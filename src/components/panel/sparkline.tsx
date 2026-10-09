@@ -1,3 +1,5 @@
+import { LINE_HEX } from '@/lib/risk-category'
+
 type SparklineProps = {
   values: number[]
   width: number
@@ -46,7 +48,7 @@ export function Sparkline({
           y1={baselineY}
           x2={width - pad}
           y2={baselineY}
-          stroke="#E3E9E4"
+          stroke={LINE_HEX}
           strokeWidth={1}
         />
       )}

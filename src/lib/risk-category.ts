@@ -7,6 +7,12 @@ export type RiskCategoryStyle = {
   text: string
 }
 
+/** Mirrors `--color-brand` in tokens.css — for MapLibre / SVG that need resolved colors. */
+export const BRAND_HEX = '#1E6B45'
+
+/** Line / border hex — mirrors `--color-line`. */
+export const LINE_HEX = '#E3E9E4'
+
 /** Colors from docs/spesifikasi-ui.md — hex values, not Tailwind classes. */
 export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
   sangat_tinggi: {

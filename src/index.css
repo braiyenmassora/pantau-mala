@@ -50,39 +50,39 @@
 }
 
 :root {
-    /* forever-young brand → shadcn theme (light only) */
-    --background: #DCE7EC; /* map-bg */
-    --foreground: #14261B; /* ink */
-    --card: #FFFFFF;
-    --card-foreground: #14261B;
-    --popover: #FFFFFF;
-    --popover-foreground: #14261B;
-    --primary: #1E6B45; /* brand */
-    --primary-foreground: #FFFFFF;
-    --secondary: #EDF4EF; /* brand-soft */
-    --secondary-foreground: #1E6B45;
-    --muted: #F6F8F6; /* surface-muted */
-    --muted-foreground: #52645A; /* ink-2 */
-    --accent: #EDF4EF;
-    --accent-foreground: #1E6B45;
-    --destructive: #C2410C; /* risk-high */
-    --border: #E3E9E4; /* line */
-    --input: #E3E9E4;
-    --ring: #1E6B45;
-    --chart-1: #C2410C;
-    --chart-2: #D99A0B;
-    --chart-3: #2E8B57;
-    --chart-4: #1E6B45;
-    --chart-5: #52645A;
-    --radius: 0.75rem; /* ~12px card */
-    --sidebar: #FFFFFF;
-    --sidebar-foreground: #14261B;
-    --sidebar-primary: #1E6B45;
-    --sidebar-primary-foreground: #FFFFFF;
-    --sidebar-accent: #F6F8F6;
-    --sidebar-accent-foreground: #14261B;
-    --sidebar-border: #E3E9E4;
-    --sidebar-ring: #1E6B45;
+    /* shadcn theme ← tokens.css (satu sumber hex) */
+    --background: var(--color-surface);
+    --foreground: var(--color-ink);
+    --card: var(--color-surface);
+    --card-foreground: var(--color-ink);
+    --popover: var(--color-surface);
+    --popover-foreground: var(--color-ink);
+    --primary: var(--color-brand);
+    --primary-foreground: var(--color-surface);
+    --secondary: var(--color-brand-soft);
+    --secondary-foreground: var(--color-brand);
+    --muted: var(--color-surface-muted);
+    --muted-foreground: var(--color-ink-2);
+    --accent: var(--color-surface-muted);
+    --accent-foreground: var(--color-ink);
+    --destructive: var(--color-risk-high);
+    --border: var(--color-line);
+    --input: var(--color-line);
+    --ring: var(--color-brand);
+    --chart-1: var(--color-risk-high);
+    --chart-2: var(--color-risk-mid);
+    --chart-3: var(--color-risk-low);
+    --chart-4: var(--color-brand);
+    --chart-5: var(--color-ink-2);
+    --radius: 12px;
+    --sidebar: var(--color-surface);
+    --sidebar-foreground: var(--color-ink);
+    --sidebar-primary: var(--color-brand);
+    --sidebar-primary-foreground: var(--color-surface);
+    --sidebar-accent: var(--color-surface-muted);
+    --sidebar-accent-foreground: var(--color-ink);
+    --sidebar-border: var(--color-line);
+    --sidebar-ring: var(--color-brand);
 }
 
 @layer base {
