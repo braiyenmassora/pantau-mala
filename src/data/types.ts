@@ -70,3 +70,28 @@ export type Meta = {
     udara: SourceStatus
   }
 }
+
+/** Provinsi entry in daftar-wilayah.json (search catalog). */
+export type CatalogProvince = {
+  kode: string
+  nama: string
+  /** [minLon, minLat, maxLon, maxLat] */
+  bbox: [number, number, number, number]
+  /** [lon, lat] */
+  pusat: [number, number]
+}
+
+/** Kabupaten/kota entry in daftar-wilayah.json (may lack hotspot risk data). */
+export type CatalogKabKota = {
+  kode: string
+  nama: string
+  provinsi: string
+  pusat: [number, number]
+  zona_waktu: TimeZoneId
+}
+
+export type DaftarWilayah = {
+  _catatan?: string
+  provinsi: CatalogProvince[]
+  kabkota: CatalogKabKota[]
+}

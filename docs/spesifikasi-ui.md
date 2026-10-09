@@ -126,7 +126,7 @@ Menu: kartu putih, radius 12, bayangan `lg`, padding 4, item 36 px radius 8; ter
 
 **Kontrol peta** – kanan bawah: lokasi saya, zoom +/−, masing-masing 40×40, radius 8, gap 8.
 
-**Keterangan peta** – kartu kiri bawah (`surface`, garis `line`, radius 12, bayangan `sm`, padding 12, max-lebar 240, kolom gap 8): baris 1 contoh pin tinggi 20 + "Skor risiko 0–100"; baris 2 halo tumpang tindih 14 + "Lingkaran makin besar, titik panas makin banyak" (`ink-2`, boleh wrap). Kolom ikon kiri lebar sama agar teks rata.
+**Keterangan peta** – dua kartu berdampingan kiri bawah (`flex` row, gap 8, `items-stretch`; wrap bila lebar &lt; 1100 dan panel terbuka). Tiap kartu: `surface`, garis `line`, radius 12, bayangan `sm`, padding 8/12, `items-center` gap 8, caption 12/16. Kotak ikon kiri lebar 36. Kartu 1: pin contoh tinggi 20 + "Skor risiko 0–100" (`ink`). Kartu 2: halo 16 tumpang tindih −6 + "Lingkaran makin besar, titik panas makin banyak" (`ink-2`, max-width 200).
 
 **Atribusi basemap** – kontrol MapLibre **compact** (ikon ⓘ), kanan bawah tepat di atas pill "Diperbarui …" (jarak 8); gaya token: `surface`, pill, caption 12/16, `ink-2`, `shadow-sm`.
 
@@ -168,7 +168,7 @@ Desain dibuat untuk lebar **1440 × 900** dan tetap rapi mulai lebar **1024 px**
 | Baris chip (dropdown + kategori) | `left 432, top 16, right 16`, boleh turun baris | tinggi 36, gap 8 |
 | Menu dropdown provinsi | 44 px di bawah chip | lebar 240 |
 | Dialog izin lokasi | `left 432, top 68` | lebar 360, radius 16, bayangan `lg` |
-| Keterangan peta | `left 432, bottom 16` | kartu max 240, padding 12 |
+| Keterangan peta | `left 432, bottom 16` | dua kartu, gap 8, padding 8/12 |
 | Kontrol peta (lokasi, zoom) | `right 16, bottom 48` | tombol 40 × 40, gap 8 |
 | Atribusi basemap (compact) | `right 16, bottom 48` (di atas pill waktu, jarak 8) | pill caption |
 | Waktu pembaruan | `right 16, bottom 16` | tinggi 24 |

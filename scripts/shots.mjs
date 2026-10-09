@@ -247,20 +247,41 @@ try {
   await shot('11-data-gagal')
   await page.unroute('**/wilayah.json')
 
-  // 12) ringkasan mencari "dsds"
+  // 12) cari dsds → tidak ditemukan
   await page.goto(BASE, { waitUntil: 'networkidle' })
   await wait(1200)
   await page.getByPlaceholder(/Cari|kabupaten/i).fill('dsds')
   await wait(600)
   await shot('12-cari-dsds')
 
-  // 13) lokasi Jakarta
+  // 13) cari maluku → provinsi + kab tanpa titik panas
+  await page.getByRole('button', { name: /Hapus pencarian/ }).click()
+  await wait(300)
+  await page.getByPlaceholder(/Cari|kabupaten/i).fill('maluku')
+  await wait(600)
+  await shot('15-cari-maluku')
+
+  // 14) cari ambon
+  await page.getByRole('button', { name: /Hapus pencarian/ }).click()
+  await wait(300)
+  await page.getByPlaceholder(/Cari|kabupaten/i).fill('ambon')
+  await wait(600)
+  await shot('16-cari-ambon')
+
+  // 15) cari pulang
+  await page.getByRole('button', { name: /Hapus pencarian/ }).click()
+  await wait(300)
+  await page.getByPlaceholder(/Cari|kabupaten/i).fill('pulang')
+  await wait(600)
+  await shot('17-cari-pulang')
+
+  // 16) lokasi Jakarta
   await page.goto(`${BASE}/?lokasi=-6.18,106.83`, { waitUntil: 'networkidle' })
   await wait(1000)
   await enableLocation()
   await shot('13-lokasi-jakarta')
 
-  // 14) lokasi tanpa titik panas
+  // 17) lokasi tanpa titik panas
   await page.goto(`${BASE}/?lokasi=0,120`, { waitUntil: 'networkidle' })
   await wait(1000)
   await enableLocation()

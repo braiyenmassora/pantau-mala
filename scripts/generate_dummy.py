@@ -91,7 +91,75 @@ json.dump(wilayah, open(out / "wilayah.json", "w"), ensure_ascii=False, indent=2
 json.dump({"type":"FeatureCollection","features":feats}, open(out / "titik-panas-24j.geojson", "w"), ensure_ascii=False, indent=2)
 json.dump({"diperbarui":"2026-10-09T14:05:00+07:00","status":{"firms":"ok","cuaca":"ok","udara":"ok"}}, open(out / "meta.json", "w"), ensure_ascii=False, indent=2)
 json.dump({"diperbarui":"2026-10-09T11:05:00+07:00","status":{"firms":"terlambat","cuaca":"ok","udara":"gagal"}}, open(out / "meta-bermasalah.json", "w"), ensure_ascii=False, indent=2)
+# Katalog pencarian (38 provinsi + kab/kota hotspot + beberapa tanpa titik panas)
+PROV_CATALOG = [
+ ("11","Aceh",[95.0,2.0,98.3,6.1],[96.9,4.7]),
+ ("12","Sumatera Utara",[97.0,1.0,100.5,4.5],[98.7,2.1]),
+ ("13","Sumatera Barat",[98.5,-3.5,101.5,0.5],[100.4,-0.9]),
+ ("14","Riau",[100.0,-1.2,103.8,2.8],[101.6,0.5]),
+ ("15","Jambi",[101.0,-2.8,104.5,-0.5],[103.6,-1.6]),
+ ("16","Sumatera Selatan",[102.0,-5.0,106.5,-1.5],[104.8,-3.3]),
+ ("17","Bengkulu",[101.0,-5.6,103.8,-2.3],[102.3,-3.8]),
+ ("18","Lampung",[103.5,-6.5,106.0,-3.7],[105.2,-5.0]),
+ ("19","Kepulauan Bangka Belitung",[105.0,-3.5,109.2,-0.8],[106.1,-2.1]),
+ ("21","Kepulauan Riau",[103.0,-0.5,109.5,4.5],[104.5,1.0]),
+ ("31","DKI Jakarta",[106.65,-6.4,107.0,-5.95],[106.85,-6.2]),
+ ("32","Jawa Barat",[106.3,-7.8,108.9,-5.9],[107.6,-6.9]),
+ ("33","Jawa Tengah",[108.5,-8.2,111.8,-6.0],[110.0,-7.2]),
+ ("34","DI Yogyakarta",[110.0,-8.2,110.9,-7.5],[110.4,-7.8]),
+ ("35","Jawa Timur",[110.9,-8.8,114.7,-6.7],[112.6,-7.5]),
+ ("36","Banten",[105.0,-7.0,106.8,-5.7],[106.1,-6.4]),
+ ("51","Bali",[114.4,-8.9,115.8,-8.0],[115.1,-8.4]),
+ ("52","Nusa Tenggara Barat",[115.7,-9.1,119.4,-8.0],[117.4,-8.6]),
+ ("53","Nusa Tenggara Timur",[118.8,-11.2,125.3,-7.5],[121.5,-9.0]),
+ ("61","Kalimantan Barat",[108.5,-3.1,114.3,2.1],[111.1,-0.3]),
+ ("62","Kalimantan Tengah",[110.7,-3.6,115.9,0.8],[113.5,-1.7]),
+ ("63","Kalimantan Selatan",[114.3,-4.2,116.7,-1.3],[115.4,-3.0]),
+ ("64","Kalimantan Timur",[113.8,-2.5,119.0,2.5],[116.5,0.5]),
+ ("65","Kalimantan Utara",[114.5,1.5,119.2,4.5],[116.5,3.0]),
+ ("71","Sulawesi Utara",[123.0,0.3,127.2,5.0],[124.8,1.5]),
+ ("72","Sulawesi Tengah",[119.0,-3.5,124.5,1.5],[121.5,-1.0]),
+ ("73","Sulawesi Selatan",[116.8,-8.0,122.0,-1.5],[119.9,-4.0]),
+ ("74","Sulawesi Tenggara",[120.5,-6.5,124.8,-2.5],[122.5,-4.0]),
+ ("75","Gorontalo",[121.0,0.2,123.8,1.5],[122.5,0.7]),
+ ("76","Sulawesi Barat",[118.5,-4.0,120.0,-1.0],[119.3,-2.5]),
+ ("81","Maluku",[125.5,-8.5,135.0,-2.5],[128.2,-3.7]),
+ ("82","Maluku Utara",[124.0,-2.5,129.5,3.0],[127.4,0.8]),
+ ("91","Papua",[138.0,-4.0,141.1,-0.5],[140.5,-2.5]),
+ ("92","Papua Barat",[129.0,-4.5,135.0,0.5],[132.5,-2.0]),
+ ("93","Papua Selatan",[137.0,-9.2,141.1,-4.5],[139.5,-7.5]),
+ ("94","Papua Tengah",[134.0,-5.0,139.0,-1.5],[136.5,-3.5]),
+ ("95","Papua Pegunungan",[137.5,-5.5,141.0,-2.5],[139.5,-4.0]),
+ ("96","Papua Barat Daya",[130.0,-2.5,134.5,1.0],[132.0,-0.5]),
+]
+EXTRA_KAB = [
+ ("81.71","Kota Ambon","Maluku","WIT",[128.18,-3.70]),
+ ("81.01","Kab. Maluku Tengah","Maluku","WIT",[129.0,-3.2]),
+ ("32.73","Kota Bandung","Jawa Barat","WIB",[107.62,-6.91]),
+ ("51.71","Kota Denpasar","Bali","WITA",[115.22,-8.67]),
+]
+kab_by_kode = {
+    w["kode"]: {
+        "kode": w["kode"], "nama": w["nama"], "provinsi": w["provinsi"],
+        "pusat": w["pusat"], "zona_waktu": w["zona_waktu"],
+    }
+    for w in wilayah
+}
+for kode, nama, prov, tz, pusat in EXTRA_KAB:
+    kab_by_kode[kode] = {
+        "kode": kode, "nama": nama, "provinsi": prov, "pusat": pusat, "zona_waktu": tz,
+    }
+daftar = {
+    "_catatan": "dummy, ganti dari data BIG oleh worker",
+    "provinsi": [
+        {"kode": k, "nama": n, "bbox": b, "pusat": p} for k, n, b, p in PROV_CATALOG
+    ],
+    "kabkota": sorted(kab_by_kode.values(), key=lambda x: (x["provinsi"], x["nama"])),
+}
+json.dump(daftar, open(out / "daftar-wilayah.json", "w"), ensure_ascii=False, indent=2)
+
 days=[sum(w["tren_7h"][i] for w in wilayah) for i in range(7)]
 print(len(wilayah),"wilayah;",len(feats),"fitur geojson; total/hari",days)
+print(len(daftar["provinsi"]),"provinsi katalog;",len(daftar["kabkota"]),"kabkota katalog")
 print({k:sum(1 for w in wilayah if w["kategori"]==k) for k in ["sangat_tinggi","sedang","rendah"]})
 print({k:sum(1 for w in wilayah if w["udara"]["kategori"]==k) for k in ["tidak_sehat","sedang","baik"]})

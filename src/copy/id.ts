@@ -17,6 +17,11 @@ export const copy = {
       title: 'Lokasi tidak ditemukan',
       description: 'Coba nama kabupaten/kota lain.',
     },
+    noHotspotsInRegion: {
+      title: 'Tidak ada titik panas',
+      description: (nama: string) =>
+        `Dalam 7 hari terakhir tidak ada titik panas terdeteksi di ${nama}.`,
+    },
     nearbyClear: {
       title: 'Tidak ada titik panas di sekitar kamu',
       description: 'Dalam radius 25 km tidak ada titik panas terdeteksi.',
@@ -81,6 +86,16 @@ export const copy = {
   legend: {
     score: 'Skor risiko 0–100',
     halo: 'Lingkaran makin besar, titik panas makin banyak',
+  },
+  search: {
+    provinces: 'Provinsi',
+    kabkota: 'Kabupaten/kota',
+    provinceTitle: (nama: string) => `Provinsi ${nama}`,
+    withHotspots: (n: number) => `${n} wilayah dengan titik panas`,
+    noHotspots: 'Tidak ada titik panas',
+    kabNoHotspotsMeta: (provinsi: string) =>
+      `${provinsi} · Tidak ada titik panas`,
+    dash: '–',
   },
   footer: {
     sourcePrefix: 'Sumber data:',

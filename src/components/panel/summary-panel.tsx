@@ -11,7 +11,10 @@ import { useMemo } from 'react'
 
 import { Badge, EmptyState, SectionLabel, Skeleton } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
+import { CatalogRegionRow } from '@/components/panel/catalog-region-row'
 import { LocationCard } from '@/components/panel/location-card'
+import { NoHotspotDetail } from '@/components/panel/no-hotspot-detail'
+import { ProvinceSearchRow } from '@/components/panel/province-search-row'
 import { RegionDetailPanel } from '@/components/panel/region-detail-panel'
 import { RegionRow } from '@/components/panel/region-row'
 import { Sparkline } from '@/components/panel/sparkline'
@@ -21,12 +24,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { useMeta } from '@/data/queries'
+import { useDaftarWilayah, useMeta } from '@/data/queries'
 import type { Region, SourceStatus } from '@/data/types'
 import { copy } from '@/copy/id'
 import { filterRegions } from '@/lib/filter-regions'
 import { formatDateTime, formatNumber, formatPercent } from '@/lib/format'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { searchWilayah } from '@/lib/search-wilayah'
 import { computeSummary } from '@/lib/summary'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -60,11 +64,17 @@ export function SummaryPanel({
   const selectedCategories = useMapStore((s) => s.selectedCategories)
   const clearCategories = useMapStore((s) => s.clearCategories)
   const { data: meta } = useMeta()
+  const { data: daftar } = useDaftarWilayah()
 
   const selected = useMemo(
     () => regions.find((r) => r.kode === selectedCode) ?? null,
     [regions, selectedCode],
   )
+
+  const selectedCatalog = useMemo(() => {
+    if (selected || !selectedCode || !daftar) return null
+    return daftar.kabkota.find((k) => k.kode === selectedCode) ?? null
+  }, [selected, selectedCode, daftar])
 
   /** Hotspot card ignores search query — province + category only. */
   const viewRegions = useMemo(
@@ -76,6 +86,11 @@ export function SummaryPanel({
       }),
     [regions, province, selectedCategories],
   )
+
+  const searchHits = useMemo(() => {
+    if (!daftar || !query.trim()) return null
+    return searchWilayah(daftar, regions, query)
+  }, [daftar, regions, query])
 
   if (isPending) {
     return <SummarySkeleton />
@@ -100,6 +115,10 @@ export function SummaryPanel({
     return <RegionDetailPanel region={selected} />
   }
 
+  if (selectedCatalog) {
+    return <NoHotspotDetail kab={selectedCatalog} />
+  }
+
   const wilayahLabel = province === 'Semua' ? 'Indonesia' : province
   const title =
     province === 'Semua'
@@ -107,8 +126,7 @@ export function SummaryPanel({
       : copy.panel.provinceToday(province)
   const searching = query.trim().length > 0
   const filtering = selectedCategories.size > 0
-  const list = searching ? filtered : filtered.slice(0, 5)
-  const sectionLabel = searching ? copy.panel.searchResults : copy.panel.topRisk
+  const list = searching ? [] : filtered.slice(0, 5)
   const summary = computeSummary(viewRegions)
   const noHotspots = summary.todayTotal === 0
   const showSpark =
@@ -120,6 +138,12 @@ export function SummaryPanel({
         (k) => meta.status[k] === 'terlambat',
       )
     : []
+
+  const searchEmpty =
+    searching &&
+    searchHits &&
+    searchHits.provinces.length === 0 &&
+    searchHits.kabkota.length === 0
 
   return (
     <div key={`summary-${province}-${query}`} className="animate-view-in space-y-6">
@@ -208,47 +232,90 @@ export function SummaryPanel({
         </section>
       )}
 
-      <section>
-        <SectionLabel className="mb-2">{sectionLabel}</SectionLabel>
-        {list.length === 0 ? (
-          searching ? (
+      {searching ? (
+        <section className="space-y-6">
+          {!searchHits ? (
+            <Skeleton className="min-h-16 w-full" />
+          ) : searchEmpty ? (
             <EmptyState
               icon={SearchX}
               title={copy.empty.searchMiss.title}
               description={copy.empty.searchMiss.description}
             />
-          ) : filtering ? (
-            <EmptyState
-              icon={Filter}
-              title={copy.empty.noRegionsFilter.title}
-              description={copy.empty.noRegionsFilter.description(
-                [...selectedCategories]
-                  .map((c) => RISK_CATEGORIES[c].label)
-                  .join(', '),
-                wilayahLabel,
-              )}
-              action={{
-                label: copy.empty.noRegionsFilter.action,
-                onClick: clearCategories,
-              }}
-            />
           ) : (
-            <EmptyState
-              icon={ShieldCheck}
-              title={copy.empty.noHotspots.title}
-              description={copy.empty.noHotspots.description(wilayahLabel)}
-            />
-          )
-        ) : (
-          <ul className="flex flex-col">
-            {list.map((region) => (
-              <li key={region.kode}>
-                <RegionRow region={region} mapRef={mapRef} />
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+            <>
+              {searchHits.provinces.length > 0 && (
+                <div>
+                  <SectionLabel className="mb-2">{copy.search.provinces}</SectionLabel>
+                  <ul className="flex flex-col">
+                    {searchHits.provinces.map((hit) => (
+                      <li key={hit.province.kode}>
+                        <ProvinceSearchRow
+                          province={hit.province}
+                          hotspotCount={hit.hotspotCount}
+                          mapRef={mapRef}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {searchHits.kabkota.length > 0 && (
+                <div>
+                  <SectionLabel className="mb-2">{copy.search.kabkota}</SectionLabel>
+                  <ul className="flex flex-col">
+                    {searchHits.kabkota.map((hit) => (
+                      <li key={hit.kab.kode}>
+                        {hit.region ? (
+                          <RegionRow region={hit.region} mapRef={mapRef} />
+                        ) : (
+                          <CatalogRegionRow kab={hit.kab} mapRef={mapRef} />
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </>
+          )}
+        </section>
+      ) : (
+        <section>
+          <SectionLabel className="mb-2">{copy.panel.topRisk}</SectionLabel>
+          {list.length === 0 ? (
+            filtering ? (
+              <EmptyState
+                icon={Filter}
+                title={copy.empty.noRegionsFilter.title}
+                description={copy.empty.noRegionsFilter.description(
+                  [...selectedCategories]
+                    .map((c) => RISK_CATEGORIES[c].label)
+                    .join(', '),
+                  wilayahLabel,
+                )}
+                action={{
+                  label: copy.empty.noRegionsFilter.action,
+                  onClick: clearCategories,
+                }}
+              />
+            ) : (
+              <EmptyState
+                icon={ShieldCheck}
+                title={copy.empty.noHotspots.title}
+                description={copy.empty.noHotspots.description(wilayahLabel)}
+              />
+            )
+          ) : (
+            <ul className="flex flex-col">
+              {list.map((region) => (
+                <li key={region.kode}>
+                  <RegionRow region={region} mapRef={mapRef} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
     </div>
   )
 }

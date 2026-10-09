@@ -1,9 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
 
-import type { HotspotFeatureCollection, Meta, Region } from '@/data/types'
+import type {
+  DaftarWilayah,
+  HotspotFeatureCollection,
+  Meta,
+  Region,
+} from '@/data/types'
 
 const STALE_MS = 5 * 60 * 1000
 const REFETCH_MS = 15 * 60 * 1000
+const CATALOG_STALE_MS = 24 * 60 * 60 * 1000
 
 function dataBaseUrl() {
   const base = import.meta.env.VITE_DATA_URL ?? '/data'
@@ -43,5 +49,13 @@ export function useMeta() {
     queryFn: () => fetchJson<Meta>('/meta.json'),
     staleTime: STALE_MS,
     refetchInterval: REFETCH_MS,
+  })
+}
+
+export function useDaftarWilayah() {
+  return useQuery({
+    queryKey: ['daftar-wilayah'],
+    queryFn: () => fetchJson<DaftarWilayah>('/daftar-wilayah.json'),
+    staleTime: CATALOG_STALE_MS,
   })
 }

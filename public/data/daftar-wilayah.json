@@ -1,0 +1,779 @@
+{
+  "_catatan": "dummy, ganti dari data BIG oleh worker",
+  "provinsi": [
+    {
+      "kode": "11",
+      "nama": "Aceh",
+      "bbox": [
+        95.0,
+        2.0,
+        98.3,
+        6.1
+      ],
+      "pusat": [
+        96.9,
+        4.7
+      ]
+    },
+    {
+      "kode": "12",
+      "nama": "Sumatera Utara",
+      "bbox": [
+        97.0,
+        1.0,
+        100.5,
+        4.5
+      ],
+      "pusat": [
+        98.7,
+        2.1
+      ]
+    },
+    {
+      "kode": "13",
+      "nama": "Sumatera Barat",
+      "bbox": [
+        98.5,
+        -3.5,
+        101.5,
+        0.5
+      ],
+      "pusat": [
+        100.4,
+        -0.9
+      ]
+    },
+    {
+      "kode": "14",
+      "nama": "Riau",
+      "bbox": [
+        100.0,
+        -1.2,
+        103.8,
+        2.8
+      ],
+      "pusat": [
+        101.6,
+        0.5
+      ]
+    },
+    {
+      "kode": "15",
+      "nama": "Jambi",
+      "bbox": [
+        101.0,
+        -2.8,
+        104.5,
+        -0.5
+      ],
+      "pusat": [
+        103.6,
+        -1.6
+      ]
+    },
+    {
+      "kode": "16",
+      "nama": "Sumatera Selatan",
+      "bbox": [
+        102.0,
+        -5.0,
+        106.5,
+        -1.5
+      ],
+      "pusat": [
+        104.8,
+        -3.3
+      ]
+    },
+    {
+      "kode": "17",
+      "nama": "Bengkulu",
+      "bbox": [
+        101.0,
+        -5.6,
+        103.8,
+        -2.3
+      ],
+      "pusat": [
+        102.3,
+        -3.8
+      ]
+    },
+    {
+      "kode": "18",
+      "nama": "Lampung",
+      "bbox": [
+        103.5,
+        -6.5,
+        106.0,
+        -3.7
+      ],
+      "pusat": [
+        105.2,
+        -5.0
+      ]
+    },
+    {
+      "kode": "19",
+      "nama": "Kepulauan Bangka Belitung",
+      "bbox": [
+        105.0,
+        -3.5,
+        109.2,
+        -0.8
+      ],
+      "pusat": [
+        106.1,
+        -2.1
+      ]
+    },
+    {
+      "kode": "21",
+      "nama": "Kepulauan Riau",
+      "bbox": [
+        103.0,
+        -0.5,
+        109.5,
+        4.5
+      ],
+      "pusat": [
+        104.5,
+        1.0
+      ]
+    },
+    {
+      "kode": "31",
+      "nama": "DKI Jakarta",
+      "bbox": [
+        106.65,
+        -6.4,
+        107.0,
+        -5.95
+      ],
+      "pusat": [
+        106.85,
+        -6.2
+      ]
+    },
+    {
+      "kode": "32",
+      "nama": "Jawa Barat",
+      "bbox": [
+        106.3,
+        -7.8,
+        108.9,
+        -5.9
+      ],
+      "pusat": [
+        107.6,
+        -6.9
+      ]
+    },
+    {
+      "kode": "33",
+      "nama": "Jawa Tengah",
+      "bbox": [
+        108.5,
+        -8.2,
+        111.8,
+        -6.0
+      ],
+      "pusat": [
+        110.0,
+        -7.2
+      ]
+    },
+    {
+      "kode": "34",
+      "nama": "DI Yogyakarta",
+      "bbox": [
+        110.0,
+        -8.2,
+        110.9,
+        -7.5
+      ],
+      "pusat": [
+        110.4,
+        -7.8
+      ]
+    },
+    {
+      "kode": "35",
+      "nama": "Jawa Timur",
+      "bbox": [
+        110.9,
+        -8.8,
+        114.7,
+        -6.7
+      ],
+      "pusat": [
+        112.6,
+        -7.5
+      ]
+    },
+    {
+      "kode": "36",
+      "nama": "Banten",
+      "bbox": [
+        105.0,
+        -7.0,
+        106.8,
+        -5.7
+      ],
+      "pusat": [
+        106.1,
+        -6.4
+      ]
+    },
+    {
+      "kode": "51",
+      "nama": "Bali",
+      "bbox": [
+        114.4,
+        -8.9,
+        115.8,
+        -8.0
+      ],
+      "pusat": [
+        115.1,
+        -8.4
+      ]
+    },
+    {
+      "kode": "52",
+      "nama": "Nusa Tenggara Barat",
+      "bbox": [
+        115.7,
+        -9.1,
+        119.4,
+        -8.0
+      ],
+      "pusat": [
+        117.4,
+        -8.6
+      ]
+    },
+    {
+      "kode": "53",
+      "nama": "Nusa Tenggara Timur",
+      "bbox": [
+        118.8,
+        -11.2,
+        125.3,
+        -7.5
+      ],
+      "pusat": [
+        121.5,
+        -9.0
+      ]
+    },
+    {
+      "kode": "61",
+      "nama": "Kalimantan Barat",
+      "bbox": [
+        108.5,
+        -3.1,
+        114.3,
+        2.1
+      ],
+      "pusat": [
+        111.1,
+        -0.3
+      ]
+    },
+    {
+      "kode": "62",
+      "nama": "Kalimantan Tengah",
+      "bbox": [
+        110.7,
+        -3.6,
+        115.9,
+        0.8
+      ],
+      "pusat": [
+        113.5,
+        -1.7
+      ]
+    },
+    {
+      "kode": "63",
+      "nama": "Kalimantan Selatan",
+      "bbox": [
+        114.3,
+        -4.2,
+        116.7,
+        -1.3
+      ],
+      "pusat": [
+        115.4,
+        -3.0
+      ]
+    },
+    {
+      "kode": "64",
+      "nama": "Kalimantan Timur",
+      "bbox": [
+        113.8,
+        -2.5,
+        119.0,
+        2.5
+      ],
+      "pusat": [
+        116.5,
+        0.5
+      ]
+    },
+    {
+      "kode": "65",
+      "nama": "Kalimantan Utara",
+      "bbox": [
+        114.5,
+        1.5,
+        119.2,
+        4.5
+      ],
+      "pusat": [
+        116.5,
+        3.0
+      ]
+    },
+    {
+      "kode": "71",
+      "nama": "Sulawesi Utara",
+      "bbox": [
+        123.0,
+        0.3,
+        127.2,
+        5.0
+      ],
+      "pusat": [
+        124.8,
+        1.5
+      ]
+    },
+    {
+      "kode": "72",
+      "nama": "Sulawesi Tengah",
+      "bbox": [
+        119.0,
+        -3.5,
+        124.5,
+        1.5
+      ],
+      "pusat": [
+        121.5,
+        -1.0
+      ]
+    },
+    {
+      "kode": "73",
+      "nama": "Sulawesi Selatan",
+      "bbox": [
+        116.8,
+        -8.0,
+        122.0,
+        -1.5
+      ],
+      "pusat": [
+        119.9,
+        -4.0
+      ]
+    },
+    {
+      "kode": "74",
+      "nama": "Sulawesi Tenggara",
+      "bbox": [
+        120.5,
+        -6.5,
+        124.8,
+        -2.5
+      ],
+      "pusat": [
+        122.5,
+        -4.0
+      ]
+    },
+    {
+      "kode": "75",
+      "nama": "Gorontalo",
+      "bbox": [
+        121.0,
+        0.2,
+        123.8,
+        1.5
+      ],
+      "pusat": [
+        122.5,
+        0.7
+      ]
+    },
+    {
+      "kode": "76",
+      "nama": "Sulawesi Barat",
+      "bbox": [
+        118.5,
+        -4.0,
+        120.0,
+        -1.0
+      ],
+      "pusat": [
+        119.3,
+        -2.5
+      ]
+    },
+    {
+      "kode": "81",
+      "nama": "Maluku",
+      "bbox": [
+        125.5,
+        -8.5,
+        135.0,
+        -2.5
+      ],
+      "pusat": [
+        128.2,
+        -3.7
+      ]
+    },
+    {
+      "kode": "82",
+      "nama": "Maluku Utara",
+      "bbox": [
+        124.0,
+        -2.5,
+        129.5,
+        3.0
+      ],
+      "pusat": [
+        127.4,
+        0.8
+      ]
+    },
+    {
+      "kode": "91",
+      "nama": "Papua",
+      "bbox": [
+        138.0,
+        -4.0,
+        141.1,
+        -0.5
+      ],
+      "pusat": [
+        140.5,
+        -2.5
+      ]
+    },
+    {
+      "kode": "92",
+      "nama": "Papua Barat",
+      "bbox": [
+        129.0,
+        -4.5,
+        135.0,
+        0.5
+      ],
+      "pusat": [
+        132.5,
+        -2.0
+      ]
+    },
+    {
+      "kode": "93",
+      "nama": "Papua Selatan",
+      "bbox": [
+        137.0,
+        -9.2,
+        141.1,
+        -4.5
+      ],
+      "pusat": [
+        139.5,
+        -7.5
+      ]
+    },
+    {
+      "kode": "94",
+      "nama": "Papua Tengah",
+      "bbox": [
+        134.0,
+        -5.0,
+        139.0,
+        -1.5
+      ],
+      "pusat": [
+        136.5,
+        -3.5
+      ]
+    },
+    {
+      "kode": "95",
+      "nama": "Papua Pegunungan",
+      "bbox": [
+        137.5,
+        -5.5,
+        141.0,
+        -2.5
+      ],
+      "pusat": [
+        139.5,
+        -4.0
+      ]
+    },
+    {
+      "kode": "96",
+      "nama": "Papua Barat Daya",
+      "bbox": [
+        130.0,
+        -2.5,
+        134.5,
+        1.0
+      ],
+      "pusat": [
+        132.0,
+        -0.5
+      ]
+    }
+  ],
+  "kabkota": [
+    {
+      "kode": "51.71",
+      "nama": "Kota Denpasar",
+      "provinsi": "Bali",
+      "pusat": [
+        115.22,
+        -8.67
+      ],
+      "zona_waktu": "WITA"
+    },
+    {
+      "kode": "31.71",
+      "nama": "Kota Jakarta Pusat",
+      "provinsi": "DKI Jakarta",
+      "pusat": [
+        106.84,
+        -6.18
+      ],
+      "zona_waktu": "WIB"
+    },
+    {
+      "kode": "15.05",
+      "nama": "Kab. Muaro Jambi",
+      "provinsi": "Jambi",
+      "pusat": [
+        103.8,
+        -1.6
+      ],
+      "zona_waktu": "WIB"
+    },
+    {
+      "kode": "15.71",
+      "nama": "Kota Jambi",
+      "provinsi": "Jambi",
+      "pusat": [
+        103.61,
+        -1.61
+      ],
+      "zona_waktu": "WIB"
+    },
+    {
+      "kode": "32.73",
+      "nama": "Kota Bandung",
+      "provinsi": "Jawa Barat",
+      "pusat": [
+        107.62,
+        -6.91
+      ],
+      "zona_waktu": "WIB"
+    },
+    {
+      "kode": "33.74",
+      "nama": "Kota Semarang",
+      "provinsi": "Jawa Tengah",
+      "pusat": [
+        110.42,
+        -6.97
+      ],
+      "zona_waktu": "WIB"
+    },
+    {
+      "kode": "61.04",
+      "nama": "Kab. Ketapang",
+      "provinsi": "Kalimantan Barat",
+      "pusat": [
+        110.5,
+        -1.9
+      ],
+      "zona_waktu": "WIB"
+    },
+    {
+      "kode": "61.12",
+      "nama": "Kab. Kubu Raya",
+      "provinsi": "Kalimantan Barat",
+      "pusat": [
+        109.4,
+        -0.3
+      ],
+      "zona_waktu": "WIB"
+    },
+    {
+      "kode": "63.03",
+      "nama": "Kab. Banjar",
+      "provinsi": "Kalimantan Selatan",
+      "pusat": [
+        115.0,
+        -3.3
+      ],
+      "zona_waktu": "WITA"
+    },
+    {
+      "kode": "62.03",
+      "nama": "Kab. Kapuas",
+      "provinsi": "Kalimantan Tengah",
+      "pusat": [
+        114.4,
+        -2.1
+      ],
+      "zona_waktu": "WIB"
+    },
+    {
+      "kode": "62.11",
+      "nama": "Kab. Pulang Pisau",
+      "provinsi": "Kalimantan Tengah",
+      "pusat": [
+        114.25,
+        -2.75
+      ],
+      "zona_waktu": "WIB"
+    },
+    {
+      "kode": "64.02",
+      "nama": "Kab. Kutai Kartanegara",
+      "provinsi": "Kalimantan Timur",
+      "pusat": [
+        116.8,
+        -0.4
+      ],
+      "zona_waktu": "WITA"
+    },
+    {
+      "kode": "81.01",
+      "nama": "Kab. Maluku Tengah",
+      "provinsi": "Maluku",
+      "pusat": [
+        129.0,
+        -3.2
+      ],
+      "zona_waktu": "WIT"
+    },
+    {
+      "kode": "81.71",
+      "nama": "Kota Ambon",
+      "provinsi": "Maluku",
+      "pusat": [
+        128.18,
+        -3.7
+      ],
+      "zona_waktu": "WIT"
+    },
+    {
+      "kode": "53.08",
+      "nama": "Kab. Ende",
+      "provinsi": "Nusa Tenggara Timur",
+      "pusat": [
+        121.66,
+        -8.84
+      ],
+      "zona_waktu": "WITA"
+    },
+    {
+      "kode": "53.10",
+      "nama": "Kab. Kupang",
+      "provinsi": "Nusa Tenggara Timur",
+      "pusat": [
+        123.9,
+        -10.0
+      ],
+      "zona_waktu": "WITA"
+    },
+    {
+      "kode": "91.71",
+      "nama": "Kota Jayapura",
+      "provinsi": "Papua",
+      "pusat": [
+        140.67,
+        -2.53
+      ],
+      "zona_waktu": "WIT"
+    },
+    {
+      "kode": "92.03",
+      "nama": "Kab. Fakfak",
+      "provinsi": "Papua Barat",
+      "pusat": [
+        132.3,
+        -2.92
+      ],
+      "zona_waktu": "WIT"
+    },
+    {
+      "kode": "93.01",
+      "nama": "Kab. Merauke",
+      "provinsi": "Papua Selatan",
+      "pusat": [
+        140.4,
+        -8.5
+      ],
+      "zona_waktu": "WIT"
+    },
+    {
+      "kode": "14.04",
+      "nama": "Kab. Pelalawan",
+      "provinsi": "Riau",
+      "pusat": [
+        102.2,
+        0.2
+      ],
+      "zona_waktu": "WIB"
+    },
+    {
+      "kode": "73.18",
+      "nama": "Kab. Tana Toraja",
+      "provinsi": "Sulawesi Selatan",
+      "pusat": [
+        119.85,
+        -3.04
+      ],
+      "zona_waktu": "WITA"
+    },
+    {
+      "kode": "73.71",
+      "nama": "Kota Makassar",
+      "provinsi": "Sulawesi Selatan",
+      "pusat": [
+        119.43,
+        -5.15
+      ],
+      "zona_waktu": "WITA"
+    },
+    {
+      "kode": "71.71",
+      "nama": "Kota Manado",
+      "provinsi": "Sulawesi Utara",
+      "pusat": [
+        124.84,
+        1.48
+      ],
+      "zona_waktu": "WITA"
+    },
+    {
+      "kode": "16.02",
+      "nama": "Kab. Ogan Komering Ilir",
+      "provinsi": "Sumatera Selatan",
+      "pusat": [
+        105.6,
+        -3.4
+      ],
+      "zona_waktu": "WIB"
+    }
+  ]
+}

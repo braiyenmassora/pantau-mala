@@ -122,14 +122,25 @@ describe('SummaryPanel states', () => {
 
   it('shows search miss empty', () => {
     useMapStore.setState({ query: 'xyzzy' })
-    wrap(
-      <SummaryPanel
-        regions={[region]}
-        filtered={[]}
-        mapRef={createRef<MapRef | null>()}
-        isPending={false}
-        isError={false}
-      />,
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+    client.setQueryData(['daftar-wilayah'], {
+      provinsi: [],
+      kabkota: [],
+    })
+    render(
+      <QueryClientProvider client={client}>
+        <TooltipProvider>
+          <SummaryPanel
+            regions={[region]}
+            filtered={[]}
+            mapRef={createRef<MapRef | null>()}
+            isPending={false}
+            isError={false}
+          />
+        </TooltipProvider>
+      </QueryClientProvider>,
     )
     expect(screen.getByText(copy.empty.searchMiss.title)).toBeTruthy()
   })

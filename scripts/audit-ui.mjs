@@ -41,7 +41,7 @@ const BANNED_VISIBLE = /\b(?:hotspot|confidence|Anda|saya)\b/i
 /** Allowed arbitrary px for h-/w-/size-[Npx] (density + sparks + hairlines). */
 const ALLOWED_PX = new Set([
   1, 2, 3, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 68,
-  128, 240, 360, 400, 416, 432,
+  128, 200, 240, 360, 400, 416, 432,
 ])
 
 const ARBITRARY_SIZE = /\b(?:h|w|size|min-h|max-h|min-w|max-w)-\[(\d+)px\]/g

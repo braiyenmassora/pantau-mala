@@ -14,7 +14,7 @@ Dokumen ini hanya memuat hal yang wajib selaras dengan [mockup web](https://clau
 | --- | --- | --- |
 | Peta | Pin skor berwarna kategori, cluster saat zoom jauh, halo berdenyut untuk Sedang dan Sangat tinggi | Skor, kategori, titik tengah wilayah, jumlah titik panas |
 | Chip filter | Dropdown provinsi + chip Sangat tinggi / Sedang / Rendah beserta jumlah wilayah. Awalnya semua tampil; klik chip = tampilkan hanya kategori itu (bisa lebih dari satu) | Provinsi dan kategori tiap wilayah |
-| Pencarian | Cari kabupaten/kota, peta zoom ke hasil | Nama wilayah dan provinsi |
+| Pencarian | Cari provinsi & kabupaten/kota (termasuk tanpa titik panas) | `daftar-wilayah.json` + `wilayah.json` |
 | Panel ringkasan | Titik panas 24 jam, perubahan dibanding kemarin, tren 7 hari, daftar wilayah risiko tertinggi | Total titik panas per hari (7 hari), skor per wilayah |
 | Detail wilayah | Kartu risiko (kategori + skor/100 + skala, penjelasan di ⓘ), ringkasan, "Yang bisa kamu lakukan", kondisi saat ini, tren 7 hari, info teknis satelit (terlipat, waktu dalam WIB/WITA/WIT wilayahnya) | Semua isi `wilayah.json` (lihat Kontrak data) |
 | Lokasi pengguna | Kartu pra-izin (Lanjutkan / Nanti saja), lalu titik lokasi, radius 25 km, risiko dan titik panas terdekat | `titik-panas-24j.geojson`, dihitung di browser |
@@ -51,7 +51,7 @@ Atribusi yang tampil di panel: "Data: NASA FIRMS · BMKG · Open-Meteo".
 
 ## Kontrak data ke frontend
 
-Worker menulis tiga file ke R2 tiap jam. Nama field di bawah adalah kontrak: frontend dan API fase 2 memakai bentuk yang sama.
+Worker menulis file data ke R2. Nama field di bawah adalah kontrak: frontend dan API fase 2 memakai bentuk yang sama. `daftar-wilayah.json` jarang berubah (katalog pencarian); tiga file lain diperbarui tiap jam.
 
 **`wilayah.json`** — satu objek per kabupaten/kota yang punya titik panas dalam 7 hari:
 
@@ -77,6 +77,22 @@ Worker menulis tiga file ke R2 tiap jam. Nama field di bawah adalah kontrak: fro
 **`titik-panas-24j.geojson`** — FeatureCollection titik (koordinat `[lon, lat]`) yang sudah dideduplikasi, properti: `waktu`, `satelit`, `keyakinan`, `frp_mw`, `kode_wilayah`.
 
 **`meta.json`** — `diperbarui` (waktu ISO, WIB) dan `status` per sumber (`firms`, `cuaca`, `udara`: `ok` / `terlambat` / `gagal`) untuk penanda di pojok peta.
+
+**`daftar-wilayah.json`** — katalog pencarian (statis / jarang berubah; dari BIG oleh worker):
+
+```json
+{
+  "_catatan": "dummy, ganti dari data BIG oleh worker",
+  "provinsi": [
+    { "kode": "81", "nama": "Maluku", "bbox": [125.5, -8.5, 135.0, -2.5], "pusat": [128.2, -3.7] }
+  ],
+  "kabkota": [
+    { "kode": "81.71", "nama": "Kota Ambon", "provinsi": "Maluku", "pusat": [128.18, -3.70], "zona_waktu": "WIT" }
+  ]
+}
+```
+
+Pencarian memakai katalog ini lalu digabung dengan `wilayah.json` (skor/titik panas). Pin peta tetap hanya dari `wilayah.json`.
 
 Contoh angka di atas hanya ilustrasi, sama dengan data contoh di mockup.
 
