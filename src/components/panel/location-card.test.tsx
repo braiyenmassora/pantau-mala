@@ -1,9 +1,10 @@
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { cleanup, render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { LocationCard } from '@/components/panel/location-card'
+import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
 import { useMapStore } from '@/store/map'
 
@@ -35,22 +36,21 @@ const region: Region = {
   saran: [],
 }
 
-describe('LocationCard active', () => {
+describe('LocationCard', () => {
+  afterEach(() => cleanup())
+
   beforeEach(() => {
     useMapStore.setState({
-      location: { status: 'active', coords: { lon: 114.2, lat: -2.9 } },
+      location: { status: 'off' },
     })
   })
 
-  it('shows nearby info without action buttons', async () => {
+  it('shows nearby clear empty when active with no hotspots', () => {
+    useMapStore.setState({
+      location: { status: 'active', coords: { lon: 114.2, lat: -2.9 } },
+    })
     const client = new QueryClient({
-      defaultOptions: {
-        queries: {
-          retry: false,
-          // Empty hotspots — card still renders with zero count / empty nearest
-          queryFn: async () => ({ type: 'FeatureCollection', features: [] }),
-        },
-      },
+      defaultOptions: { queries: { retry: false } },
     })
     client.setQueryData(['hotspots'], { type: 'FeatureCollection', features: [] })
 
@@ -60,9 +60,37 @@ describe('LocationCard active', () => {
       </QueryClientProvider>,
     )
 
-    expect(screen.getByText('Di sekitar kamu')).toBeTruthy()
-    expect(screen.getByText('Dalam radius 25 km')).toBeTruthy()
+    expect(screen.getByText(copy.empty.nearbyClear.title)).toBeTruthy()
     expect(screen.queryByRole('button', { name: 'Lihat detail' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Matikan lokasi' })).toBeNull()
+  })
+
+  it('shows denied empty state', () => {
+    useMapStore.setState({ location: { status: 'denied' } })
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+    render(
+      <QueryClientProvider client={client}>
+        <LocationCard regions={[region]} />
+      </QueryClientProvider>,
+    )
+    expect(screen.getByText(copy.empty.locationDenied.title)).toBeTruthy()
+  })
+
+  it('shows error empty with coba lagi', () => {
+    useMapStore.setState({ location: { status: 'error' } })
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+    render(
+      <QueryClientProvider client={client}>
+        <LocationCard regions={[region]} />
+      </QueryClientProvider>,
+    )
+    expect(screen.getByText(copy.empty.locationError.title)).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: copy.empty.locationError.action }),
+    ).toBeTruthy()
   })
 })

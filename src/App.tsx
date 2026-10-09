@@ -30,7 +30,7 @@ export default function App() {
   const panelOpen = useUiStore((s) => s.panelOpen)
   const togglePanel = useUiStore((s) => s.togglePanel)
 
-  const { data, isPending, isError } = useRegions()
+  const { data, isPending, isError, refetch } = useRegions()
   const province = useMapStore((s) => s.province)
   const selectedCategories = useMapStore((s) => s.selectedCategories)
   const query = useMapStore((s) => s.query)
@@ -97,6 +97,9 @@ export default function App() {
               mapRef={mapRef}
               isPending={isPending}
               isError={isError}
+              onRetry={() => {
+                void refetch()
+              }}
             />
           </div>
 

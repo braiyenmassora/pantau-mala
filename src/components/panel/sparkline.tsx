@@ -19,6 +19,7 @@ export function Sparkline({
   showBaseline = false,
 }: SparklineProps) {
   if (values.length < 2) return null
+  if (values.every((v) => v === 0)) return null
 
   const max = Math.max(...values, 1)
   const min = Math.min(...values, 0)

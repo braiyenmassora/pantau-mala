@@ -1,13 +1,12 @@
-import { Crosshair } from 'lucide-react'
+import { Crosshair, MapPinOff, ShieldCheck } from 'lucide-react'
 import { useMemo } from 'react'
 
-import { Badge, Button, DataTile } from '@/components/common'
-import { focusRing } from '@/components/common/focus-ring'
+import { Badge, Button, DataTile, EmptyState } from '@/components/common'
 import { useTitikPanas } from '@/data/queries'
 import type { Region } from '@/data/types'
+import { copy } from '@/copy/id'
 import { formatNumber } from '@/lib/format'
 import { computeNearby } from '@/lib/nearby'
-import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 
 type LocationCardProps = {
@@ -26,34 +25,39 @@ export function LocationCard({ regions }: LocationCardProps) {
 
   if (location.status === 'denied') {
     return (
-      <section className="animate-view-in rounded-card bg-surface-muted p-4 text-sm text-ink">
-        Akses lokasi ditolak. Cari kabupaten/kota lewat kolom pencarian, atau
-        aktifkan lokasi di pengaturan browser.
-      </section>
+      <EmptyState
+        icon={MapPinOff}
+        title={copy.empty.locationDenied.title}
+        description={copy.empty.locationDenied.description}
+      />
     )
   }
 
   if (location.status === 'error') {
     return (
-      <section className="animate-view-in rounded-card bg-surface-muted p-4 text-sm text-ink">
-        Lokasi belum bisa didapat. Coba lagi nanti atau cari kabupaten/kota lewat
-        kolom pencarian.{' '}
-        <button
-          type="button"
-          className={cn(
-            'rounded-ctl font-semibold text-brand underline-offset-2',
-            'transition-opacity duration-150 ease-in-out hover:underline',
-            focusRing,
-          )}
-          onClick={() => setLocation({ status: 'requesting' })}
-        >
-          Coba lagi
-        </button>
-      </section>
+      <EmptyState
+        icon={MapPinOff}
+        title={copy.empty.locationError.title}
+        description={copy.empty.locationError.description}
+        action={{
+          label: copy.empty.locationError.action,
+          onClick: () => setLocation({ status: 'requesting' }),
+        }}
+      />
     )
   }
 
   if (location.status === 'active' && location.coords && nearby) {
+    if (nearby.hotspotCount === 0) {
+      return (
+        <EmptyState
+          icon={ShieldCheck}
+          title={copy.empty.nearbyClear.title}
+          description={copy.empty.nearbyClear.description}
+        />
+      )
+    }
+
     const userRegion = nearby.userRegionCode
       ? regions.find((r) => r.kode === nearby.userRegionCode)
       : null
@@ -67,10 +71,10 @@ export function LocationCard({ regions }: LocationCardProps) {
           <div className="min-w-0">
             <p className="flex items-center gap-2 text-xs font-medium text-brand">
               <span className="size-2 rounded-full bg-brand" aria-hidden />
-              Di sekitar kamu
+              {copy.location.nearbyLabel}
             </p>
             <p className="mt-1 text-base font-semibold text-ink">
-              {userRegion?.nama ?? 'Lokasi kamu'}
+              {userRegion?.nama ?? copy.location.yourLocation}
             </p>
           </div>
           {userRegion && <Badge variant="category" category={userRegion.kategori} />}
@@ -78,26 +82,24 @@ export function LocationCard({ regions }: LocationCardProps) {
 
         <div className="mt-3 grid grid-cols-2 gap-2">
           <DataTile
-            label="Dalam radius 25 km"
+            label={copy.location.radius25}
             value={formatNumber(nearby.hotspotCount)}
-            unit="titik panas"
+            unit={copy.location.hotspotUnit}
           />
           {nearby.nearest && nearestRegion ? (
-            <DataTile label="Paling dekat">
+            <DataTile label={copy.location.nearest}>
               <p className="mt-1 text-base font-semibold text-ink">
                 {formatNumber(nearby.nearest.distanceKm, {
                   minimumFractionDigits: 1,
                   maximumFractionDigits: 1,
                 })}
-                <span className="ml-1 text-xs font-normal text-ink-2">km</span>
+                <span className="ml-1 text-xs font-normal text-ink-2">
+                  {copy.location.km}
+                </span>
               </p>
               <p className="truncate text-xs text-ink-2">{nearestRegion.nama}</p>
             </DataTile>
-          ) : (
-            <div className="rounded-card border border-line bg-surface p-3">
-              <p className="text-sm text-ink-2">Tidak ada titik panas dalam 25 km</p>
-            </div>
-          )}
+          ) : null}
         </div>
       </section>
     )
@@ -110,15 +112,15 @@ export function LocationCard({ regions }: LocationCardProps) {
           <Crosshair className="size-5" strokeWidth={2} aria-hidden />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-base font-semibold text-ink">Risiko di sekitar kamu</p>
-          <p className="mt-1 text-sm text-ink-2">Titik panas dalam radius 25 km</p>
+          <p className="text-base font-semibold text-ink">{copy.location.riskTitle}</p>
+          <p className="mt-1 text-sm text-ink-2">{copy.location.riskSubtitle}</p>
           <Button
             variant="soft"
             size="sm"
             className="mt-3"
             onClick={() => setLocation({ status: 'requesting' })}
           >
-            Gunakan lokasi
+            {copy.location.useLocation}
           </Button>
         </div>
       </div>

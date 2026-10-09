@@ -23,6 +23,7 @@ type MapState = {
   hover: (code: string | null) => void
   setProvince: (province: string) => void
   toggleCategory: (category: RiskCategory) => void
+  clearCategories: () => void
   setQuery: (query: string) => void
   setLocation: (location: UserLocation) => void
 }
@@ -44,6 +45,7 @@ export const useMapStore = create<MapState>((set) => ({
       else next.add(category)
       return { selectedCategories: next }
     }),
+  clearCategories: () => set({ selectedCategories: new Set() }),
   setQuery: (query) => set({ query }),
   setLocation: (location) => set({ location }),
 }))

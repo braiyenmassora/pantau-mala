@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react'
 
+import { copy } from '@/copy/id'
 import type { RiskCategory } from '@/data/types'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { cn } from '@/lib/utils'
@@ -20,7 +21,7 @@ export function Badge(props: BadgeProps) {
           props.className,
         )}
       >
-        {props.children ?? 'Beta'}
+        {props.children ?? copy.common.beta}
       </span>
     )
   }

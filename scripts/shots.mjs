@@ -119,6 +119,36 @@ try {
   await wait(1500)
   await shot('08-ringkasan-1024')
 
+  // 9) filter tanpa hasil
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto(BASE, { waitUntil: 'networkidle' })
+  await wait(1200)
+  await page.getByRole('button', { name: 'Pilih provinsi' }).click()
+  await wait(200)
+  await page.getByRole('option', { name: 'DKI Jakarta' }).click()
+  await wait(400)
+  await page.getByRole('button', { name: /^Sedang/ }).click()
+  await wait(500)
+  await shot('09-filter-kosong')
+
+  // 10) pencarian tidak ditemukan
+  await page.getByRole('button', { name: /^Sedang/ }).click()
+  await wait(200)
+  await page.getByRole('button', { name: 'Pilih provinsi' }).click()
+  await wait(200)
+  await page.getByRole('option', { name: 'Semua provinsi' }).click()
+  await wait(300)
+  await page.getByPlaceholder(/Cari|kabupaten/i).fill('xyzzy-tidak-ada')
+  await wait(600)
+  await shot('10-pencarian-kosong')
+
+  // 11) data gagal dimuat
+  await page.route('**/wilayah.json', (route) => route.abort())
+  await page.goto(BASE, { waitUntil: 'networkidle' })
+  await wait(1500)
+  await shot('11-data-gagal')
+  await page.unroute('**/wilayah.json')
+
   await browser.close()
   console.log('shots: ok')
 } catch (err) {
