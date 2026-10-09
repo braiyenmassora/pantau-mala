@@ -19,6 +19,7 @@ Token yang sama tersedia sebagai kode di `src/styles/tokens.css`.
 | `brand-soft` | `#EDF4EF` | Tombol lembut, badge Beta, lingkaran ikon |
 
 Satu warna aksen saja (hijau brand). **Tidak ada biru.**
+Teks sekunder di atas latar `ink` (mis. angka di chip terpilih) = `surface` 70%.
 
 **Kategori risiko** (dot / tint / text):
 
@@ -54,7 +55,8 @@ Hanya 6 ukuran (12, 13, 14, 16, 20, 28). Tidak ada teks huruf kapital semua.
 
 - **Spasi** kelipatan 4: 4, 8, 12, 16, 20, 24.
   - Padding panel 16 · jarak antar-bagian 24 · judul bagian ke isinya 8 · antar-tile 8
-  - Ikon ke teks 8 · antarbaris teks bertumpuk 4 · elemen ke tepi layar 16
+  - Ikon ⓘ di belakang teks berjarak 4; ikon di depan teks berjarak 8
+  - Antarbaris teks bertumpuk 4 · elemen ke tepi layar 16
 - **Radius**: 8 (kontrol peta, item menu) · 12 (kartu, tile) · 16 (panel, dialog) · 999 (pill).
 - **Bayangan**:
   - `sm` `0 1px 3px rgba(20,38,27,.16)` – chip, kontrol, search box
@@ -90,6 +92,8 @@ Menu: kartu putih, radius 12, bayangan `lg`, padding 4, item 36 px radius 8; ter
 **Tombol** – semua pill, teks 600.
 - Besar 40 (teks 14), kecil 36 (teks 13).
 - Primer: `brand`, teks putih. Sekunder: putih bergaris, teks `text-primary`. Lembut: `brand-soft`, teks `brand`.
+
+**Fokus keyboard** – cincin 2 px `brand`, offset 2, hanya `focus-visible` (bukan saat klik mouse saja).
 
 **Pin peta** – tinggi 28, pill putih bergaris, dot 8 + skor Mono 13. Hover/terpilih: latar gelap, teks putih, nama wilayah ikut tampil, skala 1,1.
 
@@ -180,6 +184,7 @@ Panel (flex kolom, overflow hidden)
 | Pin | 10 (aktif/hover 20) |
 | Cluster | 12 |
 | Titik lokasi pengguna | 15 |
+| Overlay peta (chip, keterangan, kontrol, waktu) | 30 |
 | Panel | 40 |
 | Tab panel | 41 |
 | Dialog izin lokasi | 50 |
