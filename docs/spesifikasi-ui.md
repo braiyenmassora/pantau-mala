@@ -55,7 +55,16 @@ Hanya 6 ukuran (12, 13, 14, 16, 20, 28). Tidak ada teks huruf kapital semua.
 
 - **Spasi** kelipatan 4: 4, 8, 12, 16, 20, 24.
   - Padding panel 16 · jarak antar-bagian 24 · judul bagian ke isinya 8 · antar-tile 8
-  - Ikon ⓘ di belakang teks berjarak 4; ikon di depan teks berjarak 8
+  - Jarak ikon→teks menurut konteks (bukan selalu 8):
+
+| Konteks | Ikon | Teks | Jarak |
+| --- | --- | --- | --- |
+| Label kecil (tile, kartu, meta, keterangan peta, dot di chip/pin) | 14–16 / dot 8 | 12–13 | 4 |
+| Kontrol (tombol, chip, dropdown, search, item menu) | 16–18 | 13–14 | 8 |
+| Ikon di belakang teks (ⓘ, panah dropdown) | 14–16 | apa pun | 4 |
+| Ikon dalam lingkaran di kiri kartu (40) | 20 | apa pun | 12 |
+
+  - Ikon lucide tanpa margin/padding ekstra; wrapper ikon = ukuran ikon (kecuali kotak 40/36 yang ditentukan)
   - Antarbaris teks bertumpuk 4 · elemen ke tepi layar 16
 - **Radius**: 8 (kontrol peta, item menu) · 12 (kartu, tile) · 16 (panel, dialog) · 999 (pill).
 - **Bayangan**:
@@ -71,11 +80,11 @@ Hanya 6 ukuran (12, 13, 14, 16, 20, 28). Tidak ada teks huruf kapital semua.
 | --- | --- | --- | --- | --- | --- |
 | 48 | Search box | kiri 8 (logo 32), kanan 4 (area aksi 40×40) | 18 | 8 | 14/20 |
 | 40 | Tombol md, kontrol peta, tombol ikon | 16 (ikon-saja: 0, kotak 40×40) | 18 (kontrol peta 20) | 8 | 14/20 |
-| 36 | Tombol sm, chip, dropdown, item menu, tombol lipat | 12 (chip/dropdown: kiri 12, kanan 14) | 16 | 8 | 13/18 |
-| 28 | Pin peta | kiri 8, kanan 10 | dot 8 | 8 | 13/18 Mono |
-| 24 | Badge, pill status waktu, label radius | 10 | dot 6–8 | 8 | 12/16 |
+| 36 | Tombol sm, chip, dropdown, item menu, tombol lipat | 12 (chip/dropdown: kiri 12, kanan 14) | 16 | 8 (dot→teks 4) | 13/18 |
+| 28 | Pin peta | kiri 8, kanan 10 | dot 8 | 4 | 13/18 Mono |
+| 24 | Badge, pill status waktu, label radius | 10 | dot 6–8 | 4 | 12/16 |
 
-Aturan tambahan: ikon di tengah kotaknya (`flex items-center justify-center`); baris ikon+teks `items-center`; label+nilai bertumpuk gap 4; kartu padding 16; tile padding 12; antar-bagian 24; judul→isi 8; kartu+ikon bulat: lingkaran 40, gap 12; baris daftar min 64, padding 12/8, cincin 40, gap 12; skala risiko track 6 / celah 2 / penanda 12 / track→label 8; sparkline 128×40 / 56×20 / detail 64; tinggi kontrol hanya 24/28/36/40/48.
+Aturan tambahan: ikon di tengah kotaknya (`flex items-center justify-center`); baris ikon+teks `items-center`; jarak ikon→teks ikut tabel §3; label+nilai bertumpuk gap 4; kartu padding 16; tile padding 12; antar-bagian 24; judul→isi 8; kartu+ikon bulat: lingkaran 40, gap 12; baris daftar min 64, padding 12/8, cincin 40, gap 12; skala risiko track 6 / celah 2 / penanda 12 / track→label 8; sparkline 128×40 / 56×20 / detail 64; tinggi kontrol hanya 24/28/36/40/48.
 
 ## 4. Pola kartu
 

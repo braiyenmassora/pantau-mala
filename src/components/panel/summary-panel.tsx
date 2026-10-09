@@ -146,7 +146,7 @@ export function SummaryPanel({
         />
       ) : (
         <section className="rounded-card bg-surface-muted p-4">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <p className="text-xs font-medium text-ink-2">{copy.panel.hotspot24h}</p>
             <Tooltip>
               <TooltipTrigger asChild>

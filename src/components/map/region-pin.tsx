@@ -69,7 +69,7 @@ export function RegionPin({ region }: RegionPinProps) {
         <button
           type="button"
           className={cn(
-            'relative flex h-7 items-center gap-2 rounded-full border border-line bg-surface shadow-map',
+            'relative flex h-7 items-center gap-1 rounded-full border border-line bg-surface shadow-map',
             'origin-center transition-transform duration-150 ease-in-out',
             focusRing,
             active && 'scale-110 border-ink bg-ink text-surface',

@@ -19,6 +19,7 @@ const HEX_ALLOW = new Set([
 const BANNED_TW_COLORS =
   /\b(?:bg|text|border|ring|from|to|via|fill|stroke)-(?:blue|sky|indigo|cyan|slate|gray|zinc|neutral|stone|purple|violet|fuchsia|pink|rose)-\d{2,3}\b/
 
+/** Half-steps only (1.5 etc). gap-1 (=4px) is allowed for small labels / trailing icons. */
 const HALF_STEP_SPACING =
   /\b(?:p|px|py|pt|pb|pl|pr|m|mx|my|mt|mb|ml|mr|gap|space-[xy]|inset|top|right|bottom|left|scroll-m|scroll-p)-(?:\d+\.)?(?:0\.5|1\.5|2\.5|3\.5)\b/
 

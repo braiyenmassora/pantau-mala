@@ -61,10 +61,44 @@ try {
     console.log(`wrote screenshots/${name}.png`)
   }
 
+  /** Horizontal gap between left element's right edge and right element's left (px). */
+  async function assertHGap(left, right, expected, label) {
+    const a = await left.boundingBox()
+    const b = await right.boundingBox()
+    if (!a || !b) throw new Error(`${label}: missing bounding box`)
+    const gap = Math.round(b.x - (a.x + a.width))
+    if (Math.abs(gap - expected) > 1) {
+      throw new Error(`${label}: gap=${gap}px, expected ${expected}±1`)
+    }
+    console.log(`gap ok: ${label} = ${gap}px`)
+  }
+
   // 1) ringkasan awal
   await page.goto(BASE, { waitUntil: 'networkidle' })
   await wait(1500)
   await shot('01-ringkasan')
+
+  // icon→text gaps (summary)
+  await assertHGap(
+    page.getByText('Titik panas 24 jam', { exact: true }),
+    page.getByRole('button', { name: 'Penjelasan titik panas' }),
+    4,
+    'Titik panas 24 jam → ⓘ',
+  )
+  {
+    const chip = page.getByRole('button', { name: /^Sedang/ })
+    await assertHGap(chip.locator('span').first(), chip.locator('span').nth(1), 4, 'chip Sedang dot→teks')
+  }
+  {
+    const useBtn = page.getByRole('button', { name: 'Gunakan lokasi', exact: true })
+    const card = useBtn.locator('xpath=ancestor::section[1]')
+    await assertHGap(
+      card.locator('span').first(),
+      card.getByText('Risiko di sekitar kamu'),
+      12,
+      'kartu Gunakan lokasi lingkaran→teks',
+    )
+  }
 
   // 2) dropdown provinsi
   await page.getByRole('button', { name: 'Pilih provinsi' }).click()
@@ -85,6 +119,16 @@ try {
   await page.locator('aside').getByRole('button', { name: /Pulang Pisau/i }).click()
   await wait(800)
   await shot('04-detail-pulang-pisau-top')
+
+  // icon→text gaps (detail)
+  {
+    const tile = page.locator('aside').getByText('Kelembapan', { exact: true }).locator('..')
+    await assertHGap(tile.locator('svg').first(), tile.getByText('Kelembapan'), 4, 'tile Kelembapan')
+  }
+  {
+    const row = page.locator('aside h2').locator('xpath=following-sibling::p[1]')
+    await assertHGap(row.locator('svg').first(), row.locator('span').first(), 4, 'kepala detail MapPin→teks')
+  }
 
   // 5) scroll + info teknis
   await page.getByRole('button', { name: 'Info teknis satelit' }).click()

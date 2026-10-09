@@ -33,6 +33,7 @@ export function Button({
       className={cn(
         'inline-flex items-center justify-center gap-2 rounded-full font-semibold',
         'transition-[opacity,background-color,color] duration-150 ease-in-out',
+        '[&_svg]:shrink-0',
         focusRing,
         variantClass[variant],
         sizeClass[size],

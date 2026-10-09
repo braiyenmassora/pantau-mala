@@ -68,7 +68,7 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
       <div className="space-y-4">
         <header>
           <h2 className="text-xl font-semibold text-ink">{region.nama}</h2>
-          <p className="mt-1 flex items-center gap-2 text-xs text-ink-2">
+          <p className="mt-1 flex items-center gap-1 text-xs text-ink-2">
             <MapPin className="size-4 shrink-0" strokeWidth={2} aria-hidden />
             <span>
               {region.provinsi} ·{' '}

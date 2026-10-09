@@ -24,8 +24,8 @@ export function DataTile({
   return (
     <div className={cn('rounded-card bg-surface-muted p-3', className)}>
       {(icon || label) && (
-        <div className="flex items-center gap-2 text-ink-2">
-          {icon && <span className="shrink-0">{icon}</span>}
+        <div className="flex items-center gap-1 text-ink-2">
+          {icon}
           <span className="text-xs font-medium">{label}</span>
         </div>
       )}

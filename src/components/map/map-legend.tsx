@@ -19,9 +19,9 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
       )}
       {...mapOverlayGestureProps}
     >
-      <span className="flex items-center gap-2">
+      <span className="flex items-center gap-1">
         <span
-          className="flex h-7 items-center gap-2 rounded-full border border-line bg-surface shadow-map"
+          className="flex h-7 items-center gap-1 rounded-full border border-line bg-surface shadow-map"
           style={{ paddingLeft: 8, paddingRight: 10 }}
         >
           <span
@@ -38,7 +38,7 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
 
       <span className="h-4 w-px bg-line" aria-hidden />
 
-      <span className="flex items-center gap-2">
+      <span className="flex items-center gap-1">
         <span className="relative size-5" aria-hidden>
           <span
             className="absolute inset-0 rounded-full border"

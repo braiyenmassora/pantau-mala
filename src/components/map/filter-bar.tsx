@@ -72,9 +72,16 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
     >
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Chip aria-expanded={open} aria-haspopup="listbox" aria-label="Pilih provinsi">
-            <MapIcon className="size-4 shrink-0 text-ink-2" strokeWidth={2} aria-hidden />
-            <span className="max-w-48 truncate">{provinceLabel}</span>
+          <Chip
+            aria-expanded={open}
+            aria-haspopup="listbox"
+            aria-label="Pilih provinsi"
+            className="gap-1"
+          >
+            <span className="inline-flex min-w-0 items-center gap-2">
+              <MapIcon className="size-4 shrink-0 text-ink-2" strokeWidth={2} aria-hidden />
+              <span className="max-w-48 truncate">{provinceLabel}</span>
+            </span>
             <ChevronDown
               className={cn(
                 'size-4 shrink-0 text-ink-2 transition-transform duration-150 ease-in-out',
@@ -132,6 +139,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           <Chip
             key={category}
             pressed={pressed}
+            className="gap-1"
             title={`Tampilkan hanya ${formatNumber(count)} wilayah berisiko ${meta.label}`}
             onClick={() => toggleCategory(category)}
           >

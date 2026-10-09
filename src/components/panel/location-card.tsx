@@ -69,7 +69,7 @@ export function LocationCard({ regions }: LocationCardProps) {
       <section className="animate-view-in rounded-card bg-surface-muted p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="flex items-center gap-2 text-xs font-medium text-brand">
+            <p className="flex items-center gap-1 text-xs font-medium text-brand">
               <span className="size-2 rounded-full bg-brand" aria-hidden />
               {copy.location.nearbyLabel}
             </p>

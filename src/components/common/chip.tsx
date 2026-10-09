@@ -18,7 +18,7 @@ export function Chip({ pressed, className, children, style, ...props }: ChipProp
         'inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface',
         'text-sm font-medium text-ink shadow-sm',
         'transition-[box-shadow,background-color,color,transform] duration-150 ease-in-out',
-        'hover:shadow-md',
+        'hover:shadow-md [&_svg]:shrink-0',
         focusRing,
         pressed && 'border-ink bg-ink text-surface hover:bg-ink hover:shadow-md',
         className,
