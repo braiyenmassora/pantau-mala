@@ -1,7 +1,7 @@
 import { MapPin } from 'lucide-react'
-
 import type { RefObject } from 'react'
 
+import { Button } from '@/components/common'
 import type { MapRef } from '@/components/ui/map'
 import { resolveUserCoords } from '@/lib/geolocation'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
@@ -35,6 +35,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
       aria-labelledby="location-prompt-title"
       className={cn(
         'absolute top-[68px] z-50 w-[360px] animate-view-in rounded-panel bg-surface p-4 shadow-lg',
+        'transition-[left] duration-300 ease-[var(--ease-out-soft)]',
         panelOpen ? 'left-[432px]' : 'left-4',
       )}
     >
@@ -45,25 +46,21 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
         <div className="min-w-0 flex-1">
           <h2
             id="location-prompt-title"
-            className="text-base leading-6 font-semibold text-ink"
+            className="text-base font-semibold text-ink"
           >
             Lihat risiko di sekitar kamu?
           </h2>
-          <p className="mt-1 text-[13px] leading-[18px] text-ink-2">
+          <p className="mt-1 text-sm text-ink-2">
             Browser akan meminta izin lokasi untuk menampilkan titik panas dalam
             radius 25 km. Lokasi kamu tidak disimpan.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <button
-              type="button"
-              className="inline-flex h-9 items-center rounded-full border border-line bg-surface px-3.5 text-[13px] leading-[18px] font-semibold text-ink hover:bg-surface-muted"
-              onClick={() => setLocation({ status: 'off' })}
-            >
+            <Button variant="secondary" size="sm" onClick={() => setLocation({ status: 'off' })}>
               Nanti saja
-            </button>
-            <button
-              type="button"
-              className="inline-flex h-9 items-center rounded-full bg-brand px-3.5 text-[13px] leading-[18px] font-semibold text-white hover:opacity-90"
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
               onClick={() => {
                 void resolveUserCoords().then((result) => {
                   if (result.ok) {
@@ -79,7 +76,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
               }}
             >
               Lanjutkan
-            </button>
+            </Button>
           </div>
         </div>
       </div>

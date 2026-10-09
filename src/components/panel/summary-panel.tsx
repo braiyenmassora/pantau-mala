@@ -2,6 +2,8 @@ import { Info } from 'lucide-react'
 import type { RefObject } from 'react'
 import { useMemo } from 'react'
 
+import { Badge, SectionLabel } from '@/components/common'
+import { focusRing } from '@/components/common/focus-ring'
 import { LocationCard } from '@/components/panel/location-card'
 import { RegionDetailPanel } from '@/components/panel/region-detail-panel'
 import { RegionRow } from '@/components/panel/region-row'
@@ -14,6 +16,7 @@ import {
 } from '@/components/ui/tooltip'
 import type { Region } from '@/data/types'
 import { formatNumber, formatPercent } from '@/lib/format'
+import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { computeSummary } from '@/lib/summary'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -68,18 +71,16 @@ export function SummaryPanel({
     <div key={`summary-${province}-${query}`} className="animate-view-in space-y-6">
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="text-xl leading-7 font-semibold text-ink">{title}</h2>
-          <p className="mt-1 text-[13px] leading-[18px] text-ink-2">
-            Indikator kebakaran hutan dan lahan
-          </p>
+          <h2 className="text-xl font-semibold text-ink">{title}</h2>
+          <p className="mt-1 text-sm text-ink-2">Indikator kebakaran hutan dan lahan</p>
         </div>
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className="inline-flex h-6 shrink-0 items-center rounded-full bg-brand-soft px-2.5 text-[12px] leading-4 font-semibold text-brand">
-              Beta
+            <span>
+              <Badge variant="beta" />
             </span>
           </TooltipTrigger>
-          <TooltipContent side="bottom">
+          <TooltipContent side="bottom" className="rounded-ctl">
             Versi uji coba. Skor risiko masih dikalibrasi.
           </TooltipContent>
         </Tooltip>
@@ -88,19 +89,19 @@ export function SummaryPanel({
       <LocationCard regions={regions} mapRef={mapRef} />
 
       <section className="rounded-card bg-surface-muted p-4">
-        <div className="flex items-center gap-1.5">
-          <p className="text-[12px] leading-4 font-medium text-ink-2">Titik panas 24 jam</p>
+        <div className="flex items-center gap-2">
+          <p className="text-xs font-medium text-ink-2">Titik panas 24 jam</p>
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 type="button"
-                className="text-ink-3 hover:text-ink-2"
+                className={cn('text-ink-3 transition-colors duration-150 ease-in-out hover:text-ink-2', focusRing, 'rounded-ctl')}
                 aria-label="Penjelasan titik panas"
               >
                 <Info className="size-3.5" strokeWidth={2} />
               </button>
             </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-xs">
+            <TooltipContent side="top" className="max-w-xs rounded-ctl">
               Titik panas: lokasi yang dideteksi satelit lebih panas dari sekitarnya. Belum
               tentu kebakaran.
             </TooltipContent>
@@ -109,7 +110,7 @@ export function SummaryPanel({
 
         <div className="mt-2 flex items-end justify-between gap-3">
           <div>
-            <p className="font-mono text-[28px] leading-8 font-semibold tracking-[-0.02em] text-ink">
+            <p className="font-mono text-3xl font-semibold tracking-[-0.02em] text-ink">
               {formatNumber(summary.todayTotal)}
             </p>
             <ChangeLine
@@ -123,19 +124,17 @@ export function SummaryPanel({
               values={summary.totalsByDay}
               width={128}
               height={40}
-              color="#C2410C"
+              color={RISK_CATEGORIES.sangat_tinggi.dot}
             />
-            <span className="text-[12px] leading-4 text-ink-2">7 hari terakhir</span>
+            <span className="text-xs text-ink-2">7 hari terakhir</span>
           </div>
         </div>
       </section>
 
       <section>
-        <h3 className="mb-2 text-[13px] leading-[18px] font-semibold text-ink-2">
-          {sectionLabel}
-        </h3>
+        <SectionLabel className="mb-2">{sectionLabel}</SectionLabel>
         {list.length === 0 ? (
-          <div className="rounded-card bg-surface-muted p-4 text-sm leading-5 text-ink-2">
+          <div className="rounded-card bg-surface-muted p-4 text-sm text-ink-2">
             Lokasi tidak ditemukan. Coba nama kabupaten/kota lain.
           </div>
         ) : (
@@ -164,20 +163,18 @@ function ChangeLine({
   if (yesterday === 0 && today === 0) return null
 
   if (yesterday === 0 && today > 0) {
-    return <p className="mt-1 text-[13px] leading-[18px] text-ink-2">Baru muncul hari ini</p>
+    return <p className="mt-1 text-sm text-ink-2">Baru muncul hari ini</p>
   }
 
   if (changePercent === 0) {
-    return (
-      <p className="mt-1 text-[13px] leading-[18px] text-ink-2">Sama dengan kemarin</p>
-    )
+    return <p className="mt-1 text-sm text-ink-2">Sama dengan kemarin</p>
   }
 
   if (changePercent == null) return null
 
   const up = changePercent > 0
   return (
-    <p className={cn('mt-1 text-[13px] leading-[18px] text-risk-high-text')}>
+    <p className="mt-1 text-sm text-risk-high-text">
       {up ? '▲' : '▼'} {formatPercent(Math.abs(changePercent))} dibanding kemarin
     </p>
   )

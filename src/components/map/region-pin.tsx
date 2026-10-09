@@ -1,3 +1,4 @@
+import { focusRing } from '@/components/common/focus-ring'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import type { Region } from '@/data/types'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
@@ -29,15 +30,6 @@ export function RegionPin({ region }: RegionPinProps) {
       longitude={region.pusat[0]}
       latitude={region.pusat[1]}
       anchor="center"
-      onClick={(e) => {
-        e.stopPropagation()
-        select(region.kode)
-        map?.flyTo({
-          center: region.pusat,
-          zoom: 8,
-          duration: reducedMotion ? 0 : 600,
-        })
-      }}
       onMouseEnter={() => hover(region.kode)}
       onMouseLeave={() => hover(null)}
     >
@@ -71,29 +63,37 @@ export function RegionPin({ region }: RegionPinProps) {
           </>
         )}
 
-        <span
+        <button
+          type="button"
           className={cn(
-            'relative flex h-7 items-center gap-1.5 rounded-full border border-line bg-surface px-2 shadow-map',
-            'origin-center transition-transform duration-150',
-            active && 'scale-110 border-ink bg-ink text-white',
+            'relative flex h-7 items-center gap-2 rounded-full border border-line bg-surface px-2 shadow-map',
+            'origin-center transition-transform duration-150 ease-in-out',
+            focusRing,
+            active && 'scale-110 border-ink bg-ink text-surface',
           )}
+          aria-label={`${region.nama}, skor ${region.skor}, risiko ${style.label}`}
+          onClick={(e) => {
+            e.stopPropagation()
+            select(region.kode)
+            map?.flyTo({
+              center: region.pusat,
+              zoom: 8,
+              duration: reducedMotion ? 0 : 600,
+            })
+          }}
         >
           <span
             className={cn(
               'size-2 shrink-0 rounded-full',
-              active && 'ring-[1.5px] ring-white',
+              active && 'ring-[1.5px] ring-surface',
             )}
             style={{ backgroundColor: style.dot }}
           />
-          <span className="font-mono text-[13px] leading-[18px] font-semibold">
-            {region.skor}
-          </span>
+          <span className="font-mono text-sm font-semibold">{region.skor}</span>
           {active && (
-            <span className="max-w-40 truncate text-[13px] leading-[18px] font-semibold">
-              {region.nama}
-            </span>
+            <span className="max-w-40 truncate text-sm font-semibold">{region.nama}</span>
           )}
-        </span>
+        </button>
       </MarkerContent>
     </MapMarker>
   )

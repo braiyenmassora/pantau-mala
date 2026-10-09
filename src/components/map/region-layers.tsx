@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import Supercluster from 'supercluster'
 
+import { focusRing } from '@/components/common/focus-ring'
 import { RegionPin } from '@/components/map/region-pin'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import type { Region } from '@/data/types'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { highestRiskCategory, RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
+import { cn } from '@/lib/utils'
 
 type PointProps = { region: Region }
 
@@ -80,36 +82,41 @@ export function RegionLayers({ regions }: RegionLayersProps) {
               longitude={lon}
               latitude={lat}
               anchor="center"
-              onClick={(e) => {
-                e.stopPropagation()
-                const nextZoom = index.getClusterExpansionZoom(clusterId)
-                map?.easeTo({
-                  center: [lon, lat],
-                  zoom: nextZoom,
-                  duration: reducedMotion ? 0 : 600,
-                })
-              }}
             >
               <MarkerContent className="relative z-[12] flex items-center justify-center">
                 <span
                   aria-hidden
-                  className="absolute rounded-full"
+                  className="pointer-events-none absolute rounded-full"
                   style={{
                     width: size + 12,
                     height: size + 12,
                     backgroundColor: withAlpha(color, 0.18),
                   }}
                 />
-                <span
-                  className="relative flex items-center justify-center rounded-full border-[3px] border-white font-mono text-base leading-none font-semibold text-white shadow-map"
+                <button
+                  type="button"
+                  className={cn(
+                    'relative flex items-center justify-center rounded-full border-[3px] border-surface font-mono text-base leading-6 font-semibold text-surface shadow-map',
+                    focusRing,
+                  )}
                   style={{
                     width: size,
                     height: size,
                     backgroundColor: color,
                   }}
+                  aria-label={`${count} wilayah, klik untuk memperbesar`}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    const nextZoom = index.getClusterExpansionZoom(clusterId)
+                    map?.easeTo({
+                      center: [lon, lat],
+                      zoom: nextZoom,
+                      duration: reducedMotion ? 0 : 600,
+                    })
+                  }}
                 >
                   {count}
-                </span>
+                </button>
               </MarkerContent>
             </MapMarker>
           )

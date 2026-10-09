@@ -17,23 +17,23 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
         panelOpen ? 'left-[432px]' : 'left-4',
       )}
     >
-      <span className="flex items-center gap-1.5">
-        <span className="flex h-7 items-center gap-1.5 rounded-full border border-line bg-surface px-2 shadow-map">
+      <span className="flex items-center gap-2">
+        <span className="flex h-7 items-center gap-2 rounded-full border border-line bg-surface px-2 shadow-map">
           <span
             className="size-2 rounded-full"
             style={{ backgroundColor: high }}
             aria-hidden
           />
-          <span className="font-mono text-[13px] leading-[18px] font-semibold">82</span>
+          <span className="font-mono text-sm font-semibold">82</span>
         </span>
-        <span className="text-[12px] leading-4 text-ink-2">
+        <span className="text-xs text-ink-2">
           Skor risiko · makin tinggi makin berbahaya
         </span>
       </span>
 
       <span className="h-4 w-px bg-line" aria-hidden />
 
-      <span className="flex items-center gap-1.5">
+      <span className="flex items-center gap-2">
         <span className="relative size-5" aria-hidden>
           <span
             className="absolute inset-0 rounded-full border"
@@ -50,7 +50,7 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
             }}
           />
         </span>
-        <span className="text-[12px] leading-4 text-ink-2">
+        <span className="text-xs text-ink-2">
           Ukuran halo = jumlah titik panas
         </span>
       </span>

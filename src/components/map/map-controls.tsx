@@ -1,6 +1,7 @@
 import { Crosshair, Minus, Plus } from 'lucide-react'
 import type { RefObject } from 'react'
 
+import { focusRing } from '@/components/common/focus-ring'
 import type { MapRef } from '@/components/ui/map'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { cn } from '@/lib/utils'
@@ -12,7 +13,8 @@ type MapControlsProps = {
 
 const btnClass = cn(
   'flex size-10 items-center justify-center rounded-ctl border border-line bg-surface text-ink shadow-sm',
-  'hover:bg-surface-muted',
+  'transition-[background-color,color] duration-150 ease-in-out hover:bg-surface-muted',
+  focusRing,
 )
 
 export function MapControls({ mapRef }: MapControlsProps) {
@@ -26,7 +28,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
       <button
         type="button"
         className={cn(btnClass, active && 'text-brand')}
-        aria-label={active ? 'Pusatkan ke lokasi saya' : 'Gunakan lokasi saya'}
+        aria-label={active ? 'Pusatkan ke lokasi kamu' : 'Gunakan lokasi kamu'}
         aria-pressed={Boolean(active)}
         onClick={() => {
           if (active) {

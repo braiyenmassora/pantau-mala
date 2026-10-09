@@ -1,6 +1,8 @@
 import { Check, ChevronDown, Map as MapIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
+import { Chip } from '@/components/common'
+import { focusRing } from '@/components/common/focus-ring'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import type { Region, RiskCategory } from '@/data/types'
 import { filterRegions } from '@/lib/filter-regions'
@@ -12,13 +14,6 @@ import { useMapStore } from '@/store/map'
 const ALL_PROVINCES = 'Semua'
 
 const CATEGORY_ORDER: RiskCategory[] = ['sangat_tinggi', 'sedang', 'rendah']
-
-const chipBase = cn(
-  'inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-3.5',
-  'text-[13px] leading-[18px] font-medium text-ink shadow-sm',
-  'transition-[box-shadow,background-color,color,transform] duration-150',
-  'hover:shadow-md',
-)
 
 type FilterBarProps = {
   panelOpen: boolean
@@ -75,24 +70,18 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
     >
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <button
-            type="button"
-            className={chipBase}
-            aria-expanded={open}
-            aria-haspopup="listbox"
-            aria-label="Pilih provinsi"
-          >
+          <Chip aria-expanded={open} aria-haspopup="listbox" aria-label="Pilih provinsi">
             <MapIcon className="size-4 shrink-0 text-ink-2" strokeWidth={2} aria-hidden />
             <span className="max-w-48 truncate">{provinceLabel}</span>
             <ChevronDown
               className={cn(
-                'size-4 shrink-0 text-ink-2 transition-transform duration-150',
+                'size-4 shrink-0 text-ink-2 transition-transform duration-150 ease-in-out',
                 open && 'rotate-180',
               )}
               strokeWidth={2}
               aria-hidden
             />
-          </button>
+          </Chip>
         </PopoverTrigger>
         <PopoverContent
           align="start"
@@ -110,8 +99,9 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
                     role="option"
                     aria-selected={selected}
                     className={cn(
-                      'flex h-9 w-full cursor-pointer items-center gap-2 rounded-ctl px-2 text-left text-[13px]',
-                      'hover:bg-surface-muted',
+                      'flex h-9 w-full cursor-pointer items-center gap-2 rounded-ctl px-2 text-left text-sm',
+                      'transition-colors duration-150 ease-in-out hover:bg-surface-muted',
+                      focusRing,
                       selected && 'bg-surface-muted font-semibold',
                     )}
                     onClick={() => {
@@ -137,32 +127,27 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         const pressed = selectedCategories.has(category)
 
         return (
-          <button
+          <Chip
             key={category}
-            type="button"
-            className={cn(
-              chipBase,
-              pressed && 'border-ink bg-ink text-white hover:bg-ink hover:shadow-md',
-            )}
-            aria-pressed={pressed}
+            pressed={pressed}
             title={`Tampilkan hanya ${formatNumber(count)} wilayah berisiko ${meta.label}`}
             onClick={() => toggleCategory(category)}
           >
             <span
-              className={cn('size-2 shrink-0 rounded-full', pressed && 'ring-[1.5px] ring-white')}
+              className={cn('size-2 shrink-0 rounded-full', pressed && 'ring-[1.5px] ring-surface')}
               style={{ backgroundColor: meta.dot }}
               aria-hidden
             />
             <span>{meta.label}</span>
             <span
               className={cn(
-                'font-mono text-[13px] leading-[18px]',
-                pressed ? 'text-[#C9D3CC]' : 'text-ink-3',
+                'font-mono text-sm',
+                pressed ? 'text-surface/70' : 'text-ink-3',
               )}
             >
               {formatNumber(count)}
             </span>
-          </button>
+          </Chip>
         )
       })}
     </div>

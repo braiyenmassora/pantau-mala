@@ -10,8 +10,10 @@ import {
   MapPin,
   Wind,
 } from 'lucide-react'
-import { useState, type ReactNode } from 'react'
+import { useState } from 'react'
 
+import { DataTile, SectionLabel } from '@/components/common'
+import { focusRing } from '@/components/common/focus-ring'
 import { Sparkline } from '@/components/panel/sparkline'
 import {
   Tooltip,
@@ -64,8 +66,8 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
     <div key={region.kode} className="animate-view-in space-y-6">
       <div className="space-y-4">
         <header>
-          <h2 className="text-xl leading-7 font-semibold text-ink">{region.nama}</h2>
-          <p className="mt-1 flex items-center gap-1.5 text-[12px] leading-4 text-ink-2">
+          <h2 className="text-xl font-semibold text-ink">{region.nama}</h2>
+          <p className="mt-1 flex items-center gap-2 text-xs text-ink-2">
             <MapPin className="size-4 shrink-0" strokeWidth={2} aria-hidden />
             <span>
               {region.provinsi} ·{' '}
@@ -77,24 +79,22 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
       </div>
 
       <section className="space-y-2">
-        <h3 className="text-[13px] leading-[18px] font-semibold text-ink-2">Ringkasan</h3>
-        <p className="text-sm leading-[22px] text-ink">{region.ringkasan}</p>
+        <SectionLabel>Ringkasan</SectionLabel>
+        <p className="text-base leading-[22px] text-ink">{region.ringkasan}</p>
       </section>
 
       <section className="space-y-2">
-        <h3 className="text-[13px] leading-[18px] font-semibold text-ink-2">
-          Yang bisa kamu lakukan
-        </h3>
+        <SectionLabel>Yang bisa kamu lakukan</SectionLabel>
         <div className="rounded-card bg-surface-muted p-4">
           <ul className="space-y-2">
             {region.saran.map((item) => (
               <li key={item} className="flex items-start gap-2">
                 <Check
-                  className="mt-0.5 size-4 shrink-0 text-brand"
+                  className="mt-1 size-4 shrink-0 text-brand"
                   strokeWidth={2}
                   aria-hidden
                 />
-                <span className="text-sm leading-5 text-ink">{item}</span>
+                <span className="text-base text-ink">{item}</span>
               </li>
             ))}
           </ul>
@@ -102,9 +102,7 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
       </section>
 
       <section className="space-y-2">
-        <h3 className="text-[13px] leading-[18px] font-semibold text-ink-2">
-          Kondisi saat ini
-        </h3>
+        <SectionLabel>Kondisi saat ini</SectionLabel>
         <div className="grid grid-cols-2 gap-2">
           <DataTile
             icon={<Flame className="size-4" strokeWidth={2} />}
@@ -147,10 +145,8 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
 
       <section className="space-y-2">
         <div className="flex items-baseline justify-between gap-2">
-          <h3 className="text-[13px] leading-[18px] font-semibold text-ink-2">
-            Tren titik panas 7 hari
-          </h3>
-          <p className="font-mono text-[13px] leading-[18px] text-ink-2">
+          <SectionLabel>Tren titik panas 7 hari</SectionLabel>
+          <p className="font-mono text-sm text-ink-2">
             {formatNumber(trendStart)} → {formatNumber(trendEnd)} titik
           </p>
         </div>
@@ -162,7 +158,7 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
           showBaseline
           className="h-16 w-full"
         />
-        <div className="flex justify-between text-[12px] leading-4 text-ink-2">
+        <div className="flex justify-between text-xs text-ink-2">
           <span>{dates.start}</span>
           <span>{dates.end}</span>
         </div>
@@ -171,14 +167,18 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
       <section>
         <button
           type="button"
-          className="flex h-9 w-full items-center justify-between rounded-ctl text-left text-[13px] leading-[18px] font-semibold text-ink-2 hover:text-ink"
+          className={cn(
+            'flex h-9 w-full items-center justify-between rounded-ctl text-left text-sm font-semibold text-ink-2',
+            'transition-colors duration-150 ease-in-out hover:text-ink',
+            focusRing,
+          )}
           aria-expanded={techOpen}
           onClick={() => setTechOpen((v) => !v)}
         >
           Info teknis satelit
           <ChevronDown
             className={cn(
-              'size-4 transition-transform duration-150',
+              'size-4 transition-transform duration-150 ease-in-out',
               techOpen && 'rotate-180',
             )}
             strokeWidth={2}
@@ -223,81 +223,52 @@ function RiskCard({ region }: { region: Region }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-1">
-            <p className="text-[12px] leading-4 font-medium">Risiko kebakaran</p>
+            <p className="text-xs font-medium">Risiko kebakaran</p>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   type="button"
-                  className="opacity-70 hover:opacity-100"
+                  className={cn('opacity-70 transition-opacity duration-150 ease-in-out hover:opacity-100', focusRing, 'rounded-ctl')}
                   aria-label="Penjelasan skor risiko"
                   style={{ color: style.text }}
                 >
                   <Info className="size-3.5" strokeWidth={2} />
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-xs">
+              <TooltipContent side="top" className="max-w-xs rounded-ctl">
                 Skor 0–100 dari gabungan jumlah titik panas, cuaca kering, dan tren 7 hari.
                 Makin tinggi, makin besar kemungkinan api meluas.
               </TooltipContent>
             </Tooltip>
           </div>
-          <p className="mt-1 text-xl leading-7 font-semibold">{style.label}</p>
+          <p className="mt-1 text-xl font-semibold">{style.label}</p>
         </div>
         <div className="text-right">
-          <p className="font-mono text-[28px] leading-8 font-semibold tracking-[-0.02em] text-ink">
+          <p className="font-mono text-3xl font-semibold tracking-[-0.02em] text-ink">
             {region.skor}
           </p>
-          <p className="text-[13px] leading-[18px] text-ink-2">/100</p>
+          <p className="text-sm text-ink-2">/100</p>
         </div>
       </div>
 
       <div className="relative pt-2">
-        <div className="flex h-1.5 gap-0.5">
+        <div className="flex" style={{ gap: 2, height: 6 }}>
           <span className="h-full flex-[34] rounded-l-full bg-risk-low" />
           <span className="h-full flex-[33] bg-risk-mid" />
           <span className="h-full flex-[33] rounded-r-full bg-risk-high" />
         </div>
         <span
-          className="absolute top-0.5 size-3 -translate-x-1/2 rounded-full border-2 border-ink bg-white"
-          style={{ left: markerLeft }}
+          className="absolute size-3 -translate-x-1/2 rounded-full border-2 border-ink bg-surface"
+          style={{ left: markerLeft, top: 2 }}
           aria-hidden
         />
-        <div className="mt-2 flex justify-between text-[12px] leading-4 text-ink-2">
+        <div className="mt-2 flex justify-between text-xs text-ink-2">
           <span>Rendah</span>
           <span>Sedang</span>
           <span>Sangat tinggi</span>
         </div>
       </div>
     </section>
-  )
-}
-
-function DataTile({
-  icon,
-  label,
-  value,
-  unit,
-  valueClassName,
-}: {
-  icon: ReactNode
-  label: string
-  value: string
-  unit?: string
-  valueClassName?: string
-}) {
-  return (
-    <div className="rounded-card bg-surface-muted p-3">
-      <div className="flex items-center gap-2 text-ink-2">
-        <span className="shrink-0">{icon}</span>
-        <span className="text-[12px] leading-4 font-medium">{label}</span>
-      </div>
-      <p className={cn('mt-1 text-base leading-6 font-semibold text-ink', valueClassName)}>
-        {value}
-        {unit && (
-          <span className="ml-1 text-[12px] leading-4 font-normal text-ink-2">{unit}</span>
-        )}
-      </p>
-    </div>
   )
 }
 
@@ -311,11 +282,11 @@ function TechRow({
   mono?: boolean
 }) {
   return (
-    <div className="flex items-start justify-between gap-3 px-3 py-2.5">
-      <dt className="text-[13px] leading-[18px] text-ink-2">{label}</dt>
+    <div className="flex items-start justify-between gap-3 px-3 py-2">
+      <dt className="text-sm text-ink-2">{label}</dt>
       <dd
         className={cn(
-          'text-right text-[13px] leading-[18px] font-medium text-ink',
+          'text-right text-sm font-medium text-ink',
           mono && 'font-mono',
         )}
       >

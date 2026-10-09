@@ -7,10 +7,8 @@ import {
   MarkerContent,
 } from '@/components/ui/map'
 import { NEARBY_HOTSPOT_RADIUS_KM } from '@/lib/nearby'
-import { withAlpha } from '@/lib/risk-category'
+import { BRAND_HEX, withAlpha } from '@/lib/risk-category'
 import { useMapStore } from '@/store/map'
-
-const BRAND = '#1E6B45'
 
 export function UserLocationLayer() {
   const location = useMapStore((s) => s.location)
@@ -46,11 +44,11 @@ export function UserLocationLayer() {
         id="user-radius-25km"
         data={circleData}
         fillPaint={{
-          'fill-color': BRAND,
+          'fill-color': BRAND_HEX,
           'fill-opacity': 0.04,
         }}
         linePaint={{
-          'line-color': withAlpha(BRAND, 0.4),
+          'line-color': withAlpha(BRAND_HEX, 0.4),
           'line-width': 1,
           'line-dasharray': [2, 2],
         }}
@@ -60,17 +58,17 @@ export function UserLocationLayer() {
           <span
             aria-hidden
             className="absolute size-10 rounded-full"
-            style={{ backgroundColor: withAlpha(BRAND, 0.16) }}
+            style={{ backgroundColor: withAlpha(BRAND_HEX, 0.16) }}
           />
           <span
-            className="relative size-4 rounded-full border-[3px] border-white bg-brand shadow-map"
+            className="relative size-4 rounded-full border-[3px] border-surface bg-brand shadow-map"
             aria-label="Lokasi kamu"
           />
         </MarkerContent>
       </MapMarker>
       <MapMarker longitude={labelPos[0]} latitude={labelPos[1]} anchor="center">
         <MarkerContent className="z-[15]">
-          <span className="rounded-full border border-line bg-surface px-2.5 py-1 text-[12px] leading-4 font-medium text-ink shadow-sm">
+          <span className="rounded-full border border-line bg-surface px-2 py-1 text-xs font-medium text-ink shadow-sm">
             Radius 25 km
           </span>
         </MarkerContent>

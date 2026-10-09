@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useMemo, useRef } from 'react'
 
+import { focusRing } from '@/components/common/focus-ring'
 import { FilterBar } from '@/components/map/filter-bar'
 import { LocationPromptDialog } from '@/components/map/location-prompt-dialog'
 import { MapControls } from '@/components/map/map-controls'
@@ -106,7 +107,8 @@ export default function App() {
             'rounded-r-ctl border border-l-0 border-line bg-surface text-ink-2 shadow-sm',
             'hover:bg-surface-muted',
             easePanel,
-            'transition-[left,background-color]',
+            'transition-[left,background-color] duration-150',
+            focusRing,
             panelOpen ? 'left-[416px]' : 'left-0',
           )}
         >

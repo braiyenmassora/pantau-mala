@@ -43,10 +43,10 @@ export function UpdatedAtBadge() {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div className="absolute right-4 bottom-4 z-30 flex h-6 items-center gap-1.5 text-[12px] leading-4 text-ink-2">
+        <div className="absolute right-4 bottom-4 z-30 flex h-6 items-center gap-2 text-xs text-ink-2">
           <span
             className={cn(
-              'size-1.5 rounded-full',
+              'size-2 rounded-full',
               hasProblem ? 'bg-risk-mid' : 'bg-risk-low',
             )}
             aria-hidden
@@ -54,7 +54,9 @@ export function UpdatedAtBadge() {
           <span>{label}</span>
         </div>
       </TooltipTrigger>
-      <TooltipContent side="top">{tip}</TooltipContent>
+      <TooltipContent side="top" className="rounded-ctl">
+        {tip}
+      </TooltipContent>
     </Tooltip>
   )
 }

@@ -1,5 +1,7 @@
 import type { RefObject } from 'react'
 
+import { focusRing } from '@/components/common/focus-ring'
+import { Sparkline } from '@/components/panel/sparkline'
 import type { MapRef } from '@/components/ui/map'
 import type { Region } from '@/data/types'
 import { formatNumber } from '@/lib/format'
@@ -8,8 +10,6 @@ import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { trendLabel } from '@/lib/trend'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
-
-import { Sparkline } from './sparkline'
 
 type RegionRowProps = {
   region: Region
@@ -30,7 +30,9 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
     <button
       type="button"
       className={cn(
-        'flex min-h-16 w-full items-center gap-3 rounded-card px-2 py-3 text-left transition-colors duration-150',
+        'flex min-h-16 w-full items-center gap-3 rounded-card px-2 py-3 text-left',
+        'transition-colors duration-150 ease-in-out',
+        focusRing,
         active ? 'bg-surface-muted' : 'hover:bg-surface-muted',
       )}
       onMouseEnter={() => hover(region.kode)}
@@ -49,28 +51,19 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
         style={{ borderColor: style.dot }}
         aria-hidden
       >
-        <span className="font-mono text-[13px] leading-[18px] font-semibold text-ink">
-          {region.skor}
-        </span>
+        <span className="font-mono text-sm font-semibold text-ink">{region.skor}</span>
       </span>
 
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm leading-5 font-semibold text-ink">
-          {region.nama}
-        </span>
-        <span className="block truncate text-[13px] leading-[18px] text-ink-2">
+        <span className="block truncate text-base font-semibold text-ink">{region.nama}</span>
+        <span className="block truncate text-sm text-ink-2">
           {region.provinsi} · {formatNumber(region.titik_panas_24j)} titik panas
         </span>
       </span>
 
-      <span className="flex shrink-0 flex-col items-end gap-0.5">
-        <Sparkline
-          values={region.tren_7h}
-          width={56}
-          height={20}
-          color={style.dot}
-        />
-        <span className="text-[12px] leading-4 text-ink-2">{trend}</span>
+      <span className="flex shrink-0 flex-col items-end gap-1">
+        <Sparkline values={region.tren_7h} width={56} height={20} color={style.dot} />
+        <span className="text-xs text-ink-2">{trend}</span>
       </span>
     </button>
   )
