@@ -63,7 +63,10 @@ export function LocationCard({ regions }: LocationCardProps) {
               <span className="size-2 rounded-full bg-brand" aria-hidden />
               {copy.location.nearbyLabel}
             </p>
-            <p className="mt-1 text-lg font-semibold text-ink">
+            <p
+              className="mt-1 truncate text-lg font-semibold text-ink"
+              title={userRegion?.nama ?? copy.location.yourLocation}
+            >
               {userRegion?.nama ?? copy.location.yourLocation}
             </p>
           </div>
@@ -102,7 +105,9 @@ export function LocationCard({ regions }: LocationCardProps) {
                       {copy.location.km}
                     </span>
                   </p>
-                  <p className="truncate text-xs text-ink-2">{nearestRegion.nama}</p>
+                  <p className="truncate text-xs text-ink-2" title={nearestRegion.nama}>
+                    {nearestRegion.nama}
+                  </p>
                 </>
               ) : null}
             </div>

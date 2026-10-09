@@ -12,6 +12,7 @@
     "test:watch": "vitest",
     "audit:ui": "node scripts/audit-ui.mjs",
     "shots": "node scripts/shots.mjs",
+    "layout:check": "node scripts/layout-check.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

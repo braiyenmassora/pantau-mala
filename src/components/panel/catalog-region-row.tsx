@@ -47,7 +47,10 @@ export function CatalogRegionRow({ kab, mapRef }: CatalogRegionRowProps) {
         <MapPin className="size-4" strokeWidth={2} />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-base font-semibold text-ink">
+        <span
+          className="block truncate text-base font-semibold text-ink"
+          title={kab.nama}
+        >
           {kab.nama}
         </span>
         <span className="block truncate text-sm text-ink-2">

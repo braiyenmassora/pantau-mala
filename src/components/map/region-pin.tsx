@@ -96,7 +96,9 @@ export function RegionPin({ region }: RegionPinProps) {
           />
           <span className="font-mono text-sm font-semibold">{region.skor}</span>
           {active && (
-            <span className="max-w-40 truncate text-sm font-semibold">{region.nama}</span>
+            <span className="max-w-40 truncate text-sm font-semibold" title={region.nama}>
+              {region.nama}
+            </span>
           )}
         </button>
       </MarkerContent>

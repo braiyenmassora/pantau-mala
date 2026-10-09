@@ -15,10 +15,11 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
 
   return (
     <div
+      data-testid="map-legend"
       className={cn(
-        'absolute bottom-4 z-30 flex flex-row items-stretch gap-2',
-        'transition-[left] duration-300 ease-[var(--ease-out-soft)]',
-        panelOpen ? 'left-[432px] max-[1099px]:flex-wrap' : 'left-4',
+        'absolute bottom-4 z-30 flex flex-row flex-wrap items-stretch gap-2',
+        'transition-[left,right] duration-300 ease-[var(--ease-out-soft)]',
+        panelOpen ? 'left-[432px] right-[72px]' : 'left-4 w-max max-w-[calc(100vw-5rem)]',
       )}
       {...mapOverlayGestureProps}
     >

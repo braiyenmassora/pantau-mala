@@ -45,6 +45,7 @@ export function UpdatedAtBadge() {
     <Tooltip>
       <TooltipTrigger asChild>
         <div
+          data-testid="updated-at"
           className="absolute right-4 bottom-4 z-30 flex h-6 items-center gap-1 text-xs text-ink-2"
           {...mapOverlayGestureProps}
         >

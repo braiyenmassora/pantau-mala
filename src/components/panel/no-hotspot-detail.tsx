@@ -15,7 +15,9 @@ export function NoHotspotDetail({ kab }: NoHotspotDetailProps) {
   return (
     <div className="animate-view-in space-y-6">
       <header>
-        <h2 className="text-xl font-semibold text-ink">{kab.nama}</h2>
+        <h2 className="line-clamp-2 text-xl font-semibold text-ink" title={kab.nama}>
+          {kab.nama}
+        </h2>
         <p className="mt-1 flex items-center gap-1 text-sm text-ink-2">
             <MapPin className="size-4 shrink-0 text-ink-2" strokeWidth={2} aria-hidden />
           <span>

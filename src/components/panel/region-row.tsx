@@ -59,7 +59,12 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
       </span>
 
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-base font-semibold text-ink">{region.nama}</span>
+        <span
+          className="block truncate text-base font-semibold text-ink"
+          title={region.nama}
+        >
+          {region.nama}
+        </span>
         <span className="block truncate text-sm text-ink-2">
           {region.provinsi} · {formatNumber(region.titik_panas_24j)} titik panas
         </span>
