@@ -1,0 +1,326 @@
+import {
+  Check,
+  ChevronDown,
+  Cloud,
+  CloudFog,
+  CloudRain,
+  Droplets,
+  Flame,
+  Info,
+  MapPin,
+  Wind,
+} from 'lucide-react'
+import { useState, type ReactNode } from 'react'
+
+import { Sparkline } from '@/components/panel/sparkline'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { useMeta } from '@/data/queries'
+import type { AirQualityCategory, ConfidenceLevel, Region } from '@/data/types'
+import {
+  formatCoordinates,
+  formatDateTime,
+  formatNumber,
+  trendWindowLabels,
+} from '@/lib/format'
+import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { cn } from '@/lib/utils'
+
+const CONFIDENCE_LABEL: Record<ConfidenceLevel, string> = {
+  rendah: 'Rendah',
+  sedang: 'Sedang',
+  tinggi: 'Tinggi',
+}
+
+const AIR_LABEL: Record<AirQualityCategory, string> = {
+  baik: 'Baik',
+  sedang: 'Sedang',
+  tidak_sehat: 'Tidak sehat',
+}
+
+const AIR_TEXT: Record<AirQualityCategory, string> = {
+  baik: 'text-risk-low-text',
+  sedang: 'text-risk-mid-text',
+  tidak_sehat: 'text-risk-high-text',
+}
+
+type RegionDetailPanelProps = {
+  region: Region
+}
+
+export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
+  const { data: meta } = useMeta()
+  const [techOpen, setTechOpen] = useState(false)
+  const style = RISK_CATEGORIES[region.kategori]
+  const [lon, lat] = region.pusat
+  const trendStart = region.tren_7h[0] ?? 0
+  const trendEnd = region.tren_7h[region.tren_7h.length - 1] ?? 0
+  const dates = trendWindowLabels(meta?.diperbarui ?? new Date().toISOString())
+
+  return (
+    <div key={region.kode} className="animate-view-in space-y-6">
+      <div className="space-y-4">
+        <header>
+          <h2 className="text-xl leading-7 font-semibold text-ink">{region.nama}</h2>
+          <p className="mt-1 flex items-center gap-1.5 text-[12px] leading-4 text-ink-2">
+            <MapPin className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+            <span>
+              {region.provinsi} ·{' '}
+              <span className="font-mono">{formatCoordinates(lon, lat)}</span>
+            </span>
+          </p>
+        </header>
+        <RiskCard region={region} />
+      </div>
+
+      <section className="space-y-2">
+        <h3 className="text-[13px] leading-[18px] font-semibold text-ink-2">Ringkasan</h3>
+        <p className="text-sm leading-[22px] text-ink">{region.ringkasan}</p>
+      </section>
+
+      <section className="space-y-2">
+        <h3 className="text-[13px] leading-[18px] font-semibold text-ink-2">
+          Yang bisa kamu lakukan
+        </h3>
+        <div className="rounded-card bg-surface-muted p-4">
+          <ul className="space-y-2">
+            {region.saran.map((item) => (
+              <li key={item} className="flex items-start gap-2">
+                <Check
+                  className="mt-0.5 size-4 shrink-0 text-brand"
+                  strokeWidth={2}
+                  aria-hidden
+                />
+                <span className="text-sm leading-5 text-ink">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="space-y-2">
+        <h3 className="text-[13px] leading-[18px] font-semibold text-ink-2">
+          Kondisi saat ini
+        </h3>
+        <div className="grid grid-cols-2 gap-2">
+          <DataTile
+            icon={<Flame className="size-4" strokeWidth={2} />}
+            label="Titik panas 24 jam"
+            value={formatNumber(region.titik_panas_24j)}
+            unit="titik"
+          />
+          <DataTile
+            icon={<Cloud className="size-4" strokeWidth={2} />}
+            label="Cuaca"
+            value={`${formatNumber(region.cuaca.suhu_c)}°C`}
+            unit={region.cuaca.kondisi}
+          />
+          <DataTile
+            icon={<Droplets className="size-4" strokeWidth={2} />}
+            label="Kelembapan"
+            value={formatNumber(region.cuaca.kelembapan)}
+            unit="%"
+          />
+          <DataTile
+            icon={<Wind className="size-4" strokeWidth={2} />}
+            label="Angin"
+            value={formatNumber(region.cuaca.angin_kmj)}
+            unit="km/jam"
+          />
+          <DataTile
+            icon={<CloudRain className="size-4" strokeWidth={2} />}
+            label="Tanpa hujan"
+            value={formatNumber(region.cuaca.hari_tanpa_hujan)}
+            unit="hari"
+          />
+          <DataTile
+            icon={<CloudFog className="size-4" strokeWidth={2} />}
+            label="Udara (PM2.5)"
+            value={AIR_LABEL[region.udara.kategori]}
+            valueClassName={AIR_TEXT[region.udara.kategori]}
+          />
+        </div>
+      </section>
+
+      <section className="space-y-2">
+        <div className="flex items-baseline justify-between gap-2">
+          <h3 className="text-[13px] leading-[18px] font-semibold text-ink-2">
+            Tren titik panas 7 hari
+          </h3>
+          <p className="font-mono text-[13px] leading-[18px] text-ink-2">
+            {formatNumber(trendStart)} → {formatNumber(trendEnd)} titik
+          </p>
+        </div>
+        <Sparkline
+          values={region.tren_7h}
+          width={336}
+          height={64}
+          color={style.dot}
+          showBaseline
+          className="h-16 w-full"
+        />
+        <div className="flex justify-between text-[12px] leading-4 text-ink-2">
+          <span>{dates.start}</span>
+          <span>{dates.end}</span>
+        </div>
+      </section>
+
+      <section>
+        <button
+          type="button"
+          className="flex h-9 w-full items-center justify-between rounded-ctl text-left text-[13px] leading-[18px] font-semibold text-ink-2 hover:text-ink"
+          aria-expanded={techOpen}
+          onClick={() => setTechOpen((v) => !v)}
+        >
+          Info teknis satelit
+          <ChevronDown
+            className={cn(
+              'size-4 transition-transform duration-150',
+              techOpen && 'rotate-180',
+            )}
+            strokeWidth={2}
+            aria-hidden
+          />
+        </button>
+        {techOpen && (
+          <dl className="mt-2 divide-y divide-line rounded-card border border-line bg-surface">
+            <TechRow
+              label="Waktu"
+              value={formatDateTime(region.deteksi_terakhir.waktu, region.zona_waktu)}
+            />
+            <TechRow label="Satelit" value={region.deteksi_terakhir.satelit} />
+            <TechRow
+              label="Tingkat keyakinan"
+              value={CONFIDENCE_LABEL[region.deteksi_terakhir.keyakinan]}
+            />
+            <TechRow
+              label="Intensitas api (FRP)"
+              value={`${formatNumber(region.deteksi_terakhir.frp_mw, {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1,
+              })} MW`}
+              mono
+            />
+          </dl>
+        )}
+      </section>
+    </div>
+  )
+}
+
+function RiskCard({ region }: { region: Region }) {
+  const style = RISK_CATEGORIES[region.kategori]
+  const markerLeft = `${Math.min(100, Math.max(0, region.skor))}%`
+
+  return (
+    <section
+      className="space-y-3 rounded-card p-4"
+      style={{ backgroundColor: style.tint, color: style.text }}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-1">
+            <p className="text-[12px] leading-4 font-medium">Risiko kebakaran</p>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="opacity-70 hover:opacity-100"
+                  aria-label="Penjelasan skor risiko"
+                  style={{ color: style.text }}
+                >
+                  <Info className="size-3.5" strokeWidth={2} />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs">
+                Skor 0–100 dari gabungan jumlah titik panas, cuaca kering, dan tren 7 hari.
+                Makin tinggi, makin besar kemungkinan api meluas.
+              </TooltipContent>
+            </Tooltip>
+          </div>
+          <p className="mt-1 text-xl leading-7 font-semibold">{style.label}</p>
+        </div>
+        <div className="text-right">
+          <p className="font-mono text-[28px] leading-8 font-semibold tracking-[-0.02em] text-ink">
+            {region.skor}
+          </p>
+          <p className="text-[13px] leading-[18px] text-ink-2">/100</p>
+        </div>
+      </div>
+
+      <div className="relative pt-2">
+        <div className="flex h-1.5 gap-0.5">
+          <span className="h-full flex-[34] rounded-l-full bg-risk-low" />
+          <span className="h-full flex-[33] bg-risk-mid" />
+          <span className="h-full flex-[33] rounded-r-full bg-risk-high" />
+        </div>
+        <span
+          className="absolute top-0.5 size-3 -translate-x-1/2 rounded-full border-2 border-ink bg-white"
+          style={{ left: markerLeft }}
+          aria-hidden
+        />
+        <div className="mt-2 flex justify-between text-[12px] leading-4 text-ink-2">
+          <span>Rendah</span>
+          <span>Sedang</span>
+          <span>Sangat tinggi</span>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function DataTile({
+  icon,
+  label,
+  value,
+  unit,
+  valueClassName,
+}: {
+  icon: ReactNode
+  label: string
+  value: string
+  unit?: string
+  valueClassName?: string
+}) {
+  return (
+    <div className="rounded-card bg-surface-muted p-3">
+      <div className="flex items-center gap-2 text-ink-2">
+        <span className="shrink-0">{icon}</span>
+        <span className="text-[12px] leading-4 font-medium">{label}</span>
+      </div>
+      <p className={cn('mt-1 text-base leading-6 font-semibold text-ink', valueClassName)}>
+        {value}
+        {unit && (
+          <span className="ml-1 text-[12px] leading-4 font-normal text-ink-2">{unit}</span>
+        )}
+      </p>
+    </div>
+  )
+}
+
+function TechRow({
+  label,
+  value,
+  mono,
+}: {
+  label: string
+  value: string
+  mono?: boolean
+}) {
+  return (
+    <div className="flex items-start justify-between gap-3 px-3 py-2.5">
+      <dt className="text-[13px] leading-[18px] text-ink-2">{label}</dt>
+      <dd
+        className={cn(
+          'text-right text-[13px] leading-[18px] font-medium text-ink',
+          mono && 'font-mono',
+        )}
+      >
+        {value}
+      </dd>
+    </div>
+  )
+}

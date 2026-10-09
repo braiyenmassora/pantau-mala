@@ -1,0 +1,101 @@
+/* Token desain forever-young (MVP) – sumber: docs/spesifikasi-ui.md
+   Diimpor dari src/index.css setelah @import "tailwindcss".
+   Font diimpor di main.tsx (IBM Plex Sans 400/500/600, Mono 500/600). */
+
+@theme {
+  /* Font */
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* Netral */
+  --color-ink: #14261B;           /* text-primary, elemen aktif */
+  --color-ink-2: #52645A;         /* text-secondary */
+  --color-ink-3: #7A8A80;         /* text-disabled / placeholder */
+  --color-line: #E3E9E4;          /* border */
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F6F8F6;
+  --color-map-bg: #DCE7EC;
+  --color-scrollbar: #D3DBD6;
+
+  /* Brand (satu aksen, tidak ada biru) */
+  --color-brand: #1E6B45;
+  --color-brand-soft: #EDF4EF;
+
+  /* Kategori risiko: dot / tint / text */
+  --color-risk-high: #C2410C;
+  --color-risk-high-tint: #F8D7D0;
+  --color-risk-high-text: #8E2414;
+  --color-risk-mid: #D99A0B;
+  --color-risk-mid-tint: #FBF0CF;
+  --color-risk-mid-text: #6B4E00;
+  --color-risk-low: #2E8B57;
+  --color-risk-low-tint: #E4F0E8;
+  --color-risk-low-text: #1E5A3A;
+
+  /* Tipografi (ukuran / line-height) – hanya 6 ukuran */
+  --text-xs: 12px;   --text-xs--line-height: 16px;   /* caption, label, badge */
+  --text-sm: 13px;   --text-sm--line-height: 18px;   /* small, chip, section-label, button kecil */
+  --text-base: 14px; --text-base--line-height: 20px; /* body, button besar */
+  --text-lg: 16px;   --text-lg--line-height: 24px;   /* title */
+  --text-xl: 20px;   --text-xl--line-height: 28px;   /* title-lg */
+  --text-3xl: 28px;  --text-3xl--line-height: 32px;  /* number-lg (Mono) */
+
+  /* Radius */
+  --radius-ctl: 8px;    /* kontrol peta, item menu */
+  --radius-card: 12px;  /* kartu, tile */
+  --radius-panel: 16px; /* panel, dialog */
+
+  /* Bayangan */
+  --shadow-sm: 0 1px 3px rgba(20, 38, 27, 0.16);
+  --shadow-md: 0 4px 16px rgba(20, 38, 27, 0.12);
+  --shadow-lg: 0 8px 28px rgba(20, 38, 27, 0.18);
+  --shadow-map: 0 1px 3px rgba(20, 38, 27, 0.24);
+
+  /* Motion */
+  --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Animasi halo */
+  --animate-halo-high: halo-pulse 2.6s ease-out infinite;
+  --animate-halo-mid: halo-pulse 3.4s ease-out infinite;
+  --animate-view-in: view-in 0.22s ease-out both;
+
+  @keyframes halo-pulse {
+    0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.55; }
+    100% { transform: translate(-50%, -50%) scale(1.7); opacity: 0; }
+  }
+  @keyframes view-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
+}
+
+@layer base {
+  html { color-scheme: light; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-ink);
+    background: var(--color-map-bg);
+    font-size: 14px;
+    line-height: 20px;
+  }
+}
+
+/* Scroll panel halus */
+.soft-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+.soft-scroll:hover { scrollbar-color: var(--color-scrollbar) transparent; }
+.soft-fade {
+  mask-image: linear-gradient(to bottom, transparent 0, #000 12px, #000 calc(100% - 24px), transparent 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
