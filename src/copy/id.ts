@@ -74,6 +74,7 @@ export const copy = {
       `${up ? '▲' : '▼'} ${pct} dibanding kemarin`,
     searchPlaceholder: 'Cari kabupaten/kota',
     searchClear: 'Hapus pencarian dan pilihan',
+    closeDetail: 'Tutup detail',
     techTitle: 'Info teknis satelit',
     techTime: 'Waktu',
     techSatellite: 'Satelit',

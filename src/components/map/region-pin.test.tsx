@@ -95,21 +95,28 @@ describe('RegionPin', () => {
     ).toBeTruthy()
   })
 
-  it('does not show wilayah name on the active (selected) pin', () => {
+  it('keeps skor only inside the pin; name stays in tooltip when selected', async () => {
     useMapStore.setState({ selectedCode: region.kode })
     renderPin()
     const pin = screen.getByRole('button', {
       name: 'Kab. Pulang Pisau, skor 82, risiko Sangat tinggi',
     })
     expect(pin.textContent).toBe('82')
-    expect(screen.queryByRole('tooltip')).toBeNull()
+    expect((await screen.findByRole('tooltip')).textContent).toContain(
+      'Kab. Pulang Pisau',
+    )
   })
 
-  it('shows wilayah name in tooltip on keyboard focus', async () => {
+  it('shows wilayah name in tooltip on click', async () => {
     const user = userEvent.setup()
     renderPin()
-    await user.tab()
-    const tip = await screen.findByRole('tooltip')
-    expect(tip.textContent).toContain('Kab. Pulang Pisau')
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Kab. Pulang Pisau, skor 82, risiko Sangat tinggi',
+      }),
+    )
+    expect((await screen.findByRole('tooltip')).textContent).toContain(
+      'Kab. Pulang Pisau',
+    )
   })
 })

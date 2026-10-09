@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { focusRing } from '@/components/common/focus-ring'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import {
@@ -40,9 +42,12 @@ export function RegionPin({ region }: RegionPinProps) {
   const select = useMapStore((s) => s.select)
   const hover = useMapStore((s) => s.hover)
   const panelOpen = useUiStore((s) => s.panelOpen)
+  const [tipHover, setTipHover] = useState(false)
 
   const style = RISK_CATEGORIES[region.kategori]
-  const active = selectedCode === region.kode || hoveredCode === region.kode
+  const selected = selectedCode === region.kode
+  const active = selected || hoveredCode === region.kode
+  const tipOpen = tipHover || selected
   const circle = shouldShowHalo(region.titik_panas_24j)
   const pulse = circle && showHaloPulse(region.kategori)
   const haloSize = haloDiameter(region.titik_panas_24j)
@@ -88,7 +93,11 @@ export function RegionPin({ region }: RegionPinProps) {
           />
         )}
 
-        <Tooltip delayDuration={150}>
+        <Tooltip
+          delayDuration={150}
+          open={tipOpen}
+          onOpenChange={setTipHover}
+        >
           <TooltipTrigger asChild>
             <button
               type="button"

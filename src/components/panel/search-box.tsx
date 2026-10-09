@@ -22,7 +22,8 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
   const panelOpen = useUiStore((s) => s.panelOpen)
   const reducedMotion = usePrefersReducedMotion()
 
-  const showClear = query.trim().length > 0 || selectedCode !== null
+  const detailOpen = selectedCode !== null
+  const showClear = query.trim().length > 0
 
   function clearAll() {
     setQuery('')
@@ -30,6 +31,26 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
     const map = mapRef.current
     if (!map) return
     fitIndonesia(map, panelOpen, reducedMotion ? 0 : 600)
+  }
+
+  if (detailOpen) {
+    return (
+      <div className="flex h-12 items-center justify-end">
+        <button
+          type="button"
+          className={cn(
+            'flex size-10 shrink-0 items-center justify-center rounded-full border border-line bg-surface text-ink-2 shadow-sm',
+            'transition-[background-color,color] duration-150 ease-in-out',
+            'hover:bg-surface-muted hover:text-ink',
+            focusRing,
+          )}
+          aria-label={copy.panel.closeDetail}
+          onClick={clearAll}
+        >
+          <X className="size-[18px]" strokeWidth={2} aria-hidden />
+        </button>
+      </div>
+    )
   }
 
   return (

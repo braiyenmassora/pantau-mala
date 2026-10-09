@@ -11,6 +11,8 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: { alias: { '@': path.resolve(rootDir, './src') } },
   build: {
+    // MapLibre chunk is large by design; initial JS stays under the 200 KB gzip gate.
+    chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
         manualChunks(id) {

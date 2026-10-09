@@ -114,7 +114,7 @@ Aturan tambahan: ikon di tengah kotaknya (`flex items-center justify-center`); b
 
 ## 5. Komponen
 
-**Search box** – tinggi 48, pill, garis + bayangan `sm`, logo bulat 32, ikon aksi 40 (ikon cari berubah jadi × saat ada isi atau wilayah dipilih), teks 14. Input polos (`type="text"` + `inputMode="search"`), tanpa border/outline/ring/latar; fokus di pembungkus (`focus-within:ring-2 ring-brand ring-offset-2`). Satu tombol × milik kita saja.
+**Search box** – tinggi 48, pill, garis + bayangan `sm`, logo bulat 32, ikon aksi 40 (ikon cari berubah jadi × saat ada isi), teks 14. Input polos (`type="text"` + `inputMode="search"`), tanpa border/outline/ring/latar; fokus di pembungkus (`focus-within:ring-2 ring-brand ring-offset-2`). Saat **detail lokasi** terbuka: search disembunyikan; hanya tombol × 40 (tutup detail) di kanan.
 
 **Chip kategori** – tinggi 36, padding 12/14, gap 8, dot 8, teks `chip`, angka Mono.
 - Default: tidak ada chip terpilih = semua kategori tampil.
@@ -136,7 +136,7 @@ Menu: kartu putih, radius 12, bayangan `lg`, padding 4, item 36 px radius 8; ter
 **Pin peta** – pill satu baris tinggi 28, padding kiri 8 / kanan 10, gap 8. Isi selalu: dot 8 + skor Mono 13/18 600. Lebar pin **tidak** berubah saat aktif; nama wilayah **tidak** pernah di dalam pin.
 - Biasa (tidak aktif): latar `surface`, garis 1 px `line`, skor `ink`, bayangan `shadow-map`.
 - Aktif (hover atau terpilih): latar `risk-{kategori}-tint`, garis 1,5 px `risk-{kategori}`, skor `risk-{kategori}-text`, bayangan `0 2px 8px rgba(20,38,27,.24)`, scale 1,1, z-index 20, transisi 150 ms. Fokus keyboard: `ring-2 ring-brand ring-offset-2` di atas gaya aktif.
-- Tooltip nama: shadcn Tooltip **hanya** saat hover / fokus keyboard (bukan saat terpilih saja), di atas pin, jarak 8, latar `ink`, teks `surface` caption 12/16, radius 8, padding 4/8, delay 150 ms. `aria-label` tetap `"{nama}, skor {skor}, risiko {kategori}"`.
+- Tooltip nama: shadcn Tooltip saat hover, fokus keyboard, **atau pin terpilih (klik)**; di atas pin, jarak 8, latar `ink`, teks `surface` caption 12/16, radius 8, padding 4/8, delay 150 ms. `aria-label` tetap `"{nama}, skor {skor}, risiko {kategori}"`.
 
 **Cluster** – lingkaran 40 + 6 × jumlah (px), garis putih 3, warna = kategori tertinggi, cincin 6 px warna kategori 18%. Hover: latar tetap kategori tertinggi, cincin dipertegas (opacity 30%). Klik = zoom in.
 
