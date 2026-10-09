@@ -17,6 +17,56 @@ type RegionLayersProps = {
   regions: Region[]
 }
 
+type ClusterMarkerProps = {
+  lon: number
+  lat: number
+  count: number
+  color: string
+  onExpand: () => void
+}
+
+function ClusterMarker({ lon, lat, count, color, onExpand }: ClusterMarkerProps) {
+  const [hovered, setHovered] = useState(false)
+  const size = 40 + 6 * count
+
+  return (
+    <MapMarker longitude={lon} latitude={lat} anchor="center">
+      <MarkerContent className="relative z-[12] flex items-center justify-center">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute rounded-full transition-[background-color] duration-150 ease-in-out"
+          style={{
+            width: size + 12,
+            height: size + 12,
+            backgroundColor: withAlpha(color, hovered ? 0.3 : 0.18),
+          }}
+        />
+        <button
+          type="button"
+          className={cn(
+            'relative flex items-center justify-center rounded-full border-[3px] border-surface font-mono text-base leading-6 font-semibold text-surface shadow-map',
+            focusRing,
+          )}
+          style={{
+            width: size,
+            height: size,
+            backgroundColor: color,
+          }}
+          aria-label={`${count} wilayah, klik untuk memperbesar`}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          onClick={(e) => {
+            e.stopPropagation()
+            onExpand()
+          }}
+        >
+          {count}
+        </button>
+      </MarkerContent>
+    </MapMarker>
+  )
+}
+
 export function RegionLayers({ regions }: RegionLayersProps) {
   const { map } = useMap()
   const panelOpen = useUiStore((s) => s.panelOpen)
@@ -77,52 +127,24 @@ export function RegionLayers({ regions }: RegionLayersProps) {
           const leaves = index.getLeaves(clusterId, Infinity)
           const top = highestRiskCategory(leaves.map((l) => l.properties.region.kategori))
           const color = RISK_CATEGORIES[top].dot
-          const size = 40 + 6 * count
 
           return (
-            <MapMarker
+            <ClusterMarker
               key={`cluster-${clusterId}`}
-              longitude={lon}
-              latitude={lat}
-              anchor="center"
-            >
-              <MarkerContent className="relative z-[12] flex items-center justify-center">
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute rounded-full"
-                  style={{
-                    width: size + 12,
-                    height: size + 12,
-                    backgroundColor: withAlpha(color, 0.18),
-                  }}
-                />
-                <button
-                  type="button"
-                  className={cn(
-                    'relative flex items-center justify-center rounded-full border-[3px] border-surface font-mono text-base leading-6 font-semibold text-surface shadow-map',
-                    focusRing,
-                  )}
-                  style={{
-                    width: size,
-                    height: size,
-                    backgroundColor: color,
-                  }}
-                  aria-label={`${count} wilayah, klik untuk memperbesar`}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    const nextZoom = index.getClusterExpansionZoom(clusterId)
-                    map?.easeTo({
-                      center: [lon, lat],
-                      zoom: nextZoom,
-                      padding: getMapPadding(panelOpen),
-                      duration: reducedMotion ? 0 : 600,
-                    })
-                  }}
-                >
-                  {count}
-                </button>
-              </MarkerContent>
-            </MapMarker>
+              lon={lon}
+              lat={lat}
+              count={count}
+              color={color}
+              onExpand={() => {
+                const nextZoom = index.getClusterExpansionZoom(clusterId)
+                map?.easeTo({
+                  center: [lon, lat],
+                  zoom: nextZoom,
+                  padding: getMapPadding(panelOpen),
+                  duration: reducedMotion ? 0 : 600,
+                })
+              }}
+            />
           )
         }
 

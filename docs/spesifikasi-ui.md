@@ -8,7 +8,7 @@ Token yang sama tersedia sebagai kode di `src/styles/tokens.css`.
 
 | Token | Hex | Dipakai untuk |
 | --- | --- | --- |
-| `text-primary` | `#14261B` | Teks utama, latar elemen aktif (pin/chip terpilih) |
+| `text-primary` | `#14261B` | Teks utama, latar chip terpilih |
 | `text-secondary` | `#52645A` | Label, teks sekunder, ikon |
 | `text-disabled` | `#7A8A80` | Placeholder |
 | `border` | `#E3E9E4` | Semua garis dan pembatas |
@@ -81,13 +81,13 @@ Hanya 6 ukuran (12, 13, 14, 16, 20, 28). Tidak ada teks huruf kapital semua.
 | Konteks | Warna |
 | --- | --- |
 | Ikon label, meta, ⓘ, panah, kontrol peta | `ink-2` |
-| Ikon di latar `ink` (chip/pin aktif) | `surface` |
+| Ikon di latar `ink` (chip terpilih) | `surface` |
 | Aksi & positif: logo, centang, lokasi pengguna, ikon EmptyState | `brand` |
 | Indikator risiko (dot, halo, cincin, skala) | `risk-*` sesuai kategori |
 | Teks/ikon di atas tint kategori | `risk-*-text` |
 | Ikon nonaktif | `ink-3` |
 
-Warna risiko **tidak** untuk dekorasi. Kontras teks/latar ≥ 4,5:1 (teks ≥ 18px: 3:1). `ink-3` pada `surface` ≈ 3,6:1 — **gagal** untuk teks konten; hanya untuk ikon nonaktif. Placeholder dan teks sekunder memakai `ink-2` (≥ 4,5:1).
+Warna risiko **tidak** untuk dekorasi. Kontras teks/latar ≥ 4,5:1 (teks ≥ 18px: 3:1). `ink-3` pada `surface` ≈ 3,6:1 — **gagal** untuk teks konten; hanya untuk ikon nonaktif. Placeholder dan teks sekunder memakai `ink-2` (≥ 4,5:1). `risk-{kategori}-text` di atas `risk-{kategori}-tint` ≥ 4,5:1 untuk ketiga kategori (Sangat tinggi, Sedang, Rendah).
 
 ### Density (tinggi kontrol)
 
@@ -96,7 +96,7 @@ Warna risiko **tidak** untuk dekorasi. Kontras teks/latar ≥ 4,5:1 (teks ≥ 18
 | 48 | Search box | kiri 8 (logo 32), kanan 4 (area aksi 40×40) | 18 | 8 | 14/20 |
 | 40 | Tombol md, kontrol peta, tombol ikon | 16 (ikon-saja: 0, kotak 40×40) | 18 (kontrol peta 20) | 8 | 14/20 |
 | 36 | Tombol sm, chip, dropdown, item menu, tombol lipat | 12 (chip/dropdown: kiri 12, kanan 14) | 16 | 8 (dot→teks 4) | 13/18 |
-| 28 | Pin peta | kiri 8, kanan 10 | dot 8 | 4 | 13/18 Mono |
+| 28 | Pin peta | kiri 8, kanan 10 | dot 8 | 8 | 13/18 Mono |
 | 24 | Badge, pill status waktu, label radius | 10 | dot 6–8 | 4 | 12/16 |
 
 Aturan tambahan: ikon di tengah kotaknya (`flex items-center justify-center`); baris ikon+teks `items-center`; jarak ikon→teks ikut tabel §3; label+nilai bertumpuk gap 4; kartu padding 16; tile padding 12; antar-bagian 24; judul→isi 8; kartu+ikon bulat: lingkaran 40, gap 12; baris daftar min 64, padding 12/8, cincin 40, gap 12; skala risiko track 6 / celah 2 / penanda 12 / track→label 8; sparkline 128×40 / 56×20 / detail 64; tinggi kontrol hanya 24/28/36/40/48.
@@ -117,8 +117,8 @@ Aturan tambahan: ikon di tengah kotaknya (`flex items-center justify-center`); b
 **Chip kategori** – tinggi 36, padding 12/14, gap 8, dot 8, teks `chip`, angka Mono.
 - Default: tidak ada chip terpilih = semua kategori tampil.
 - Klik = pilih (bisa lebih dari satu) → hanya kategori terpilih yang tampil. Klik lagi = batal.
-- Terpilih: latar `#14261B`, teks putih, dot diberi cincin putih 1,5 px (sama dengan pin aktif).
-- Chip = kontrol (latar putih), badge = status (latar tint).
+- Terpilih: latar `ink` (`#14261B`), teks putih, dot diberi cincin putih 1,5 px.
+- **Aktif/terpilih:** pin = warna status (tint), chip = `ink`. Chip = kontrol, badge/pin aktif = status.
 
 **Dropdown provinsi** – chip yang sama + ikon peta + panah 16 (berputar 180° saat terbuka). Bukan `<select>` bawaan (pakai shadcn Popover + Command atau Select).
 Menu: kartu putih, radius 12, bayangan `lg`, padding 4, item 36 px radius 8; terpilih = `surface-muted` + teks 600 + centang hijau.
@@ -131,9 +131,11 @@ Menu: kartu putih, radius 12, bayangan `lg`, padding 4, item 36 px radius 8; ter
 
 **Fokus keyboard** – cincin 2 px `brand`, offset 2, hanya `focus-visible` (bukan saat klik mouse saja).
 
-**Pin peta** – tinggi 28, pill putih bergaris, dot 8 + skor Mono 13. Hover/terpilih: latar gelap, teks putih, nama wilayah ikut tampil, skala 1,1.
+**Pin peta** – pill satu baris tinggi 28, padding kiri 8 / kanan 10, gap 8.
+- Biasa (tidak aktif): latar `surface`, garis 1 px `line`, dot 8 warna kategori, skor Mono 13/18 600 `ink`, bayangan `shadow-map`. Nama wilayah **tidak** tampil.
+- Aktif (hover atau terpilih saja): bentuk tetap; latar `risk-{kategori}-tint`, garis 1,5 px `risk-{kategori}`, dot 8 `risk-{kategori}`, skor Mono 13/18 600 + nama wilayah Sans 13/18 500 keduanya `risk-{kategori}-text`, gap 8. Nama maks 180 px + ellipsis; nama lengkap di `title` & `aria-label`. Bayangan `0 2px 8px rgba(20,38,27,.24)`, scale 1,1, z-index 20, transisi 150 ms. Fokus keyboard: `ring-2 ring-brand ring-offset-2` di atas gaya aktif.
 
-**Cluster** – lingkaran 40 + 6 × jumlah (px), garis putih 3, warna = kategori tertinggi, cincin 6 px warna kategori 18–20%. Klik = zoom in.
+**Cluster** – lingkaran 40 + 6 × jumlah (px), garis putih 3, warna = kategori tertinggi, cincin 6 px warna kategori 18%. Hover: latar tetap kategori tertinggi, cincin dipertegas (opacity 30%). Klik = zoom in.
 
 **Baris wilayah (daftar)** – tinggi min 64, padding 12/8, cincin skor 40 (garis 3 warna kategori), nama `body-strong`, provinsi + jumlah `small`, sparkline 56×20 + label tren (↑ naik / ↓ turun / → stabil). Hover = `surface-muted`.
 

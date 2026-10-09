@@ -1,6 +1,6 @@
 import { focusRing } from '@/components/common/focus-ring'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
-import type { Region } from '@/data/types'
+import type { Region, RiskCategory } from '@/data/types'
 import { getMapPadding } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
@@ -10,6 +10,12 @@ import { useUiStore } from '@/store/ui'
 
 type RegionPinProps = {
   region: Region
+}
+
+const ACTIVE_PIN: Record<RiskCategory, string> = {
+  sangat_tinggi: 'border-[1.5px] border-risk-high bg-risk-high-tint text-risk-high-text',
+  sedang: 'border-[1.5px] border-risk-mid bg-risk-mid-tint text-risk-mid-text',
+  rendah: 'border-[1.5px] border-risk-low bg-risk-low-tint text-risk-low-text',
 }
 
 export function RegionPin({ region }: RegionPinProps) {
@@ -27,6 +33,7 @@ export function RegionPin({ region }: RegionPinProps) {
   const haloSize = 48 + 3 * region.titik_panas_24j
   const pulseClass =
     region.kategori === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
+  const label = `${region.nama}, skor ${region.skor}, risiko ${style.label}`
 
   return (
     <MapMarker
@@ -69,13 +76,14 @@ export function RegionPin({ region }: RegionPinProps) {
         <button
           type="button"
           className={cn(
-            'relative flex h-7 items-center gap-1 rounded-full border border-line bg-surface shadow-map',
-            'origin-center transition-transform duration-150 ease-in-out',
+            'relative flex h-7 items-center gap-2 rounded-full border border-line bg-surface text-ink shadow-map',
+            'origin-center transition-[transform,box-shadow,background-color,border-color,color] duration-150 ease-in-out',
             focusRing,
-            active && 'scale-110 border-ink bg-ink text-surface',
+            active && cn('scale-110 shadow-[0_2px_8px_rgba(20,38,27,0.24)]', ACTIVE_PIN[region.kategori]),
           )}
           style={{ paddingLeft: 8, paddingRight: 10 }}
-          aria-label={`${region.nama}, skor ${region.skor}, risiko ${style.label}`}
+          title={region.nama}
+          aria-label={label}
           onClick={(e) => {
             e.stopPropagation()
             select(region.kode)
@@ -88,15 +96,13 @@ export function RegionPin({ region }: RegionPinProps) {
           }}
         >
           <span
-            className={cn(
-              'size-2 shrink-0 rounded-full',
-              active && 'ring-[1.5px] ring-surface',
-            )}
+            className="size-2 shrink-0 rounded-full"
             style={{ backgroundColor: style.dot }}
+            aria-hidden
           />
           <span className="font-mono text-sm font-semibold">{region.skor}</span>
           {active && (
-            <span className="max-w-40 truncate text-sm font-semibold" title={region.nama}>
+            <span className="max-w-[180px] truncate text-sm font-medium" title={region.nama}>
               {region.nama}
             </span>
           )}
