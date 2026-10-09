@@ -68,7 +68,10 @@ export function UserLocationLayer() {
       </MapMarker>
       <MapMarker longitude={labelPos[0]} latitude={labelPos[1]} anchor="center">
         <MarkerContent className="z-[15]">
-          <span className="rounded-full border border-line bg-surface px-2 py-1 text-xs font-medium text-ink shadow-sm">
+          <span
+            className="inline-flex h-6 items-center rounded-full border border-line bg-surface text-xs font-medium text-ink shadow-sm"
+            style={{ paddingLeft: 10, paddingRight: 10 }}
+          >
             Radius 25 km
           </span>
         </MarkerContent>

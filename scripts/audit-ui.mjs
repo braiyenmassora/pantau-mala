@@ -11,7 +11,6 @@ const SCAN_ROOTS = [join(ROOT, 'src')]
 const IGNORE_DIRS = new Set(['ui', 'node_modules'])
 const IGNORE_FILES = new Set(['tokens.css'])
 
-/** Hex allowed only in the JS token bridge (mirrors tokens.css). */
 const HEX_ALLOW = new Set([
   join(ROOT, 'src/lib/risk-category.ts'),
   join(ROOT, 'src/styles/tokens.css'),
@@ -36,8 +35,19 @@ const HEX_OR_RGB =
 
 const WHITE_CLASS = /\b(?:bg|text|border)-white\b/
 const UPPERCASE_CLASS = /\buppercase\b/
-
 const BANNED_VISIBLE = /\b(?:hotspot|confidence|Anda|saya)\b/i
+
+/** Allowed arbitrary px for h-/w-/size-[Npx] (density + sparks + hairlines). */
+const ALLOWED_PX = new Set([
+  1, 2, 3, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 68,
+  128, 240, 360, 400, 416, 432,
+])
+
+const ARBITRARY_SIZE = /\b(?:h|w|size|min-h|max-h|min-w|max-w)-\[(\d+)px\]/g
+
+/** Lucide size-* on the same attribute: only 14/16/18/20 (or TW 3.5/4/4.5/5). */
+const LUCIDE_ICON_SIZE =
+  /\b(?:className)=["'`][^"'`]*\bsize-(?:\[(\d+)px\]|(3\.5|4\.5|4|5))\b/
 
 const failures = []
 
@@ -60,7 +70,6 @@ function add(file, line, rule, snippet) {
   failures.push({ file: rel(file), line, rule, snippet: snippet.trim().slice(0, 120) })
 }
 
-/** Extract visible UI strings: JSX text, aria-label, title, placeholder. */
 function visibleStrings(source) {
   const found = []
   const attr =
@@ -69,7 +78,6 @@ function visibleStrings(source) {
   while ((m = attr.exec(source))) {
     found.push({ index: m.index, text: m[2] })
   }
-  // JSX text nodes between > and < (skip expressions)
   const jsxText = />([^<>{]+)</g
   while ((m = jsxText.exec(source))) {
     const t = m[1].trim()
@@ -85,8 +93,7 @@ function lineAt(source, index) {
 function scanFile(file) {
   const source = readFileSync(file, 'utf8')
   const lines = source.split('\n')
-  const underComponents = file.includes(`${join('src', 'components')}${join('/', '')}`) ||
-    file.includes('/src/components/')
+  const underComponents = file.includes('/src/components/')
   const underUi = file.includes('/src/components/ui/')
   const isAppTsx = file.endsWith('/src/App.tsx')
   const scanClasses = (underComponents && !underUi) || isAppTsx
@@ -95,10 +102,7 @@ function scanFile(file) {
   if (scanClasses) {
     lines.forEach((line, i) => {
       const n = i + 1
-      if (!allowHex && HEX_OR_RGB.test(line) && !line.includes('import.meta')) {
-        // allow style={{ }} that reference RISK / withAlpha vars — still ban raw hex
-        if (HEX_OR_RGB.test(line)) add(file, n, 'hex/rgb/hsl literal', line)
-      }
+      if (!allowHex && HEX_OR_RGB.test(line)) add(file, n, 'hex/rgb/hsl literal', line)
       if (WHITE_CLASS.test(line)) add(file, n, 'bg/text/border-white', line)
       if (UPPERCASE_CLASS.test(line)) add(file, n, 'uppercase class', line)
       if (BANNED_TW_COLORS.test(line)) add(file, n, 'default Tailwind palette color', line)
@@ -106,10 +110,27 @@ function scanFile(file) {
       if (BAD_ROUNDED.test(line)) add(file, n, 'rounded outside ctl/card/panel/full', line)
       if (BAD_SHADOW.test(line)) add(file, n, 'shadow outside sm/md/lg/map', line)
       if (TEXT_ARBITRARY.test(line)) add(file, n, 'arbitrary text-[..px]', line)
+
+      ARBITRARY_SIZE.lastIndex = 0
+      let m
+      while ((m = ARBITRARY_SIZE.exec(line))) {
+        const px = Number(m[1])
+        if (!ALLOWED_PX.has(px)) add(file, n, 'arbitrary h/w/size px not allowed', line)
+      }
+
+      const lucide = LUCIDE_ICON_SIZE.exec(line)
+      LUCIDE_ICON_SIZE.lastIndex = 0
+      if (lucide && line.includes('strokeWidth')) {
+        if (lucide[1]) {
+          const px = Number(lucide[1])
+          if (![14, 16, 18, 20].includes(px)) {
+            add(file, n, 'lucide size outside 14/16/18/20', line)
+          }
+        }
+      }
     })
   }
 
-  // Visible copy bans: all tsx under src except ui/
   if (file.endsWith('.tsx') && !underUi) {
     for (const { index, text } of visibleStrings(source)) {
       if (BANNED_VISIBLE.test(text)) {

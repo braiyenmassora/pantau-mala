@@ -33,7 +33,7 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
     <button
       type="button"
       className={cn(
-        'flex min-h-16 w-full items-center gap-3 rounded-card px-2 py-3 text-left',
+        'flex min-h-16 w-full items-center gap-3 rounded-card px-3 py-2 text-left',
         'transition-colors duration-150 ease-in-out',
         focusRing,
         active ? 'bg-surface-muted' : 'hover:bg-surface-muted',

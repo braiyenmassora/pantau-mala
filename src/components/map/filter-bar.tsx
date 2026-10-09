@@ -101,7 +101,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
                     role="option"
                     aria-selected={selected}
                     className={cn(
-                      'flex h-9 w-full cursor-pointer items-center gap-2 rounded-ctl px-2 text-left text-sm',
+                      'flex h-9 w-full cursor-pointer items-center gap-2 rounded-ctl px-3 text-left text-sm',
                       'transition-colors duration-150 ease-in-out hover:bg-surface-muted',
                       focusRing,
                       selected && 'bg-surface-muted font-semibold',

@@ -10,8 +10,8 @@ const variantClass = {
 } as const
 
 const sizeClass = {
-  md: 'h-10 text-base',
-  sm: 'h-9 text-sm',
+  md: 'h-10 px-4 text-base',
+  sm: 'h-9 px-3 text-sm',
 } as const
 
 type AppButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -31,7 +31,7 @@ export function Button({
     <button
       type="button"
       className={cn(
-        'inline-flex items-center justify-center rounded-full px-3 font-semibold',
+        'inline-flex items-center justify-center gap-2 rounded-full font-semibold',
         'transition-[opacity,background-color,color] duration-150 ease-in-out',
         focusRing,
         variantClass[variant],

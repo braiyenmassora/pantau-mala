@@ -20,7 +20,10 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
       {...mapOverlayGestureProps}
     >
       <span className="flex items-center gap-2">
-        <span className="flex h-7 items-center gap-2 rounded-full border border-line bg-surface px-2 shadow-map">
+        <span
+          className="flex h-7 items-center gap-2 rounded-full border border-line bg-surface shadow-map"
+          style={{ paddingLeft: 8, paddingRight: 10 }}
+        >
           <span
             className="size-2 rounded-full"
             style={{ backgroundColor: high }}

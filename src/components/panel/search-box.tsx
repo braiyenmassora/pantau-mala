@@ -38,7 +38,7 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
       )}
     >
       <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand text-surface">
-        <Flame className="size-4" strokeWidth={2} aria-hidden />
+        <Flame className="size-[18px]" strokeWidth={2} aria-hidden />
       </span>
       <input
         type="search"
@@ -64,11 +64,11 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
           aria-label="Hapus pencarian dan pilihan"
           onClick={clearAll}
         >
-          <X className="size-4" strokeWidth={2} aria-hidden />
+          <X className="size-[18px]" strokeWidth={2} aria-hidden />
         </button>
       ) : (
         <span className="flex size-10 shrink-0 items-center justify-center text-ink-3" aria-hidden>
-          <Search className="size-4" strokeWidth={2} />
+          <Search className="size-[18px]" strokeWidth={2} />
         </span>
       )}
     </div>

@@ -65,6 +65,18 @@ Hanya 6 ukuran (12, 13, 14, 16, 20, 28). Tidak ada teks huruf kapital semua.
   - `map` `0 1px 3px rgba(20,38,27,.24)` – pin, cluster, titik lokasi
 - **Ikon**: lucide, garis 2 px; ukuran 14 (ⓘ, panah tab panel), 16 (inline), 18 (aksi), 20 (kontrol peta, ikon kartu).
 
+### Density (tinggi kontrol)
+
+| Tinggi | Dipakai untuk | Padding horizontal | Ikon | Gap isi | Teks |
+| --- | --- | --- | --- | --- | --- |
+| 48 | Search box | kiri 8 (logo 32), kanan 4 (area aksi 40×40) | 18 | 8 | 14/20 |
+| 40 | Tombol md, kontrol peta, tombol ikon | 16 (ikon-saja: 0, kotak 40×40) | 18 (kontrol peta 20) | 8 | 14/20 |
+| 36 | Tombol sm, chip, dropdown, item menu, tombol lipat | 12 (chip/dropdown: kiri 12, kanan 14) | 16 | 8 | 13/18 |
+| 28 | Pin peta | kiri 8, kanan 10 | dot 8 | 8 | 13/18 Mono |
+| 24 | Badge, pill status waktu, label radius | 10 | dot 6–8 | 8 | 12/16 |
+
+Aturan tambahan: ikon di tengah kotaknya (`flex items-center justify-center`); baris ikon+teks `items-center`; label+nilai bertumpuk gap 4; kartu padding 16; tile padding 12; antar-bagian 24; judul→isi 8; kartu+ikon bulat: lingkaran 40, gap 12; baris daftar min 64, padding 12/8, cincin 40, gap 12; skala risiko track 6 / celah 2 / penanda 12 / track→label 8; sparkline 128×40 / 56×20 / detail 64; tinggi kontrol hanya 24/28/36/40/48.
+
 ## 4. Pola kartu
 
 | Pola | Gaya | Dipakai di |

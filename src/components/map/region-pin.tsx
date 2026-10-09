@@ -69,11 +69,12 @@ export function RegionPin({ region }: RegionPinProps) {
         <button
           type="button"
           className={cn(
-            'relative flex h-7 items-center gap-2 rounded-full border border-line bg-surface px-2 shadow-map',
+            'relative flex h-7 items-center gap-2 rounded-full border border-line bg-surface shadow-map',
             'origin-center transition-transform duration-150 ease-in-out',
             focusRing,
             active && 'scale-110 border-ink bg-ink text-surface',
           )}
+          style={{ paddingLeft: 8, paddingRight: 10 }}
           aria-label={`${region.nama}, skor ${region.skor}, risiko ${style.label}`}
           onClick={(e) => {
             e.stopPropagation()
