@@ -55,7 +55,7 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
           'min-w-0 flex-1 appearance-none border-0 bg-transparent text-base text-ink shadow-none',
           'outline-none ring-0 focus:border-0 focus:outline-none focus:ring-0',
           'focus-visible:outline-none focus-visible:ring-0',
-          'placeholder:text-ink-3',
+          'placeholder:text-ink-2',
           '[&::-webkit-search-cancel-button]:appearance-none',
         )}
       />

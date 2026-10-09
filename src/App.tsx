@@ -58,7 +58,7 @@ export default function App() {
             className="size-full"
             center={INDONESIA_CENTER}
             zoom={4.5}
-            attributionControl={{ compact: true }}
+            attributionControl={false}
             dragRotate={false}
             pitchWithRotate={false}
           >

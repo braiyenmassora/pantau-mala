@@ -15,8 +15,8 @@ type MapControlsProps = {
 }
 
 const btnClass = cn(
-  'flex size-10 items-center justify-center rounded-ctl border border-line bg-surface text-ink shadow-sm',
-  'transition-[background-color,color] duration-150 ease-in-out hover:bg-surface-muted',
+  'flex size-10 items-center justify-center rounded-ctl border border-line bg-surface text-ink-2 shadow-sm',
+  'transition-[background-color,color] duration-150 ease-in-out hover:bg-surface-muted hover:text-ink',
   focusRing,
 )
 

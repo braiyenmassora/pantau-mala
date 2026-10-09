@@ -68,7 +68,7 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
         <header>
           <h2 className="text-xl font-semibold text-ink">{region.nama}</h2>
           <p className="mt-1 flex items-center gap-1 text-sm text-ink-2">
-            <MapPin className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+            <MapPin className="size-4 shrink-0 text-ink-2" strokeWidth={2} aria-hidden />
             <span>
               {region.provinsi}
               {' · '}
@@ -83,7 +83,9 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
 
       <section className="space-y-2">
         <SectionLabel>Ringkasan</SectionLabel>
-        <p className="text-base leading-[22px] text-ink">{region.ringkasan}</p>
+        <p className="text-base text-ink" style={{ lineHeight: '22px' }}>
+          {region.ringkasan}
+        </p>
       </section>
 
       <section className="space-y-2">
@@ -108,37 +110,37 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
         <SectionLabel>Kondisi saat ini</SectionLabel>
         <div className="grid grid-cols-2 gap-2">
           <DataTile
-            icon={<Flame className="size-4" strokeWidth={2} />}
+            icon={<Flame className="size-4 text-ink-2" strokeWidth={2} />}
             label="Titik panas 24 jam"
             value={formatNumber(region.titik_panas_24j)}
             unit="titik"
           />
           <DataTile
-            icon={<Cloud className="size-4" strokeWidth={2} />}
+            icon={<Cloud className="size-4 text-ink-2" strokeWidth={2} />}
             label="Cuaca"
             value={`${formatNumber(region.cuaca.suhu_c)}°C`}
             unit={region.cuaca.kondisi}
           />
           <DataTile
-            icon={<Droplets className="size-4" strokeWidth={2} />}
+            icon={<Droplets className="size-4 text-ink-2" strokeWidth={2} />}
             label="Kelembapan"
             value={formatNumber(region.cuaca.kelembapan)}
             unit="%"
           />
           <DataTile
-            icon={<Wind className="size-4" strokeWidth={2} />}
+            icon={<Wind className="size-4 text-ink-2" strokeWidth={2} />}
             label="Angin"
             value={formatNumber(region.cuaca.angin_kmj)}
             unit="km/jam"
           />
           <DataTile
-            icon={<CloudRain className="size-4" strokeWidth={2} />}
+            icon={<CloudRain className="size-4 text-ink-2" strokeWidth={2} />}
             label="Tanpa hujan"
             value={formatNumber(region.cuaca.hari_tanpa_hujan)}
             unit="hari"
           />
           <DataTile
-            icon={<CloudFog className="size-4" strokeWidth={2} />}
+            icon={<CloudFog className="size-4 text-ink-2" strokeWidth={2} />}
             label="Udara (PM2.5)"
             value={AIR_LABEL[region.udara.kategori]}
             valueClassName={AIR_TEXT[region.udara.kategori]}
@@ -149,7 +151,7 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
       <section className="space-y-2">
         <div className="flex items-baseline justify-between gap-2">
           <SectionLabel>Tren titik panas 7 hari</SectionLabel>
-          <p className="font-mono text-sm text-ink-2">
+          <p className="font-mono text-sm tabular-nums text-ink-2">
             {formatNumber(trendStart)} → {formatNumber(trendEnd)} titik
           </p>
         </div>

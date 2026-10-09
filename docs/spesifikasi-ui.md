@@ -33,7 +33,9 @@ Halo: isi warna dot 10%, garis 24%, cincin pulse 35%. Ukuran halo = 48 + 3 × ju
 
 ## 2. Tipografi
 
-Font: **IBM Plex Sans** untuk semua teks, **IBM Plex Mono** untuk skor, jumlah, koordinat, FRP.
+Font: **IBM Plex Sans** 400/500/600 dan **IBM Plex Mono** 500/600 saja (`font-display: swap`; preload 400 & 600).
+Mono **hanya** untuk angka data (skor, jumlah, koordinat, FRP, km). Angka di teks Sans yang berubah (persen, jam) memakai `tabular-nums`.
+Letter-spacing hanya pada `number-lg` (−0,02em).
 Hanya 6 ukuran (12, 13, 14, 16, 20, 28). Tidak ada teks huruf kapital semua.
 
 | Token | Ukuran / line-height / bobot | Contoh |
@@ -73,6 +75,19 @@ Hanya 6 ukuran (12, 13, 14, 16, 20, 28). Tidak ada teks huruf kapital semua.
   - `lg` `0 8px 28px rgba(20,38,27,.18)` – dialog, menu dropdown
   - `map` `0 1px 3px rgba(20,38,27,.24)` – pin, cluster, titik lokasi
 - **Ikon**: lucide, garis 2 px; ukuran 14 (ⓘ, panah tab panel), 16 (inline), 18 (aksi), 20 (kontrol peta, ikon kartu).
+
+**Warna ikon**
+
+| Konteks | Warna |
+| --- | --- |
+| Ikon label, meta, ⓘ, panah, kontrol peta | `ink-2` |
+| Ikon di latar `ink` (chip/pin aktif) | `surface` |
+| Aksi & positif: logo, centang, lokasi pengguna, ikon EmptyState | `brand` |
+| Indikator risiko (dot, halo, cincin, skala) | `risk-*` sesuai kategori |
+| Teks/ikon di atas tint kategori | `risk-*-text` |
+| Ikon nonaktif | `ink-3` |
+
+Warna risiko **tidak** untuk dekorasi. Kontras teks/latar ≥ 4,5:1 (teks ≥ 18px: 3:1). `ink-3` pada `surface` ≈ 3,6:1 — **gagal** untuk teks konten; hanya untuk ikon nonaktif. Placeholder dan teks sekunder memakai `ink-2` (≥ 4,5:1).
 
 ### Density (tinggi kontrol)
 
@@ -126,9 +141,9 @@ Menu: kartu putih, radius 12, bayangan `lg`, padding 4, item 36 px radius 8; ter
 
 **Kontrol peta** – kanan bawah: lokasi saya, zoom +/−, masing-masing 40×40, radius 8, gap 8.
 
-**Keterangan peta** – dua kartu berdampingan kiri bawah (`flex` row, gap 8, `items-stretch`; wrap bila lebar &lt; 1100 dan panel terbuka). Tiap kartu: `surface`, garis `line`, radius 12, bayangan `sm`, padding 8/12, `items-center` gap 8, caption 12/16. Kotak ikon kiri lebar 36. Kartu 1: pin contoh tinggi 20 + "Skor risiko 0–100" (`ink`). Kartu 2: halo 16 tumpang tindih −6 + "Lingkaran makin besar, titik panas makin banyak" (`ink-2`, max-width 200).
+**Keterangan peta** – dua kartu berdampingan kiri bawah (`flex` row, gap 8, `items-stretch`; wrap bila lebar &lt; 1100 dan panel terbuka). Tiap kartu: `surface`, garis `line`, radius 12, bayangan `sm`, padding 8/12, `items-center` gap 8. Kotak ikon kiri lebar 36. Kartu 1: dot + judul "82" / "Skor risiko, makin tinggi makin rawan". Kartu 2: halo + judul "Lingkaran" / "Makin besar, makin banyak titik panas".
 
-**Atribusi basemap** – kontrol MapLibre **compact** (ikon ⓘ), kanan bawah tepat di atas pill "Diperbarui …" (jarak 8); gaya token: `surface`, pill, caption 12/16, `ink-2`, `shadow-sm`.
+**Atribusi basemap** – disembunyikan di peta; atribusi sumber data ada di footer panel.
 
 **Lokasi pengguna** – titik `brand` 16 px, pinggir putih 3 px, aura 40 px 16%. Radius 25 km: garis putus-putus 1 px `brand` 40%, isi 4%, label "Radius 25 km".
 
@@ -170,7 +185,6 @@ Desain dibuat untuk lebar **1440 × 900** dan tetap rapi mulai lebar **1024 px**
 | Dialog izin lokasi | `left 432, top 68` | lebar 360, radius 16, bayangan `lg` |
 | Keterangan peta | `left 432, bottom 16` | dua kartu, gap 8, padding 8/12 |
 | Kontrol peta (lokasi, zoom) | `right 16, bottom 48` | tombol 40 × 40, gap 8 |
-| Atribusi basemap (compact) | `right 16, bottom 48` (di atas pill waktu, jarak 8) | pill caption |
 | Waktu pembaruan | `right 16, bottom 16` | tinggi 24 |
 
 Saat panel **ditutup**: panel bergeser `translateX(-432px)` dan memudar, tab pindah ke `left 0`, chip dan keterangan peta pindah ke `left 16`, dan area peta melebar penuh. Semua bergerak bersamaan 300 ms.

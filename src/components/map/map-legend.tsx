@@ -25,17 +25,16 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
       <div className="flex items-center gap-2 rounded-card border border-line bg-surface px-3 py-2 shadow-sm">
         <span className={ICON_BOX} aria-hidden>
           <span
-            className="flex h-5 items-center gap-1 rounded-full border border-line bg-surface shadow-map"
-            style={{ paddingLeft: 6, paddingRight: 6 }}
-          >
-            <span
-              className="size-2 rounded-full"
-              style={{ backgroundColor: high }}
-            />
-            <span className="font-mono text-xs font-semibold">82</span>
-          </span>
+            className="size-2 rounded-full"
+            style={{ backgroundColor: high }}
+          />
         </span>
-        <span className="text-xs text-ink">{copy.legend.score}</span>
+        <span className="flex flex-col gap-1">
+          <span className="font-mono text-xs font-semibold text-ink">
+            {copy.legend.scoreTitle}
+          </span>
+          <span className="text-xs text-ink-2">{copy.legend.scoreHint}</span>
+        </span>
       </div>
 
       <div className="flex items-center gap-2 rounded-card border border-line bg-surface px-3 py-2 shadow-sm">
@@ -57,7 +56,12 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
             />
           </span>
         </span>
-        <span className="max-w-[200px] text-xs text-ink-2">{copy.legend.halo}</span>
+        <span className="flex flex-col gap-1">
+          <span className="text-xs font-semibold text-ink">
+            {copy.legend.haloTitle}
+          </span>
+          <span className="text-xs text-ink-2">{copy.legend.haloHint}</span>
+        </span>
       </div>
     </div>
   )

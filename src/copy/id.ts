@@ -84,8 +84,10 @@ export const copy = {
     nearbyNoHotspots: 'Tidak ada titik panas dalam radius 25 km',
   },
   legend: {
-    score: 'Skor risiko 0–100',
-    halo: 'Lingkaran makin besar, titik panas makin banyak',
+    scoreTitle: '82',
+    scoreHint: 'Skor risiko, makin tinggi makin rawan',
+    haloTitle: 'Lingkaran',
+    haloHint: 'Makin besar, makin banyak titik panas',
   },
   search: {
     provinces: 'Provinsi',
@@ -95,7 +97,6 @@ export const copy = {
     noHotspots: 'Tidak ada titik panas',
     kabNoHotspotsMeta: (provinsi: string) =>
       `${provinsi} · Tidak ada titik panas`,
-    dash: '–',
   },
   footer: {
     sourcePrefix: 'Sumber data:',

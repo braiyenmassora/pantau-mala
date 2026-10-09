@@ -1,3 +1,4 @@
+import { MapPin } from 'lucide-react'
 import type { RefObject } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
@@ -40,12 +41,10 @@ export function CatalogRegionRow({ kab, mapRef }: CatalogRegionRowProps) {
       }}
     >
       <span
-        className="flex size-10 shrink-0 items-center justify-center rounded-full border-[3px] border-line bg-surface"
+        className="flex size-10 shrink-0 items-center justify-center rounded-full border-[3px] border-line bg-surface text-ink-3"
         aria-hidden
       >
-        <span className="font-mono text-sm font-semibold text-ink-3">
-          {copy.search.dash}
-        </span>
+        <MapPin className="size-4" strokeWidth={2} />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-base font-semibold text-ink">

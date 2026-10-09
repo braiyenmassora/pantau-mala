@@ -30,7 +30,12 @@ export function DataTile({
         </div>
       )}
       {children ?? (
-        <p className={cn('mt-1 text-base font-semibold text-ink', valueClassName)}>
+        <p
+          className={cn(
+            'mt-1 text-base font-semibold tabular-nums text-ink',
+            valueClassName,
+          )}
+        >
           {value ?? ''}
           {unit && (
             <span className="ml-1 text-xs font-normal text-ink-2">{unit}</span>

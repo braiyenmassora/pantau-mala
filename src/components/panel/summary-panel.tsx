@@ -175,62 +175,65 @@ export function SummaryPanel({
         />
       )}
 
-      <LocationCard regions={regions} />
+      {!searching && <LocationCard regions={regions} />}
 
-      {noHotspots ? (
-        <EmptyState
-          icon={ShieldCheck}
-          title={copy.empty.noHotspots.title}
-          description={copy.empty.noHotspots.description(wilayahLabel)}
-        />
-      ) : (
-        <section className="rounded-card bg-surface-muted p-4">
-          <div className="flex items-end justify-between gap-3">
-            <div className="flex min-w-0 flex-col gap-1">
-              <div className="flex items-center gap-1">
-                <p className="text-xs font-medium text-ink-2">{copy.panel.hotspot24h}</p>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      className={cn(
-                        'text-ink-3 transition-colors duration-150 ease-in-out hover:text-ink-2',
-                        focusRing,
-                        'rounded-ctl',
-                      )}
-                      aria-label={copy.panel.hotspotHint}
-                    >
-                      <Info className="size-3.5" strokeWidth={2} />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-xs rounded-ctl">
-                    {copy.panel.hotspotTooltip}
-                  </TooltipContent>
-                </Tooltip>
-              </div>
-              <p className="font-mono text-3xl font-semibold tracking-[-0.02em] text-ink">
-                {formatNumber(summary.todayTotal)}
-              </p>
-              <ChangeLine
-                today={summary.todayTotal}
-                yesterday={summary.yesterdayTotal}
-                changePercent={summary.changePercent}
-              />
-            </div>
-            {showSpark && (
-              <div className="flex flex-col items-end gap-1">
-                <Sparkline
-                  values={summary.totalsByDay}
-                  width={128}
-                  height={40}
-                  color={RISK_CATEGORIES.sangat_tinggi.dot}
+      {!searching &&
+        (noHotspots ? (
+          <EmptyState
+            icon={ShieldCheck}
+            title={copy.empty.noHotspots.title}
+            description={copy.empty.noHotspots.description(wilayahLabel)}
+          />
+        ) : (
+          <section className="rounded-card bg-surface-muted p-4">
+            <div className="flex items-end justify-between gap-3">
+              <div className="flex min-w-0 flex-col gap-1">
+                <div className="flex items-center gap-1">
+                  <p className="text-xs font-medium text-ink-2">
+                    {copy.panel.hotspot24h}
+                  </p>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        type="button"
+                        className={cn(
+                          'text-ink-2 transition-colors duration-150 ease-in-out hover:text-ink',
+                          focusRing,
+                          'rounded-ctl',
+                        )}
+                        aria-label={copy.panel.hotspotHint}
+                      >
+                        <Info className="size-3.5" strokeWidth={2} />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-xs rounded-ctl">
+                      {copy.panel.hotspotTooltip}
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <p className="font-mono text-3xl font-semibold tracking-[-0.02em] text-ink">
+                  {formatNumber(summary.todayTotal)}
+                </p>
+                <ChangeLine
+                  today={summary.todayTotal}
+                  yesterday={summary.yesterdayTotal}
+                  changePercent={summary.changePercent}
                 />
-                <span className="text-xs text-ink-2">{copy.panel.last7days}</span>
               </div>
-            )}
-          </div>
-        </section>
-      )}
+              {showSpark && (
+                <div className="flex flex-col items-end gap-1">
+                  <Sparkline
+                    values={summary.totalsByDay}
+                    width={128}
+                    height={40}
+                    color={RISK_CATEGORIES.sangat_tinggi.dot}
+                  />
+                  <span className="text-xs text-ink-2">{copy.panel.last7days}</span>
+                </div>
+              )}
+            </div>
+          </section>
+        ))}
 
       {searching ? (
         <section className="space-y-6">
@@ -358,7 +361,7 @@ function ChangeLine({
 
   const up = changePercent > 0
   return (
-    <p className="text-sm text-risk-high-text">
+    <p className="text-sm tabular-nums text-ink">
       {copy.panel.vsYesterday(formatPercent(Math.abs(changePercent)), up)}
     </p>
   )

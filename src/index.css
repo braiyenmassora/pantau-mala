@@ -101,31 +101,8 @@
   .maplibregl-popup-tip {
     @apply hidden!;
     }
-  /* Compact basemap attribution: above "Diperbarui" (bottom 16 + 24 + gap 8). */
-  .maplibregl-ctrl-bottom-right {
-    right: 16px !important;
-    bottom: 48px !important;
-    z-index: 30;
-  }
+  /* Basemap attribution disembunyikan; sumber data ada di footer panel. */
   .maplibregl-ctrl-attrib {
-    margin: 0 !important;
-    max-width: 240px;
-    background-color: var(--color-surface) !important;
-    color: var(--color-ink-2) !important;
-    border: 1px solid var(--color-line) !important;
-    border-radius: 999px !important;
-    box-shadow: var(--shadow-sm) !important;
-    font-size: 12px !important;
-    line-height: 16px !important;
-  }
-  .maplibregl-ctrl-attrib a {
-    color: var(--color-ink-2) !important;
-  }
-  .maplibregl-ctrl-attrib a:hover {
-    color: var(--color-ink) !important;
-  }
-  .maplibregl-ctrl-attrib-button {
-    background-color: var(--color-surface) !important;
-    border-radius: 999px !important;
+    display: none !important;
   }
 }
