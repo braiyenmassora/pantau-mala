@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useEffect, useMemo, useRef } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 
 import { StatusAnnouncer } from '@/components/common/status-announcer'
 import { focusRing } from '@/components/common/focus-ring'
@@ -7,7 +7,6 @@ import { FilterBar } from '@/components/map/filter-bar'
 import { LocationPromptDialog } from '@/components/map/location-prompt-dialog'
 import { MapControls } from '@/components/map/map-controls'
 import { MapLegend } from '@/components/map/map-legend'
-import { MapShell } from '@/components/map/map-shell'
 import { UpdatedAtBadge } from '@/components/map/updated-at'
 import { PanelFooter } from '@/components/panel/panel-footer'
 import { SearchBox } from '@/components/panel/search-box'
@@ -22,13 +21,36 @@ import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
 
+const MapShell = lazy(() =>
+  import('@/components/map/map-shell').then((m) => ({ default: m.MapShell })),
+)
+
 const easePanel = 'duration-300 ease-[var(--ease-out-soft)]'
 
 export default function App() {
   const mapRef = useRef<MapRef | null>(null)
   const panelContentRef = useRef<HTMLDivElement>(null)
+  const [mapReady, setMapReady] = useState(false)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const togglePanel = useUiStore((s) => s.togglePanel)
+
+  // Defer MapLibre so panel paints first; keeps main-thread free for LCP/TBT.
+  useEffect(() => {
+    let cancelled = false
+    const boot = () => {
+      if (!cancelled) setMapReady(true)
+    }
+    const idle =
+      typeof requestIdleCallback === 'function'
+        ? requestIdleCallback(boot, { timeout: 2500 })
+        : null
+    const t = window.setTimeout(boot, 1800)
+    return () => {
+      cancelled = true
+      if (idle != null) cancelIdleCallback(idle)
+      clearTimeout(t)
+    }
+  }, [])
 
   const { data, isPending, isError, refetch } = useRegions()
   const province = useMapStore((s) => s.province)
@@ -81,8 +103,9 @@ export default function App() {
             'rounded-panel bg-surface shadow-md',
             easePanel,
             'transition-[transform,opacity]',
+            // Open without translate so fixed FilterBar inside isn't clipped by the aside.
             panelOpen
-              ? 'translate-x-0 opacity-100'
+              ? 'opacity-100'
               : 'pointer-events-none -translate-x-[432px] opacity-0',
           )}
           aria-hidden={!panelOpen}
@@ -153,11 +176,17 @@ export default function App() {
           aria-label="Peta titik panas Indonesia"
           className="absolute inset-0 z-0"
         >
-          <MapShell
-            mapRef={mapRef}
-            panelOpen={panelOpen}
-            regions={filtered}
-          />
+          {mapReady ? (
+            <Suspense fallback={<div className="size-full bg-map-bg" aria-hidden />}>
+              <MapShell
+                mapRef={mapRef}
+                panelOpen={panelOpen}
+                regions={filtered}
+              />
+            </Suspense>
+          ) : (
+            <div className="size-full bg-map-bg" aria-hidden />
+          )}
         </main>
       </div>
     </TooltipProvider>

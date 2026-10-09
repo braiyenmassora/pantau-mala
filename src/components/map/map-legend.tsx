@@ -12,6 +12,7 @@ const ICON_BOX = 'flex size-9 shrink-0 items-center justify-center'
 export function MapLegend({ panelOpen }: MapLegendProps) {
   const high = RISK_CATEGORIES.sangat_tinggi.dot
   const mid = RISK_CATEGORIES.sedang.dot
+  const low = RISK_CATEGORIES.rendah.dot
 
   return (
     <div
@@ -39,23 +40,17 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
       </div>
 
       <div className="flex items-center gap-2 rounded-card border border-line bg-surface px-3 py-2 shadow-sm">
-        <span className={ICON_BOX} aria-hidden>
-          <span className="relative size-4">
+        <span className={`${ICON_BOX} gap-1`} aria-hidden>
+          {[low, mid, high].map((dot) => (
             <span
-              className="absolute top-0 left-0 size-4 rounded-full border"
+              key={dot}
+              className="size-2.5 rounded-full border"
               style={{
-                backgroundColor: withAlpha(high, 0.1),
-                borderColor: withAlpha(high, 0.24),
+                backgroundColor: withAlpha(dot, 0.1),
+                borderColor: withAlpha(dot, 0.24),
               }}
             />
-            <span
-              className="absolute top-0 left-[-6px] size-4 rounded-full border"
-              style={{
-                backgroundColor: withAlpha(mid, 0.1),
-                borderColor: withAlpha(mid, 0.24),
-              }}
-            />
-          </span>
+          ))}
         </span>
         <span className="flex flex-col gap-1">
           <span className="text-xs font-semibold text-ink">

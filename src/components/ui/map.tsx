@@ -900,8 +900,7 @@ function MapControls({
         onLocate?.(coords);
         setWaitingForLocation(false);
       },
-      (error) => {
-        console.error("Error getting location:", error);
+      (_error) => {
         setWaitingForLocation(false);
       },
       // Without a timeout the spec default is Infinity: a dismissed permission

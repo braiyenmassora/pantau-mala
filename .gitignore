@@ -33,3 +33,7 @@ dist-ssr
 # Test / coverage
 coverage
 *.tsbuildinfo
+screenshots/
+.lh-chrome-profile/
+.lh-tmp/
+docs/lighthouse-last.json

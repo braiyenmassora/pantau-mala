@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { haloDiameter } from '@/lib/halo'
+import {
+  HALO_MIN_TITIK,
+  haloDiameter,
+  showHalo,
+  showHaloPulse,
+} from '@/lib/halo'
 
 describe('haloDiameter', () => {
   it.each([
@@ -14,5 +19,20 @@ describe('haloDiameter', () => {
 
   it('23 hotspots → ≈98 px', () => {
     expect(haloDiameter(23)).toBeCloseTo(98, 0)
+  })
+})
+
+describe('halo visibility', () => {
+  it(`floor is ${HALO_MIN_TITIK}`, () => {
+    expect(HALO_MIN_TITIK).toBe(5)
+  })
+
+  it('Rendah with 8 hotspots → circle, no pulse', () => {
+    expect(showHalo(8)).toBe(true)
+    expect(showHaloPulse('rendah')).toBe(false)
+  })
+
+  it('Sedang with 3 hotspots → no circle', () => {
+    expect(showHalo(3)).toBe(false)
   })
 })

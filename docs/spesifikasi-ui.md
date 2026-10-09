@@ -23,13 +23,15 @@ Teks sekunder di atas latar `ink` (mis. angka di chip terpilih) = `surface` 70%.
 
 **Kategori risiko** (dot / tint / text):
 
-| Kategori | Skor | Dot | Tint (latar badge) | Text di atas tint | Halo di peta |
-| --- | --- | --- | --- | --- | --- |
-| Sangat tinggi | 67–100 | `#C2410C` | `#F8D7D0` | `#8E2414` | Ya, pulse 2,6 dtk |
-| Sedang | 34–66 | `#D99A0B` | `#FBF0CF` | `#6B4E00` | Ya, pulse 3,4 dtk (lebih pelan) |
-| Rendah | 0–33 | `#2E8B57` | `#E4F0E8` | `#1E5A3A` | Tidak |
+| Kategori | Skor | Dot | Tint (latar badge) | Text di atas tint | Lingkaran | Denyut |
+| --- | --- | --- | --- | --- | --- | --- |
+| Sangat tinggi | 67–100 | `#C2410C` | `#F8D7D0` | `#8E2414` | Bila ≥ 5 titik panas | Ya, 2,6 dtk |
+| Sedang | 34–66 | `#D99A0B` | `#FBF0CF` | `#6B4E00` | Bila ≥ 5 titik panas | Ya, 3,4 dtk (lebih pelan) |
+| Rendah | 0–33 | `#2E8B57` | `#E4F0E8` | `#1E5A3A` | Bila ≥ 5 titik panas | Tidak |
 
-Halo: isi warna dot 10%, garis 24%, cincin pulse 35%. Ukuran halo = 48 + 3 × jumlah titik panas (px).
+Lingkaran (halo): tampil untuk **semua** kategori bila `titik_panas_24j >= 5` (`HALO_MIN_TITIK`). Isi warna dot 10%, garis 24% (Rendah = risk-low). Diameter = clamp(40, 40 + 12 × √titik_panas_24j, 120) piksel (luas sebanding dengan jumlah titik panas). Denyut (cincin pulse 35%) hanya Sedang dan Sangat tinggi.
+
+Lingkaran menunjukkan jumlah titik panas, bukan luas area terbakar; ukurannya dalam piksel layar dan tidak berubah saat zoom.
 
 ## 2. Tipografi
 
@@ -131,9 +133,10 @@ Menu: kartu putih, radius 12, bayangan `lg`, padding 4, item 36 px radius 8; ter
 
 **Fokus keyboard** – cincin 2 px `brand`, offset 2, hanya `focus-visible` (bukan saat klik mouse saja).
 
-**Pin peta** – pill satu baris tinggi 28, padding kiri 8 / kanan 10, gap 8.
-- Biasa (tidak aktif): latar `surface`, garis 1 px `line`, dot 8 warna kategori, skor Mono 13/18 600 `ink`, bayangan `shadow-map`. Nama wilayah **tidak** tampil.
-- Aktif (hover atau terpilih saja): bentuk tetap; latar `risk-{kategori}-tint`, garis 1,5 px `risk-{kategori}`, dot 8 `risk-{kategori}`, skor Mono 13/18 600 + nama wilayah Sans 13/18 500 keduanya `risk-{kategori}-text`, gap 8. Nama maks 180 px + ellipsis; nama lengkap di `title` & `aria-label`. Bayangan `0 2px 8px rgba(20,38,27,.24)`, scale 1,1, z-index 20, transisi 150 ms. Fokus keyboard: `ring-2 ring-brand ring-offset-2` di atas gaya aktif.
+**Pin peta** – pill satu baris tinggi 28, padding kiri 8 / kanan 10, gap 8. Isi selalu: dot 8 + skor Mono 13/18 600. Lebar pin **tidak** berubah saat aktif; nama wilayah **tidak** pernah di dalam pin.
+- Biasa (tidak aktif): latar `surface`, garis 1 px `line`, skor `ink`, bayangan `shadow-map`.
+- Aktif (hover atau terpilih): latar `risk-{kategori}-tint`, garis 1,5 px `risk-{kategori}`, skor `risk-{kategori}-text`, bayangan `0 2px 8px rgba(20,38,27,.24)`, scale 1,1, z-index 20, transisi 150 ms. Fokus keyboard: `ring-2 ring-brand ring-offset-2` di atas gaya aktif.
+- Tooltip nama: shadcn Tooltip **hanya** saat hover / fokus keyboard (bukan saat terpilih saja), di atas pin, jarak 8, latar `ink`, teks `surface` caption 12/16, radius 8, padding 4/8, delay 150 ms. `aria-label` tetap `"{nama}, skor {skor}, risiko {kategori}"`.
 
 **Cluster** – lingkaran 40 + 6 × jumlah (px), garis putih 3, warna = kategori tertinggi, cincin 6 px warna kategori 18%. Hover: latar tetap kategori tertinggi, cincin dipertegas (opacity 30%). Klik = zoom in.
 
@@ -143,7 +146,7 @@ Menu: kartu putih, radius 12, bayangan `lg`, padding 4, item 36 px radius 8; ter
 
 **Kontrol peta** – kanan bawah: lokasi saya, zoom +/−, masing-masing 40×40, radius 8, gap 8.
 
-**Keterangan peta** – dua kartu berdampingan kiri bawah (`flex` row, gap 8, `items-stretch`; wrap bila lebar &lt; 1100 dan panel terbuka). Tiap kartu: `surface`, garis `line`, radius 12, bayangan `sm`, padding 8/12, `items-center` gap 8. Kotak ikon kiri lebar 36. Kartu 1: dot + judul "82" / "Skor risiko, makin tinggi makin rawan". Kartu 2: halo + judul "Lingkaran" / "Makin besar, makin banyak titik panas".
+**Keterangan peta** – dua kartu berdampingan kiri bawah (`flex` row, gap 8, `items-stretch`; wrap bila lebar &lt; 1100 dan panel terbuka). Tiap kartu: `surface`, garis `line`, radius 12, bayangan `sm`, padding 8/12, `items-center` gap 8. Kotak ikon kiri lebar 36. Kartu 1: dot + judul "82" / "Skor risiko, makin tinggi makin rawan". Kartu 2: tiga lingkaran kecil (hijau, kuning, merah) + judul "Lingkaran" / "Makin besar, makin banyak titik panas".
 
 **Atribusi basemap** – disembunyikan di peta; atribusi sumber data ada di footer panel.
 
