@@ -5,11 +5,13 @@ import { Sparkline } from '@/components/panel/sparkline'
 import type { MapRef } from '@/components/ui/map'
 import type { Region } from '@/data/types'
 import { formatNumber } from '@/lib/format'
+import { getMapPadding } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { trendLabel } from '@/lib/trend'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
+import { useUiStore } from '@/store/ui'
 
 type RegionRowProps = {
   region: Region
@@ -21,6 +23,7 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
   const selectedCode = useMapStore((s) => s.selectedCode)
   const hover = useMapStore((s) => s.hover)
   const select = useMapStore((s) => s.select)
+  const panelOpen = useUiStore((s) => s.panelOpen)
   const reducedMotion = usePrefersReducedMotion()
   const style = RISK_CATEGORIES[region.kategori]
   const active = hoveredCode === region.kode || selectedCode === region.kode
@@ -42,6 +45,7 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
         mapRef.current?.flyTo({
           center: region.pusat,
           zoom: 8,
+          padding: getMapPadding(panelOpen),
           duration: reducedMotion ? 0 : 600,
         })
       }}

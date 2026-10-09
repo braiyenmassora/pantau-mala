@@ -8,6 +8,7 @@ import type { Region, RiskCategory } from '@/data/types'
 import { filterRegions } from '@/lib/filter-regions'
 import { formatNumber } from '@/lib/format'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 
@@ -67,6 +68,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         'transition-[left] duration-300 ease-[var(--ease-out-soft)]',
         panelOpen ? 'left-[432px]' : 'left-4',
       )}
+      {...mapOverlayGestureProps}
     >
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>

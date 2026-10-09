@@ -3,10 +3,11 @@ import type { RefObject } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
 import type { MapRef } from '@/components/ui/map'
-import { INDONESIA_CENTER, INDONESIA_ZOOM } from '@/lib/indonesia-view'
+import { fitIndonesia } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
+import { useUiStore } from '@/store/ui'
 
 type SearchBoxProps = {
   mapRef: RefObject<MapRef | null>
@@ -17,6 +18,7 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
   const selectedCode = useMapStore((s) => s.selectedCode)
   const setQuery = useMapStore((s) => s.setQuery)
   const select = useMapStore((s) => s.select)
+  const panelOpen = useUiStore((s) => s.panelOpen)
   const reducedMotion = usePrefersReducedMotion()
 
   const showClear = query.trim().length > 0 || selectedCode !== null
@@ -24,11 +26,9 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
   function clearAll() {
     setQuery('')
     select(null)
-    mapRef.current?.flyTo({
-      center: INDONESIA_CENTER,
-      zoom: INDONESIA_ZOOM,
-      duration: reducedMotion ? 0 : 600,
-    })
+    const map = mapRef.current
+    if (!map) return
+    fitIndonesia(map, panelOpen, reducedMotion ? 0 : 600)
   }
 
   return (

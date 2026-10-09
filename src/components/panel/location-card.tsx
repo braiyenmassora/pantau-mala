@@ -8,14 +8,12 @@ import type { MapRef } from '@/components/ui/map'
 import { useTitikPanas } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { formatNumber } from '@/lib/format'
-import {
-  INDONESIA_CENTER,
-  INDONESIA_ZOOM,
-} from '@/lib/indonesia-view'
+import { fitIndonesia, getMapPadding } from '@/lib/indonesia-view'
 import { computeNearby } from '@/lib/nearby'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
+import { useUiStore } from '@/store/ui'
 
 type LocationCardProps = {
   regions: Region[]
@@ -26,6 +24,7 @@ export function LocationCard({ regions, mapRef }: LocationCardProps) {
   const location = useMapStore((s) => s.location)
   const setLocation = useMapStore((s) => s.setLocation)
   const select = useMapStore((s) => s.select)
+  const panelOpen = useUiStore((s) => s.panelOpen)
   const reducedMotion = usePrefersReducedMotion()
   const { data: hotspots } = useTitikPanas()
 
@@ -121,6 +120,7 @@ export function LocationCard({ regions, mapRef }: LocationCardProps) {
               mapRef.current?.flyTo({
                 center: nearestRegion.pusat,
                 zoom: 8,
+                padding: getMapPadding(panelOpen),
                 duration: reducedMotion ? 0 : 600,
               })
             }}
@@ -132,11 +132,9 @@ export function LocationCard({ regions, mapRef }: LocationCardProps) {
             size="sm"
             onClick={() => {
               setLocation({ status: 'off' })
-              mapRef.current?.flyTo({
-                center: INDONESIA_CENTER,
-                zoom: INDONESIA_ZOOM,
-                duration: reducedMotion ? 0 : 600,
-              })
+              const map = mapRef.current
+              if (!map) return
+              fitIndonesia(map, panelOpen, reducedMotion ? 0 : 600)
             }}
           >
             Matikan lokasi

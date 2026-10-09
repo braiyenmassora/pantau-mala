@@ -1,10 +1,12 @@
 import { focusRing } from '@/components/common/focus-ring'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import type { Region } from '@/data/types'
+import { getMapPadding } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
+import { useUiStore } from '@/store/ui'
 
 type RegionPinProps = {
   region: Region
@@ -17,6 +19,7 @@ export function RegionPin({ region }: RegionPinProps) {
   const hoveredCode = useMapStore((s) => s.hoveredCode)
   const select = useMapStore((s) => s.select)
   const hover = useMapStore((s) => s.hover)
+  const panelOpen = useUiStore((s) => s.panelOpen)
 
   const style = RISK_CATEGORIES[region.kategori]
   const active = selectedCode === region.kode || hoveredCode === region.kode
@@ -78,6 +81,7 @@ export function RegionPin({ region }: RegionPinProps) {
             map?.flyTo({
               center: region.pusat,
               zoom: 8,
+              padding: getMapPadding(panelOpen),
               duration: reducedMotion ? 0 : 600,
             })
           }}

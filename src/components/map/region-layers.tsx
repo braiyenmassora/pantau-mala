@@ -5,9 +5,11 @@ import { focusRing } from '@/components/common/focus-ring'
 import { RegionPin } from '@/components/map/region-pin'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import type { Region } from '@/data/types'
+import { getMapPadding } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { highestRiskCategory, RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
 import { cn } from '@/lib/utils'
+import { useUiStore } from '@/store/ui'
 
 type PointProps = { region: Region }
 
@@ -17,6 +19,7 @@ type RegionLayersProps = {
 
 export function RegionLayers({ regions }: RegionLayersProps) {
   const { map } = useMap()
+  const panelOpen = useUiStore((s) => s.panelOpen)
   const reducedMotion = usePrefersReducedMotion()
   const [zoom, setZoom] = useState(0)
   const [bounds, setBounds] = useState<[number, number, number, number] | null>(null)
@@ -111,6 +114,7 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                     map?.easeTo({
                       center: [lon, lat],
                       zoom: nextZoom,
+                      padding: getMapPadding(panelOpen),
                       duration: reducedMotion ? 0 : 600,
                     })
                   }}

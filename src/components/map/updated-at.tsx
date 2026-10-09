@@ -6,6 +6,7 @@ import {
 import { useMeta } from '@/data/queries'
 import type { SourceStatus } from '@/data/types'
 import { formatDateTime } from '@/lib/format'
+import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 
 type MetaSources = {
@@ -43,7 +44,10 @@ export function UpdatedAtBadge() {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div className="absolute right-4 bottom-4 z-30 flex h-6 items-center gap-2 text-xs text-ink-2">
+        <div
+          className="absolute right-4 bottom-4 z-30 flex h-6 items-center gap-2 text-xs text-ink-2"
+          {...mapOverlayGestureProps}
+        >
           <span
             className={cn(
               'size-2 rounded-full',

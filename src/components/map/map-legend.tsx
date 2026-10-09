@@ -1,4 +1,5 @@
 import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
+import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 
 type MapLegendProps = {
@@ -16,6 +17,7 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
         'transition-[left] duration-300 ease-[var(--ease-out-soft)]',
         panelOpen ? 'left-[432px]' : 'left-4',
       )}
+      {...mapOverlayGestureProps}
     >
       <span className="flex items-center gap-2">
         <span className="flex h-7 items-center gap-2 rounded-full border border-line bg-surface px-2 shadow-map">

@@ -3,9 +3,12 @@ import type { RefObject } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
 import type { MapRef } from '@/components/ui/map'
+import { getMapPadding } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
+import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
+import { useUiStore } from '@/store/ui'
 
 type MapControlsProps = {
   mapRef: RefObject<MapRef | null>
@@ -20,11 +23,15 @@ const btnClass = cn(
 export function MapControls({ mapRef }: MapControlsProps) {
   const location = useMapStore((s) => s.location)
   const setLocation = useMapStore((s) => s.setLocation)
+  const panelOpen = useUiStore((s) => s.panelOpen)
   const reducedMotion = usePrefersReducedMotion()
   const active = location.status === 'active' && location.coords
 
   return (
-    <div className="absolute right-4 bottom-12 z-30 flex flex-col gap-2">
+    <div
+      className="absolute right-4 bottom-12 z-30 flex flex-col gap-2"
+      {...mapOverlayGestureProps}
+    >
       <button
         type="button"
         className={cn(btnClass, active && 'text-brand')}
@@ -35,6 +42,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
             mapRef.current?.flyTo({
               center: [location.coords!.lon, location.coords!.lat],
               zoom: 9,
+              padding: getMapPadding(panelOpen),
               duration: reducedMotion ? 0 : 600,
             })
             return

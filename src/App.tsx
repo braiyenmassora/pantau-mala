@@ -1,9 +1,10 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
 import { FilterBar } from '@/components/map/filter-bar'
 import { LocationPromptDialog } from '@/components/map/location-prompt-dialog'
+import { IndonesiaMapFraming } from '@/components/map/indonesia-map-framing'
 import { MapControls } from '@/components/map/map-controls'
 import { MapLegend } from '@/components/map/map-legend'
 import { RegionLayers } from '@/components/map/region-layers'
@@ -15,11 +16,8 @@ import { Map, type MapRef } from '@/components/ui/map'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { useRegions } from '@/data/queries'
 import { filterRegions } from '@/lib/filter-regions'
-import {
-  INDONESIA_BOUNDS,
-  INDONESIA_CENTER,
-  INDONESIA_ZOOM,
-} from '@/lib/indonesia-view'
+import { INDONESIA_CENTER, MAP_MAX_BOUNDS } from '@/lib/indonesia-view'
+import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -28,6 +26,7 @@ const easePanel = 'duration-300 ease-[var(--ease-out-soft)]'
 
 export default function App() {
   const mapRef = useRef<MapRef | null>(null)
+  const panelContentRef = useRef<HTMLDivElement>(null)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const togglePanel = useUiStore((s) => s.togglePanel)
 
@@ -35,6 +34,12 @@ export default function App() {
   const province = useMapStore((s) => s.province)
   const selectedCategories = useMapStore((s) => s.selectedCategories)
   const query = useMapStore((s) => s.query)
+  const selectedCode = useMapStore((s) => s.selectedCode)
+
+  useEffect(() => {
+    const el = panelContentRef.current
+    if (el) el.scrollTop = 0
+  }, [selectedCode, province, query])
 
   const filtered = useMemo(
     () =>
@@ -51,13 +56,13 @@ export default function App() {
             theme="light"
             className="size-full"
             center={INDONESIA_CENTER}
-            zoom={INDONESIA_ZOOM}
-            minZoom={4}
-            maxBounds={INDONESIA_BOUNDS}
+            zoom={4.5}
+            maxBounds={MAP_MAX_BOUNDS}
             attributionControl={false}
             dragRotate={false}
             pitchWithRotate={false}
           >
+            <IndonesiaMapFraming panelOpen={panelOpen} />
             <RegionLayers regions={filtered} />
             <UserLocationLayer />
           </Map>
@@ -77,12 +82,16 @@ export default function App() {
               : 'pointer-events-none -translate-x-[432px] opacity-0',
           )}
           aria-hidden={!panelOpen}
+          {...mapOverlayGestureProps}
         >
           <div className="shrink-0 px-4 pt-4">
             <SearchBox mapRef={mapRef} />
           </div>
 
-          <div className="soft-scroll soft-fade min-h-0 flex-1 space-y-6 px-4 pt-5 pb-4">
+          <div
+            ref={panelContentRef}
+            className="soft-scroll soft-fade min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-5 pb-8"
+          >
             <SummaryPanel
               regions={data ?? []}
               filtered={filtered}
@@ -111,6 +120,7 @@ export default function App() {
             focusRing,
             panelOpen ? 'left-[416px]' : 'left-0',
           )}
+          {...mapOverlayGestureProps}
         >
           {panelOpen ? (
             <ChevronLeft className="size-3.5" strokeWidth={2} aria-hidden />

@@ -4,7 +4,9 @@ import type { RefObject } from 'react'
 import { Button } from '@/components/common'
 import type { MapRef } from '@/components/ui/map'
 import { resolveUserCoords } from '@/lib/geolocation'
+import { getMapPadding } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
+import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -25,6 +27,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
     mapRef.current?.flyTo({
       center: [lon, lat],
       zoom: 9,
+      padding: getMapPadding(panelOpen),
       duration: reducedMotion ? 0 : 600,
     })
   }
@@ -38,6 +41,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
         'transition-[left] duration-300 ease-[var(--ease-out-soft)]',
         panelOpen ? 'left-[432px]' : 'left-4',
       )}
+      {...mapOverlayGestureProps}
     >
       <div className="flex gap-3">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand">

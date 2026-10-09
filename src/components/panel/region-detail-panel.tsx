@@ -10,7 +10,7 @@ import {
   MapPin,
   Wind,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 import { DataTile, SectionLabel } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
@@ -56,6 +56,7 @@ type RegionDetailPanelProps = {
 export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
   const { data: meta } = useMeta()
   const [techOpen, setTechOpen] = useState(false)
+  const techPanelRef = useRef<HTMLDivElement>(null)
   const style = RISK_CATEGORIES[region.kategori]
   const [lon, lat] = region.pusat
   const trendStart = region.tren_7h[0] ?? 0
@@ -164,7 +165,7 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
         </div>
       </section>
 
-      <section>
+      <section ref={techPanelRef}>
         <button
           type="button"
           className={cn(
@@ -173,7 +174,20 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
             focusRing,
           )}
           aria-expanded={techOpen}
-          onClick={() => setTechOpen((v) => !v)}
+          onClick={() => {
+            setTechOpen((open) => {
+              const next = !open
+              if (next) {
+                requestAnimationFrame(() => {
+                  techPanelRef.current?.scrollIntoView?.({
+                    block: 'nearest',
+                    behavior: 'smooth',
+                  })
+                })
+              }
+              return next
+            })
+          }}
         >
           Info teknis satelit
           <ChevronDown
@@ -185,8 +199,8 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
             aria-hidden
           />
         </button>
-        {techOpen && (
-          <dl className="mt-2 divide-y divide-line rounded-card border border-line bg-surface">
+        {techOpen && region.deteksi_terakhir && (
+          <div className="mt-2 divide-y divide-line rounded-card border border-line bg-surface">
             <TechRow
               label="Waktu"
               value={formatDateTime(region.deteksi_terakhir.waktu, region.zona_waktu)}
@@ -204,7 +218,7 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
               })} MW`}
               mono
             />
-          </dl>
+          </div>
         )}
       </section>
     </div>
@@ -283,15 +297,15 @@ function TechRow({
 }) {
   return (
     <div className="flex items-start justify-between gap-3 px-3 py-2">
-      <dt className="text-sm text-ink-2">{label}</dt>
-      <dd
+      <span className="text-sm text-ink-2">{label}</span>
+      <span
         className={cn(
           'text-right text-sm font-medium text-ink',
           mono && 'font-mono',
         )}
       >
         {value}
-      </dd>
+      </span>
     </div>
   )
 }
