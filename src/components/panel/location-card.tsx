@@ -1,7 +1,7 @@
-import { Crosshair, MapPinOff, ShieldCheck } from 'lucide-react'
+import { Crosshair, Flame, MapPin, MapPinOff } from 'lucide-react'
 import { useMemo } from 'react'
 
-import { Badge, Button, DataTile, EmptyState } from '@/components/common'
+import { Badge, Button, EmptyState } from '@/components/common'
 import { useTitikPanas } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
@@ -48,16 +48,6 @@ export function LocationCard({ regions }: LocationCardProps) {
   }
 
   if (location.status === 'active' && location.coords && nearby) {
-    if (nearby.hotspotCount === 0) {
-      return (
-        <EmptyState
-          icon={ShieldCheck}
-          title={copy.empty.nearbyClear.title}
-          description={copy.empty.nearbyClear.description}
-        />
-      )
-    }
-
     const userRegion = nearby.userRegionCode
       ? regions.find((r) => r.kode === nearby.userRegionCode)
       : null
@@ -66,41 +56,58 @@ export function LocationCard({ regions }: LocationCardProps) {
       : null
 
     return (
-      <section className="animate-view-in rounded-card bg-surface-muted p-4">
-        <div className="flex items-start justify-between gap-2">
+      <section className="animate-view-in flex flex-col gap-3 rounded-card bg-surface-muted p-4">
+        <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="flex items-center gap-1 text-xs font-medium text-brand">
               <span className="size-2 rounded-full bg-brand" aria-hidden />
               {copy.location.nearbyLabel}
             </p>
-            <p className="mt-1 text-base font-semibold text-ink">
+            <p className="mt-1 text-lg font-semibold text-ink">
               {userRegion?.nama ?? copy.location.yourLocation}
             </p>
           </div>
           {userRegion && <Badge variant="category" category={userRegion.kategori} />}
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <DataTile
-            label={copy.location.radius25}
-            value={formatNumber(nearby.hotspotCount)}
-            unit={copy.location.hotspotUnit}
-          />
-          {nearby.nearest && nearestRegion ? (
-            <DataTile label={copy.location.nearest}>
-              <p className="mt-1 text-base font-semibold text-ink">
-                {formatNumber(nearby.nearest.distanceKm, {
-                  minimumFractionDigits: 1,
-                  maximumFractionDigits: 1,
-                })}
+        {nearby.hotspotCount === 0 ? (
+          <p className="text-sm text-ink-2">{copy.location.nearbyNoHotspots}</p>
+        ) : (
+          <div className="grid grid-cols-2">
+            <div className="pr-3">
+              <div className="flex items-center gap-1 text-xs text-ink-2">
+                <span>{copy.location.radius25}</span>
+                <Flame className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+              </div>
+              <p className="mt-1 text-lg font-semibold text-ink">
+                {formatNumber(nearby.hotspotCount)}
                 <span className="ml-1 text-xs font-normal text-ink-2">
-                  {copy.location.km}
+                  {copy.location.hotspotUnit}
                 </span>
               </p>
-              <p className="truncate text-xs text-ink-2">{nearestRegion.nama}</p>
-            </DataTile>
-          ) : null}
-        </div>
+            </div>
+            <div className="border-l border-line pl-3">
+              <div className="flex items-center gap-1 text-xs text-ink-2">
+                <span>{copy.location.nearest}</span>
+                <MapPin className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+              </div>
+              {nearby.nearest && nearestRegion ? (
+                <>
+                  <p className="mt-1 text-lg font-semibold text-ink">
+                    {formatNumber(nearby.nearest.distanceKm, {
+                      minimumFractionDigits: 1,
+                      maximumFractionDigits: 1,
+                    })}
+                    <span className="ml-1 text-xs font-normal text-ink-2">
+                      {copy.location.km}
+                    </span>
+                  </p>
+                  <p className="truncate text-xs text-ink-2">{nearestRegion.nama}</p>
+                </>
+              ) : null}
+            </div>
+          </div>
+        )}
       </section>
     )
   }

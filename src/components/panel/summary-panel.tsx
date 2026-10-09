@@ -24,6 +24,7 @@ import {
 import { useMeta } from '@/data/queries'
 import type { Region, SourceStatus } from '@/data/types'
 import { copy } from '@/copy/id'
+import { filterRegions } from '@/lib/filter-regions'
 import { formatDateTime, formatNumber, formatPercent } from '@/lib/format'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { computeSummary } from '@/lib/summary'
@@ -65,6 +66,17 @@ export function SummaryPanel({
     [regions, selectedCode],
   )
 
+  /** Hotspot card ignores search query — province + category only. */
+  const viewRegions = useMemo(
+    () =>
+      filterRegions(regions, {
+        province,
+        selectedCategories,
+        query: '',
+      }),
+    [regions, province, selectedCategories],
+  )
+
   if (isPending) {
     return <SummarySkeleton />
   }
@@ -97,8 +109,11 @@ export function SummaryPanel({
   const filtering = selectedCategories.size > 0
   const list = searching ? filtered : filtered.slice(0, 5)
   const sectionLabel = searching ? copy.panel.searchResults : copy.panel.topRisk
-  const summary = computeSummary(filtered)
+  const summary = computeSummary(viewRegions)
   const noHotspots = summary.todayTotal === 0
+  const showSpark =
+    summary.totalsByDay.length >= 2 &&
+    !summary.totalsByDay.every((v) => v === 0)
 
   const lateSources = meta
     ? (Object.keys(meta.status) as (keyof MetaSources)[]).filter(
@@ -146,30 +161,29 @@ export function SummaryPanel({
         />
       ) : (
         <section className="rounded-card bg-surface-muted p-4">
-          <div className="flex items-center gap-1">
-            <p className="text-xs font-medium text-ink-2">{copy.panel.hotspot24h}</p>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  className={cn(
-                    'text-ink-3 transition-colors duration-150 ease-in-out hover:text-ink-2',
-                    focusRing,
-                    'rounded-ctl',
-                  )}
-                  aria-label={copy.panel.hotspotHint}
-                >
-                  <Info className="size-3.5" strokeWidth={2} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-xs rounded-ctl">
-                {copy.panel.hotspotTooltip}
-              </TooltipContent>
-            </Tooltip>
-          </div>
-
-          <div className="mt-2 flex items-end justify-between gap-3">
-            <div>
+          <div className="flex items-end justify-between gap-3">
+            <div className="flex min-w-0 flex-col gap-1">
+              <div className="flex items-center gap-1">
+                <p className="text-xs font-medium text-ink-2">{copy.panel.hotspot24h}</p>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      className={cn(
+                        'text-ink-3 transition-colors duration-150 ease-in-out hover:text-ink-2',
+                        focusRing,
+                        'rounded-ctl',
+                      )}
+                      aria-label={copy.panel.hotspotHint}
+                    >
+                      <Info className="size-3.5" strokeWidth={2} />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs rounded-ctl">
+                    {copy.panel.hotspotTooltip}
+                  </TooltipContent>
+                </Tooltip>
+              </div>
               <p className="font-mono text-3xl font-semibold tracking-[-0.02em] text-ink">
                 {formatNumber(summary.todayTotal)}
               </p>
@@ -179,15 +193,17 @@ export function SummaryPanel({
                 changePercent={summary.changePercent}
               />
             </div>
-            <div className="flex flex-col items-end gap-1">
-              <Sparkline
-                values={summary.totalsByDay}
-                width={128}
-                height={40}
-                color={RISK_CATEGORIES.sangat_tinggi.dot}
-              />
-              <span className="text-xs text-ink-2">{copy.panel.last7days}</span>
-            </div>
+            {showSpark && (
+              <div className="flex flex-col items-end gap-1">
+                <Sparkline
+                  values={summary.totalsByDay}
+                  width={128}
+                  height={40}
+                  color={RISK_CATEGORIES.sangat_tinggi.dot}
+                />
+                <span className="text-xs text-ink-2">{copy.panel.last7days}</span>
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -264,18 +280,18 @@ function ChangeLine({
   if (yesterday === 0 && today === 0) return null
 
   if (yesterday === 0 && today > 0) {
-    return <p className="mt-1 text-sm text-ink-2">{copy.panel.newToday}</p>
+    return <p className="text-sm text-ink-2">{copy.panel.newToday}</p>
   }
 
   if (changePercent === 0) {
-    return <p className="mt-1 text-sm text-ink-2">{copy.panel.sameAsYesterday}</p>
+    return <p className="text-sm text-ink-2">{copy.panel.sameAsYesterday}</p>
   }
 
   if (changePercent == null) return null
 
   const up = changePercent > 0
   return (
-    <p className="mt-1 text-sm text-risk-high-text">
+    <p className="text-sm text-risk-high-text">
       {copy.panel.vsYesterday(formatPercent(Math.abs(changePercent)), up)}
     </p>
   )

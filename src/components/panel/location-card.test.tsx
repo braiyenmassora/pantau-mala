@@ -45,7 +45,7 @@ describe('LocationCard', () => {
     })
   })
 
-  it('shows nearby clear empty when active with no hotspots', () => {
+  it('shows nearby card with inline empty when active and no hotspots', () => {
     useMapStore.setState({
       location: { status: 'active', coords: { lon: 114.2, lat: -2.9 } },
     })
@@ -60,7 +60,8 @@ describe('LocationCard', () => {
       </QueryClientProvider>,
     )
 
-    expect(screen.getByText(copy.empty.nearbyClear.title)).toBeTruthy()
+    expect(screen.getByText(copy.location.nearbyLabel)).toBeTruthy()
+    expect(screen.getByText(copy.location.nearbyNoHotspots)).toBeTruthy()
     expect(screen.queryByRole('button', { name: 'Lihat detail' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Matikan lokasi' })).toBeNull()
   })

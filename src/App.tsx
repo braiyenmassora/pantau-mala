@@ -10,6 +10,7 @@ import { MapLegend } from '@/components/map/map-legend'
 import { RegionLayers } from '@/components/map/region-layers'
 import { UpdatedAtBadge } from '@/components/map/updated-at'
 import { UserLocationLayer } from '@/components/map/user-location-layer'
+import { PanelFooter } from '@/components/panel/panel-footer'
 import { SearchBox } from '@/components/panel/search-box'
 import { SummaryPanel } from '@/components/panel/summary-panel'
 import { Map, type MapRef } from '@/components/ui/map'
@@ -57,7 +58,7 @@ export default function App() {
             className="size-full"
             center={INDONESIA_CENTER}
             zoom={4.5}
-            attributionControl={false}
+            attributionControl={{ compact: true }}
             dragRotate={false}
             pitchWithRotate={false}
           >
@@ -103,9 +104,7 @@ export default function App() {
             />
           </div>
 
-          <footer className="shrink-0 border-t border-line px-4 py-3 text-xs leading-4 text-ink-2">
-            Data: NASA FIRMS · BMKG · Open-Meteo
-          </footer>
+          <PanelFooter />
         </aside>
 
         <button

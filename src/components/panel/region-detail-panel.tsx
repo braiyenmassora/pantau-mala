@@ -1,6 +1,5 @@
 import {
   Check,
-  ChevronDown,
   Cloud,
   CloudFog,
   CloudRain,
@@ -10,7 +9,6 @@ import {
   MapPin,
   Wind,
 } from 'lucide-react'
-import { useRef, useState } from 'react'
 
 import { DataTile, SectionLabel } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
@@ -22,6 +20,7 @@ import {
 } from '@/components/ui/tooltip'
 import { useMeta } from '@/data/queries'
 import type { AirQualityCategory, ConfidenceLevel, Region } from '@/data/types'
+import { copy } from '@/copy/id'
 import {
   formatCoordinates,
   formatDateTime,
@@ -55,24 +54,27 @@ type RegionDetailPanelProps = {
 
 export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
   const { data: meta } = useMeta()
-  const [techOpen, setTechOpen] = useState(false)
-  const techPanelRef = useRef<HTMLDivElement>(null)
   const style = RISK_CATEGORIES[region.kategori]
   const [lon, lat] = region.pusat
   const trendStart = region.tren_7h[0] ?? 0
   const trendEnd = region.tren_7h[region.tren_7h.length - 1] ?? 0
   const dates = trendWindowLabels(meta?.diperbarui ?? new Date().toISOString())
+  const showSpark =
+    region.tren_7h.length >= 2 && !region.tren_7h.every((v) => v === 0)
 
   return (
     <div key={region.kode} className="animate-view-in space-y-6">
       <div className="space-y-4">
         <header>
           <h2 className="text-xl font-semibold text-ink">{region.nama}</h2>
-          <p className="mt-1 flex items-center gap-1 text-xs text-ink-2">
+          <p className="mt-1 flex items-center gap-1 text-sm text-ink-2">
             <MapPin className="size-4 shrink-0" strokeWidth={2} aria-hidden />
             <span>
-              {region.provinsi} ·{' '}
-              <span className="font-mono">{formatCoordinates(lon, lat)}</span>
+              {region.provinsi}
+              {' · '}
+              <span className="font-mono text-xs">
+                {formatCoordinates(lon, lat)}
+              </span>
             </span>
           </p>
         </header>
@@ -151,67 +153,45 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
             {formatNumber(trendStart)} → {formatNumber(trendEnd)} titik
           </p>
         </div>
-        <Sparkline
-          values={region.tren_7h}
-          width={336}
-          height={64}
-          color={style.dot}
-          showBaseline
-          className="h-16 w-full"
-        />
-        <div className="flex justify-between text-xs text-ink-2">
-          <span>{dates.start}</span>
-          <span>{dates.end}</span>
-        </div>
+        {showSpark && (
+          <>
+            <Sparkline
+              values={region.tren_7h}
+              width={336}
+              height={64}
+              color={style.dot}
+              showBaseline
+              className="h-16 w-full"
+            />
+            <div className="flex justify-between text-xs text-ink-2">
+              <span>{dates.start}</span>
+              <span>{dates.end}</span>
+            </div>
+          </>
+        )}
       </section>
 
-      <section ref={techPanelRef}>
-        <button
-          type="button"
-          className={cn(
-            'flex h-9 w-full items-center justify-between rounded-ctl text-left text-sm font-semibold text-ink-2',
-            'transition-colors duration-150 ease-in-out hover:text-ink',
-            focusRing,
-          )}
-          aria-expanded={techOpen}
-          onClick={() => {
-            setTechOpen((open) => {
-              const next = !open
-              if (next) {
-                requestAnimationFrame(() => {
-                  techPanelRef.current?.scrollIntoView?.({
-                    block: 'nearest',
-                    behavior: 'smooth',
-                  })
-                })
-              }
-              return next
-            })
-          }}
-        >
-          Info teknis satelit
-          <ChevronDown
-            className={cn(
-              'size-4 transition-transform duration-150 ease-in-out',
-              techOpen && 'rotate-180',
-            )}
-            strokeWidth={2}
-            aria-hidden
-          />
-        </button>
-        {techOpen && region.deteksi_terakhir && (
-          <div className="mt-2 divide-y divide-line rounded-card border border-line bg-surface">
+      {region.deteksi_terakhir && (
+        <section>
+          <SectionLabel className="mb-2">{copy.panel.techTitle}</SectionLabel>
+          <div className="divide-y divide-line rounded-card border border-line bg-surface">
             <TechRow
-              label="Waktu"
-              value={formatDateTime(region.deteksi_terakhir.waktu, region.zona_waktu)}
+              label={copy.panel.techTime}
+              value={formatDateTime(
+                region.deteksi_terakhir.waktu,
+                region.zona_waktu,
+              )}
             />
-            <TechRow label="Satelit" value={region.deteksi_terakhir.satelit} />
             <TechRow
-              label="Tingkat keyakinan"
+              label={copy.panel.techSatellite}
+              value={region.deteksi_terakhir.satelit}
+            />
+            <TechRow
+              label={copy.panel.techConfidence}
               value={CONFIDENCE_LABEL[region.deteksi_terakhir.keyakinan]}
             />
             <TechRow
-              label="Intensitas api (FRP)"
+              label={copy.panel.techFrp}
               value={`${formatNumber(region.deteksi_terakhir.frp_mw, {
                 minimumFractionDigits: 1,
                 maximumFractionDigits: 1,
@@ -219,8 +199,8 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
               mono
             />
           </div>
-        )}
-      </section>
+        </section>
+      )}
     </div>
   )
 }
@@ -234,7 +214,7 @@ function RiskCard({ region }: { region: Region }) {
       className="space-y-3 rounded-card p-4"
       style={{ backgroundColor: style.tint, color: style.text }}
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-end justify-between gap-3">
         <div>
           <div className="flex items-center gap-1">
             <p className="text-xs font-medium">Risiko kebakaran</p>
@@ -242,7 +222,11 @@ function RiskCard({ region }: { region: Region }) {
               <TooltipTrigger asChild>
                 <button
                   type="button"
-                  className={cn('opacity-70 transition-opacity duration-150 ease-in-out hover:opacity-100', focusRing, 'rounded-ctl')}
+                  className={cn(
+                    'opacity-70 transition-opacity duration-150 ease-in-out hover:opacity-100',
+                    focusRing,
+                    'rounded-ctl',
+                  )}
                   aria-label="Penjelasan skor risiko"
                   style={{ color: style.text }}
                 >
@@ -257,11 +241,13 @@ function RiskCard({ region }: { region: Region }) {
           </div>
           <p className="mt-1 text-xl font-semibold">{style.label}</p>
         </div>
-        <div className="text-right">
+        <div className="flex items-baseline gap-1">
           <p className="font-mono text-3xl font-semibold tracking-[-0.02em] text-ink">
             {region.skor}
           </p>
-          <p className="text-sm text-ink-2">/100</p>
+          <span className="text-sm" style={{ color: style.text }}>
+            /100
+          </span>
         </div>
       </div>
 

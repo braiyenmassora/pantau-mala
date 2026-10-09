@@ -58,6 +58,13 @@ export const copy = {
     sameAsYesterday: 'Sama dengan kemarin',
     vsYesterday: (pct: string, up: boolean) =>
       `${up ? '▲' : '▼'} ${pct} dibanding kemarin`,
+    searchPlaceholder: 'Cari kabupaten/kota',
+    searchClear: 'Hapus pencarian dan pilihan',
+    techTitle: 'Info teknis satelit',
+    techTime: 'Waktu',
+    techSatellite: 'Satelit',
+    techConfidence: 'Tingkat keyakinan',
+    techFrp: 'Intensitas api (FRP)',
   },
   location: {
     nearbyLabel: 'Di sekitar kamu',
@@ -69,6 +76,29 @@ export const copy = {
     riskTitle: 'Risiko di sekitar kamu',
     riskSubtitle: 'Titik panas dalam radius 25 km',
     useLocation: 'Gunakan lokasi',
+    nearbyNoHotspots: 'Tidak ada titik panas dalam radius 25 km',
+  },
+  legend: {
+    score: 'Skor risiko 0–100',
+    halo: 'Lingkaran makin besar, titik panas makin banyak',
+  },
+  footer: {
+    sourcePrefix: 'Sumber data:',
+    sources: [
+      {
+        name: 'NASA FIRMS',
+        href: 'https://firms.modaps.eosdis.nasa.gov',
+      },
+      {
+        name: 'BMKG',
+        href: 'https://www.bmkg.go.id',
+      },
+      {
+        name: 'Open-Meteo',
+        href: 'https://open-meteo.com',
+      },
+    ] as const,
+    openInNewTab: (name: string) => `${name}, buka di tab baru`,
   },
   source: {
     firms: 'NASA FIRMS',

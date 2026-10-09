@@ -1,11 +1,11 @@
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
 import { RegionDetailPanel } from '@/components/panel/region-detail-panel'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
 import { formatDateTime, formatNumber } from '@/lib/format'
 
@@ -51,24 +51,22 @@ function renderDetail(region: Region) {
   )
 }
 
-describe('RegionDetailPanel satellite tech', () => {
-  it('shows Waktu, Satelit, tingkat keyakinan, and FRP after open (Pulang Pisau)', async () => {
-    const user = userEvent.setup()
+describe('RegionDetailPanel', () => {
+  it('shows satellite tech open by default (Pulang Pisau)', () => {
     renderDetail(pulangPisau)
 
-    await user.click(screen.getByRole('button', { name: 'Info teknis satelit' }))
-
-    expect(screen.getByText('Waktu')).toBeTruthy()
+    expect(screen.getByText(copy.panel.techTitle)).toBeTruthy()
+    expect(screen.getByText(copy.panel.techTime)).toBeTruthy()
     expect(
       screen.getByText(
         formatDateTime(pulangPisau.deteksi_terakhir.waktu, pulangPisau.zona_waktu),
       ),
     ).toBeTruthy()
-    expect(screen.getByText('Satelit')).toBeTruthy()
+    expect(screen.getByText(copy.panel.techSatellite)).toBeTruthy()
     expect(screen.getByText('MODIS Aqua')).toBeTruthy()
-    expect(screen.getByText('Tingkat keyakinan')).toBeTruthy()
+    expect(screen.getByText(copy.panel.techConfidence)).toBeTruthy()
     expect(screen.getByText('Tinggi')).toBeTruthy()
-    expect(screen.getByText('Intensitas api (FRP)')).toBeTruthy()
+    expect(screen.getByText(copy.panel.techFrp)).toBeTruthy()
     expect(
       screen.getByText(
         `${formatNumber(pulangPisau.deteksi_terakhir.frp_mw, {
@@ -77,5 +75,13 @@ describe('RegionDetailPanel satellite tech', () => {
         })} MW`,
       ),
     ).toBeTruthy()
+    expect(screen.queryByRole('button', { name: copy.panel.techTitle })).toBeNull()
+  })
+
+  it('keeps score and /100 on one baseline row', () => {
+    const { container } = renderDetail(pulangPisau)
+    const scoreRow = container.querySelector('.flex.items-baseline.gap-1')
+    expect(scoreRow?.textContent).toContain('82')
+    expect(scoreRow?.textContent).toContain('/100')
   })
 })

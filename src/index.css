@@ -101,16 +101,31 @@
   .maplibregl-popup-tip {
     @apply hidden!;
     }
+  /* Compact basemap attribution: above "Diperbarui" (bottom 16 + 24 + gap 8). */
+  .maplibregl-ctrl-bottom-right {
+    right: 16px !important;
+    bottom: 48px !important;
+    z-index: 30;
+  }
   .maplibregl-ctrl-attrib {
-    @apply bg-background! text-muted-foreground! border-border! rounded-md! border! shadow-sm!;
-    }
+    margin: 0 !important;
+    max-width: 240px;
+    background-color: var(--color-surface) !important;
+    color: var(--color-ink-2) !important;
+    border: 1px solid var(--color-line) !important;
+    border-radius: 999px !important;
+    box-shadow: var(--shadow-sm) !important;
+    font-size: 12px !important;
+    line-height: 16px !important;
+  }
   .maplibregl-ctrl-attrib a {
-    @apply text-muted-foreground!;
-    }
+    color: var(--color-ink-2) !important;
+  }
   .maplibregl-ctrl-attrib a:hover {
-    @apply text-foreground!;
-    }
+    color: var(--color-ink) !important;
+  }
   .maplibregl-ctrl-attrib-button {
-    @apply bg-transparent!;
-    }
+    background-color: var(--color-surface) !important;
+    border-radius: 999px !important;
+  }
 }

@@ -73,6 +73,13 @@ try {
     console.log(`gap ok: ${label} = ${gap}px`)
   }
 
+  async function enableLocation() {
+    await page.getByRole('button', { name: 'Gunakan lokasi', exact: true }).click()
+    await wait(300)
+    await page.getByRole('button', { name: 'Lanjutkan', exact: true }).click()
+    await wait(1200)
+  }
+
   // 1) ringkasan awal
   await page.goto(BASE, { waitUntil: 'networkidle' })
   await wait(1500)
@@ -98,6 +105,36 @@ try {
       12,
       'kartu Gunakan lokasi lingkaran→teks',
     )
+  }
+
+  // search input: no own border/ring when focused (ring on wrapper)
+  {
+    const input = page.getByRole('textbox', { name: /Cari kabupaten/i })
+    await input.focus()
+    const focused = await input.evaluate((el) => {
+      const s = getComputedStyle(el)
+      return {
+        borderStyle: s.borderTopStyle,
+        borderWidth: s.borderTopWidth,
+        outlineStyle: s.outlineStyle,
+        outlineWidth: s.outlineWidth,
+        boxShadow: s.boxShadow,
+      }
+    })
+    const noBorder =
+      focused.borderStyle === 'none' || focused.borderWidth === '0px'
+    const noOutline =
+      focused.outlineStyle === 'none' || focused.outlineWidth === '0px'
+    if (!noBorder) {
+      throw new Error(`search input border ${focused.borderStyle}/${focused.borderWidth}`)
+    }
+    if (!noOutline) {
+      throw new Error(`search input outline ${focused.outlineStyle}/${focused.outlineWidth}`)
+    }
+    if (focused.boxShadow !== 'none') {
+      throw new Error(`search input boxShadow ${focused.boxShadow}, want none`)
+    }
+    console.log('search input: no border/outline/shadow when focused')
   }
 
   // 2) dropdown provinsi
@@ -130,9 +167,29 @@ try {
     await assertHGap(row.locator('svg').first(), row.locator('span').first(), 4, 'kepala detail MapPin→teks')
   }
 
-  // 5) scroll + info teknis
-  await page.getByRole('button', { name: 'Info teknis satelit' }).click()
-  await wait(400)
+  // skor + /100 same baseline row
+  {
+    const sameRow = await page.locator('aside').evaluate(() => {
+      const score = [...document.querySelectorAll('aside p, aside span')].find(
+        (el) => el.textContent?.trim() === '82' && el.className.includes('font-mono'),
+      )
+      const denom = [...document.querySelectorAll('aside span')].find(
+        (el) => el.textContent?.trim() === '/100',
+      )
+      if (!score || !denom) return { ok: false, reason: 'missing' }
+      const parent = score.parentElement
+      return {
+        ok: parent === denom.parentElement && parent?.className.includes('items-baseline'),
+        reason: parent?.className ?? '',
+      }
+    })
+    if (!sameRow.ok) {
+      throw new Error(`skor+/100 not same baseline row (${sameRow.reason})`)
+    }
+    console.log('risk card: skor and /100 same baseline row')
+  }
+
+  // 5) scroll + info teknis (always open)
   await page.locator('.soft-scroll').evaluate((el) => {
     el.scrollTop = el.scrollHeight
   })
@@ -143,13 +200,10 @@ try {
   await page.getByRole('button', { name: 'Hapus pencarian dan pilihan' }).click()
   await wait(500)
 
-  // 6) lokasi aktif
+  // 6) lokasi aktif (Pulang Pisau area)
   await page.goto(`${BASE}/?lokasi=-2.9,114.2`, { waitUntil: 'networkidle' })
   await wait(1000)
-  await page.getByRole('button', { name: 'Gunakan lokasi', exact: true }).click()
-  await wait(300)
-  await page.getByRole('button', { name: 'Lanjutkan', exact: true }).click()
-  await wait(1200)
+  await enableLocation()
   await shot('06-lokasi-di-sekitar-kamu')
 
   // 7) panel tertutup
@@ -175,7 +229,7 @@ try {
   await wait(500)
   await shot('09-filter-kosong')
 
-  // 10) pencarian tidak ditemukan
+  // 10) pencarian tidak ditemukan (legacy)
   await page.getByRole('button', { name: /^Sedang/ }).click()
   await wait(200)
   await page.getByRole('button', { name: 'Pilih provinsi' }).click()
@@ -192,6 +246,25 @@ try {
   await wait(1500)
   await shot('11-data-gagal')
   await page.unroute('**/wilayah.json')
+
+  // 12) ringkasan mencari "dsds"
+  await page.goto(BASE, { waitUntil: 'networkidle' })
+  await wait(1200)
+  await page.getByPlaceholder(/Cari|kabupaten/i).fill('dsds')
+  await wait(600)
+  await shot('12-cari-dsds')
+
+  // 13) lokasi Jakarta
+  await page.goto(`${BASE}/?lokasi=-6.18,106.83`, { waitUntil: 'networkidle' })
+  await wait(1000)
+  await enableLocation()
+  await shot('13-lokasi-jakarta')
+
+  // 14) lokasi tanpa titik panas
+  await page.goto(`${BASE}/?lokasi=0,120`, { waitUntil: 'networkidle' })
+  await wait(1000)
+  await enableLocation()
+  await shot('14-lokasi-tanpa-titik-panas')
 
   await browser.close()
   console.log('shots: ok')

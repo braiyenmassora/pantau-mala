@@ -91,13 +91,13 @@ Aturan tambahan: ikon di tengah kotaknya (`flex items-center justify-center`); b
 | Pola | Gaya | Dipakai di |
 | --- | --- | --- |
 | Kartu info | `surface-muted`, tanpa garis, padding 16, radius 12 | Titik panas 24 jam, "Yang bisa kamu lakukan", pesan izin ditolak, "Di sekitar kamu" (aktif) |
-| Tile data | `surface-muted`, padding 12, radius 12; ikon 16 + `label`, nilai `title` + satuan `caption` abu | "Kondisi saat ini", 2 tile "Di sekitar kamu" |
+| Tile data | `surface-muted`, padding 12, radius 12; ikon 16 + `label`, nilai `title` + satuan `caption` abu | "Kondisi saat ini". **Tile di dalam kartu muted tidak memakai latar sendiri** (statistik "Di sekitar kamu"). |
 | Kartu aksi | `surface`, garis `border`, padding 16, radius 12 | "Risiko di sekitar kamu" (pra-izin) |
 | Kartu status | Latar tint kategori, padding 16 | Kartu risiko di detail wilayah |
 
 ## 5. Komponen
 
-**Search box** – tinggi 48, pill, garis + bayangan `sm`, logo bulat 32, ikon aksi 40 (ikon cari berubah jadi × saat ada isi atau wilayah dipilih), teks 14.
+**Search box** – tinggi 48, pill, garis + bayangan `sm`, logo bulat 32, ikon aksi 40 (ikon cari berubah jadi × saat ada isi atau wilayah dipilih), teks 14. Input polos (`type="text"` + `inputMode="search"`), tanpa border/outline/ring/latar; fokus di pembungkus (`focus-within:ring-2 ring-brand ring-offset-2`). Satu tombol × milik kita saja.
 
 **Chip kategori** – tinggi 36, padding 12/14, gap 8, dot 8, teks `chip`, angka Mono.
 - Default: tidak ada chip terpilih = semua kategori tampil.
@@ -122,11 +122,13 @@ Menu: kartu putih, radius 12, bayangan `lg`, padding 4, item 36 px radius 8; ter
 
 **Baris wilayah (daftar)** – tinggi min 64, padding 12/8, cincin skor 40 (garis 3 warna kategori), nama `body-strong`, provinsi + jumlah `small`, sparkline 56×20 + label tren (↑ naik / ↓ turun / → stabil). Hover = `surface-muted`.
 
-**Kartu risiko (detail)** – latar tint kategori. Kiri: label "Risiko kebakaran" + ⓘ, kategori `title-lg`. Kanan: skor `number-lg` + "/100". Bawah: skala 6 px (hijau/kuning/merah, celah 2 px) + penanda bulat 12 px + label Rendah · Sedang · Sangat tinggi.
+**Kartu risiko (detail)** – latar tint kategori. Baris atas `items-end`: kiri label "Risiko kebakaran" + ⓘ + kategori `title-lg`; kanan skor dan "/100" **satu baris** `items-baseline` (angka `number-lg` ink + "/100" `small` warna kategori). Bawah: skala 6 px (hijau/kuning/merah, celah 2 px) + penanda bulat 12 px + label Rendah · Sedang · Sangat tinggi.
 
 **Kontrol peta** – kanan bawah: lokasi saya, zoom +/−, masing-masing 40×40, radius 8, gap 8.
 
-**Keterangan peta** – pill 36 kiri bawah: contoh pin "82" + "Skor risiko · makin tinggi makin berbahaya" | halo merah+kuning + "Ukuran halo = jumlah titik panas".
+**Keterangan peta** – kartu kiri bawah (`surface`, garis `line`, radius 12, bayangan `sm`, padding 12, max-lebar 240, kolom gap 8): baris 1 contoh pin tinggi 20 + "Skor risiko 0–100"; baris 2 halo tumpang tindih 14 + "Lingkaran makin besar, titik panas makin banyak" (`ink-2`, boleh wrap). Kolom ikon kiri lebar sama agar teks rata.
+
+**Atribusi basemap** – kontrol MapLibre **compact** (ikon ⓘ), kanan bawah tepat di atas pill "Diperbarui …" (jarak 8); gaya token: `surface`, pill, caption 12/16, `ink-2`, `shadow-sm`.
 
 **Lokasi pengguna** – titik `brand` 16 px, pinggir putih 3 px, aura 40 px 16%. Radius 25 km: garis putus-putus 1 px `brand` 40%, isi 4%, label "Radius 25 km".
 
@@ -166,8 +168,9 @@ Desain dibuat untuk lebar **1440 × 900** dan tetap rapi mulai lebar **1024 px**
 | Baris chip (dropdown + kategori) | `left 432, top 16, right 16`, boleh turun baris | tinggi 36, gap 8 |
 | Menu dropdown provinsi | 44 px di bawah chip | lebar 240 |
 | Dialog izin lokasi | `left 432, top 68` | lebar 360, radius 16, bayangan `lg` |
-| Keterangan peta | `left 432, bottom 16` | tinggi 36 |
+| Keterangan peta | `left 432, bottom 16` | kartu max 240, padding 12 |
 | Kontrol peta (lokasi, zoom) | `right 16, bottom 48` | tombol 40 × 40, gap 8 |
+| Atribusi basemap (compact) | `right 16, bottom 48` (di atas pill waktu, jarak 8) | pill caption |
 | Waktu pembaruan | `right 16, bottom 16` | tinggi 24 |
 
 Saat panel **ditutup**: panel bergeser `translateX(-432px)` dan memudar, tab pindah ke `left 0`, chip dan keterangan peta pindah ke `left 16`, dan area peta melebar penuh. Semua bergerak bersamaan 300 ms.
@@ -179,23 +182,25 @@ Panel (flex kolom, overflow hidden)
 ├─ Area search      padding 16 16 0        (tetap, tidak ikut scroll)
 ├─ Area konten      padding 20 16 16       (scroll, class soft-scroll + soft-fade)
 │   └─ tumpukan bagian, jarak antar-bagian 24
-└─ Footer atribusi  padding 12 16, garis atas `border`   (tetap)
+└─ Footer atribusi  min-tinggi 44, padding 0 16 (wrap: 12 atas-bawah), garis atas `border`, latar `surface` (tetap)
 ```
+
+**Footer atribusi** – caption 12/16: ikon Satellite 14 `ink-2` → jarak 4 → "Sumber data:" `ink-2` → tautan NASA FIRMS, BMKG, Open-Meteo (koma); tautan `ink` 500, underline hanya hover/focus-visible; `target="_blank"` + `rel="noopener noreferrer"`. Teks boleh wrap, jangan ellipsis.
 
 **Tampilan Ringkasan** (urutan dari atas):
 1. Judul `title-lg` ("Indonesia hari ini" / "<Provinsi> hari ini") + subjudul `small` + badge Beta di kanan.
-2. Kartu lokasi: *Risiko di sekitar kamu* (kartu aksi + tombol Gunakan lokasi), atau *Di sekitar kamu* (kartu info: label, nama wilayah + badge, 2 tile; tanpa tombol — lokasi tetap aktif selama sesi; detail lewat pin; crosshair peta memusatkan ulang), atau pesan izin ditolak (kartu info).
-3. Kartu info *Titik panas 24 jam*: angka `number-lg` + perubahan harian di kiri, sparkline 128×40 + "7 hari terakhir" di kanan.
-4. Bagian *Wilayah risiko tertinggi* (5 teratas) atau *Hasil pencarian*: daftar baris wilayah.
+2. Kartu lokasi: *Risiko di sekitar kamu* (kartu aksi + tombol Gunakan lokasi), atau *Di sekitar kamu* (kartu info: label, nama + badge, statistik 2 kolom tanpa latar tile, dipisah garis vertikal; tanpa tombol), atau EmptyState izin ditolak/gagal.
+3. Kartu info *Titik panas 24 jam* dihitung dari **provinsi + filter kategori saja** (bukan query pencarian): label+ⓘ → angka → perubahan; kanan sparkline 128×40 + "7 hari terakhir" (`items-end`). Total 0 → EmptyState. Sparkline disembunyikan jika semua 0 / &lt; 2 hari data.
+4. Bagian *Wilayah risiko tertinggi* (5 teratas) atau *Hasil pencarian*: daftar baris; kosong → EmptyState.
 
 **Tampilan Detail wilayah** (urutan dari atas):
-1. Kepala: nama `title-lg`, lalu baris ikon pin + provinsi · koordinat (Mono 12). Jarak ke kartu risiko 16.
-2. Kartu risiko.
+1. Kepala: nama `title-lg`, lalu baris ikon pin 16 + provinsi · koordinat (Mono 12), gap ikon→teks 4, teks `small` ink-2. Jarak ke kartu risiko 16.
+2. Kartu risiko (skor + /100 satu baris).
 3. *Ringkasan* (paragraf).
 4. *Yang bisa kamu lakukan* (kartu info berisi daftar centang).
 5. *Kondisi saat ini* (grid 2 kolom, 6 tile, gap 8).
 6. *Tren titik panas 7 hari* (judul + "8 → 23 titik" di kanan, grafik tinggi 64, label tanggal awal–akhir).
-7. *Info teknis satelit* (tombol lipat 36 px; isi: Waktu, Satelit, Tingkat keyakinan, Intensitas api (FRP) dengan garis pemisah).
+7. *Info teknis satelit* (selalu terbuka: Waktu, Satelit, Tingkat keyakinan, Intensitas api (FRP)).
 
 ### 6.4 Lapisan (z-index)
 

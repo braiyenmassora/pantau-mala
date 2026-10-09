@@ -3,6 +3,7 @@ import type { RefObject } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
 import type { MapRef } from '@/components/ui/map'
+import { copy } from '@/copy/id'
 import { fitIndonesia } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { cn } from '@/lib/utils'
@@ -35,21 +36,27 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
     <div
       className={cn(
         'flex h-12 items-center gap-2 rounded-full border border-line bg-surface pr-1 pl-2 shadow-sm',
+        'focus-within:ring-2 focus-within:ring-brand focus-within:ring-offset-2',
       )}
     >
       <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand text-surface">
         <Flame className="size-[18px]" strokeWidth={2} aria-hidden />
       </span>
       <input
-        type="search"
+        type="text"
+        inputMode="search"
+        enterKeyHint="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Cari kabupaten/kota"
-        aria-label="Cari kabupaten/kota"
+        placeholder={copy.panel.searchPlaceholder}
+        aria-label={copy.panel.searchPlaceholder}
+        style={{ outline: 'none', boxShadow: 'none', border: 'none', background: 'transparent' }}
         className={cn(
-          'min-w-0 flex-1 bg-transparent text-base text-ink outline-none placeholder:text-ink-3',
-          focusRing,
-          'rounded-ctl',
+          'min-w-0 flex-1 appearance-none border-0 bg-transparent text-base text-ink shadow-none',
+          'outline-none ring-0 focus:border-0 focus:outline-none focus:ring-0',
+          'focus-visible:outline-none focus-visible:ring-0',
+          'placeholder:text-ink-3',
+          '[&::-webkit-search-cancel-button]:appearance-none',
         )}
       />
       {showClear ? (
@@ -61,7 +68,7 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
             'hover:bg-surface-muted hover:text-ink',
             focusRing,
           )}
-          aria-label="Hapus pencarian dan pilihan"
+          aria-label={copy.panel.searchClear}
           onClick={clearAll}
         >
           <X className="size-[18px]" strokeWidth={2} aria-hidden />
