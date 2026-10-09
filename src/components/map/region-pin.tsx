@@ -79,7 +79,7 @@ export function RegionPin({ region }: RegionPinProps) {
             'relative flex h-7 items-center gap-2 rounded-full border border-line bg-surface text-ink shadow-map',
             'origin-center transition-[transform,box-shadow,background-color,border-color,color] duration-150 ease-in-out',
             focusRing,
-            active && cn('scale-110 shadow-[0_2px_8px_rgba(20,38,27,0.24)]', ACTIVE_PIN[region.kategori]),
+            active && cn('scale-110 shadow-md', ACTIVE_PIN[region.kategori]),
           )}
           style={{ paddingLeft: 8, paddingRight: 10 }}
           title={region.nama}
@@ -102,7 +102,7 @@ export function RegionPin({ region }: RegionPinProps) {
           />
           <span className="font-mono text-sm font-semibold">{region.skor}</span>
           {active && (
-            <span className="max-w-[180px] truncate text-sm font-medium" title={region.nama}>
+            <span className="max-w-44 truncate text-sm font-medium" title={region.nama}>
               {region.nama}
             </span>
           )}

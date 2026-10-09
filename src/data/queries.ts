@@ -1,31 +1,41 @@
 import { useQuery } from '@tanstack/react-query'
 
-import type {
-  DaftarWilayah,
-  HotspotFeatureCollection,
-  Meta,
-  Region,
-} from '@/data/types'
+import {
+  parseDaftarWilayah,
+  parseHotspots,
+  parseMeta,
+  parseRegions,
+} from '@/data/schema'
 
 const STALE_MS = 5 * 60 * 1000
 const REFETCH_MS = 15 * 60 * 1000
 const CATALOG_STALE_MS = 24 * 60 * 60 * 1000
 
-function dataBaseUrl() {
-  const base = import.meta.env.VITE_DATA_URL ?? '/data'
-  return base.replace(/\/$/, '')
+/** Empty VITE_DATA_URL → local mock under /data. */
+export function isDummyDataMode(): boolean {
+  const v = import.meta.env.VITE_DATA_URL
+  return v == null || String(v).trim() === ''
 }
 
-async function fetchJson<T>(path: string): Promise<T> {
+function dataBaseUrl() {
+  if (isDummyDataMode()) return '/data'
+  return String(import.meta.env.VITE_DATA_URL).replace(/\/$/, '')
+}
+
+async function fetchJson<T>(
+  path: string,
+  parse: (data: unknown) => T,
+): Promise<T> {
   const res = await fetch(`${dataBaseUrl()}${path}`)
   if (!res.ok) throw new Error(`Failed to load ${path} (${res.status})`)
-  return res.json() as Promise<T>
+  const json: unknown = await res.json()
+  return parse(json)
 }
 
 export function useRegions() {
   return useQuery({
     queryKey: ['regions'],
-    queryFn: () => fetchJson<Region[]>('/wilayah.json'),
+    queryFn: () => fetchJson('/wilayah.json', parseRegions),
     staleTime: STALE_MS,
     refetchInterval: REFETCH_MS,
   })
@@ -34,7 +44,7 @@ export function useRegions() {
 export function useHotspots() {
   return useQuery({
     queryKey: ['hotspots'],
-    queryFn: () => fetchJson<HotspotFeatureCollection>('/titik-panas-24j.geojson'),
+    queryFn: () => fetchJson('/titik-panas-24j.geojson', parseHotspots),
     staleTime: STALE_MS,
     refetchInterval: REFETCH_MS,
   })
@@ -46,7 +56,7 @@ export const useTitikPanas = useHotspots
 export function useMeta() {
   return useQuery({
     queryKey: ['meta'],
-    queryFn: () => fetchJson<Meta>('/meta.json'),
+    queryFn: () => fetchJson('/meta.json', parseMeta),
     staleTime: STALE_MS,
     refetchInterval: REFETCH_MS,
   })
@@ -55,7 +65,7 @@ export function useMeta() {
 export function useDaftarWilayah() {
   return useQuery({
     queryKey: ['daftar-wilayah'],
-    queryFn: () => fetchJson<DaftarWilayah>('/daftar-wilayah.json'),
+    queryFn: () => fetchJson('/daftar-wilayah.json', parseDaftarWilayah),
     staleTime: CATALOG_STALE_MS,
   })
 }

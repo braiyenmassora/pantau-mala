@@ -64,7 +64,12 @@ export function SummaryPanel({
   const selectedCategories = useMapStore((s) => s.selectedCategories)
   const clearCategories = useMapStore((s) => s.clearCategories)
   const { data: meta } = useMeta()
-  const { data: daftar } = useDaftarWilayah()
+  const {
+    data: daftar,
+    isPending: daftarPending,
+    isError: daftarError,
+    refetch: refetchDaftar,
+  } = useDaftarWilayah()
 
   const selected = useMemo(
     () => regions.find((r) => r.kode === selectedCode) ?? null,
@@ -144,6 +149,22 @@ export function SummaryPanel({
     searchHits &&
     searchHits.provinces.length === 0 &&
     searchHits.kabkota.length === 0
+
+  if (searching && daftarError) {
+    return (
+      <EmptyState
+        icon={CloudOff}
+        title={copy.empty.loadFail.title}
+        description={copy.empty.loadFail.description}
+        action={{
+          label: copy.empty.loadFail.action,
+          onClick: () => {
+            void refetchDaftar()
+          },
+        }}
+      />
+    )
+  }
 
   return (
     <div key={`summary-${province}-${query}`} className="animate-view-in space-y-6">
@@ -237,9 +258,9 @@ export function SummaryPanel({
 
       {searching ? (
         <section className="space-y-6">
-          {!searchHits ? (
+          {daftarPending && !searchHits ? (
             <Skeleton className="min-h-16 w-full" />
-          ) : searchEmpty ? (
+          ) : searchEmpty || !searchHits ? (
             <EmptyState
               icon={SearchX}
               title={copy.empty.searchMiss.title}

@@ -4,20 +4,17 @@ import { useEffect, useMemo, useRef } from 'react'
 import { focusRing } from '@/components/common/focus-ring'
 import { FilterBar } from '@/components/map/filter-bar'
 import { LocationPromptDialog } from '@/components/map/location-prompt-dialog'
-import { IndonesiaMapFraming } from '@/components/map/indonesia-map-framing'
 import { MapControls } from '@/components/map/map-controls'
 import { MapLegend } from '@/components/map/map-legend'
-import { RegionLayers } from '@/components/map/region-layers'
+import { MapShell } from '@/components/map/map-shell'
 import { UpdatedAtBadge } from '@/components/map/updated-at'
-import { UserLocationLayer } from '@/components/map/user-location-layer'
 import { PanelFooter } from '@/components/panel/panel-footer'
 import { SearchBox } from '@/components/panel/search-box'
 import { SummaryPanel } from '@/components/panel/summary-panel'
-import { Map, type MapRef } from '@/components/ui/map'
+import type { MapRef } from '@/components/ui/map'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { useRegions } from '@/data/queries'
 import { filterRegions } from '@/lib/filter-regions'
-import { INDONESIA_CENTER } from '@/lib/indonesia-view'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -52,20 +49,11 @@ export default function App() {
     <TooltipProvider>
       <div className="relative h-dvh w-dvw overflow-hidden bg-map-bg text-ink">
         <div className="absolute inset-0 z-0">
-          <Map
-            ref={mapRef}
-            theme="light"
-            className="size-full"
-            center={INDONESIA_CENTER}
-            zoom={4.5}
-            attributionControl={false}
-            dragRotate={false}
-            pitchWithRotate={false}
-          >
-            <IndonesiaMapFraming panelOpen={panelOpen} />
-            <RegionLayers regions={filtered} />
-            <UserLocationLayer />
-          </Map>
+          <MapShell
+            mapRef={mapRef}
+            panelOpen={panelOpen}
+            regions={filtered}
+          />
         </div>
 
         {data && <FilterBar panelOpen={panelOpen} regions={data} />}

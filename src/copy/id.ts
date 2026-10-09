@@ -46,6 +46,15 @@ export const copy = {
       description: 'Coba lagi nanti atau cari kabupaten/kota lewat kolom pencarian.',
       action: 'Coba lagi',
     },
+    mapFail: {
+      title: 'Peta belum bisa ditampilkan',
+      description:
+        'Browser tidak mendukung WebGL atau basemap gagal dimuat. Panel informasi tetap bisa dipakai.',
+      action: 'Muat ulang',
+    },
+  },
+  data: {
+    samplePill: 'Data contoh',
   },
   panel: {
     indonesiaToday: 'Indonesia hari ini',
