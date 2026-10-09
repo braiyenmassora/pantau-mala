@@ -16,7 +16,7 @@ import { Map, type MapRef } from '@/components/ui/map'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { useRegions } from '@/data/queries'
 import { filterRegions } from '@/lib/filter-regions'
-import { INDONESIA_CENTER, MAP_MAX_BOUNDS } from '@/lib/indonesia-view'
+import { INDONESIA_CENTER } from '@/lib/indonesia-view'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -57,7 +57,6 @@ export default function App() {
             className="size-full"
             center={INDONESIA_CENTER}
             zoom={4.5}
-            maxBounds={MAP_MAX_BOUNDS}
             attributionControl={false}
             dragRotate={false}
             pitchWithRotate={false}

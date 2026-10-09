@@ -1,16 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
-import { getMapPadding, INDONESIA_BOUNDS, MAP_MAX_BOUNDS } from './indonesia-view'
+import { expandBounds10, getMapPadding, INDONESIA_BOUNDS } from './indonesia-view'
 
 describe('indonesia-view', () => {
-  it('uses the specified Indonesia and max bounds', () => {
+  it('keeps Indonesia geographic bounds', () => {
     expect(INDONESIA_BOUNDS).toEqual([
       [94.9, -11.2],
       [141.1, 6.3],
-    ])
-    expect(MAP_MAX_BOUNDS).toEqual([
-      [50, -40],
-      [155, 35],
     ])
   })
 
@@ -27,5 +23,18 @@ describe('indonesia-view', () => {
       right: 72,
       bottom: 64,
     })
+  })
+
+  it('expands bounds 10% on each side', () => {
+    const bounds = {
+      getWest: () => 100,
+      getEast: () => 120,
+      getSouth: () => -10,
+      getNorth: () => 0,
+    }
+    expect(expandBounds10(bounds as never)).toEqual([
+      [98, -11],
+      [122, 1],
+    ])
   })
 })
