@@ -1,31 +1,22 @@
 import { Crosshair } from 'lucide-react'
-import type { RefObject } from 'react'
 import { useMemo } from 'react'
 
 import { Badge, Button, DataTile } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
-import type { MapRef } from '@/components/ui/map'
 import { useTitikPanas } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { formatNumber } from '@/lib/format'
-import { fitIndonesia, getMapPadding } from '@/lib/indonesia-view'
 import { computeNearby } from '@/lib/nearby'
-import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
-import { useUiStore } from '@/store/ui'
 
 type LocationCardProps = {
   regions: Region[]
-  mapRef: RefObject<MapRef | null>
 }
 
-export function LocationCard({ regions, mapRef }: LocationCardProps) {
+export function LocationCard({ regions }: LocationCardProps) {
   const location = useMapStore((s) => s.location)
   const setLocation = useMapStore((s) => s.setLocation)
-  const select = useMapStore((s) => s.select)
-  const panelOpen = useUiStore((s) => s.panelOpen)
-  const reducedMotion = usePrefersReducedMotion()
   const { data: hotspots } = useTitikPanas()
 
   const nearby = useMemo(() => {
@@ -71,7 +62,7 @@ export function LocationCard({ regions, mapRef }: LocationCardProps) {
       : null
 
     return (
-      <section className="animate-view-in rounded-card border border-line bg-surface p-4">
+      <section className="animate-view-in rounded-card bg-surface-muted p-4">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="flex items-center gap-2 text-xs font-medium text-brand">
@@ -103,42 +94,10 @@ export function LocationCard({ regions, mapRef }: LocationCardProps) {
               <p className="truncate text-xs text-ink-2">{nearestRegion.nama}</p>
             </DataTile>
           ) : (
-            <div className="rounded-card bg-surface-muted p-3">
+            <div className="rounded-card border border-line bg-surface p-3">
               <p className="text-sm text-ink-2">Tidak ada titik panas dalam 25 km</p>
             </div>
           )}
-        </div>
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Button
-            variant="primary"
-            size="sm"
-            disabled={!nearby.nearest || !nearestRegion}
-            onClick={() => {
-              if (!nearestRegion) return
-              select(nearestRegion.kode)
-              mapRef.current?.flyTo({
-                center: nearestRegion.pusat,
-                zoom: 8,
-                padding: getMapPadding(panelOpen),
-                duration: reducedMotion ? 0 : 600,
-              })
-            }}
-          >
-            Lihat detail
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => {
-              setLocation({ status: 'off' })
-              const map = mapRef.current
-              if (!map) return
-              fitIndonesia(map, panelOpen, reducedMotion ? 0 : 600)
-            }}
-          >
-            Matikan lokasi
-          </Button>
         </div>
       </section>
     )

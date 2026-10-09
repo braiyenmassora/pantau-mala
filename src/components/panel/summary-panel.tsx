@@ -86,7 +86,7 @@ export function SummaryPanel({
         </Tooltip>
       </header>
 
-      <LocationCard regions={regions} mapRef={mapRef} />
+      <LocationCard regions={regions} />
 
       <section className="rounded-card bg-surface-muted p-4">
         <div className="flex items-center gap-2">

@@ -69,9 +69,9 @@ Hanya 6 ukuran (12, 13, 14, 16, 20, 28). Tidak ada teks huruf kapital semua.
 
 | Pola | Gaya | Dipakai di |
 | --- | --- | --- |
-| Kartu info | `surface-muted`, tanpa garis, padding 16, radius 12 | Titik panas 24 jam, "Yang bisa kamu lakukan", pesan izin ditolak |
+| Kartu info | `surface-muted`, tanpa garis, padding 16, radius 12 | Titik panas 24 jam, "Yang bisa kamu lakukan", pesan izin ditolak, "Di sekitar kamu" (aktif) |
 | Tile data | `surface-muted`, padding 12, radius 12; ikon 16 + `label`, nilai `title` + satuan `caption` abu | "Kondisi saat ini", 2 tile "Di sekitar kamu" |
-| Kartu aksi | `surface`, garis `border`, padding 16, radius 12 | "Risiko di sekitar kamu", "Di sekitar kamu" |
+| Kartu aksi | `surface`, garis `border`, padding 16, radius 12 | "Risiko di sekitar kamu" (pra-izin) |
 | Kartu status | Latar tint kategori, padding 16 | Kartu risiko di detail wilayah |
 
 ## 5. Komponen
@@ -163,7 +163,7 @@ Panel (flex kolom, overflow hidden)
 
 **Tampilan Ringkasan** (urutan dari atas):
 1. Judul `title-lg` ("Indonesia hari ini" / "<Provinsi> hari ini") + subjudul `small` + badge Beta di kanan.
-2. Kartu lokasi: *Risiko di sekitar kamu* (kartu aksi), atau *Di sekitar kamu* (kartu aksi + 2 tile + 2 tombol), atau pesan izin ditolak (kartu info).
+2. Kartu lokasi: *Risiko di sekitar kamu* (kartu aksi + tombol Gunakan lokasi), atau *Di sekitar kamu* (kartu info: label, nama wilayah + badge, 2 tile; tanpa tombol — lokasi tetap aktif selama sesi; detail lewat pin; crosshair peta memusatkan ulang), atau pesan izin ditolak (kartu info).
 3. Kartu info *Titik panas 24 jam*: angka `number-lg` + perubahan harian di kiri, sparkline 128×40 + "7 hari terakhir" di kanan.
 4. Bagian *Wilayah risiko tertinggi* (5 teratas) atau *Hasil pencarian*: daftar baris wilayah.
 
