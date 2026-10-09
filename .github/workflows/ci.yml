@@ -21,6 +21,7 @@ jobs:
       - run: pnpm exec tsc -b --pretty false
       - run: pnpm test
       - run: pnpm audit:ui
+      - run: pnpm a11y:check
       - name: Reject production build without VITE_DATA_URL
         run: |
           if node scripts/check-prod-data-url.mjs; then

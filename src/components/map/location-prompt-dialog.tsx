@@ -1,8 +1,9 @@
 import { MapPin } from 'lucide-react'
-import type { RefObject } from 'react'
+import { useEffect, useRef, type RefObject } from 'react'
 
 import { Button } from '@/components/common'
 import type { MapRef } from '@/components/ui/map'
+import { restoreFocusTrigger } from '@/lib/focus-return'
 import { resolveUserCoords } from '@/lib/geolocation'
 import { getMapPadding } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
@@ -20,8 +21,21 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
   const setLocation = useMapStore((s) => s.setLocation)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const reducedMotion = usePrefersReducedMotion()
+  const dialogRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (status !== 'requesting') return
+    const root = dialogRef.current
+    const focusable = root?.querySelector<HTMLElement>('button')
+    focusable?.focus()
+  }, [status])
 
   if (status !== 'requesting') return null
+
+  const dismiss = () => {
+    setLocation({ status: 'off' })
+    restoreFocusTrigger()
+  }
 
   const flyToUser = (lon: number, lat: number) => {
     mapRef.current?.flyTo({
@@ -34,7 +48,9 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
 
   return (
     <div
+      ref={dialogRef}
       role="dialog"
+      aria-modal="true"
       aria-labelledby="location-prompt-title"
       className={cn(
         'absolute top-[68px] z-50 w-[360px] animate-view-in rounded-panel bg-surface p-4 shadow-lg',
@@ -59,7 +75,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
             radius 25 km. Lokasi kamu tidak disimpan.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <Button variant="secondary" size="sm" onClick={() => setLocation({ status: 'off' })}>
+            <Button variant="secondary" size="sm" onClick={dismiss}>
               Nanti saja
             </Button>
             <Button

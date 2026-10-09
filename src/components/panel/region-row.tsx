@@ -5,6 +5,7 @@ import { Sparkline } from '@/components/panel/sparkline'
 import type { MapRef } from '@/components/ui/map'
 import type { Region } from '@/data/types'
 import { formatNumber } from '@/lib/format'
+import { rememberFocusTrigger } from '@/lib/focus-return'
 import { getMapPadding } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
@@ -40,7 +41,8 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
       )}
       onMouseEnter={() => hover(region.kode)}
       onMouseLeave={() => hover(null)}
-      onClick={() => {
+      onClick={(e) => {
+        rememberFocusTrigger(e.currentTarget)
         select(region.kode)
         mapRef.current?.flyTo({
           center: region.pusat,

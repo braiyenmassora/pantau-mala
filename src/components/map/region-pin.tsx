@@ -1,6 +1,8 @@
 import { focusRing } from '@/components/common/focus-ring'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import type { Region, RiskCategory } from '@/data/types'
+import { rememberFocusTrigger } from '@/lib/focus-return'
+import { haloDiameter } from '@/lib/halo'
 import { getMapPadding } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
@@ -30,7 +32,7 @@ export function RegionPin({ region }: RegionPinProps) {
   const style = RISK_CATEGORIES[region.kategori]
   const active = selectedCode === region.kode || hoveredCode === region.kode
   const showHalo = region.kategori !== 'rendah'
-  const haloSize = 48 + 3 * region.titik_panas_24j
+  const haloSize = haloDiameter(region.titik_panas_24j)
   const pulseClass =
     region.kategori === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
   const label = `${region.nama}, skor ${region.skor}, risiko ${style.label}`
@@ -86,6 +88,7 @@ export function RegionPin({ region }: RegionPinProps) {
           aria-label={label}
           onClick={(e) => {
             e.stopPropagation()
+            rememberFocusTrigger(e.currentTarget)
             select(region.kode)
             map?.flyTo({
               center: region.pusat,

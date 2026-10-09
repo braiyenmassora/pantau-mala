@@ -64,7 +64,8 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
   return (
     <div
       className={cn(
-        'absolute top-4 right-4 z-30 flex flex-wrap items-center gap-2',
+        // fixed: keeps map-area placement when rendered inside the panel for tab order
+        'fixed top-4 right-4 z-30 flex flex-wrap items-center gap-2',
         'transition-[left] duration-300 ease-[var(--ease-out-soft)]',
         panelOpen ? 'left-[432px]' : 'left-4',
       )}
@@ -98,35 +99,38 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           sideOffset={8}
           className="z-[60] w-60 rounded-card border-0 bg-surface p-1 text-ink shadow-lg ring-0"
         >
-          <ul role="listbox" aria-label="Provinsi" className="max-h-72 overflow-y-auto">
+          <div
+            role="listbox"
+            aria-label="Provinsi"
+            className="max-h-72 overflow-y-auto"
+          >
             {options.map((option) => {
               const selected = province === option.value
               return (
-                <li key={option.value}>
-                  <button
-                    type="button"
-                    role="option"
-                    aria-selected={selected}
-                    className={cn(
-                      'flex h-9 w-full cursor-pointer items-center gap-2 rounded-ctl px-3 text-left text-sm',
-                      'transition-colors duration-150 ease-in-out hover:bg-surface-muted',
-                      focusRing,
-                      selected && 'bg-surface-muted font-semibold',
-                    )}
-                    onClick={() => {
-                      setProvince(option.value)
-                      setOpen(false)
-                    }}
-                  >
-                    <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                    {selected && (
-                      <Check className="size-4 shrink-0 text-brand" strokeWidth={2} aria-hidden />
-                    )}
-                  </button>
-                </li>
+                <button
+                  key={option.value}
+                  type="button"
+                  role="option"
+                  aria-selected={selected}
+                  className={cn(
+                    'flex h-9 w-full cursor-pointer items-center gap-2 rounded-ctl px-3 text-left text-sm',
+                    'transition-colors duration-150 ease-in-out hover:bg-surface-muted',
+                    focusRing,
+                    selected && 'bg-surface-muted font-semibold',
+                  )}
+                  onClick={() => {
+                    setProvince(option.value)
+                    setOpen(false)
+                  }}
+                >
+                  <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                  {selected && (
+                    <Check className="size-4 shrink-0 text-brand" strokeWidth={2} aria-hidden />
+                  )}
+                </button>
               )
             })}
-          </ul>
+          </div>
         </PopoverContent>
       </Popover>
 
@@ -152,7 +156,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
             <span
               className={cn(
                 'font-mono text-sm',
-                pressed ? 'text-surface/70' : 'text-ink-3',
+                pressed ? 'text-surface/70' : 'text-ink-2',
               )}
             >
               {formatNumber(count)}

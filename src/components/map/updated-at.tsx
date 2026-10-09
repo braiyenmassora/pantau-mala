@@ -62,8 +62,10 @@ export function UpdatedAtBadge() {
       {showStamp && label && (
         <Tooltip>
           <TooltipTrigger asChild>
-            <div
+            <button
+              type="button"
               data-testid="updated-at"
+              aria-label={label}
               className="flex h-6 items-center gap-1 text-xs text-ink-2"
             >
               <span
@@ -74,7 +76,7 @@ export function UpdatedAtBadge() {
                 aria-hidden
               />
               <span>{label}</span>
-            </div>
+            </button>
           </TooltipTrigger>
           <TooltipContent side="top" className="rounded-ctl">
             {tip}

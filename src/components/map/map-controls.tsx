@@ -3,6 +3,7 @@ import type { RefObject } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
 import type { MapRef } from '@/components/ui/map'
+import { rememberFocusTrigger } from '@/lib/focus-return'
 import { getMapPadding } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
@@ -38,7 +39,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
         className={cn(btnClass, active && 'text-brand')}
         aria-label={active ? 'Pusatkan ke lokasi kamu' : 'Gunakan lokasi kamu'}
         aria-pressed={Boolean(active)}
-        onClick={() => {
+        onClick={(e) => {
           if (active) {
             mapRef.current?.flyTo({
               center: [location.coords!.lon, location.coords!.lat],
@@ -48,6 +49,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
             })
             return
           }
+          rememberFocusTrigger(e.currentTarget)
           setLocation({ status: 'requesting' })
         }}
       >

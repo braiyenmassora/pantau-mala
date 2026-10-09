@@ -5,6 +5,7 @@ import { focusRing } from '@/components/common/focus-ring'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import type { CatalogKabKota } from '@/data/types'
+import { rememberFocusTrigger } from '@/lib/focus-return'
 import { getMapPadding } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { cn } from '@/lib/utils'
@@ -30,7 +31,8 @@ export function CatalogRegionRow({ kab, mapRef }: CatalogRegionRowProps) {
         'transition-colors duration-150 ease-in-out hover:bg-surface-muted',
         focusRing,
       )}
-      onClick={() => {
+      onClick={(e) => {
+        rememberFocusTrigger(e.currentTarget)
         select(kab.kode)
         mapRef.current?.flyTo({
           center: kab.pusat,

@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useMemo, useRef } from 'react'
 
+import { StatusAnnouncer } from '@/components/common/status-announcer'
 import { focusRing } from '@/components/common/focus-ring'
 import { FilterBar } from '@/components/map/filter-bar'
 import { LocationPromptDialog } from '@/components/map/location-prompt-dialog'
@@ -15,6 +16,7 @@ import type { MapRef } from '@/components/ui/map'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { useRegions } from '@/data/queries'
 import { filterRegions } from '@/lib/filter-regions'
+import { restoreFocusTrigger } from '@/lib/focus-return'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -33,11 +35,31 @@ export default function App() {
   const selectedCategories = useMapStore((s) => s.selectedCategories)
   const query = useMapStore((s) => s.query)
   const selectedCode = useMapStore((s) => s.selectedCode)
+  const select = useMapStore((s) => s.select)
+  const setLocation = useMapStore((s) => s.setLocation)
+  const locationStatus = useMapStore((s) => s.location.status)
 
   useEffect(() => {
     const el = panelContentRef.current
     if (el) el.scrollTop = 0
   }, [selectedCode, province, query])
+
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key !== 'Escape') return
+      if (locationStatus === 'requesting') {
+        setLocation({ status: 'off' })
+        restoreFocusTrigger()
+        return
+      }
+      if (selectedCode) {
+        select(null)
+        restoreFocusTrigger()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [locationStatus, selectedCode, select, setLocation])
 
   const filtered = useMemo(
     () =>
@@ -48,18 +70,12 @@ export default function App() {
   return (
     <TooltipProvider>
       <div className="relative h-dvh w-dvw overflow-hidden bg-map-bg text-ink">
-        <div className="absolute inset-0 z-0">
-          <MapShell
-            mapRef={mapRef}
-            panelOpen={panelOpen}
-            regions={filtered}
-          />
-        </div>
+        <StatusAnnouncer />
 
-        {data && <FilterBar panelOpen={panelOpen} regions={data} />}
-        <LocationPromptDialog mapRef={mapRef} />
-
+        {/* Tab order: search → chip → list → controls → pins (map last in DOM). */}
         <aside
+          aria-label="Panel informasi"
+          inert={!panelOpen || undefined}
           className={cn(
             'absolute top-4 bottom-4 left-4 z-40 flex w-[400px] flex-col overflow-hidden',
             'rounded-panel bg-surface shadow-md',
@@ -72,9 +88,14 @@ export default function App() {
           aria-hidden={!panelOpen}
           {...mapOverlayGestureProps}
         >
-          <div className="shrink-0 px-4 pt-4">
+          <header className="shrink-0 px-4 pt-4">
             <SearchBox mapRef={mapRef} />
-          </div>
+          </header>
+
+          {/* When panel open: chips sit between search and list in the tab order. */}
+          {panelOpen && data && (
+            <FilterBar panelOpen={panelOpen} regions={data} />
+          )}
 
           <div
             ref={panelContentRef}
@@ -118,9 +139,26 @@ export default function App() {
           )}
         </button>
 
+        {/* When panel closed: chips stay focusable outside inert aside. */}
+        {!panelOpen && data && (
+          <FilterBar panelOpen={panelOpen} regions={data} />
+        )}
+
+        <LocationPromptDialog mapRef={mapRef} />
         <MapLegend panelOpen={panelOpen} />
         <MapControls mapRef={mapRef} />
         <UpdatedAtBadge />
+
+        <main
+          aria-label="Peta titik panas Indonesia"
+          className="absolute inset-0 z-0"
+        >
+          <MapShell
+            mapRef={mapRef}
+            panelOpen={panelOpen}
+            regions={filtered}
+          />
+        </main>
       </div>
     </TooltipProvider>
   )

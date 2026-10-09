@@ -175,9 +175,13 @@ export function SummaryPanel({
         </div>
         <Tooltip>
           <TooltipTrigger asChild>
-            <span>
+            <button
+              type="button"
+              className={cn('rounded-ctl', focusRing)}
+              aria-label={copy.panel.betaTooltip}
+            >
               <Badge variant="beta" />
-            </span>
+            </button>
           </TooltipTrigger>
           <TooltipContent side="bottom" className="rounded-ctl">
             {copy.panel.betaTooltip}

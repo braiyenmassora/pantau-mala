@@ -5,6 +5,7 @@ import { Badge, Button, EmptyState } from '@/components/common'
 import { useTitikPanas } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
+import { rememberFocusTrigger } from '@/lib/focus-return'
 import { formatNumber } from '@/lib/format'
 import { computeNearby } from '@/lib/nearby'
 import { useMapStore } from '@/store/map'
@@ -130,7 +131,10 @@ export function LocationCard({ regions }: LocationCardProps) {
             variant="soft"
             size="sm"
             className="mt-3"
-            onClick={() => setLocation({ status: 'requesting' })}
+            onClick={(e) => {
+              rememberFocusTrigger(e.currentTarget)
+              setLocation({ status: 'requesting' })
+            }}
           >
             {copy.location.useLocation}
           </Button>
