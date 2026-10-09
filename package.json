@@ -10,6 +10,7 @@
     "format": "prettier --write .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "audit:ui": "node scripts/audit-ui.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
