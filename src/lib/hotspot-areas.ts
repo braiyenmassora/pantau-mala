@@ -48,6 +48,9 @@ const MIN_POINTS = 3
 const BUFFER_KM = 0.375
 const SIMPLIFY_TOLERANCE = 0.00015
 
+/** Area polygons + legend card visible; halo hidden at this zoom and above. */
+export const AREA_MIN_ZOOM = 7
+
 function majorityKode(points: HotspotFeature[]): string {
   const counts = new Map<string, number>()
   for (const p of points) {

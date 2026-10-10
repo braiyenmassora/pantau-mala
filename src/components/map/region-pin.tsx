@@ -7,6 +7,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { copy } from '@/copy/id'
 import type { Region, RiskCategory } from '@/data/types'
 import { rememberFocusTrigger } from '@/lib/focus-return'
 import {
@@ -23,6 +24,8 @@ import { useUiStore } from '@/store/ui'
 
 type RegionPinProps = {
   region: Region
+  /** When false, hide the hotspot-count halo (e.g. zoom ≥ 7 with area polygons). */
+  showHalo?: boolean
 }
 
 const ACTIVE_PIN: Record<RiskCategory, string> = {
@@ -34,7 +37,7 @@ const ACTIVE_PIN: Record<RiskCategory, string> = {
     'border-[1.5px] border-risk-low bg-risk-low-tint text-risk-low-text shadow-md',
 }
 
-export function RegionPin({ region }: RegionPinProps) {
+export function RegionPin({ region, showHalo = true }: RegionPinProps) {
   const { map } = useMap()
   const reducedMotion = usePrefersReducedMotion()
   const selectedCode = useMapStore((s) => s.selectedCode)
@@ -48,12 +51,12 @@ export function RegionPin({ region }: RegionPinProps) {
   const selected = selectedCode === region.kode
   const active = selected || hoveredCode === region.kode
   const tipOpen = tipHover || selected
-  const circle = shouldShowHalo(region.titik_panas_24j)
+  const circle = showHalo && shouldShowHalo(region.titik_panas_24j)
   const pulse = circle && showHaloPulse(region.kategori)
   const haloSize = haloDiameter(region.titik_panas_24j)
   const pulseClass =
     region.kategori === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
-  const label = `${region.nama}, skor ${region.skor}, risiko ${style.label}`
+  const label = copy.map.pinAria(region.nama, region.skor, style.label)
 
   return (
     <MapMarker

@@ -5,6 +5,7 @@ import { focusRing } from '@/components/common/focus-ring'
 import { RegionPin } from '@/components/map/region-pin'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import type { Region } from '@/data/types'
+import { AREA_MIN_ZOOM } from '@/lib/hotspot-areas'
 import { getMapPadding } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { highestRiskCategory, RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
@@ -149,7 +150,13 @@ export function RegionLayers({ regions }: RegionLayersProps) {
         }
 
         const region = (props as PointProps).region
-        return <RegionPin key={region.kode} region={region} />
+        return (
+          <RegionPin
+            key={region.kode}
+            region={region}
+            showHalo={zoom < AREA_MIN_ZOOM}
+          />
+        )
       })}
     </>
   )
