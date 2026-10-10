@@ -6,6 +6,7 @@ import type {
   Meta,
   Region,
 } from '@/data/types'
+import type { HotspotAreaFeatureCollection } from '@/lib/hotspot-areas'
 
 const timeZoneId = z.enum(['WIB', 'WITA', 'WIT'])
 const riskCategory = z.enum(['rendah', 'sedang', 'sangat_tinggi'])
@@ -123,6 +124,33 @@ export function parseMeta(data: unknown): Meta {
 
 export function parseHotspots(data: unknown): HotspotFeatureCollection {
   return hotspotsSchema.parse(data) as HotspotFeatureCollection
+}
+
+const hotspotAreaPropertiesSchema = z.object({
+  id: z.string(),
+  jumlah_titik: z.number(),
+  luas_km2: z.number(),
+  waktu_terakhir: z.string(),
+  kode_wilayah: z.string(),
+  kategori: riskCategory,
+})
+
+export const hotspotAreasSchema = z.object({
+  type: z.literal('FeatureCollection'),
+  features: z.array(
+    z.object({
+      type: z.literal('Feature'),
+      geometry: z.object({
+        type: z.enum(['Polygon', 'MultiPolygon']),
+        coordinates: z.array(z.unknown()),
+      }),
+      properties: hotspotAreaPropertiesSchema,
+    }),
+  ),
+})
+
+export function parseHotspotAreas(data: unknown): HotspotAreaFeatureCollection {
+  return hotspotAreasSchema.parse(data) as HotspotAreaFeatureCollection
 }
 
 export function parseDaftarWilayah(data: unknown): DaftarWilayah {

@@ -1,11 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
 
 import {
   parseDaftarWilayah,
+  parseHotspotAreas,
   parseHotspots,
   parseMeta,
   parseRegions,
 } from '@/data/schema'
+import { computeHotspotAreas } from '@/lib/hotspot-areas'
 
 const STALE_MS = 5 * 60 * 1000
 const REFETCH_MS = 15 * 60 * 1000
@@ -52,6 +55,60 @@ export function useHotspots() {
 
 /** Alias for hotspot GeoJSON (titik panas 24 jam). */
 export const useTitikPanas = useHotspots
+
+/**
+ * Preferred: /data/area-titik-panas.geojson from the worker.
+ * Fallback: compute from hotspots + wilayah in the browser.
+ */
+export function useHotspotAreas() {
+  const hotspots = useHotspots()
+  const regions = useRegions()
+
+  const fileQuery = useQuery({
+    queryKey: ['hotspot-areas-file'],
+    queryFn: async () => {
+      const res = await fetch(`${dataBaseUrl()}/area-titik-panas.geojson`)
+      if (res.status === 404) return null
+      if (!res.ok) throw new Error(`Failed to load area-titik-panas (${res.status})`)
+      return parseHotspotAreas(await res.json())
+    },
+    staleTime: STALE_MS,
+    refetchInterval: REFETCH_MS,
+    retry: false,
+  })
+
+  const computed = useMemo(() => {
+    if (!hotspots.data || !regions.data) return null
+    return computeHotspotAreas(hotspots.data, regions.data)
+  }, [hotspots.data, regions.data])
+
+  if (fileQuery.data) {
+    return {
+      ...fileQuery,
+      data: fileQuery.data,
+      isPending: false,
+      isError: false,
+    }
+  }
+
+  const pending =
+    fileQuery.isPending || hotspots.isPending || regions.isPending
+  const error = fileQuery.isError
+    ? false // 404 → fallback; other errors still fall back to compute
+    : hotspots.isError || regions.isError
+
+  return {
+    data: computed ?? undefined,
+    isPending: pending,
+    isError: error,
+    isFetching: hotspots.isFetching || regions.isFetching || fileQuery.isFetching,
+    refetch: () => {
+      void hotspots.refetch()
+      void regions.refetch()
+      void fileQuery.refetch()
+    },
+  }
+}
 
 export function useMeta() {
   return useQuery({
