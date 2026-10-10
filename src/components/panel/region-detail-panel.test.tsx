@@ -1,7 +1,11 @@
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { cleanup, render, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@/lib/prefers-reduced-motion', () => ({
+  usePrefersReducedMotion: () => true,
+}))
 
 import { RegionDetailPanel } from '@/components/panel/region-detail-panel'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -52,6 +56,15 @@ function renderDetail(region: Region) {
 }
 
 describe('RegionDetailPanel', () => {
+  afterEach(cleanup)
+
+  it('moves focus to the region title on open', () => {
+    renderDetail(pulangPisau)
+    expect(document.activeElement).toBe(
+      screen.getByRole('heading', { name: pulangPisau.nama }),
+    )
+  })
+
   it('shows satellite tech open by default (Pulang Pisau)', () => {
     renderDetail(pulangPisau)
 

@@ -117,14 +117,15 @@ export function SummaryPanel({
   }
 
   if (selected) {
-    return <RegionDetailPanel region={selected} />
+    return <RegionDetailPanel region={selected} mapRef={mapRef} />
   }
 
   if (selectedCatalog) {
     return <NoHotspotDetail kab={selectedCatalog} />
   }
 
-  const wilayahLabel = province === 'Semua' ? 'Indonesia' : province
+  const wilayahLabel =
+    province === 'Semua' ? copy.common.indonesia : province
   const title =
     province === 'Semua'
       ? copy.panel.indonesiaToday
@@ -262,6 +263,7 @@ export function SummaryPanel({
 
       {searching ? (
         <section className="space-y-6">
+          <SectionLabel>{copy.panel.searchResults}</SectionLabel>
           {daftarPending && !searchHits ? (
             <Skeleton className="min-h-16 w-full" />
           ) : searchEmpty || !searchHits ? (
@@ -350,7 +352,7 @@ export function SummaryPanel({
 
 function SummarySkeleton() {
   return (
-    <div className="space-y-6" aria-busy aria-label="Memuat">
+    <div className="space-y-6" aria-busy aria-label={copy.common.loading}>
       <Skeleton className="h-32 w-full" />
       <ul className="flex flex-col gap-2">
         {Array.from({ length: 5 }, (_, i) => (

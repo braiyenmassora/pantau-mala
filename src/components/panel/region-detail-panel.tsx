@@ -1,3 +1,5 @@
+import bbox from '@turf/bbox'
+import { featureCollection } from '@turf/helpers'
 import {
   Check,
   Cloud,
@@ -9,16 +11,18 @@ import {
   MapPin,
   Wind,
 } from 'lucide-react'
+import { useEffect, useMemo, useRef, type RefObject } from 'react'
 
 import { DataTile, SectionLabel } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { Sparkline } from '@/components/panel/sparkline'
+import type { MapRef } from '@/components/ui/map'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { useMeta } from '@/data/queries'
+import { useHotspotAreas, useMeta } from '@/data/queries'
 import type { AirQualityCategory, ConfidenceLevel, Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import {
@@ -27,20 +31,15 @@ import {
   formatNumber,
   trendWindowLabels,
 } from '@/lib/format'
+import { getMapPadding } from '@/lib/indonesia-view'
+import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { cn } from '@/lib/utils'
+import { useUiStore } from '@/store/ui'
 
-const CONFIDENCE_LABEL: Record<ConfidenceLevel, string> = {
-  rendah: 'Rendah',
-  sedang: 'Sedang',
-  tinggi: 'Tinggi',
-}
+const CONFIDENCE_LABEL: Record<ConfidenceLevel, string> = copy.confidence
 
-const AIR_LABEL: Record<AirQualityCategory, string> = {
-  baik: 'Baik',
-  sedang: 'Sedang',
-  tidak_sehat: 'Tidak sehat',
-}
+const AIR_LABEL: Record<AirQualityCategory, string> = copy.air
 
 const AIR_TEXT: Record<AirQualityCategory, string> = {
   baik: 'text-risk-low-text',
@@ -50,10 +49,15 @@ const AIR_TEXT: Record<AirQualityCategory, string> = {
 
 type RegionDetailPanelProps = {
   region: Region
+  mapRef?: RefObject<MapRef | null>
 }
 
-export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
+export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
   const { data: meta } = useMeta()
+  const { data: areas } = useHotspotAreas()
+  const panelOpen = useUiStore((s) => s.panelOpen)
+  const reducedMotion = usePrefersReducedMotion()
+  const titleRef = useRef<HTMLHeadingElement>(null)
   const style = RISK_CATEGORIES[region.kategori]
   const [lon, lat] = region.pusat
   const trendStart = region.tren_7h[0] ?? 0
@@ -62,11 +66,53 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
   const showSpark =
     region.tren_7h.length >= 2 && !region.tren_7h.every((v) => v === 0)
 
+  const regionAreas = useMemo(
+    () =>
+      (areas?.features ?? []).filter(
+        (f) => f.properties.kode_wilayah === region.kode,
+      ),
+    [areas, region.kode],
+  )
+  const areaCount = regionAreas.length
+  const areaKmTotal = regionAreas.reduce(
+    (sum, f) => sum + f.properties.luas_km2,
+    0,
+  )
+
+  useEffect(() => {
+    titleRef.current?.focus()
+  }, [region.kode])
+
+  function fitRegionAreas() {
+    if (!mapRef?.current || regionAreas.length === 0) return
+    const [west, south, east, north] = bbox(featureCollection(regionAreas))
+    mapRef.current.fitBounds(
+      [
+        [west, south],
+        [east, north],
+      ],
+      {
+        padding: getMapPadding(panelOpen),
+        duration: reducedMotion ? 0 : 600,
+        maxZoom: 12,
+      },
+    )
+  }
+
   return (
     <div key={region.kode} className="animate-view-in space-y-6">
       <div className="space-y-4">
         <header>
-          <h2 className="line-clamp-2 text-xl font-semibold text-ink" title={region.nama}>
+          <h2
+            ref={titleRef}
+            tabIndex={-1}
+            className={cn(
+              'line-clamp-2 text-xl font-semibold text-ink outline-none',
+              focusRing,
+              'rounded-ctl',
+            )}
+            title={region.nama}
+          >
             {region.nama}
           </h2>
           <p className="mt-1 flex items-center gap-1 text-sm text-ink-2">
@@ -84,14 +130,14 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
       </div>
 
       <section className="space-y-2">
-        <SectionLabel>Ringkasan</SectionLabel>
+        <SectionLabel>{copy.detail.summary}</SectionLabel>
         <p className="text-base text-ink" style={{ lineHeight: '22px' }}>
           {region.ringkasan}
         </p>
       </section>
 
       <section className="space-y-2">
-        <SectionLabel>Yang bisa kamu lakukan</SectionLabel>
+        <SectionLabel>{copy.detail.actions}</SectionLabel>
         <div className="rounded-card bg-surface-muted p-4">
           <ul className="space-y-2">
             {region.saran.map((item) => (
@@ -109,52 +155,80 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
       </section>
 
       <section className="space-y-2">
-        <SectionLabel>Kondisi saat ini</SectionLabel>
+        <SectionLabel>{copy.detail.conditions}</SectionLabel>
         <div className="grid grid-cols-2 gap-2">
           <DataTile
             icon={<Flame className="size-4 text-ink-2" strokeWidth={2} />}
-            label="Titik panas 24 jam"
+            label={copy.panel.hotspot24h}
             value={formatNumber(region.titik_panas_24j)}
-            unit="titik"
+            unit={copy.detail.hotspotUnit}
           />
           <DataTile
             icon={<Cloud className="size-4 text-ink-2" strokeWidth={2} />}
-            label="Cuaca"
+            label={copy.source.cuaca}
             value={`${formatNumber(region.cuaca.suhu_c)}°C`}
             unit={region.cuaca.kondisi}
           />
           <DataTile
             icon={<Droplets className="size-4 text-ink-2" strokeWidth={2} />}
-            label="Kelembapan"
+            label={copy.detail.humidity}
             value={formatNumber(region.cuaca.kelembapan)}
             unit="%"
           />
           <DataTile
             icon={<Wind className="size-4 text-ink-2" strokeWidth={2} />}
-            label="Angin"
+            label={copy.detail.wind}
             value={formatNumber(region.cuaca.angin_kmj)}
-            unit="km/jam"
+            unit={copy.detail.windUnit}
           />
           <DataTile
             icon={<CloudRain className="size-4 text-ink-2" strokeWidth={2} />}
-            label="Tanpa hujan"
+            label={copy.detail.dryDays}
             value={formatNumber(region.cuaca.hari_tanpa_hujan)}
-            unit="hari"
+            unit={copy.detail.dayUnit}
           />
           <DataTile
             icon={<CloudFog className="size-4 text-ink-2" strokeWidth={2} />}
-            label="Udara (PM2.5)"
+            label={copy.detail.airPm25}
             value={AIR_LABEL[region.udara.kategori]}
             valueClassName={AIR_TEXT[region.udara.kategori]}
           />
         </div>
       </section>
 
+      {areaCount > 0 && (
+        <section className="space-y-2">
+          <SectionLabel>{copy.area.section}</SectionLabel>
+          <button
+            type="button"
+            onClick={fitRegionAreas}
+            className={cn(
+              'w-full rounded-card bg-surface-muted px-4 py-3 text-left',
+              'transition-colors duration-150 ease-in-out hover:bg-line/60',
+              focusRing,
+            )}
+          >
+            <p className="text-base font-semibold text-ink">
+              {copy.area.summary(
+                formatNumber(areaCount),
+                formatNumber(Math.round(areaKmTotal * 10) / 10, {
+                  minimumFractionDigits: 1,
+                  maximumFractionDigits: 1,
+                }),
+              )}
+            </p>
+          </button>
+        </section>
+      )}
+
       <section className="space-y-2">
         <div className="flex items-baseline justify-between gap-2">
-          <SectionLabel>Tren titik panas 7 hari</SectionLabel>
+          <SectionLabel>{copy.detail.trend7d}</SectionLabel>
           <p className="font-mono text-sm tabular-nums text-ink-2">
-            {formatNumber(trendStart)} → {formatNumber(trendEnd)} titik
+            {copy.detail.trendRange(
+              formatNumber(trendStart),
+              formatNumber(trendEnd),
+            )}
           </p>
         </div>
         {showSpark && (
@@ -221,7 +295,7 @@ function RiskCard({ region }: { region: Region }) {
       <div className="flex items-end justify-between gap-3">
         <div>
           <div className="flex items-center gap-1">
-            <p className="text-xs font-medium">Risiko kebakaran</p>
+            <p className="text-xs font-medium">{copy.detail.riskTitle}</p>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -231,15 +305,14 @@ function RiskCard({ region }: { region: Region }) {
                     focusRing,
                     'rounded-ctl',
                   )}
-                  aria-label="Penjelasan skor risiko"
+                  aria-label={copy.detail.riskHint}
                   style={{ color: style.text }}
                 >
                   <Info className="size-3.5" strokeWidth={2} />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top" className="max-w-xs rounded-ctl">
-                Skor 0–100 dari gabungan jumlah titik panas, cuaca kering, dan tren 7 hari.
-                Makin tinggi, makin besar kemungkinan api meluas.
+                {copy.detail.riskTooltip}
               </TooltipContent>
             </Tooltip>
           </div>
@@ -266,10 +339,16 @@ function RiskCard({ region }: { region: Region }) {
           style={{ left: markerLeft, top: 2 }}
           aria-hidden
         />
-        <div className="mt-2 flex justify-between text-xs text-ink-2">
-          <span>Rendah</span>
-          <span>Sedang</span>
-          <span>Sangat tinggi</span>
+        <div className="mt-2 flex justify-between text-xs">
+          <span className="text-risk-low-text">
+            {RISK_CATEGORIES.rendah.label}
+          </span>
+          <span className="text-risk-mid-text">
+            {RISK_CATEGORIES.sedang.label}
+          </span>
+          <span className="text-risk-high-text">
+            {RISK_CATEGORIES.sangat_tinggi.label}
+          </span>
         </div>
       </div>
     </section>
