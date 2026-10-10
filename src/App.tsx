@@ -7,12 +7,14 @@ import { FilterBar } from '@/components/map/filter-bar'
 import { LocationPromptDialog } from '@/components/map/location-prompt-dialog'
 import { MapControls } from '@/components/map/map-controls'
 import { MapLegend } from '@/components/map/map-legend'
+import { MapSoftLoading } from '@/components/map/map-soft-loading'
 import { UpdatedAtBadge } from '@/components/map/updated-at'
 import { PanelFooter } from '@/components/panel/panel-footer'
 import { SearchBox } from '@/components/panel/search-box'
 import { SummaryPanel } from '@/components/panel/summary-panel'
 import type { MapRef } from '@/components/ui/map'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { copy } from '@/copy/id'
 import { useRegions } from '@/data/queries'
 import { filterRegions } from '@/lib/filter-regions'
 import { restoreFocusTrigger } from '@/lib/focus-return'
@@ -96,7 +98,7 @@ export default function App() {
 
         {/* Tab order: search → chip → list → controls → pins (map last in DOM). */}
         <aside
-          aria-label="Panel informasi"
+          aria-label={copy.app.panelAria}
           inert={!panelOpen || undefined}
           className={cn(
             'absolute top-4 bottom-4 left-4 z-40 flex w-[400px] flex-col overflow-hidden',
@@ -143,7 +145,7 @@ export default function App() {
           type="button"
           onClick={togglePanel}
           aria-expanded={panelOpen}
-          aria-label={panelOpen ? 'Sembunyikan panel' : 'Tampilkan panel'}
+          aria-label={panelOpen ? copy.app.hidePanel : copy.app.showPanel}
           className={cn(
             'absolute top-1/2 z-[41] flex h-12 w-6 -translate-y-1/2 items-center justify-center',
             'rounded-r-ctl border border-l-0 border-line bg-surface text-ink-2 shadow-sm',
@@ -168,16 +170,16 @@ export default function App() {
         )}
 
         <LocationPromptDialog mapRef={mapRef} />
-        <MapLegend panelOpen={panelOpen} />
+        <MapLegend panelOpen={panelOpen} mapRef={mapRef} />
         <MapControls mapRef={mapRef} />
         <UpdatedAtBadge />
 
         <main
-          aria-label="Peta titik panas Indonesia"
+          aria-label={copy.app.mapAria}
           className="absolute inset-0 z-0"
         >
           {mapReady ? (
-            <Suspense fallback={<div className="size-full bg-map-bg" aria-hidden />}>
+            <Suspense fallback={<MapSoftLoading />}>
               <MapShell
                 mapRef={mapRef}
                 panelOpen={panelOpen}
@@ -185,7 +187,7 @@ export default function App() {
               />
             </Suspense>
           ) : (
-            <div className="size-full bg-map-bg" aria-hidden />
+            <MapSoftLoading />
           )}
         </main>
       </div>
