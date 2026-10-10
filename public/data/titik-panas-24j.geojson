@@ -6,13 +6,115 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.1375,
-          -2.8607
+          114.2274,
+          -2.7025
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T01:47:00+07:00",
+        "waktu": "2026-10-09T11:47:00+07:00",
         "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 20.3,
+        "kode_wilayah": "62.11"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.2352,
+          -2.6993
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:32:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 15.6,
+        "kode_wilayah": "62.11"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.2299,
+          -2.7141
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:28:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 15.4,
+        "kode_wilayah": "62.11"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.2358,
+          -2.7065
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T05:09:00+07:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 2.5,
+        "kode_wilayah": "62.11"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.24,
+          -2.7073
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T06:38:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 10.2,
+        "kode_wilayah": "62.11"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.2316,
+          -2.6912
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T07:05:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 4.0,
+        "kode_wilayah": "62.11"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.2411,
+          -2.699
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T02:02:00+07:00",
+        "satelit": "VIIRS NOAA-21",
         "keyakinan": "sedang",
         "frp_mw": 4.5,
         "kode_wilayah": "62.11"
@@ -23,15 +125,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.211,
-          -2.9381
+          114.3034,
+          -2.8076
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T02:37:00+07:00",
+        "waktu": "2026-10-09T06:10:00+07:00",
         "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
-        "frp_mw": 2.5,
+        "frp_mw": 3.2,
         "kode_wilayah": "62.11"
       }
     },
@@ -40,15 +142,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.358,
-          -2.6695
+          114.2887,
+          -2.805
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T09:12:00+07:00",
-        "satelit": "MODIS Aqua",
+        "waktu": "2026-10-09T02:38:00+07:00",
+        "satelit": "MODIS Terra",
         "keyakinan": "sedang",
-        "frp_mw": 2.5,
+        "frp_mw": 4.4,
         "kode_wilayah": "62.11"
       }
     },
@@ -57,49 +159,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.0032,
-          -2.6277
+          114.3045,
+          -2.8033
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T13:55:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 11.4,
-        "kode_wilayah": "62.11"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.0511,
-          -2.798
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T13:21:00+07:00",
+        "waktu": "2026-10-09T11:44:00+07:00",
         "satelit": "VIIRS NOAA-21",
-        "keyakinan": "tinggi",
-        "frp_mw": 19.6,
-        "kode_wilayah": "62.11"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.3649,
-          -2.7355
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T13:02:00+07:00",
-        "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
-        "frp_mw": 1.9,
+        "frp_mw": 4.0,
         "kode_wilayah": "62.11"
       }
     },
@@ -108,47 +176,30 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.4427,
-          -2.8053
+          114.3154,
+          -2.7976
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T11:39:00+07:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 17.3,
-        "kode_wilayah": "62.11"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.1447,
-          -2.9181
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T04:49:00+07:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 19.9,
-        "kode_wilayah": "62.11"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.4171,
-          -2.8849
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T08:40:00+07:00",
+        "waktu": "2026-10-09T01:51:00+07:00",
         "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 2.9,
+        "kode_wilayah": "62.11"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.2941,
+          -2.8147
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T12:20:00+07:00",
+        "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
         "frp_mw": 9.4,
         "kode_wilayah": "62.11"
@@ -159,15 +210,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.0357,
-          -2.696
+          114.3052,
+          -2.8156
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T11:41:00+07:00",
+        "waktu": "2026-10-09T05:08:00+07:00",
         "satelit": "MODIS Terra",
         "keyakinan": "tinggi",
-        "frp_mw": 17.7,
+        "frp_mw": 9.9,
         "kode_wilayah": "62.11"
       }
     },
@@ -176,15 +227,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.4948,
-          -2.694
+          114.2166,
+          -2.773
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T07:17:00+07:00",
-        "satelit": "MODIS Terra",
+        "waktu": "2026-10-09T03:32:00+07:00",
+        "satelit": "VIIRS NOAA-20",
         "keyakinan": "tinggi",
-        "frp_mw": 9.5,
+        "frp_mw": 13.9,
         "kode_wilayah": "62.11"
       }
     },
@@ -193,49 +244,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.028,
-          -2.6213
+          114.212,
+          -2.7628
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T13:49:00+07:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "tinggi",
-        "frp_mw": 12.4,
-        "kode_wilayah": "62.11"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.359,
-          -2.8649
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T10:56:00+07:00",
+        "waktu": "2026-10-09T11:27:00+07:00",
         "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 12.3,
-        "kode_wilayah": "62.11"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.1324,
-          -2.8513
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T08:09:00+07:00",
-        "satelit": "MODIS Terra",
         "keyakinan": "sedang",
-        "frp_mw": 3.9,
+        "frp_mw": 4.2,
         "kode_wilayah": "62.11"
       }
     },
@@ -244,32 +261,49 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.2918,
-          -2.8052
+          114.2045,
+          -2.7831
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T07:57:00+07:00",
+        "waktu": "2026-10-09T09:55:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 21.1,
+        "kode_wilayah": "62.11"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.2186,
+          -2.7666
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T11:21:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "sedang",
+        "frp_mw": 2.0,
+        "kode_wilayah": "62.11"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.205,
+          -2.7659
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T12:16:00+07:00",
         "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 3.8,
-        "kode_wilayah": "62.11"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.0548,
-          -2.699
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T01:55:00+07:00",
-        "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
-        "frp_mw": 15.5,
+        "frp_mw": 21.6,
         "kode_wilayah": "62.11"
       }
     },
@@ -278,64 +312,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.2646,
-          -2.5616
+          114.2047,
+          -2.7685
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T10:29:00+07:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 16.9,
-        "kode_wilayah": "62.11"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.1334,
-          -2.6936
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T09:48:00+07:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 10.7,
-        "kode_wilayah": "62.11"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.4379,
-          -2.8446
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T01:46:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 18.2,
-        "kode_wilayah": "62.11"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.3127,
-          -2.6133
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:55:00+07:00",
-        "satelit": "MODIS Terra",
+        "waktu": "2026-10-09T11:32:00+07:00",
+        "satelit": "VIIRS SNPP",
         "keyakinan": "tinggi",
         "frp_mw": 15.7,
         "kode_wilayah": "62.11"
@@ -346,15 +329,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.2697,
-          -2.6385
+          114.2287,
+          -2.6792
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T13:10:00+07:00",
-        "satelit": "MODIS Terra",
+        "waktu": "2026-10-09T09:58:00+07:00",
+        "satelit": "VIIRS NOAA-21",
         "keyakinan": "tinggi",
-        "frp_mw": 20.7,
+        "frp_mw": 6.0,
         "kode_wilayah": "62.11"
       }
     },
@@ -363,13 +346,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.0559,
-          -2.8048
+          114.2994,
+          -2.7924
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T08:01:00+07:00",
-        "satelit": "VIIRS NOAA-21",
+        "waktu": "2026-10-09T13:19:00+07:00",
+        "satelit": "VIIRS SNPP",
         "keyakinan": "tinggi",
         "frp_mw": 9.8,
         "kode_wilayah": "62.11"
@@ -380,49 +363,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.0428,
-          -2.7556
+          114.3604,
+          -2.5654
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T10:05:00+07:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 21.6,
-        "kode_wilayah": "62.11"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.4095,
-          -2.9358
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T08:35:00+07:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "rendah",
-        "frp_mw": 1.3,
-        "kode_wilayah": "62.11"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.4735,
-          -2.7884
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T04:59:00+07:00",
+        "waktu": "2026-10-09T08:52:00+07:00",
         "satelit": "MODIS Terra",
-        "keyakinan": "rendah",
-        "frp_mw": 2.1,
+        "keyakinan": "sedang",
+        "frp_mw": 1.8,
         "kode_wilayah": "62.11"
       }
     },
@@ -431,16 +380,33 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          105.5495,
-          -3.3313
+          114.2605,
+          -2.8172
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T12:19:00+07:00",
+        "waktu": "2026-10-09T09:10:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 2.7,
+        "kode_wilayah": "62.11"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.1375,
+          -2.5153
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T13:46:00+07:00",
         "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 3.5,
-        "kode_wilayah": "16.02"
+        "keyakinan": "rendah",
+        "frp_mw": 2.0,
+        "kode_wilayah": "62.11"
       }
     },
     {
@@ -448,200 +414,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          105.4623,
-          -3.4648
+          105.6093,
+          -3.3792
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T02:15:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 14.9,
-        "kode_wilayah": "16.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          105.7039,
-          -3.5765
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T01:04:00+07:00",
+        "waktu": "2026-10-09T04:14:00+07:00",
         "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 20.5,
-        "kode_wilayah": "16.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          105.469,
-          -3.3324
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:32:00+07:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 3.9,
-        "kode_wilayah": "16.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          105.5863,
-          -3.2862
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T10:36:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 2.4,
-        "kode_wilayah": "16.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          105.5618,
-          -3.4132
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T07:22:00+07:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 16.8,
-        "kode_wilayah": "16.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          105.5513,
-          -3.4643
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:03:00+07:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "sedang",
-        "frp_mw": 2.6,
-        "kode_wilayah": "16.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          105.5609,
-          -3.4886
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T08:08:00+07:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 20.0,
-        "kode_wilayah": "16.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          105.778,
-          -3.5608
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T13:55:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 19.4,
-        "kode_wilayah": "16.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          105.4682,
-          -3.4374
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T13:54:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 2.5,
-        "kode_wilayah": "16.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          105.5395,
-          -3.2059
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T01:10:00+07:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "tinggi",
-        "frp_mw": 20.8,
-        "kode_wilayah": "16.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          105.6983,
-          -3.3078
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:27:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 4.5,
-        "kode_wilayah": "16.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          105.4589,
-          -3.5766
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T04:18:00+07:00",
-        "satelit": "MODIS Terra",
         "keyakinan": "tinggi",
         "frp_mw": 7.0,
         "kode_wilayah": "16.02"
@@ -652,32 +431,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          105.5884,
-          -3.2322
+          105.6105,
+          -3.3623
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T01:37:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 8.5,
-        "kode_wilayah": "16.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          105.4429,
-          -3.362
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:54:00+07:00",
+        "waktu": "2026-10-09T02:45:00+07:00",
         "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 3.3,
+        "keyakinan": "tinggi",
+        "frp_mw": 16.1,
         "kode_wilayah": "16.02"
       }
     },
@@ -686,13 +448,47 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          105.6395,
-          -3.5841
+          105.6072,
+          -3.365
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T10:15:00+07:00",
-        "satelit": "VIIRS NOAA-20",
+        "waktu": "2026-10-09T09:15:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "tinggi",
+        "frp_mw": 10.5,
+        "kode_wilayah": "16.02"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6025,
+          -3.3592
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T10:36:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "tinggi",
+        "frp_mw": 13.6,
+        "kode_wilayah": "16.02"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6076,
+          -3.3589
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T07:22:00+07:00",
+        "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
         "frp_mw": 3.4,
         "kode_wilayah": "16.02"
@@ -703,13 +499,149 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          105.8174,
-          -3.5183
+          105.6673,
+          -3.4018
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T09:20:00+07:00",
+        "waktu": "2026-10-09T12:21:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 5.1,
+        "kode_wilayah": "16.02"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6644,
+          -3.4188
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T07:11:00+07:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 10.5,
+        "kode_wilayah": "16.02"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.659,
+          -3.4121
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:06:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 1.7,
+        "kode_wilayah": "16.02"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6548,
+          -3.3978
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:10:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "sedang",
+        "frp_mw": 3.3,
+        "kode_wilayah": "16.02"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.6658,
+          -3.4052
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T07:00:00+07:00",
         "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 21.8,
+        "kode_wilayah": "16.02"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.5226,
+          -3.4232
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T13:35:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "tinggi",
+        "frp_mw": 16.6,
+        "kode_wilayah": "16.02"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.5344,
+          -3.4145
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T10:47:00+07:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 14.7,
+        "kode_wilayah": "16.02"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.5356,
+          -3.4332
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:10:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 6.9,
+        "kode_wilayah": "16.02"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          105.5327,
+          -3.4261
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T11:55:00+07:00",
+        "satelit": "VIIRS NOAA-20",
         "keyakinan": "tinggi",
         "frp_mw": 9.8,
         "kode_wilayah": "16.02"
@@ -720,15 +652,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          105.3785,
-          -3.3272
+          105.5298,
+          -3.5295
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T08:20:00+07:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "rendah",
-        "frp_mw": 0.8,
+        "waktu": "2026-10-09T01:39:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 1.9,
         "kode_wilayah": "16.02"
       }
     },
@@ -737,84 +669,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.1866,
-          -2.2147
+          105.7017,
+          -3.4069
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T10:06:00+07:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 2.1,
-        "kode_wilayah": "62.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.2721,
-          -2.186
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:56:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 19.3,
-        "kode_wilayah": "62.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.477,
-          -2.2969
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T10:51:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 2.8,
-        "kode_wilayah": "62.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.2077,
-          -2.2572
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T03:16:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 2.2,
-        "kode_wilayah": "62.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.3214,
-          -2.025
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T04:45:00+07:00",
+        "waktu": "2026-10-09T11:45:00+07:00",
         "satelit": "VIIRS NOAA-21",
         "keyakinan": "tinggi",
-        "frp_mw": 14.1,
-        "kode_wilayah": "62.03"
+        "frp_mw": 11.0,
+        "kode_wilayah": "16.02"
       }
     },
     {
@@ -822,15 +686,32 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.4671,
-          -1.9683
+          105.7578,
+          -3.4512
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T01:05:00+07:00",
+        "waktu": "2026-10-09T06:59:00+07:00",
         "satelit": "VIIRS NOAA-20",
         "keyakinan": "tinggi",
-        "frp_mw": 6.1,
+        "frp_mw": 18.0,
+        "kode_wilayah": "16.02"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.4174,
+          -2.0613
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T05:08:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 5.7,
         "kode_wilayah": "62.03"
       }
     },
@@ -839,15 +720,83 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.2308,
-          -2.1233
+          114.4207,
+          -2.0576
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:45:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 2.9,
+        "kode_wilayah": "62.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.4282,
+          -2.0668
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T11:06:00+07:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 21.0,
+        "kode_wilayah": "62.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.3975,
+          -2.063
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:17:00+07:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 10.5,
+        "kode_wilayah": "62.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.4094,
+          -2.066
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T05:32:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 3.7,
+        "kode_wilayah": "62.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.3983,
+          -2.1185
         ]
       },
       "properties": {
         "waktu": "2026-10-09T11:16:00+07:00",
         "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 4.0,
+        "keyakinan": "tinggi",
+        "frp_mw": 8.6,
         "kode_wilayah": "62.03"
       }
     },
@@ -856,15 +805,32 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.2245,
-          -2.2856
+          114.4016,
+          -2.1096
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T12:57:00+07:00",
+        "waktu": "2026-10-09T02:56:00+07:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 17.1,
+        "kode_wilayah": "62.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.3934,
+          -2.1322
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:27:00+07:00",
         "satelit": "VIIRS NOAA-21",
         "keyakinan": "tinggi",
-        "frp_mw": 15.3,
+        "frp_mw": 8.0,
         "kode_wilayah": "62.03"
       }
     },
@@ -873,15 +839,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.3041,
-          -1.9404
+          114.3981,
+          -2.1022
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T03:02:00+07:00",
-        "satelit": "VIIRS NOAA-20",
+        "waktu": "2026-10-09T01:57:00+07:00",
+        "satelit": "VIIRS SNPP",
         "keyakinan": "tinggi",
-        "frp_mw": 20.4,
+        "frp_mw": 11.7,
         "kode_wilayah": "62.03"
       }
     },
@@ -890,32 +856,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.2014,
-          -1.988
+          114.398,
+          -2.1264
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T04:42:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 21.6,
-        "kode_wilayah": "62.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          114.2313,
-          -1.98
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T04:55:00+07:00",
+        "waktu": "2026-10-09T07:39:00+07:00",
         "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
-        "frp_mw": 5.5,
+        "frp_mw": 4.9,
         "kode_wilayah": "62.03"
       }
     },
@@ -924,15 +873,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.3161,
-          -1.9277
+          114.1954,
+          -2.0179
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T12:59:00+07:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 10.3,
+        "waktu": "2026-10-09T07:01:00+07:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 2.3,
         "kode_wilayah": "62.03"
       }
     },
@@ -941,15 +890,32 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.1649,
-          -1.9139
+          114.2958,
+          -2.1573
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T12:51:00+07:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "sedang",
+        "frp_mw": 2.6,
+        "kode_wilayah": "62.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.3733,
+          -2.0742
         ]
       },
       "properties": {
         "waktu": "2026-10-09T08:14:00+07:00",
-        "satelit": "VIIRS SNPP",
+        "satelit": "MODIS Aqua",
         "keyakinan": "rendah",
-        "frp_mw": 2.2,
+        "frp_mw": 1.1,
         "kode_wilayah": "62.03"
       }
     },
@@ -958,15 +924,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.3762,
-          -2.1974
+          114.3095,
+          -2.0571
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T13:55:00+07:00",
+        "waktu": "2026-10-09T04:14:00+07:00",
         "satelit": "VIIRS SNPP",
         "keyakinan": "rendah",
-        "frp_mw": 1.2,
+        "frp_mw": 0.8,
         "kode_wilayah": "62.03"
       }
     },
@@ -975,15 +941,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          103.7492,
-          -1.6886
+          103.7906,
+          -1.5631
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T11:12:00+07:00",
-        "satelit": "VIIRS NOAA-20",
+        "waktu": "2026-10-09T06:41:00+07:00",
+        "satelit": "MODIS Terra",
         "keyakinan": "sedang",
-        "frp_mw": 5.9,
+        "frp_mw": 3.8,
         "kode_wilayah": "15.05"
       }
     },
@@ -992,13 +958,81 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          103.8707,
-          -1.6401
+          103.7957,
+          -1.5561
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T05:22:00+07:00",
-        "satelit": "MODIS Terra",
+        "waktu": "2026-10-09T05:11:00+07:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 4.1,
+        "kode_wilayah": "15.05"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.7925,
+          -1.5664
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T06:46:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "sedang",
+        "frp_mw": 5.0,
+        "kode_wilayah": "15.05"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.7935,
+          -1.5756
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T07:57:00+07:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 4.1,
+        "kode_wilayah": "15.05"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.7957,
+          -1.5668
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:59:00+07:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "sedang",
+        "frp_mw": 5.1,
+        "kode_wilayah": "15.05"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.7979,
+          -1.5562
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T11:58:00+07:00",
+        "satelit": "VIIRS NOAA-21",
         "keyakinan": "sedang",
         "frp_mw": 3.0,
         "kode_wilayah": "15.05"
@@ -1009,100 +1043,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          103.9885,
-          -1.6955
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T01:07:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 5.8,
-        "kode_wilayah": "15.05"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          103.6042,
-          -1.6262
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:02:00+07:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 3.5,
-        "kode_wilayah": "15.05"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          103.7426,
-          -1.5694
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T09:07:00+07:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 1.7,
-        "kode_wilayah": "15.05"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          103.81,
-          -1.4774
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T07:00:00+07:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 3.1,
-        "kode_wilayah": "15.05"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          104.0104,
-          -1.5507
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:42:00+07:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "sedang",
-        "frp_mw": 4.7,
-        "kode_wilayah": "15.05"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          103.7046,
-          -1.6366
+          103.8034,
+          -1.5546
         ]
       },
       "properties": {
         "waktu": "2026-10-09T05:32:00+07:00",
         "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
-        "frp_mw": 4.6,
+        "frp_mw": 2.9,
         "kode_wilayah": "15.05"
       }
     },
@@ -1111,13 +1060,47 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          103.5764,
-          -1.6398
+          103.7021,
+          -1.6337
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T07:43:00+07:00",
-        "satelit": "VIIRS SNPP",
+        "waktu": "2026-10-09T09:08:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "sedang",
+        "frp_mw": 2.4,
+        "kode_wilayah": "15.05"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.9812,
+          -1.5063
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T10:19:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "rendah",
+        "frp_mw": 1.5,
+        "kode_wilayah": "15.05"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.8854,
+          -1.5782
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T13:37:00+07:00",
+        "satelit": "VIIRS NOAA-21",
         "keyakinan": "rendah",
         "frp_mw": 1.8,
         "kode_wilayah": "15.05"
@@ -1128,16 +1111,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          103.6806,
-          -1.576
+          102.1994,
+          0.2347
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T01:19:00+07:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "rendah",
-        "frp_mw": 1.2,
-        "kode_wilayah": "15.05"
+        "waktu": "2026-10-09T13:47:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 2.3,
+        "kode_wilayah": "14.04"
       }
     },
     {
@@ -1145,13 +1128,47 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          102.2533,
-          0.1289
+          102.1923,
+          0.237
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T13:37:00+07:00",
-        "satelit": "MODIS Aqua",
+        "waktu": "2026-10-09T10:21:00+07:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "sedang",
+        "frp_mw": 1.9,
+        "kode_wilayah": "14.04"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          102.2112,
+          0.2427
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:09:00+07:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "sedang",
+        "frp_mw": 1.6,
+        "kode_wilayah": "14.04"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          102.187,
+          0.227
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T13:04:00+07:00",
+        "satelit": "MODIS Terra",
         "keyakinan": "sedang",
         "frp_mw": 3.5,
         "kode_wilayah": "14.04"
@@ -1162,32 +1179,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          102.1866,
-          0.3605
+          102.193,
+          0.2387
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T04:32:00+07:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 4.5,
-        "kode_wilayah": "14.04"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          102.2819,
-          0.2477
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:32:00+07:00",
+        "waktu": "2026-10-09T08:25:00+07:00",
         "satelit": "VIIRS NOAA-20",
         "keyakinan": "sedang",
-        "frp_mw": 5.2,
+        "frp_mw": 2.6,
         "kode_wilayah": "14.04"
       }
     },
@@ -1196,14 +1196,31 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          102.2864,
-          0.0899
+          102.0422,
+          0.3313
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T13:15:00+07:00",
+        "waktu": "2026-10-09T02:49:00+07:00",
         "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
+        "frp_mw": 3.4,
+        "kode_wilayah": "14.04"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          102.2447,
+          0.3368
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:58:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "rendah",
         "frp_mw": 2.2,
         "kode_wilayah": "14.04"
       }
@@ -1213,15 +1230,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          102.442,
-          0.2445
+          102.2096,
+          0.1574
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T01:15:00+07:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "sedang",
-        "frp_mw": 3.5,
+        "waktu": "2026-10-09T09:35:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "rendah",
+        "frp_mw": 1.8,
         "kode_wilayah": "14.04"
       }
     },
@@ -1230,32 +1247,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          102.0472,
-          0.2785
+          110.4984,
+          -1.8463
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T11:36:00+07:00",
+        "waktu": "2026-10-09T09:28:00+07:00",
         "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
-        "frp_mw": 3.3,
-        "kode_wilayah": "14.04"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.2528,
-          -1.7996
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T11:44:00+07:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "sedang",
-        "frp_mw": 5.0,
+        "frp_mw": 5.5,
         "kode_wilayah": "61.04"
       }
     },
@@ -1264,66 +1264,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.6521,
-          -1.8216
+          110.4979,
+          -1.8512
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T04:11:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 1.7,
-        "kode_wilayah": "61.04"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.6742,
-          -1.9174
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T04:58:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 4.5,
-        "kode_wilayah": "61.04"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.4086,
-          -1.7979
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T09:38:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 4.3,
-        "kode_wilayah": "61.04"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.5024,
-          -1.7678
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T12:57:00+07:00",
+        "waktu": "2026-10-09T11:17:00+07:00",
         "satelit": "MODIS Terra",
         "keyakinan": "sedang",
-        "frp_mw": 3.5,
+        "frp_mw": 4.9,
         "kode_wilayah": "61.04"
       }
     },
@@ -1332,15 +1281,100 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.9873,
-          -3.3963
+          110.5176,
+          -1.8506
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T12:55:00+08:00",
+        "waktu": "2026-10-09T08:04:00+07:00",
         "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
-        "frp_mw": 5.3,
+        "frp_mw": 4.7,
+        "kode_wilayah": "61.04"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.5137,
+          -1.8542
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:05:00+07:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "sedang",
+        "frp_mw": 2.1,
+        "kode_wilayah": "61.04"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.5932,
+          -1.8348
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:04:00+07:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 3.4,
+        "kode_wilayah": "61.04"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.5497,
+          -1.7795
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T07:24:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "rendah",
+        "frp_mw": 2.3,
+        "kode_wilayah": "61.04"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.5313,
+          -1.6465
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T13:36:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "rendah",
+        "frp_mw": 1.4,
+        "kode_wilayah": "61.04"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          114.9849,
+          -3.2254
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T07:34:00+08:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 4.9,
         "kode_wilayah": "63.03"
       }
     },
@@ -1349,13 +1383,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          115.1388,
-          -3.3062
+          114.9814,
+          -3.2202
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T05:49:00+08:00",
-        "satelit": "VIIRS SNPP",
+        "waktu": "2026-10-09T08:14:00+08:00",
+        "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
         "frp_mw": 2.7,
         "kode_wilayah": "63.03"
@@ -1366,15 +1400,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.8929,
-          -3.3913
+          114.9931,
+          -3.2338
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T02:45:00+08:00",
-        "satelit": "VIIRS NOAA-21",
+        "waktu": "2026-10-09T11:51:00+08:00",
+        "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
-        "frp_mw": 5.5,
+        "frp_mw": 3.3,
         "kode_wilayah": "63.03"
       }
     },
@@ -1383,15 +1417,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          114.8254,
-          -3.3468
+          114.905,
+          -3.1286
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T02:08:00+08:00",
-        "satelit": "VIIRS SNPP",
+        "waktu": "2026-10-09T10:34:00+08:00",
+        "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
-        "frp_mw": 4.7,
+        "frp_mw": 1.6,
         "kode_wilayah": "63.03"
       }
     },
@@ -1400,118 +1434,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          116.7154,
-          -0.4136
+          115.0265,
+          -3.1462
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T07:26:00+08:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "sedang",
-        "frp_mw": 2.4,
-        "kode_wilayah": "64.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          117.0024,
-          -0.3664
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T07:24:00+08:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "sedang",
-        "frp_mw": 5.4,
-        "kode_wilayah": "64.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          116.7402,
-          -0.5976
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T13:36:00+08:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 2.8,
-        "kode_wilayah": "64.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          117.0121,
-          -0.1733
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T07:34:00+08:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "rendah",
-        "frp_mw": 2.2,
-        "kode_wilayah": "64.02"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          123.7597,
-          -10.0257
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T04:31:00+08:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "sedang",
-        "frp_mw": 3.2,
-        "kode_wilayah": "53.10"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          124.0491,
-          -9.9103
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T11:43:00+08:00",
+        "waktu": "2026-10-09T11:27:00+08:00",
         "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 5.6,
-        "kode_wilayah": "53.10"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          123.9205,
-          -9.7965
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T10:36:00+08:00",
-        "satelit": "VIIRS NOAA-20",
         "keyakinan": "rendah",
-        "frp_mw": 0.9,
-        "kode_wilayah": "53.10"
+        "frp_mw": 1.0,
+        "kode_wilayah": "63.03"
       }
     },
     {
@@ -1519,16 +1451,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          123.8572,
-          -9.8166
+          115.0563,
+          -3.3036
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T03:03:00+08:00",
+        "waktu": "2026-10-09T06:13:00+08:00",
         "satelit": "VIIRS NOAA-21",
         "keyakinan": "rendah",
-        "frp_mw": 1.4,
-        "kode_wilayah": "53.10"
+        "frp_mw": 1.6,
+        "kode_wilayah": "63.03"
       }
     },
     {
@@ -1536,50 +1468,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          140.3134,
-          -8.3955
+          116.9185,
+          -0.5248
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T04:29:00+09:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 2.8,
-        "kode_wilayah": "93.01"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.5675,
-          -8.5119
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T07:16:00+09:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 1.7,
-        "kode_wilayah": "93.01"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.2345,
-          -8.7157
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T11:02:00+09:00",
+        "waktu": "2026-10-09T13:53:00+08:00",
         "satelit": "VIIRS NOAA-20",
-        "keyakinan": "rendah",
-        "frp_mw": 2.4,
-        "kode_wilayah": "93.01"
+        "keyakinan": "sedang",
+        "frp_mw": 3.4,
+        "kode_wilayah": "64.02"
       }
     },
     {
@@ -1587,15 +1485,117 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          109.1602,
-          -0.439
+          116.692,
+          -0.4007
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T04:53:00+07:00",
+        "waktu": "2026-10-09T01:22:00+08:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 2.5,
+        "kode_wilayah": "64.02"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          116.6561,
+          -0.5021
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T13:01:00+08:00",
         "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
-        "frp_mw": 3.6,
+        "frp_mw": 5.8,
+        "kode_wilayah": "64.02"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.043,
+          -9.9898
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T08:42:00+08:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "sedang",
+        "frp_mw": 2.0,
+        "kode_wilayah": "53.10"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.0084,
+          -10.0042
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T06:10:00+08:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 4.2,
+        "kode_wilayah": "53.10"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.5377,
+          -8.3313
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T01:59:00+09:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "sedang",
+        "frp_mw": 2.9,
+        "kode_wilayah": "93.01"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.3094,
+          -8.52
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T02:37:00+09:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "sedang",
+        "frp_mw": 4.6,
+        "kode_wilayah": "93.01"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          109.5497,
+          -0.3503
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T11:38:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 5.1,
         "kode_wilayah": "61.12"
       }
     },
@@ -1604,15 +1604,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          103.5925,
-          -1.7075
+          103.608,
+          -1.5846
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T10:13:00+07:00",
-        "satelit": "VIIRS NOAA-21",
+        "waktu": "2026-10-09T06:00:00+07:00",
+        "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
-        "frp_mw": 2.3,
+        "frp_mw": 5.3,
         "kode_wilayah": "15.71"
       }
     },
@@ -1621,83 +1621,100 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          103.7192,
-          -1.4989
+          103.6073,
+          -1.5721
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T10:47:00+07:00",
+        "waktu": "2026-10-09T11:57:00+07:00",
         "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
+        "frp_mw": 5.2,
+        "kode_wilayah": "15.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.599,
+          -1.5772
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T11:17:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 4.3,
+        "kode_wilayah": "15.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          103.4943,
+          -1.5504
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T10:17:00+07:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "rendah",
+        "frp_mw": 1.3,
+        "kode_wilayah": "15.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.8338,
+          -2.9868
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T10:42:00+08:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 3.2,
+        "kode_wilayah": "73.18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.8329,
+          -2.9882
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T06:51:00+08:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 10.1,
+        "kode_wilayah": "73.18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.8456,
+          -2.9828
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T01:33:00+08:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
         "frp_mw": 5.8,
-        "kode_wilayah": "15.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          103.3728,
-          -1.6852
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:37:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 3.3,
-        "kode_wilayah": "15.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          103.429,
-          -1.564
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T11:15:00+07:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "rendah",
-        "frp_mw": 2.0,
-        "kode_wilayah": "15.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          103.4909,
-          -1.5179
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T13:07:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "rendah",
-        "frp_mw": 2.1,
-        "kode_wilayah": "15.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.7853,
-          -3.0376
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T07:42:00+08:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "tinggi",
-        "frp_mw": 6.2,
         "kode_wilayah": "73.18"
       }
     },
@@ -1706,15 +1723,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.8168,
-          -3.0951
+          119.8293,
+          -2.989
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T08:06:00+08:00",
+        "waktu": "2026-10-09T04:44:00+08:00",
         "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
-        "frp_mw": 17.3,
+        "frp_mw": 13.6,
         "kode_wilayah": "73.18"
       }
     },
@@ -1723,81 +1740,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          120.0827,
-          -3.132
+          119.8352,
+          -2.9814
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T12:33:00+08:00",
+        "waktu": "2026-10-09T07:44:00+08:00",
         "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 18.4,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.7342,
-          -2.8993
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T12:37:00+08:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 10.5,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.8849,
-          -2.9727
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T13:29:00+08:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "tinggi",
-        "frp_mw": 6.5,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.7061,
-          -2.9209
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T03:31:00+08:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 2.8,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.6051,
-          -2.8608
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:35:00+08:00",
-        "satelit": "VIIRS NOAA-20",
         "keyakinan": "tinggi",
         "frp_mw": 9.9,
         "kode_wilayah": "73.18"
@@ -1808,168 +1757,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.7202,
-          -3.0496
+          119.8416,
+          -2.9868
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T09:48:00+08:00",
+        "waktu": "2026-10-09T12:35:00+08:00",
         "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
-        "frp_mw": 13.2,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.8022,
-          -3.1427
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:14:00+08:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 11.9,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          120.0983,
-          -3.0198
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T06:27:00+08:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "tinggi",
-        "frp_mw": 17.2,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.6603,
-          -3.163
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:14:00+08:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 17.9,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.6958,
-          -2.9446
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T12:11:00+08:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 4.8,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.7415,
-          -3.1998
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T09:38:00+08:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 2.8,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.954,
-          -3.1894
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:00:00+08:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 21.6,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.9189,
-          -2.9389
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T12:08:00+08:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 20.0,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.8202,
-          -3.1663
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T08:30:00+08:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 10.0,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.6327,
-          -3.0433
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:52:00+08:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 4.3,
+        "frp_mw": 11.3,
         "kode_wilayah": "73.18"
       }
     },
@@ -1979,83 +1775,15 @@
         "type": "Point",
         "coordinates": [
           119.8814,
-          -3.1185
+          -3.0459
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T03:51:00+08:00",
+        "waktu": "2026-10-09T09:48:00+08:00",
         "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 7.9,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.9954,
-          -3.1497
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T10:38:00+08:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 3.2,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.8943,
-          -3.0685
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:55:00+08:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 4.3,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          120.0738,
-          -3.1569
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T12:06:00+08:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 2.7,
-        "kode_wilayah": "73.18"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.2175,
-          -5.3489
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T03:35:00+08:00",
-        "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
         "frp_mw": 17.0,
-        "kode_wilayah": "73.71"
+        "kode_wilayah": "73.18"
       }
     },
     {
@@ -2063,50 +1791,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.3241,
-          -5.2369
+          119.8676,
+          -3.0517
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T01:14:00+08:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 7.1,
-        "kode_wilayah": "73.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.5756,
-          -5.1141
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:50:00+08:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 12.8,
-        "kode_wilayah": "73.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.6342,
-          -5.0193
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T11:09:00+08:00",
+        "waktu": "2026-10-09T13:33:00+08:00",
         "satelit": "VIIRS NOAA-20",
         "keyakinan": "tinggi",
-        "frp_mw": 7.0,
-        "kode_wilayah": "73.71"
+        "frp_mw": 15.5,
+        "kode_wilayah": "73.18"
       }
     },
     {
@@ -2114,16 +1808,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.5921,
-          -4.9815
+          119.8831,
+          -3.0547
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T10:47:00+08:00",
-        "satelit": "MODIS Aqua",
+        "waktu": "2026-10-09T05:00:00+08:00",
+        "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
-        "frp_mw": 2.1,
-        "kode_wilayah": "73.71"
+        "frp_mw": 4.7,
+        "kode_wilayah": "73.18"
       }
     },
     {
@@ -2131,16 +1825,84 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.6513,
-          -5.1498
+          119.8718,
+          -3.0666
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T12:25:00+08:00",
+        "waktu": "2026-10-09T12:08:00+08:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "tinggi",
+        "frp_mw": 16.2,
+        "kode_wilayah": "73.18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.8804,
+          -3.0507
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T08:28:00+08:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 11.5,
+        "kode_wilayah": "73.18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.888,
+          -3.0381
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T02:25:00+08:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 13.9,
+        "kode_wilayah": "73.18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.8269,
+          -3.081
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:07:00+08:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "tinggi",
+        "frp_mw": 14.9,
+        "kode_wilayah": "73.18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.8309,
+          -3.075
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:24:00+08:00",
         "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
         "frp_mw": 3.5,
-        "kode_wilayah": "73.71"
+        "kode_wilayah": "73.18"
       }
     },
     {
@@ -2148,16 +1910,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.3412,
-          -5.2499
+          119.8213,
+          -3.0878
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T07:47:00+08:00",
+        "waktu": "2026-10-09T10:39:00+08:00",
         "satelit": "VIIRS NOAA-20",
         "keyakinan": "tinggi",
-        "frp_mw": 9.7,
-        "kode_wilayah": "73.71"
+        "frp_mw": 7.0,
+        "kode_wilayah": "73.18"
       }
     },
     {
@@ -2165,16 +1927,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.6554,
-          -4.9502
+          119.822,
+          -3.0758
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T10:37:00+08:00",
-        "satelit": "VIIRS NOAA-21",
+        "waktu": "2026-10-09T11:05:00+08:00",
+        "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
-        "frp_mw": 4.1,
-        "kode_wilayah": "73.71"
+        "frp_mw": 2.2,
+        "kode_wilayah": "73.18"
       }
     },
     {
@@ -2182,16 +1944,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.4395,
-          -5.1731
+          119.819,
+          -3.0815
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T03:30:00+08:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 2.3,
-        "kode_wilayah": "73.71"
+        "waktu": "2026-10-09T12:38:00+08:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 13.5,
+        "kode_wilayah": "73.18"
       }
     },
     {
@@ -2199,15 +1961,117 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.4259,
-          -5.3135
+          119.6853,
+          -3.0901
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T11:52:00+08:00",
+        "waktu": "2026-10-09T08:04:00+08:00",
         "satelit": "VIIRS NOAA-21",
         "keyakinan": "tinggi",
-        "frp_mw": 12.5,
+        "frp_mw": 17.0,
+        "kode_wilayah": "73.18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.7164,
+          -3.1233
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:27:00+08:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "sedang",
+        "frp_mw": 2.0,
+        "kode_wilayah": "73.18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.6653,
+          -2.9436
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T02:03:00+08:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 2.2,
+        "kode_wilayah": "73.18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.7582,
+          -2.8702
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T08:07:00+08:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 13.5,
+        "kode_wilayah": "73.18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.9629,
+          -3.0559
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:31:00+08:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "rendah",
+        "frp_mw": 1.5,
+        "kode_wilayah": "73.18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.858,
+          -3.0576
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T06:38:00+08:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "rendah",
+        "frp_mw": 1.2,
+        "kode_wilayah": "73.18"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.4348,
+          -5.1118
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T13:43:00+08:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 5.2,
         "kode_wilayah": "73.71"
       }
     },
@@ -2216,15 +2080,49 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.2604,
-          -5.1853
+          119.4359,
+          -5.1374
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T02:54:00+08:00",
+        "waktu": "2026-10-09T11:28:00+08:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 20.7,
+        "kode_wilayah": "73.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.4246,
+          -5.1197
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T02:30:00+08:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 3.1,
+        "kode_wilayah": "73.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.4369,
+          -5.1211
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T07:44:00+08:00",
         "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
-        "frp_mw": 10.6,
+        "frp_mw": 13.9,
         "kode_wilayah": "73.71"
       }
     },
@@ -2233,13 +2131,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.1983,
-          -5.3148
+          119.4364,
+          -5.134
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T13:35:00+08:00",
-        "satelit": "VIIRS NOAA-21",
+        "waktu": "2026-10-09T06:16:00+08:00",
+        "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
         "frp_mw": 3.0,
         "kode_wilayah": "73.71"
@@ -2250,15 +2148,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.4373,
-          -4.9548
+          119.4334,
+          -5.1081
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T07:55:00+08:00",
-        "satelit": "MODIS Terra",
+        "waktu": "2026-10-09T09:29:00+08:00",
+        "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
-        "frp_mw": 3.6,
+        "frp_mw": 3.4,
         "kode_wilayah": "73.71"
       }
     },
@@ -2267,15 +2165,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.4913,
-          -5.1506
+          119.469,
+          -5.1661
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T09:23:00+08:00",
-        "satelit": "MODIS Aqua",
+        "waktu": "2026-10-09T05:35:00+08:00",
+        "satelit": "VIIRS NOAA-21",
         "keyakinan": "tinggi",
-        "frp_mw": 18.2,
+        "frp_mw": 8.1,
         "kode_wilayah": "73.71"
       }
     },
@@ -2284,49 +2182,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.6438,
-          -5.1748
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T09:08:00+08:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 7.9,
-        "kode_wilayah": "73.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.2996,
-          -5.2866
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T10:51:00+08:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 1.6,
-        "kode_wilayah": "73.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          119.6365,
+          119.4753,
           -5.1654
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T04:53:00+08:00",
-        "satelit": "VIIRS NOAA-20",
+        "waktu": "2026-10-09T11:38:00+08:00",
+        "satelit": "VIIRS SNPP",
         "keyakinan": "tinggi",
-        "frp_mw": 16.4,
+        "frp_mw": 18.8,
         "kode_wilayah": "73.71"
       }
     },
@@ -2335,15 +2199,32 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.4344,
-          -5.2406
+          119.4676,
+          -5.1775
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:53:00+08:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "tinggi",
+        "frp_mw": 20.6,
+        "kode_wilayah": "73.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.4764,
+          -5.1679
         ]
       },
       "properties": {
         "waktu": "2026-10-09T12:18:00+08:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 21.7,
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 3.8,
         "kode_wilayah": "73.71"
       }
     },
@@ -2352,15 +2233,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          119.3718,
-          -4.9813
+          119.4678,
+          -5.1849
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T09:09:00+08:00",
-        "satelit": "MODIS Terra",
+        "waktu": "2026-10-09T08:35:00+08:00",
+        "satelit": "VIIRS SNPP",
         "keyakinan": "tinggi",
-        "frp_mw": 17.9,
+        "frp_mw": 8.3,
         "kode_wilayah": "73.71"
       }
     },
@@ -2369,16 +2250,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          124.985,
-          1.446
+          119.387,
+          -5.1859
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T05:49:00+08:00",
+        "waktu": "2026-10-09T13:54:00+08:00",
         "satelit": "MODIS Terra",
         "keyakinan": "sedang",
-        "frp_mw": 2.7,
-        "kode_wilayah": "71.71"
+        "frp_mw": 3.4,
+        "kode_wilayah": "73.71"
       }
     },
     {
@@ -2386,16 +2267,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          125.0087,
-          1.512
+          119.3686,
+          -5.1837
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T12:19:00+08:00",
+        "waktu": "2026-10-09T10:37:00+08:00",
         "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
-        "frp_mw": 19.8,
-        "kode_wilayah": "71.71"
+        "frp_mw": 22.0,
+        "kode_wilayah": "73.71"
       }
     },
     {
@@ -2403,15 +2284,134 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          124.7562,
-          1.5851
+          119.3722,
+          -5.1928
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T08:22:00+08:00",
+        "waktu": "2026-10-09T06:35:00+08:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "sedang",
+        "frp_mw": 4.9,
+        "kode_wilayah": "73.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.3784,
+          -5.1805
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T12:15:00+08:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 15.1,
+        "kode_wilayah": "73.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.3795,
+          -5.187
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T08:45:00+08:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "sedang",
+        "frp_mw": 5.6,
+        "kode_wilayah": "73.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.2812,
+          -5.0794
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:31:00+08:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 21.4,
+        "kode_wilayah": "73.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.3193,
+          -5.0469
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T08:06:00+08:00",
         "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
-        "frp_mw": 13.3,
+        "frp_mw": 14.4,
+        "kode_wilayah": "73.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.3785,
+          -5.1012
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:04:00+08:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 13.5,
+        "kode_wilayah": "73.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.5333,
+          -5.287
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T02:54:00+08:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "rendah",
+        "frp_mw": 1.4,
+        "kode_wilayah": "73.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.8252,
+          1.5253
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T01:39:00+08:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 1.8,
         "kode_wilayah": "71.71"
       }
     },
@@ -2420,15 +2420,100 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          124.7094,
-          1.4332
+          124.8411,
+          1.5025
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T04:44:00+08:00",
+        "waktu": "2026-10-09T02:48:00+08:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 4.4,
+        "kode_wilayah": "71.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.8279,
+          1.5263
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T01:20:00+08:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 18.7,
+        "kode_wilayah": "71.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.8447,
+          1.5157
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T07:36:00+08:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 16.9,
+        "kode_wilayah": "71.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.8326,
+          1.5181
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T10:43:00+08:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 9.9,
+        "kode_wilayah": "71.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.8596,
+          1.4762
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T13:29:00+08:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 20.4,
+        "kode_wilayah": "71.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.867,
+          1.4643
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T10:19:00+08:00",
         "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
-        "frp_mw": 6.7,
+        "frp_mw": 16.2,
         "kode_wilayah": "71.71"
       }
     },
@@ -2437,12 +2522,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          124.9957,
-          1.4344
+          124.8684,
+          1.4665
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T12:58:00+08:00",
+        "waktu": "2026-10-09T07:54:00+08:00",
         "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
         "frp_mw": 3.7,
@@ -2454,217 +2539,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          124.756,
-          1.3201
+          124.867,
+          1.4673
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T09:37:00+08:00",
+        "waktu": "2026-10-09T12:18:00+08:00",
         "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 7.6,
-        "kode_wilayah": "71.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          124.6621,
-          1.6284
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T01:46:00+08:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 1.8,
-        "kode_wilayah": "71.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          124.9016,
-          1.439
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:21:00+08:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "sedang",
-        "frp_mw": 5.3,
-        "kode_wilayah": "71.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          125.0671,
-          1.5307
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T09:24:00+08:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 5.4,
-        "kode_wilayah": "71.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          124.9056,
-          1.6484
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:15:00+08:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 17.9,
-        "kode_wilayah": "71.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          124.9069,
-          1.629
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:48:00+08:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 8.7,
-        "kode_wilayah": "71.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          124.7522,
-          1.3024
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T01:02:00+08:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "tinggi",
-        "frp_mw": 12.0,
-        "kode_wilayah": "71.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          124.873,
-          1.597
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T09:26:00+08:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 8.8,
-        "kode_wilayah": "71.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          124.9316,
-          1.4791
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T07:39:00+08:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 2.1,
-        "kode_wilayah": "71.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          124.7177,
-          1.2838
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:29:00+08:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 20.4,
-        "kode_wilayah": "71.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          124.8109,
-          1.4182
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T03:04:00+08:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 2.8,
-        "kode_wilayah": "71.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          124.8184,
-          1.4008
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T12:16:00+08:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 5.3,
-        "kode_wilayah": "71.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          124.7695,
-          1.3983
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T07:36:00+08:00",
-        "satelit": "VIIRS NOAA-21",
         "keyakinan": "tinggi",
         "frp_mw": 6.4,
         "kode_wilayah": "71.71"
@@ -2675,15 +2556,49 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          124.7775,
-          1.234
+          124.8488,
+          1.4652
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T11:49:00+08:00",
+        "waktu": "2026-10-09T12:03:00+08:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "tinggi",
+        "frp_mw": 20.6,
+        "kode_wilayah": "71.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.7738,
+          1.4671
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:40:00+08:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 2.4,
+        "kode_wilayah": "71.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          124.7682,
+          1.4577
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:40:00+08:00",
         "satelit": "VIIRS NOAA-20",
-        "keyakinan": "rendah",
-        "frp_mw": 2.3,
+        "keyakinan": "sedang",
+        "frp_mw": 1.9,
         "kode_wilayah": "71.71"
       }
     },
@@ -2692,15 +2607,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          124.9871,
-          1.6464
+          124.7752,
+          1.4568
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T05:49:00+08:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "rendah",
-        "frp_mw": 1.8,
+        "waktu": "2026-10-09T12:08:00+08:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 7.4,
         "kode_wilayah": "71.71"
       }
     },
@@ -2709,16 +2624,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.9004,
-          -6.1089
+          124.7883,
+          1.4678
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T11:12:00+07:00",
-        "satelit": "VIIRS SNPP",
+        "waktu": "2026-10-09T13:34:00+08:00",
+        "satelit": "VIIRS NOAA-21",
         "keyakinan": "tinggi",
-        "frp_mw": 16.1,
-        "kode_wilayah": "31.71"
+        "frp_mw": 20.0,
+        "kode_wilayah": "71.71"
       }
     },
     {
@@ -2726,33 +2641,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.7445,
-          -6.2037
+          124.7651,
+          1.4732
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T11:02:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 3.1,
-        "kode_wilayah": "31.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.9637,
-          -6.3097
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:20:00+07:00",
-        "satelit": "VIIRS SNPP",
+        "waktu": "2026-10-09T05:58:00+08:00",
+        "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
-        "frp_mw": 18.6,
-        "kode_wilayah": "31.71"
+        "frp_mw": 19.2,
+        "kode_wilayah": "71.71"
       }
     },
     {
@@ -2760,33 +2658,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.8409,
-          -6.271
+          124.7687,
+          1.5472
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T06:33:00+07:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 2.7,
-        "kode_wilayah": "31.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.7376,
-          -6.0318
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T08:51:00+07:00",
+        "waktu": "2026-10-09T13:07:00+08:00",
         "satelit": "VIIRS NOAA-20",
         "keyakinan": "sedang",
         "frp_mw": 3.6,
-        "kode_wilayah": "31.71"
+        "kode_wilayah": "71.71"
       }
     },
     {
@@ -2794,33 +2675,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          107.0201,
-          -6.0903
+          124.6717,
+          1.6195
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T13:14:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 21.5,
-        "kode_wilayah": "31.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.9853,
-          -6.3744
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T06:05:00+07:00",
+        "waktu": "2026-10-09T12:43:00+08:00",
         "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 2.1,
-        "kode_wilayah": "31.71"
+        "keyakinan": "tinggi",
+        "frp_mw": 21.7,
+        "kode_wilayah": "71.71"
       }
     },
     {
@@ -2828,16 +2692,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.7211,
-          -6.2276
+          124.8563,
+          1.6663
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T12:43:00+07:00",
+        "waktu": "2026-10-09T09:07:00+08:00",
         "satelit": "VIIRS NOAA-21",
         "keyakinan": "tinggi",
-        "frp_mw": 7.7,
-        "kode_wilayah": "31.71"
+        "frp_mw": 13.3,
+        "kode_wilayah": "71.71"
       }
     },
     {
@@ -2845,16 +2709,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          107.0321,
-          -6.1554
+          124.7572,
+          1.4102
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T01:39:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 9.5,
-        "kode_wilayah": "31.71"
+        "waktu": "2026-10-09T06:06:00+08:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "rendah",
+        "frp_mw": 1.9,
+        "kode_wilayah": "71.71"
       }
     },
     {
@@ -2862,15 +2726,32 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.9405,
-          -6.1203
+          124.8297,
+          1.4916
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T08:58:00+07:00",
+        "waktu": "2026-10-09T09:20:00+08:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "rendah",
+        "frp_mw": 2.4,
+        "kode_wilayah": "71.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.834,
+          -6.1369
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T02:08:00+07:00",
         "satelit": "VIIRS NOAA-20",
         "keyakinan": "tinggi",
-        "frp_mw": 8.2,
+        "frp_mw": 6.7,
         "kode_wilayah": "31.71"
       }
     },
@@ -2879,83 +2760,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.6481,
-          -6.2861
+          106.8508,
+          -6.1206
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T05:31:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 2.1,
-        "kode_wilayah": "31.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.9382,
-          -6.1639
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T11:47:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 17.9,
-        "kode_wilayah": "31.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.6395,
-          -6.1843
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T07:41:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 21.0,
-        "kode_wilayah": "31.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.6986,
-          -6.2021
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T12:23:00+07:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 19.7,
-        "kode_wilayah": "31.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.8622,
-          -5.9889
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T11:23:00+07:00",
+        "waktu": "2026-10-09T09:08:00+07:00",
         "satelit": "VIIRS NOAA-21",
         "keyakinan": "tinggi",
-        "frp_mw": 7.0,
+        "frp_mw": 12.2,
         "kode_wilayah": "31.71"
       }
     },
@@ -2964,15 +2777,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          107.0021,
-          -6.3433
+          106.8402,
+          -6.1157
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T02:54:00+07:00",
+        "waktu": "2026-10-09T07:37:00+07:00",
         "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 16.3,
+        "keyakinan": "sedang",
+        "frp_mw": 4.8,
         "kode_wilayah": "31.71"
       }
     },
@@ -2981,15 +2794,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.9834,
-          -6.2826
+          106.8338,
+          -6.1226
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T01:03:00+07:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 18.6,
+        "waktu": "2026-10-09T10:26:00+07:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 5.7,
         "kode_wilayah": "31.71"
       }
     },
@@ -2998,15 +2811,66 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.6936,
-          -6.2936
+          106.8478,
+          -6.1368
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:54:00+07:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 11.8,
+        "kode_wilayah": "31.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8586,
+          -6.1401
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T07:17:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 9.0,
+        "kode_wilayah": "31.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8532,
+          -6.1161
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:41:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 4.4,
+        "kode_wilayah": "31.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8694,
+          -6.1824
         ]
       },
       "properties": {
         "waktu": "2026-10-09T13:35:00+07:00",
         "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 11.3,
+        "keyakinan": "sedang",
+        "frp_mw": 2.4,
         "kode_wilayah": "31.71"
       }
     },
@@ -3015,32 +2879,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.7286,
-          -5.9864
+          106.849,
+          -6.1856
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T10:00:00+07:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 14.6,
-        "kode_wilayah": "31.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          107.0232,
-          -6.3273
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:42:00+07:00",
+        "waktu": "2026-10-09T13:57:00+07:00",
         "satelit": "VIIRS NOAA-21",
         "keyakinan": "sedang",
-        "frp_mw": 5.1,
+        "frp_mw": 4.2,
         "kode_wilayah": "31.71"
       }
     },
@@ -3049,32 +2896,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.6771,
-          -6.359
+          106.8588,
+          -6.1832
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T06:01:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 14.4,
-        "kode_wilayah": "31.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.979,
-          -6.1747
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T08:28:00+07:00",
+        "waktu": "2026-10-09T05:51:00+07:00",
         "satelit": "VIIRS NOAA-20",
         "keyakinan": "sedang",
-        "frp_mw": 3.5,
+        "frp_mw": 2.3,
         "kode_wilayah": "31.71"
       }
     },
@@ -3083,15 +2913,49 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.9536,
-          -6.0165
+          106.8472,
+          -6.1846
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T10:20:00+07:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 6.3,
+        "kode_wilayah": "31.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8529,
+          -6.2003
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T12:04:00+07:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 13.6,
+        "kode_wilayah": "31.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8551,
+          -6.1909
         ]
       },
       "properties": {
         "waktu": "2026-10-09T10:02:00+07:00",
         "satelit": "MODIS Terra",
         "keyakinan": "tinggi",
-        "frp_mw": 10.8,
+        "frp_mw": 17.6,
         "kode_wilayah": "31.71"
       }
     },
@@ -3100,15 +2964,83 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          107.0893,
-          -6.0411
+          106.8576,
+          -6.1742
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T01:03:00+07:00",
+        "waktu": "2026-10-09T08:54:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 12.4,
+        "kode_wilayah": "31.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7964,
+          -6.193
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T02:08:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 10.4,
+        "kode_wilayah": "31.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.7986,
+          -6.1823
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:18:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 13.3,
+        "kode_wilayah": "31.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8086,
+          -6.1788
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T11:41:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 20.0,
+        "kode_wilayah": "31.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8006,
+          -6.1956
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:26:00+07:00",
         "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
-        "frp_mw": 4.6,
+        "frp_mw": 3.0,
         "kode_wilayah": "31.71"
       }
     },
@@ -3117,15 +3049,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          107.0396,
-          -6.2512
+          106.8117,
+          -6.1952
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T08:04:00+07:00",
+        "waktu": "2026-10-09T06:42:00+07:00",
         "satelit": "VIIRS SNPP",
         "keyakinan": "tinggi",
-        "frp_mw": 7.1,
+        "frp_mw": 10.1,
         "kode_wilayah": "31.71"
       }
     },
@@ -3134,50 +3066,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          106.8642,
-          -6.2499
+          106.8043,
+          -6.1816
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T11:37:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 14.5,
-        "kode_wilayah": "31.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          106.8433,
-          -6.2149
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T13:44:00+07:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "rendah",
-        "frp_mw": 2.2,
-        "kode_wilayah": "31.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.5304,
-          -7.084
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T13:35:00+07:00",
-        "satelit": "MODIS Aqua",
+        "waktu": "2026-10-09T02:05:00+07:00",
+        "satelit": "VIIRS NOAA-21",
         "keyakinan": "sedang",
-        "frp_mw": 5.5,
-        "kode_wilayah": "33.74"
+        "frp_mw": 3.4,
+        "kode_wilayah": "31.71"
       }
     },
     {
@@ -3185,16 +3083,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.378,
-          -7.132
+          106.793,
+          -6.1995
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T08:25:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 11.0,
-        "kode_wilayah": "33.74"
+        "waktu": "2026-10-09T09:35:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 3.0,
+        "kode_wilayah": "31.71"
       }
     },
     {
@@ -3202,16 +3100,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.6315,
-          -7.1431
+          106.7666,
+          -5.9918
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T03:43:00+07:00",
+        "waktu": "2026-10-09T07:55:00+07:00",
         "satelit": "VIIRS NOAA-20",
         "keyakinan": "tinggi",
-        "frp_mw": 7.5,
-        "kode_wilayah": "33.74"
+        "frp_mw": 20.7,
+        "kode_wilayah": "31.71"
       }
     },
     {
@@ -3219,50 +3117,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.5759,
-          -6.9475
+          106.9634,
+          -6.2711
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T12:23:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 21.3,
-        "kode_wilayah": "33.74"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.3754,
-          -6.8206
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T11:07:00+07:00",
+        "waktu": "2026-10-09T10:32:00+07:00",
         "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 19.9,
-        "kode_wilayah": "33.74"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.3262,
-          -7.1286
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:38:00+07:00",
-        "satelit": "MODIS Terra",
         "keyakinan": "sedang",
         "frp_mw": 2.5,
-        "kode_wilayah": "33.74"
+        "kode_wilayah": "31.71"
       }
     },
     {
@@ -3270,33 +3134,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.2241,
-          -6.8319
+          106.7865,
+          -6.1437
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T04:54:00+07:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 2.0,
-        "kode_wilayah": "33.74"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.3846,
-          -6.9456
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T04:51:00+07:00",
+        "waktu": "2026-10-09T06:07:00+07:00",
         "satelit": "MODIS Terra",
         "keyakinan": "tinggi",
-        "frp_mw": 15.8,
-        "kode_wilayah": "33.74"
+        "frp_mw": 18.2,
+        "kode_wilayah": "31.71"
       }
     },
     {
@@ -3304,33 +3151,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.6345,
-          -6.8382
+          106.7941,
+          -6.2932
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T01:38:00+07:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 1.6,
-        "kode_wilayah": "33.74"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.6308,
-          -7.0296
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T13:19:00+07:00",
-        "satelit": "VIIRS SNPP",
+        "waktu": "2026-10-09T13:52:00+07:00",
+        "satelit": "MODIS Terra",
         "keyakinan": "tinggi",
-        "frp_mw": 19.9,
-        "kode_wilayah": "33.74"
+        "frp_mw": 15.9,
+        "kode_wilayah": "31.71"
       }
     },
     {
@@ -3338,16 +3168,33 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.2409,
-          -6.9167
+          106.6529,
+          -6.0786
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T07:04:00+07:00",
+        "waktu": "2026-10-09T05:01:00+07:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 8.9,
+        "kode_wilayah": "31.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.9318,
+          -6.138
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:36:00+07:00",
         "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 7.5,
-        "kode_wilayah": "33.74"
+        "keyakinan": "rendah",
+        "frp_mw": 1.9,
+        "kode_wilayah": "31.71"
       }
     },
     {
@@ -3355,15 +3202,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.3968,
-          -7.107
+          110.4359,
+          -6.9453
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T07:26:00+07:00",
+        "waktu": "2026-10-09T07:29:00+07:00",
         "satelit": "VIIRS NOAA-21",
         "keyakinan": "tinggi",
-        "frp_mw": 17.5,
+        "frp_mw": 11.5,
         "kode_wilayah": "33.74"
       }
     },
@@ -3372,15 +3219,49 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.2125,
-          -7.149
+          110.4193,
+          -6.9412
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T10:38:00+07:00",
+        "waktu": "2026-10-09T10:05:00+07:00",
         "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 20.1,
+        "kode_wilayah": "33.74"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.4112,
+          -6.9539
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T05:28:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "tinggi",
+        "frp_mw": 16.6,
+        "kode_wilayah": "33.74"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.4309,
+          -6.9464
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:07:00+07:00",
+        "satelit": "VIIRS NOAA-20",
         "keyakinan": "sedang",
-        "frp_mw": 4.9,
+        "frp_mw": 3.1,
         "kode_wilayah": "33.74"
       }
     },
@@ -3389,15 +3270,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.3916,
-          -7.0004
+          110.4231,
+          -6.9613
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T02:17:00+07:00",
-        "satelit": "MODIS Terra",
+        "waktu": "2026-10-09T11:19:00+07:00",
+        "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
-        "frp_mw": 13.1,
+        "frp_mw": 6.7,
         "kode_wilayah": "33.74"
       }
     },
@@ -3406,49 +3287,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.2269,
-          -6.998
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T13:32:00+07:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "tinggi",
-        "frp_mw": 16.9,
-        "kode_wilayah": "33.74"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.3242,
-          -7.0818
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T09:42:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 6.9,
-        "kode_wilayah": "33.74"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.2386,
-          -7.0678
+          110.4254,
+          -6.9473
         ]
       },
       "properties": {
         "waktu": "2026-10-09T04:49:00+07:00",
         "satelit": "VIIRS NOAA-21",
-        "keyakinan": "tinggi",
-        "frp_mw": 7.9,
+        "keyakinan": "sedang",
+        "frp_mw": 2.1,
         "kode_wilayah": "33.74"
       }
     },
@@ -3457,15 +3304,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.2346,
-          -6.957
+          110.4221,
+          -6.9529
         ]
       },
       "properties": {
         "waktu": "2026-10-09T07:11:00+07:00",
-        "satelit": "VIIRS SNPP",
+        "satelit": "MODIS Terra",
         "keyakinan": "tinggi",
-        "frp_mw": 14.0,
+        "frp_mw": 8.1,
         "kode_wilayah": "33.74"
       }
     },
@@ -3474,13 +3321,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.206,
-          -6.8253
+          110.4742,
+          -6.9838
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T13:22:00+07:00",
-        "satelit": "VIIRS NOAA-20",
+        "waktu": "2026-10-09T12:02:00+07:00",
+        "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
         "frp_mw": 3.5,
         "kode_wilayah": "33.74"
@@ -3491,49 +3338,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.3265,
-          -6.9983
+          110.4603,
+          -7.0114
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T02:55:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 17.4,
-        "kode_wilayah": "33.74"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.1804,
-          -7.0401
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:25:00+07:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 13.4,
-        "kode_wilayah": "33.74"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.3884,
-          -7.1277
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T06:05:00+07:00",
+        "waktu": "2026-10-09T10:25:00+07:00",
         "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
-        "frp_mw": 4.1,
+        "frp_mw": 4.7,
         "kode_wilayah": "33.74"
       }
     },
@@ -3542,15 +3355,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.3251,
-          -7.0342
+          110.4657,
+          -6.9886
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T07:55:00+07:00",
-        "satelit": "VIIRS NOAA-21",
+        "waktu": "2026-10-09T03:51:00+07:00",
+        "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
-        "frp_mw": 18.5,
+        "frp_mw": 21.2,
         "kode_wilayah": "33.74"
       }
     },
@@ -3559,15 +3372,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.4353,
-          -7.0924
+          110.4765,
+          -6.9831
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T11:07:00+07:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "tinggi",
-        "frp_mw": 11.6,
+        "waktu": "2026-10-09T02:15:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "sedang",
+        "frp_mw": 3.5,
         "kode_wilayah": "33.74"
       }
     },
@@ -3576,50 +3389,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          110.609,
-          -7.1019
+          110.4758,
+          -7.0005
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T03:16:00+07:00",
+        "waktu": "2026-10-09T06:14:00+07:00",
         "satelit": "VIIRS SNPP",
-        "keyakinan": "rendah",
-        "frp_mw": 1.1,
-        "kode_wilayah": "33.74"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          110.2117,
-          -6.8404
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:11:00+07:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "rendah",
-        "frp_mw": 1.6,
-        "kode_wilayah": "33.74"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          121.7506,
-          -8.6872
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T10:28:00+08:00",
-        "satelit": "MODIS Terra",
         "keyakinan": "tinggi",
-        "frp_mw": 11.2,
-        "kode_wilayah": "53.08"
+        "frp_mw": 11.3,
+        "kode_wilayah": "33.74"
       }
     },
     {
@@ -3627,33 +3406,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          121.6299,
-          -8.8524
+          110.4652,
+          -7.0094
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T06:09:00+08:00",
+        "waktu": "2026-10-09T04:57:00+07:00",
         "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 5.1,
-        "kode_wilayah": "53.08"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          121.4471,
-          -8.8553
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T06:32:00+08:00",
-        "satelit": "VIIRS NOAA-20",
         "keyakinan": "tinggi",
-        "frp_mw": 6.9,
-        "kode_wilayah": "53.08"
+        "frp_mw": 18.4,
+        "kode_wilayah": "33.74"
       }
     },
     {
@@ -3661,50 +3423,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          121.8421,
-          -8.6979
+          110.4535,
+          -6.9912
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T02:41:00+08:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 4.2,
-        "kode_wilayah": "53.08"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          121.8871,
-          -8.7444
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T10:35:00+08:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 13.2,
-        "kode_wilayah": "53.08"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          121.5708,
-          -8.8497
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T11:12:00+08:00",
+        "waktu": "2026-10-09T04:06:00+07:00",
         "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
-        "frp_mw": 5.8,
-        "kode_wilayah": "53.08"
+        "frp_mw": 2.2,
+        "kode_wilayah": "33.74"
       }
     },
     {
@@ -3712,33 +3440,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          121.8287,
-          -8.647
+          110.4017,
+          -6.9827
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T13:57:00+08:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 14.1,
-        "kode_wilayah": "53.08"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          121.6289,
-          -8.8642
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T04:45:00+08:00",
+        "waktu": "2026-10-09T11:31:00+07:00",
         "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 15.8,
-        "kode_wilayah": "53.08"
+        "keyakinan": "sedang",
+        "frp_mw": 3.6,
+        "kode_wilayah": "33.74"
       }
     },
     {
@@ -3746,33 +3457,16 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          121.6144,
-          -8.9047
+          110.3984,
+          -6.9779
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T05:24:00+08:00",
+        "waktu": "2026-10-09T10:41:00+07:00",
         "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 6.8,
-        "kode_wilayah": "53.08"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          121.5748,
-          -8.8168
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T06:04:00+08:00",
-        "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
-        "frp_mw": 2.8,
-        "kode_wilayah": "53.08"
+        "frp_mw": 4.4,
+        "kode_wilayah": "33.74"
       }
     },
     {
@@ -3780,47 +3474,404 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          121.7114,
-          -8.9799
+          110.419,
+          -6.9934
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T11:58:00+08:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "sedang",
-        "frp_mw": 4.1,
-        "kode_wilayah": "53.08"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          121.8938,
-          -8.7606
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T06:19:00+08:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 8.1,
-        "kode_wilayah": "53.08"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          121.6895,
-          -8.7826
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:19:00+08:00",
+        "waktu": "2026-10-09T08:04:00+07:00",
         "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 13.5,
+        "kode_wilayah": "33.74"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.4123,
+          -6.9934
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T02:19:00+07:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 3.6,
+        "kode_wilayah": "33.74"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.4101,
+          -6.9727
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T02:39:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "tinggi",
+        "frp_mw": 15.5,
+        "kode_wilayah": "33.74"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.392,
+          -6.9835
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T01:28:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 20.5,
+        "kode_wilayah": "33.74"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.4358,
+          -7.0715
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:03:00+07:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 3.5,
+        "kode_wilayah": "33.74"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.3719,
+          -7.0065
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T01:15:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "sedang",
+        "frp_mw": 4.7,
+        "kode_wilayah": "33.74"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.5374,
+          -7.0714
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T05:24:00+07:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 12.5,
+        "kode_wilayah": "33.74"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.3799,
+          -7.007
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T06:04:00+07:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 3.0,
+        "kode_wilayah": "33.74"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.5305,
+          -6.9714
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T11:58:00+07:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "rendah",
+        "frp_mw": 1.8,
+        "kode_wilayah": "33.74"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          110.372,
+          -7.0532
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:58:00+07:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "rendah",
+        "frp_mw": 1.4,
+        "kode_wilayah": "33.74"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6542,
+          -8.8262
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T06:52:00+08:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 8.0,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6624,
+          -8.8321
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T01:23:00+08:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 10.9,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6767,
+          -8.8141
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:09:00+08:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 7.2,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.652,
+          -8.82
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:02:00+08:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 16.6,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6704,
+          -8.8148
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T12:49:00+08:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 16.0,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6657,
+          -8.8214
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T12:15:00+08:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 5.9,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6936,
+          -8.8633
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T13:50:00+08:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 13.5,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6817,
+          -8.8423
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T08:49:00+08:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "tinggi",
+        "frp_mw": 10.5,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6912,
+          -8.8546
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:51:00+08:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 15.7,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6907,
+          -8.8663
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T02:45:00+08:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 19.5,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6977,
+          -8.8614
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:09:00+08:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 19.3,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.609,
+          -8.8773
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T01:25:00+08:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 14.0,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6115,
+          -8.8846
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T06:59:00+08:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 7.6,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6123,
+          -8.8863
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T08:44:00+08:00",
+        "satelit": "MODIS Aqua",
         "keyakinan": "sedang",
         "frp_mw": 5.2,
         "kode_wilayah": "53.08"
@@ -3831,15 +3882,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          121.8662,
-          -9.0026
+          121.6089,
+          -8.8828
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T12:43:00+08:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 3.8,
+        "waktu": "2026-10-09T05:13:00+08:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 19.4,
         "kode_wilayah": "53.08"
       }
     },
@@ -3848,15 +3899,32 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          121.8856,
-          -8.9033
+          121.6132,
+          -8.8958
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T05:11:00+08:00",
+        "waktu": "2026-10-09T13:18:00+08:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 2.6,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.5428,
+          -8.8072
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T08:04:00+08:00",
         "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
-        "frp_mw": 9.1,
+        "frp_mw": 7.8,
         "kode_wilayah": "53.08"
       }
     },
@@ -3865,100 +3933,66 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          121.5579,
-          -8.7248
+          121.6553,
+          -8.8876
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T03:04:00+08:00",
+        "waktu": "2026-10-09T04:45:00+08:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "tinggi",
+        "frp_mw": 8.3,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6129,
+          -8.9378
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:42:00+08:00",
         "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 16.7,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          121.6506,
+          -8.8963
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:50:00+08:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 5.9,
+        "kode_wilayah": "53.08"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.6869,
+          -2.4941
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T01:22:00+09:00",
+        "satelit": "VIIRS NOAA-21",
         "keyakinan": "sedang",
         "frp_mw": 5.0,
-        "kode_wilayah": "53.08"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          121.741,
-          -8.6894
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T09:02:00+08:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 2.1,
-        "kode_wilayah": "53.08"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          121.8257,
-          -8.7316
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T03:11:00+08:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 17.5,
-        "kode_wilayah": "53.08"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          121.7698,
-          -8.6522
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T06:43:00+08:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 10.6,
-        "kode_wilayah": "53.08"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          121.677,
-          -8.9162
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T08:14:00+08:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 5.6,
-        "kode_wilayah": "53.08"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.6508,
-          -2.6173
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T10:28:00+09:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 14.0,
         "kode_wilayah": "91.71"
       }
     },
@@ -3967,15 +4001,83 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          140.5198,
-          -2.4881
+          140.677,
+          -2.4836
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T03:52:00+09:00",
+        "waktu": "2026-10-09T10:47:00+09:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 18.1,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.6591,
+          -2.4894
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:53:00+09:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "tinggi",
+        "frp_mw": 18.5,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.6784,
+          -2.4896
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:04:00+09:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "sedang",
+        "frp_mw": 4.7,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.6637,
+          -2.4923
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T01:20:00+09:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 20.9,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.6718,
+          -2.5087
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T01:48:00+09:00",
         "satelit": "VIIRS NOAA-21",
         "keyakinan": "tinggi",
-        "frp_mw": 6.8,
+        "frp_mw": 16.4,
         "kode_wilayah": "91.71"
       }
     },
@@ -3984,15 +4086,49 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          140.8871,
-          -2.4454
+          140.6583,
+          -2.484
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T06:35:00+09:00",
+        "waktu": "2026-10-09T06:17:00+09:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 8.0,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.7198,
+          -2.5563
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:31:00+09:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 17.1,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.695,
+          -2.5437
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T12:27:00+09:00",
         "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 19.6,
+        "keyakinan": "sedang",
+        "frp_mw": 1.9,
         "kode_wilayah": "91.71"
       }
     },
@@ -4001,15 +4137,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          140.5564,
-          -2.3679
+          140.7103,
+          -2.5486
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T13:10:00+09:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 19.3,
+        "waktu": "2026-10-09T02:05:00+09:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "sedang",
+        "frp_mw": 3.0,
         "kode_wilayah": "91.71"
       }
     },
@@ -4018,132 +4154,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          140.6456,
-          -2.5902
+          140.7104,
+          -2.5577
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T04:52:00+09:00",
+        "waktu": "2026-10-09T12:28:00+09:00",
         "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 12.6,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.6131,
-          -2.6974
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T06:15:00+09:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 6.5,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.5876,
-          -2.6716
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T12:41:00+09:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "sedang",
-        "frp_mw": 2.8,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.4894,
-          -2.4478
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T12:53:00+09:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "sedang",
-        "frp_mw": 4.3,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.5278,
-          -2.6702
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T01:16:00+09:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 3.9,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.5706,
-          -2.7109
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:15:00+09:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 16.2,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.8383,
-          -2.5301
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T02:07:00+09:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 1.6,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.4918,
-          -2.5583
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T04:45:00+09:00",
-        "satelit": "MODIS Terra",
         "keyakinan": "tinggi",
         "frp_mw": 11.6,
         "kode_wilayah": "91.71"
@@ -4154,12 +4171,46 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          140.7541,
-          -2.5206
+          140.6941,
+          -2.5596
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T03:42:00+09:00",
+        "waktu": "2026-10-09T07:17:00+09:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 4.4,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.7145,
+          -2.5552
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T13:47:00+09:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 16.9,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.6933,
+          -2.5448
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T01:08:00+09:00",
         "satelit": "VIIRS NOAA-21",
         "keyakinan": "tinggi",
         "frp_mw": 7.1,
@@ -4171,32 +4222,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          140.9142,
-          -2.5083
+          140.6377,
+          -2.542
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T09:50:00+09:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 20.0,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.5468,
-          -2.7235
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T07:23:00+09:00",
+        "waktu": "2026-10-09T06:23:00+09:00",
         "satelit": "VIIRS NOAA-20",
         "keyakinan": "tinggi",
-        "frp_mw": 11.5,
+        "frp_mw": 13.1,
         "kode_wilayah": "91.71"
       }
     },
@@ -4205,15 +4239,49 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          140.8058,
-          -2.4359
+          140.6426,
+          -2.5459
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T11:06:00+09:00",
+        "waktu": "2026-10-09T11:17:00+09:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 10.0,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.6355,
+          -2.5427
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:07:00+09:00",
         "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 10.2,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.6322,
+          -2.5418
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T12:58:00+09:00",
+        "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
-        "frp_mw": 2.1,
+        "frp_mw": 6.0,
         "kode_wilayah": "91.71"
       }
     },
@@ -4222,49 +4290,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          140.7414,
-          -2.3978
+          140.6408,
+          -2.5522
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T06:52:00+09:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 21.7,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.4874,
-          -2.4436
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T03:51:00+09:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 6.6,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.8629,
-          -2.6038
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T13:12:00+09:00",
+        "waktu": "2026-10-09T12:28:00+09:00",
         "satelit": "VIIRS NOAA-21",
         "keyakinan": "tinggi",
-        "frp_mw": 14.2,
+        "frp_mw": 22.0,
         "kode_wilayah": "91.71"
       }
     },
@@ -4273,12 +4307,12 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          140.5467,
-          -2.4287
+          140.6319,
+          -2.5501
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T09:30:00+09:00",
+        "waktu": "2026-10-09T05:57:00+09:00",
         "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
         "frp_mw": 2.8,
@@ -4290,15 +4324,15 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          140.7479,
-          -2.6207
+          140.5088,
+          -2.6672
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T01:55:00+09:00",
-        "satelit": "VIIRS NOAA-21",
+        "waktu": "2026-10-09T13:23:00+09:00",
+        "satelit": "VIIRS NOAA-20",
         "keyakinan": "sedang",
-        "frp_mw": 3.5,
+        "frp_mw": 3.8,
         "kode_wilayah": "91.71"
       }
     },
@@ -4307,16 +4341,169 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          140.8982,
-          -2.5944
+          140.8568,
+          -2.5144
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T08:57:00+09:00",
+        "waktu": "2026-10-09T08:01:00+09:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 3.1,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.6096,
+          -2.7094
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T10:56:00+09:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 7.4,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.6932,
+          -2.7022
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T07:49:00+09:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 12.6,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          140.4986,
+          -2.6675
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T08:29:00+09:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 16.9,
+        "kode_wilayah": "91.71"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.3114,
+          -2.8511
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T07:32:00+09:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "sedang",
+        "frp_mw": 5.6,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.3226,
+          -2.86
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:20:00+09:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "sedang",
+        "frp_mw": 5.7,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.3021,
+          -2.843
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T02:16:00+09:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 9.1,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.3045,
+          -2.8657
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T02:32:00+09:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 16.3,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.3084,
+          -2.8592
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T12:57:00+09:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 4.2,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.3204,
+          -2.8426
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T11:49:00+09:00",
         "satelit": "VIIRS SNPP",
         "keyakinan": "tinggi",
-        "frp_mw": 13.9,
-        "kode_wilayah": "91.71"
+        "frp_mw": 15.2,
+        "kode_wilayah": "92.03"
       }
     },
     {
@@ -4324,404 +4511,13 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          140.5534,
-          -2.697
+          132.3447,
+          -2.9533
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T13:33:00+09:00",
+        "waktu": "2026-10-09T05:41:00+09:00",
         "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 7.3,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.5669,
-          -2.689
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T03:34:00+09:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 4.5,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.6331,
-          -2.4541
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T10:45:00+09:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "tinggi",
-        "frp_mw": 13.2,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.892,
-          -2.6037
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T07:17:00+09:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "rendah",
-        "frp_mw": 0.9,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          140.7525,
-          -2.5983
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T13:47:00+09:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "rendah",
-        "frp_mw": 2.4,
-        "kode_wilayah": "91.71"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.4407,
-          -3.1061
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T10:43:00+09:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "tinggi",
-        "frp_mw": 9.8,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.5247,
-          -3.107
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T06:24:00+09:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 4.6,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.4315,
-          -2.8904
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T06:28:00+09:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 3.2,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.5303,
-          -3.1096
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T05:15:00+09:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "tinggi",
-        "frp_mw": 14.0,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.1809,
-          -3.0159
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T09:07:00+09:00",
-        "satelit": "MODIS Aqua",
-        "keyakinan": "tinggi",
-        "frp_mw": 9.4,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.5493,
-          -3.0399
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T12:58:00+09:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 5.3,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.5486,
-          -2.7958
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T12:28:00+09:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "tinggi",
-        "frp_mw": 16.7,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.1952,
-          -3.0
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T09:34:00+09:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 4.7,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.4468,
-          -2.9165
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T11:11:00+09:00",
-        "satelit": "VIIRS NOAA-20",
-        "keyakinan": "sedang",
-        "frp_mw": 5.9,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.297,
-          -2.9756
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T04:50:00+09:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 3.2,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.356,
-          -3.0855
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T09:08:00+09:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 3.3,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.2554,
-          -2.9562
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T08:33:00+09:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "sedang",
-        "frp_mw": 1.8,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.275,
-          -2.848
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T11:04:00+09:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 2.1,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.3439,
-          -2.8129
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T09:40:00+09:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 3.4,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.1121,
-          -3.0588
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T01:53:00+09:00",
-        "satelit": "VIIRS SNPP",
-        "keyakinan": "sedang",
-        "frp_mw": 2.2,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.5237,
-          -2.9124
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T04:22:00+09:00",
-        "satelit": "VIIRS NOAA-21",
-        "keyakinan": "sedang",
-        "frp_mw": 5.3,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.1872,
-          -2.87
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T11:35:00+09:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 14.5,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.5208,
-          -3.0583
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T03:37:00+09:00",
-        "satelit": "MODIS Terra",
-        "keyakinan": "tinggi",
-        "frp_mw": 17.5,
-        "kode_wilayah": "92.03"
-      }
-    },
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          132.4626,
-          -3.1087
-        ]
-      },
-      "properties": {
-        "waktu": "2026-10-09T10:02:00+09:00",
-        "satelit": "VIIRS NOAA-20",
         "keyakinan": "sedang",
         "frp_mw": 5.8,
         "kode_wilayah": "92.03"
@@ -4732,15 +4528,49 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          132.1554,
-          -2.8911
+          132.3605,
+          -2.9586
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T05:41:00+09:00",
+        "waktu": "2026-10-09T08:04:00+09:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 17.0,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.3618,
+          -2.9433
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T10:09:00+09:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 11.0,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.3497,
+          -2.9305
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T03:48:00+09:00",
         "satelit": "MODIS Terra",
         "keyakinan": "sedang",
-        "frp_mw": 4.4,
+        "frp_mw": 3.2,
         "kode_wilayah": "92.03"
       }
     },
@@ -4749,15 +4579,49 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          132.1948,
-          -2.7373
+          132.3566,
+          -2.9416
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T11:34:00+09:00",
+        "waktu": "2026-10-09T08:15:00+09:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 8.3,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.3464,
+          -2.9526
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:55:00+09:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 20.4,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.2364,
+          -2.9394
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T08:31:00+09:00",
         "satelit": "MODIS Aqua",
         "keyakinan": "tinggi",
-        "frp_mw": 9.9,
+        "frp_mw": 20.1,
         "kode_wilayah": "92.03"
       }
     },
@@ -4766,15 +4630,100 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          132.2768,
-          -2.8446
+          132.2359,
+          -2.9617
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T07:19:00+09:00",
+        "waktu": "2026-10-09T04:13:00+09:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 15.3,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.2296,
+          -2.937
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T11:43:00+09:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 13.5,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.2397,
+          -2.9416
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T05:46:00+09:00",
+        "satelit": "MODIS Aqua",
+        "keyakinan": "tinggi",
+        "frp_mw": 11.9,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.2327,
+          -2.9525
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T04:23:00+09:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "tinggi",
+        "frp_mw": 14.9,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.2335,
+          -2.9536
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T10:43:00+09:00",
+        "satelit": "VIIRS SNPP",
+        "keyakinan": "tinggi",
+        "frp_mw": 15.8,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.1887,
+          -2.8878
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T06:35:00+09:00",
         "satelit": "VIIRS SNPP",
         "keyakinan": "sedang",
-        "frp_mw": 3.5,
+        "frp_mw": 5.7,
         "kode_wilayah": "92.03"
       }
     },
@@ -4783,15 +4732,83 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          132.2787,
-          -2.9999
+          132.2999,
+          -3.0564
         ]
       },
       "properties": {
-        "waktu": "2026-10-09T03:20:00+09:00",
+        "waktu": "2026-10-09T01:02:00+09:00",
+        "satelit": "VIIRS NOAA-21",
+        "keyakinan": "tinggi",
+        "frp_mw": 8.2,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.4114,
+          -2.838
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T09:08:00+09:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "sedang",
+        "frp_mw": 3.0,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.2227,
+          -3.0059
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T05:37:00+09:00",
+        "satelit": "MODIS Terra",
+        "keyakinan": "tinggi",
+        "frp_mw": 11.4,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.2473,
+          -3.0461
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T08:52:00+09:00",
         "satelit": "VIIRS NOAA-21",
         "keyakinan": "rendah",
-        "frp_mw": 2.0,
+        "frp_mw": 0.8,
+        "kode_wilayah": "92.03"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          132.2767,
+          -2.737
+        ]
+      },
+      "properties": {
+        "waktu": "2026-10-09T10:19:00+09:00",
+        "satelit": "VIIRS NOAA-20",
+        "keyakinan": "rendah",
+        "frp_mw": 2.2,
         "kode_wilayah": "92.03"
       }
     }

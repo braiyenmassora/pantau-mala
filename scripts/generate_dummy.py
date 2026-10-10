@@ -55,21 +55,93 @@ def ringkasan(t, rh, dry):
     hujan = f"{dry} hari tanpa hujan" if dry>0 else "hujan turun dalam 24 jam terakhir"
     return f"Titik panas {tr} dalam 7 hari, kelembapan {rh}%, {hujan}."
 
+def offset_m(lon, lat, dist_m, bearing_deg):
+    """Approx lon/lat offset by meters + bearing (0=N, 90=E)."""
+    br = math.radians(bearing_deg)
+    dlat = (dist_m / 111_320.0) * math.cos(br)
+    cos_lat = math.cos(math.radians(lat)) or 1e-6
+    dlon = (dist_m / (111_320.0 * cos_lat)) * math.sin(br)
+    return lon + dlon, lat + dlat
+
+def make_pt(lon, lat, tz, conf):
+    hh, mm = random.randint(1, 13), random.randint(0, 59)
+    frp = (
+        round(random.uniform(0.8, 2.5), 1) if conf == "rendah"
+        else round(random.uniform(1.5, 6.0), 1) if conf == "sedang"
+        else round(random.uniform(6.0, 22.0), 1)
+    )
+    return (
+        round(lon, 4), round(lat, 4),
+        f"2026-10-09T{hh:02d}:{mm:02d}:00{TZ[tz]}",
+        random.choice(SATS), conf, frp,
+    )
+
+def place_counted_points(lon, lat, tz, kat, hs):
+    """Sedang/Sangat tinggi: 1–3 fire fronts (300 m–2 km) + a few scattered singles.
+    Rendah: keep loose random scatter. Counted points always == hs."""
+    pts = []
+    if hs <= 0:
+        return pts
+
+    if kat == "rendah" or hs < 3:
+        for _ in range(hs):
+            conf = "tinggi" if (kat == "sangat_tinggi" and random.random() < 0.6) else "sedang"
+            o_lon, o_lat = offset_m(
+                lon, lat,
+                random.uniform(500, 25_000),
+                random.uniform(0, 360),
+            )
+            pts.append(make_pt(o_lon, o_lat, tz, conf))
+        return pts
+
+    # 1–3 fronts; each front needs ≥3 points for DBSCAN later
+    n_fronts = min(3, max(1, hs // 5))
+    front_budget = max(n_fronts * 3, hs - max(1, hs // 5))  # leave some singles
+    front_budget = min(front_budget, hs)
+    singles = hs - front_budget
+
+    # Split front_budget across fronts (≥3 each when possible)
+    sizes = [3] * n_fronts
+    rem = front_budget - 3 * n_fronts
+    for i in range(rem):
+        sizes[i % n_fronts] += 1
+
+    for fi, size in enumerate(sizes):
+        # Front center offset from pusat (a few km away, fronts separated)
+        f_lon, f_lat = offset_m(
+            lon, lat,
+            random.uniform(1_500, 8_000),
+            (fi * (360 / n_fronts) + random.uniform(-20, 20)) % 360,
+        )
+        for _ in range(size):
+            conf = "tinggi" if (kat == "sangat_tinggi" and random.random() < 0.6) else "sedang"
+            p_lon, p_lat = offset_m(
+                f_lon, f_lat,
+                random.uniform(300, 2_000),  # tight fire front
+                random.uniform(0, 360),
+            )
+            pts.append(make_pt(p_lon, p_lat, tz, conf))
+
+    for _ in range(singles):
+        conf = "tinggi" if (kat == "sangat_tinggi" and random.random() < 0.6) else "sedang"
+        s_lon, s_lat = offset_m(
+            lon, lat,
+            random.uniform(5_000, 25_000),
+            random.uniform(0, 360),
+        )
+        pts.append(make_pt(s_lon, s_lat, tz, conf))
+
+    assert len(pts) == hs
+    return pts
+
 wilayah=[]; feats=[]
 for kode,nama,prov,tz,lon,lat,skor,t,(suhu,kond,rh,angin,dry),pm in REG:
     hs=t[-1]; kat=kategori(skor); ud=udara(pm)
-    pts=[]
-    for i in range(hs):
-        conf = "tinggi" if (kat=="sangat_tinggi" and random.random()<0.6) else "sedang"
-        hh=random.randint(1,13); mm=random.randint(0,59)
-        pts.append((round(lon+random.uniform(-0.25,0.25),4), round(lat+random.uniform(-0.2,0.2),4),
-                    f"2026-10-09T{hh:02d}:{mm:02d}:00{TZ[tz]}", random.choice(SATS), conf,
-                    round(random.uniform(1.5,6.0) if conf=="sedang" else random.uniform(6.0,22.0),1)))
+    pts = place_counted_points(lon, lat, tz, kat, hs)
     # tambahan titik keyakinan rendah (tampil di peta, tidak dihitung)
     for _ in range(random.choice([0,1,2])):
-        pts.append((round(lon+random.uniform(-0.3,0.3),4), round(lat+random.uniform(-0.25,0.25),4),
-                    f"2026-10-09T{random.randint(1,13):02d}:{random.randint(0,59):02d}:00{TZ[tz]}",
-                    random.choice(SATS),"rendah",round(random.uniform(0.8,2.5),1)))
+        o_lon, o_lat = offset_m(lon, lat, random.uniform(1_000, 30_000), random.uniform(0, 360))
+        pts.append(make_pt(o_lon, o_lat, tz, "rendah"))
     counted=[p for p in pts if p[4]!="rendah"]
     last=max(counted, key=lambda p:p[2]) if counted else max(pts,key=lambda p:p[2])
     for p in pts:

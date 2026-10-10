@@ -32,10 +32,10 @@
       "kategori": "tidak_sehat"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T13:35:00+07:00",
-      "satelit": "VIIRS SNPP",
-      "keyakinan": "tinggi",
-      "frp_mw": 11.3
+      "waktu": "2026-10-09T13:57:00+07:00",
+      "satelit": "VIIRS NOAA-21",
+      "keyakinan": "sedang",
+      "frp_mw": 4.2
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 42%, 11 hari tanpa hujan.",
     "saran": [
@@ -77,10 +77,10 @@
       "kategori": "tidak_sehat"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T13:33:00+09:00",
-      "satelit": "MODIS Aqua",
+      "waktu": "2026-10-09T13:47:00+09:00",
+      "satelit": "VIIRS NOAA-20",
       "keyakinan": "tinggi",
-      "frp_mw": 7.3
+      "frp_mw": 16.9
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 49%, 9 hari tanpa hujan.",
     "saran": [
@@ -122,10 +122,10 @@
       "kategori": "tidak_sehat"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T13:35:00+07:00",
+      "waktu": "2026-10-09T12:02:00+07:00",
       "satelit": "MODIS Aqua",
       "keyakinan": "sedang",
-      "frp_mw": 5.5
+      "frp_mw": 3.5
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 45%, 10 hari tanpa hujan.",
     "saran": [
@@ -167,10 +167,10 @@
       "kategori": "tidak_sehat"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T13:55:00+07:00",
-      "satelit": "MODIS Aqua",
+      "waktu": "2026-10-09T13:19:00+07:00",
+      "satelit": "VIIRS SNPP",
       "keyakinan": "tinggi",
-      "frp_mw": 11.4
+      "frp_mw": 9.8
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 48%, 9 hari tanpa hujan.",
     "saran": [
@@ -212,10 +212,10 @@
       "kategori": "tidak_sehat"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T12:58:00+09:00",
-      "satelit": "VIIRS SNPP",
+      "waktu": "2026-10-09T12:57:00+09:00",
+      "satelit": "MODIS Terra",
       "keyakinan": "sedang",
-      "frp_mw": 5.3
+      "frp_mw": 4.2
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 51%, 8 hari tanpa hujan.",
     "saran": [
@@ -257,10 +257,10 @@
       "kategori": "tidak_sehat"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T13:29:00+08:00",
-      "satelit": "VIIRS NOAA-21",
+      "waktu": "2026-10-09T13:33:00+08:00",
+      "satelit": "VIIRS NOAA-20",
       "keyakinan": "tinggi",
-      "frp_mw": 6.5
+      "frp_mw": 15.5
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 47%, 8 hari tanpa hujan.",
     "saran": [
@@ -302,10 +302,10 @@
       "kategori": "tidak_sehat"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T13:57:00+08:00",
-      "satelit": "VIIRS NOAA-20",
+      "waktu": "2026-10-09T13:50:00+08:00",
+      "satelit": "VIIRS SNPP",
       "keyakinan": "tinggi",
-      "frp_mw": 14.1
+      "frp_mw": 13.5
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 46%, 12 hari tanpa hujan.",
     "saran": [
@@ -347,10 +347,10 @@
       "kategori": "tidak_sehat"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T13:55:00+07:00",
-      "satelit": "MODIS Terra",
+      "waktu": "2026-10-09T13:35:00+07:00",
+      "satelit": "MODIS Aqua",
       "keyakinan": "tinggi",
-      "frp_mw": 19.4
+      "frp_mw": 16.6
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 52%, 7 hari tanpa hujan.",
     "saran": [
@@ -392,10 +392,10 @@
       "kategori": "tidak_sehat"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T13:35:00+08:00",
-      "satelit": "VIIRS NOAA-21",
+      "waktu": "2026-10-09T13:54:00+08:00",
+      "satelit": "MODIS Terra",
       "keyakinan": "sedang",
-      "frp_mw": 3.0
+      "frp_mw": 3.4
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 50%, 7 hari tanpa hujan.",
     "saran": [
@@ -437,10 +437,10 @@
       "kategori": "tidak_sehat"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T12:58:00+08:00",
-      "satelit": "VIIRS SNPP",
-      "keyakinan": "sedang",
-      "frp_mw": 3.7
+      "waktu": "2026-10-09T13:34:00+08:00",
+      "satelit": "VIIRS NOAA-21",
+      "keyakinan": "tinggi",
+      "frp_mw": 20.0
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 54%, 6 hari tanpa hujan.",
     "saran": [
@@ -482,10 +482,10 @@
       "kategori": "tidak_sehat"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T12:59:00+07:00",
+      "waktu": "2026-10-09T12:51:00+07:00",
       "satelit": "VIIRS SNPP",
-      "keyakinan": "tinggi",
-      "frp_mw": 10.3
+      "keyakinan": "sedang",
+      "frp_mw": 2.6
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 51%, 8 hari tanpa hujan.",
     "saran": [
@@ -527,10 +527,10 @@
       "kategori": "sedang"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T11:12:00+07:00",
-      "satelit": "VIIRS NOAA-20",
+      "waktu": "2026-10-09T11:58:00+07:00",
+      "satelit": "VIIRS NOAA-21",
       "keyakinan": "sedang",
-      "frp_mw": 5.9
+      "frp_mw": 3.0
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 61%, 4 hari tanpa hujan.",
     "saran": [
@@ -572,10 +572,10 @@
       "kategori": "sedang"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T13:37:00+07:00",
-      "satelit": "MODIS Aqua",
+      "waktu": "2026-10-09T13:47:00+07:00",
+      "satelit": "VIIRS NOAA-20",
       "keyakinan": "sedang",
-      "frp_mw": 3.5
+      "frp_mw": 2.3
     },
     "ringkasan": "Titik panas turun dalam 7 hari, kelembapan 63%, 3 hari tanpa hujan.",
     "saran": [
@@ -617,10 +617,10 @@
       "kategori": "sedang"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T10:47:00+07:00",
+      "waktu": "2026-10-09T11:57:00+07:00",
       "satelit": "VIIRS SNPP",
       "keyakinan": "sedang",
-      "frp_mw": 5.8
+      "frp_mw": 5.2
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 60%, 4 hari tanpa hujan.",
     "saran": [
@@ -662,10 +662,10 @@
       "kategori": "baik"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T12:57:00+07:00",
+      "waktu": "2026-10-09T11:17:00+07:00",
       "satelit": "MODIS Terra",
       "keyakinan": "sedang",
-      "frp_mw": 3.5
+      "frp_mw": 4.9
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 66%, 3 hari tanpa hujan.",
     "saran": [
@@ -706,10 +706,10 @@
       "kategori": "sedang"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T12:55:00+08:00",
+      "waktu": "2026-10-09T11:51:00+08:00",
       "satelit": "VIIRS SNPP",
       "keyakinan": "sedang",
-      "frp_mw": 5.3
+      "frp_mw": 3.3
     },
     "ringkasan": "Titik panas stabil dalam 7 hari, kelembapan 64%, 2 hari tanpa hujan.",
     "saran": [
@@ -751,10 +751,10 @@
       "kategori": "baik"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T13:36:00+08:00",
-      "satelit": "VIIRS NOAA-21",
+      "waktu": "2026-10-09T13:53:00+08:00",
+      "satelit": "VIIRS NOAA-20",
       "keyakinan": "sedang",
-      "frp_mw": 2.8
+      "frp_mw": 3.4
     },
     "ringkasan": "Titik panas stabil dalam 7 hari, kelembapan 74%, 1 hari tanpa hujan.",
     "saran": [
@@ -794,10 +794,10 @@
       "kategori": "baik"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T11:43:00+08:00",
-      "satelit": "MODIS Aqua",
+      "waktu": "2026-10-09T08:42:00+08:00",
+      "satelit": "VIIRS SNPP",
       "keyakinan": "sedang",
-      "frp_mw": 5.6
+      "frp_mw": 2.0
     },
     "ringkasan": "Titik panas naik dalam 7 hari, kelembapan 58%, 12 hari tanpa hujan.",
     "saran": [
@@ -837,10 +837,10 @@
       "kategori": "baik"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T07:16:00+09:00",
-      "satelit": "MODIS Terra",
+      "waktu": "2026-10-09T02:37:00+09:00",
+      "satelit": "VIIRS SNPP",
       "keyakinan": "sedang",
-      "frp_mw": 1.7
+      "frp_mw": 4.6
     },
     "ringkasan": "Titik panas turun dalam 7 hari, kelembapan 72%, 1 hari tanpa hujan.",
     "saran": [
@@ -880,10 +880,10 @@
       "kategori": "baik"
     },
     "deteksi_terakhir": {
-      "waktu": "2026-10-09T04:53:00+07:00",
-      "satelit": "VIIRS SNPP",
+      "waktu": "2026-10-09T11:38:00+07:00",
+      "satelit": "MODIS Terra",
       "keyakinan": "sedang",
-      "frp_mw": 3.6
+      "frp_mw": 5.1
     },
     "ringkasan": "Titik panas stabil dalam 7 hari, kelembapan 80%, hujan turun dalam 24 jam terakhir.",
     "saran": [
