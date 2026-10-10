@@ -11,12 +11,11 @@ import {
 import { useHotspotAreas, useRegions } from '@/data/queries'
 import { copy } from '@/copy/id'
 import { formatDateTime, formatNumber } from '@/lib/format'
-import {
-  AREA_MIN_ZOOM,
-  type HotspotAreaProperties,
-} from '@/lib/hotspot-areas'
+import type { HotspotAreaProperties } from '@/lib/hotspot-areas'
 import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
 import { cn } from '@/lib/utils'
+
+const AREA_MIN_ZOOM = 7
 
 const FILL: Record<string, string> = {
   sangat_tinggi: withAlpha(RISK_CATEGORIES.sangat_tinggi.dot, 0.16),
@@ -38,7 +37,6 @@ type SelectedArea = {
   props: HotspotAreaProperties
   lon: number
   lat: number
-  nama: string
   zona: 'WIB' | 'WITA' | 'WIT'
 }
 
@@ -76,9 +74,9 @@ export function HotspotAreasLayer() {
   }, [zoom])
 
   const byKode = useMemo(() => {
-    const m = new Map<string, { nama: string; zona: 'WIB' | 'WITA' | 'WIT' }>()
+    const m = new Map<string, { zona: 'WIB' | 'WITA' | 'WIT' }>()
     for (const r of regions ?? []) {
-      m.set(r.kode, { nama: r.nama, zona: r.zona_waktu })
+      m.set(r.kode, { zona: r.zona_waktu })
     }
     return m
   }, [regions])
@@ -142,7 +140,6 @@ export function HotspotAreasLayer() {
               props,
               lon: e.longitude,
               lat: e.latitude,
-              nama: meta?.nama ?? props.kode_wilayah,
               zona: meta?.zona ?? 'WIB',
             })
           }}
@@ -198,7 +195,6 @@ export function HotspotAreasLayer() {
                   formatDateTime(selected.props.waktu_terakhir, selected.zona),
                 )}
               </li>
-              <li className="font-medium text-ink">{selected.nama}</li>
             </ul>
           </div>
         </MapPopup>

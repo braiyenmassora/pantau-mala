@@ -86,6 +86,8 @@ Hanya 6 ukuran (12, 13, 14, 16, 20, 28). Tidak ada teks huruf kapital semua.
 | Ikon di latar `ink` (chip terpilih) | `surface` |
 | Aksi & positif: logo, centang, lokasi pengguna, ikon EmptyState | `brand` |
 | Indikator risiko (dot, halo, cincin, skala) | `risk-*` sesuai kategori |
+| Pin peta: Flame Sangat tinggi / Sedang | `fill` + `stroke` `risk-high` / `risk-mid` |
+| Pin peta: titik Rendah | `risk-low` |
 | Teks/ikon di atas tint kategori | `risk-*-text` |
 | Ikon nonaktif | `ink-3` |
 
@@ -98,7 +100,7 @@ Warna risiko **tidak** untuk dekorasi. Kontras teks/latar ≥ 4,5:1 (teks ≥ 18
 | 48 | Search box | kiri 8 (logo 32), kanan 4 (area aksi 40×40) | 18 | 8 | 14/20 |
 | 40 | Tombol md, kontrol peta, tombol ikon | 16 (ikon-saja: 0, kotak 40×40) | 18 (kontrol peta 20) | 8 | 14/20 |
 | 36 | Tombol sm, chip, dropdown, item menu, tombol lipat | 12 (chip/dropdown: kiri 12, kanan 14) | 16 | 8 (dot→teks 4) | 13/18 |
-| 28 | Pin peta | kiri 8, kanan 10 | dot 8 | 8 | 13/18 Mono |
+| 28 | Pin peta (lingkaran) | 0 (ikon di tengah) | Flame 16 / titik 8 | — | — |
 | 24 | Badge, pill status waktu, label radius | 10 | dot 6–8 | 4 | 12/16 |
 
 Aturan tambahan: ikon di tengah kotaknya (`flex items-center justify-center`); baris ikon+teks `items-center`; jarak ikon→teks ikut tabel §3; label+nilai bertumpuk gap 4; kartu padding 16; tile padding 12; antar-bagian 24; judul→isi 8; kartu+ikon bulat: lingkaran 40, gap 12; baris daftar min 64, padding 12/8, cincin 40, gap 12; skala risiko track 6 / celah 2 / penanda 12 / track→label 8; sparkline 128×40 / 56×20 / detail 64; tinggi kontrol hanya 24/28/36/40/48.
@@ -133,10 +135,11 @@ Menu: kartu putih, radius 12, bayangan `lg`, padding 4, item 36 px radius 8; ter
 
 **Fokus keyboard** – cincin 2 px `brand`, offset 2, hanya `focus-visible` (bukan saat klik mouse saja).
 
-**Pin peta** – pill satu baris tinggi 28, padding kiri 8 / kanan 10, gap 8. Isi selalu: dot 8 + skor Mono 13/18 600. Lebar pin **tidak** berubah saat aktif; nama wilayah **tidak** pernah di dalam pin.
-- Biasa (tidak aktif): latar `surface`, garis 1 px `line`, skor `ink`, bayangan `shadow-map`.
-- Aktif (hover atau terpilih): latar `risk-{kategori}-tint`, garis 1,5 px `risk-{kategori}`, skor `risk-{kategori}-text`, bayangan `0 2px 8px rgba(20,38,27,.24)`, scale 1,1, z-index 20, transisi 150 ms. Fokus keyboard: `ring-2 ring-brand ring-offset-2` di atas gaya aktif.
-- Tooltip nama: shadcn Tooltip saat hover, fokus keyboard, **atau pin terpilih (klik)**; di atas pin, jarak 8, latar `ink`, teks `surface` caption 12/16, radius 8, padding 4/8, delay 150 ms. `aria-label` tetap `"{nama}, skor {skor}, risiko {kategori}"`.
+**Pin peta** – lingkaran 28×28, isi di tengah (`flex items-center justify-center`). Semua kategori sama bentuknya; **tidak** ada angka skor dan **tidak** ada nama wilayah di pin.
+- Isi: Sangat tinggi = Flame 16 `fill`+`stroke` `risk-high`; Sedang = Flame 16 `fill`+`stroke` `risk-mid`; Rendah = titik bulat 8 `risk-low` (tanpa ikon api).
+- Biasa (tidak aktif): latar `surface`, garis 1 px `line`, bayangan `shadow-map`.
+- Aktif (hover atau terpilih): ukuran tetap 28, latar `risk-{kategori}-tint`, garis 1,5 px `risk-{kategori}`, bayangan `0 2px 8px rgba(20,38,27,.24)`, scale 1,1, z-index 20, transisi 150 ms. Fokus keyboard: `ring-2 ring-brand ring-offset-2` di atas gaya aktif.
+- Tooltip: shadcn Tooltip saat hover & fokus keyboard (**tidak** saat terpilih); di atas pin, jarak 8, latar `ink`, teks `surface` caption 12/16, radius 8, padding 4/8, delay 150 ms. Isi `"{nama} · Skor {skor}"` (skor Mono). `aria-label` `"{nama}, risiko {kategori}, skor {skor}"`.
 
 **Cluster** – lingkaran 40 + 6 × jumlah (px), garis putih 3, warna = kategori tertinggi, cincin 6 px warna kategori 18%. Hover: latar tetap kategori tertinggi, cincin dipertegas (opacity 30%). Klik = zoom in.
 
@@ -146,7 +149,9 @@ Menu: kartu putih, radius 12, bayangan `lg`, padding 4, item 36 px radius 8; ter
 
 **Kontrol peta** – kanan bawah: lokasi saya, zoom +/−, masing-masing 40×40, radius 8, gap 8.
 
-**Keterangan peta** – dua kartu berdampingan kiri bawah (`flex` row, gap 8, `items-stretch`; wrap bila lebar &lt; 1100 dan panel terbuka). Tiap kartu: `surface`, garis `line`, radius 12, bayangan `sm`, padding 8/12, `items-center` gap 8. Kotak ikon kiri lebar 36. Kartu 1: dot + judul "82" / "Skor risiko, makin tinggi makin rawan". Kartu 2: tiga lingkaran kecil (hijau, kuning, merah) + judul "Lingkaran" / "Makin besar, makin banyak titik panas".
+**Keterangan peta** – kartu berdampingan kiri bawah (`flex` row, gap 8, `items-stretch`; wrap bila lebar &lt; 1100 dan panel terbuka). Tiap kartu: `surface`, garis `line`, radius 12, bayangan `sm`, padding 8/12, `items-center` gap 8. Kotak ikon kiri lebar 36 (kartu Warna boleh lebih lebar untuk tiga penanda). Kartu 1: tiga penanda kecil berjajar (Flame `risk-high`, Flame `risk-mid`, titik `risk-low`), masing-masing 14, jarak 4 + judul "Warna" / "Tingkat risiko kebakaran". Kartu 2: tiga lingkaran kecil (hijau, kuning, merah) + judul "Lingkaran" / "Makin besar, makin banyak titik panas". Kartu 3 (hanya zoom ≥ 7): kotak kecil merah (isi `risk-high` 16%, garis 1,5 px 70%) + judul "Area" / "Perkiraan area titik panas".
+
+**Perkiraan area titik panas (peta)** – layer poligon MapLibre di bawah pin dan lokasi pengguna; tampil hanya zoom ≥ 7. Pada zoom ≥ 7 halo pin disembunyikan. Isi `risk-{kategori}` 16%, garis 1,5 px `risk-{kategori}` 70%, hover isi 24%. Klik → kartu kecil (`surface`, radius 12, bayangan `lg`, padding 12, lebar 240): judul "Perkiraan area titik panas" + ⓘ (tooltip: dihitung dari titik panas satelit yang berdekatan; bukan luas terbakar sebenarnya), lalu "{n} titik panas", "Luas sekitar {x} km²", "Terakhir terdeteksi {waktu}". Esc / klik di luar menutup. Jangan memakai kata "area terbakar" atau "luas kebakaran".
 
 **Atribusi basemap** – disembunyikan di peta; atribusi sumber data ada di footer panel.
 
@@ -218,14 +223,16 @@ Panel (flex kolom, overflow hidden)
 3. *Ringkasan* (paragraf).
 4. *Yang bisa kamu lakukan* (kartu info berisi daftar centang).
 5. *Kondisi saat ini* (grid 2 kolom, 6 tile, gap 8).
-6. *Tren titik panas 7 hari* (judul + "8 → 23 titik" di kanan, grafik tinggi 64, label tanggal awal–akhir).
-7. *Info teknis satelit* (selalu terbuka: Waktu, Satelit, Tingkat keyakinan, Intensitas api (FRP)).
+6. *Area titik panas* (bila ada): "2 area · sekitar 6,4 km²"; klik → peta `fitBounds` ke area wilayah itu.
+7. *Tren titik panas 7 hari* (judul + "8 → 23 titik" di kanan, grafik tinggi 64, label tanggal awal–akhir).
+8. *Info teknis satelit* (selalu terbuka: Waktu, Satelit, Tingkat keyakinan, Intensitas api (FRP)).
 
 ### 6.4 Lapisan (z-index)
 
 | Lapisan | z-index |
 | --- | --- |
-| Peta, halo | 0 |
+| Peta, poligon area (canvas) | 0 |
+| Halo (disembunyikan zoom ≥ 7) | 0 |
 | Pin | 10 (aktif/hover 20) |
 | Cluster | 12 |
 | Titik lokasi pengguna | 15 |
@@ -248,7 +255,7 @@ Panel (flex kolom, overflow hidden)
 ## 8. Copywriting
 
 - Sapaan **"kamu"**; huruf besar hanya di awal kalimat; **tidak ada teks kapital semua**.
-- Istilah: **titik panas** (bukan hotspot), **tingkat keyakinan** Rendah/Sedang/Tinggi (bukan confidence), **intensitas api (FRP)**. Nama satelit dan PM2.5 tetap.
+- Istilah: **titik panas** (bukan hotspot), **tingkat keyakinan** Rendah/Sedang/Tinggi (bukan confidence), **intensitas api (FRP)**, **perkiraan area titik panas** (jangan "area terbakar" / "luas kebakaran"). Nama satelit dan PM2.5 tetap.
 - Angka desimal pakai koma (9,2 km), kecuali koordinat. Tanggal: "09 Okt 2026, 14:05 WIB".
 - Waktu deteksi memakai zona wilayahnya (WIB/WITA/WIT); waktu "Diperbarui" tetap WIB.
 - Detail wilayah wajib punya "Yang bisa kamu lakukan" (saran per kategori + kualitas udara; Sangat tinggi menyebut Damkar 113 / darurat 112).

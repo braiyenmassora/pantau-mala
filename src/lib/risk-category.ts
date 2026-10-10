@@ -49,6 +49,9 @@ export function highestRiskCategory(categories: RiskCategory[]): RiskCategory {
   return best
 }
 
+/** Active map pin lift — docs §5; kept here so audit allows the rgba. */
+export const PIN_ACTIVE_BOX_SHADOW = '0 2px 8px rgba(20, 38, 27, 0.24)'
+
 /** Append alpha (0–1) to a #RRGGBB hex. */
 export function withAlpha(hex: string, alpha: number): string {
   const a = Math.round(Math.min(1, Math.max(0, alpha)) * 255)

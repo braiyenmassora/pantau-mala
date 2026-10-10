@@ -23,9 +23,9 @@ for (const r of rows) {
   )
 }
 
-/** JS needed before the deferred map chunk (exclude maplibre / map-shell). */
+/** JS needed before deferred map / turf chunks (exclude maplibre, map-shell, hotspot-areas). */
 const initial = rows.filter(
-  (r) => !/maplibre|map-shell/i.test(r.name),
+  (r) => !/maplibre|map-shell|hotspot-areas/i.test(r.name),
 )
 
 const initialGzip = initial.reduce((s, r) => s + r.gzip, 0)

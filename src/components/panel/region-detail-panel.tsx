@@ -1,5 +1,3 @@
-import bbox from '@turf/bbox'
-import { featureCollection } from '@turf/helpers'
 import {
   Check,
   Cloud,
@@ -23,7 +21,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useHotspotAreas, useMeta } from '@/data/queries'
-import type { AirQualityCategory, ConfidenceLevel, Region } from '@/data/types'
+import type { AirQualityCategory, Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import {
   formatCoordinates,
@@ -37,9 +35,8 @@ import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui'
 
-const CONFIDENCE_LABEL: Record<ConfidenceLevel, string> = copy.confidence
-
-const AIR_LABEL: Record<AirQualityCategory, string> = copy.air
+const CONFIDENCE_LABEL = copy.keyakinan
+const AIR_LABEL = copy.air
 
 const AIR_TEXT: Record<AirQualityCategory, string> = {
   baik: 'text-risk-low-text',
@@ -85,7 +82,25 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
 
   function fitRegionAreas() {
     if (!mapRef?.current || regionAreas.length === 0) return
-    const [west, south, east, north] = bbox(featureCollection(regionAreas))
+    let west = Infinity
+    let south = Infinity
+    let east = -Infinity
+    let north = -Infinity
+    const walk = (coords: unknown): void => {
+      if (!Array.isArray(coords) || coords.length === 0) return
+      if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+        const lon = coords[0] as number
+        const lat = coords[1] as number
+        if (lon < west) west = lon
+        if (lat < south) south = lat
+        if (lon > east) east = lon
+        if (lat > north) north = lat
+        return
+      }
+      for (const c of coords) walk(c)
+    }
+    for (const f of regionAreas) walk(f.geometry.coordinates)
+    if (!Number.isFinite(west)) return
     mapRef.current.fitBounds(
       [
         [west, south],

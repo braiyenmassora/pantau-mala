@@ -49,8 +49,15 @@ export const copy = {
     mapFail: {
       title: 'Peta belum bisa ditampilkan',
       description:
-        'Browser tidak mendukung WebGL atau basemap gagal dimuat. Panel informasi tetap bisa dipakai.',
+        'Browser kamu tidak mendukung peta interaktif. Panel informasi tetap bisa dipakai.',
       action: 'Muat ulang',
+    },
+    basemapFail: {
+      title: 'Peta dasar belum termuat',
+      action: 'Coba lagi',
+    },
+    mapPartial: {
+      title: 'Sebagian peta belum bisa ditampilkan',
     },
     mapLoading: 'Memuat peta…',
   },
@@ -101,7 +108,7 @@ export const copy = {
     riskTooltip:
       'Skor 0–100 dari gabungan jumlah titik panas, cuaca kering, dan tren 7 hari. Makin tinggi, makin besar kemungkinan api meluas.',
   },
-  confidence: {
+  keyakinan: {
     rendah: 'Rendah',
     sedang: 'Sedang',
     tinggi: 'Tinggi',
@@ -117,6 +124,7 @@ export const copy = {
     radius25: 'Dalam radius 25 km',
     radiusBadge: 'Radius 25 km',
     hotspotUnit: 'titik panas',
+    nearbyNoHotspots: 'Tidak ada titik panas dalam radius 25 km.',
     nearest: 'Paling dekat',
     km: 'km',
     riskTitle: 'Risiko di sekitar kamu',
@@ -134,8 +142,9 @@ export const copy = {
     useMyLocation: 'Gunakan lokasi kamu',
     zoomIn: 'Perbesar',
     zoomOut: 'Perkecil',
-    pinAria: (nama: string, skor: number, risiko: string) =>
-      `${nama}, skor ${skor}, risiko ${risiko}`,
+    pinAria: (nama: string, risiko: string, skor: number) =>
+      `${nama}, risiko ${risiko}, skor ${skor}`,
+    pinTooltip: (nama: string) => `${nama} · Skor`,
   },
   filter: {
     allProvinces: 'Semua provinsi',
@@ -177,14 +186,13 @@ export const copy = {
       `${count} area · sekitar ${km} km²`,
   },
   legend: {
-    scoreTitle: '82',
-    scoreHint: 'Skor risiko, makin tinggi makin rawan',
+    colorTitle: 'Warna',
+    colorHint: 'Tingkat risiko kebakaran',
     haloTitle: 'Lingkaran',
     haloHint: 'Makin besar, makin banyak titik panas',
     areaTitle: 'Area',
     areaHint: 'Perkiraan area titik panas',
   },
-
   search: {
     provinces: 'Provinsi',
     kabkota: 'Kabupaten/kota',

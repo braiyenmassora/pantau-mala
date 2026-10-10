@@ -70,12 +70,16 @@ const region: Region = {
   saran: [],
 }
 
-function renderPin() {
+function renderPin(overrides: Partial<Region> = {}) {
   return render(
     <TooltipProvider>
-      <RegionPin region={region} />
+      <RegionPin region={{ ...region, ...overrides }} />
     </TooltipProvider>,
   )
+}
+
+function pinButton(name = 'Kab. Pulang Pisau, risiko Sangat tinggi, skor 82') {
+  return screen.getByRole('button', { name })
 }
 
 describe('RegionPin', () => {
@@ -86,37 +90,62 @@ describe('RegionPin', () => {
     useMapStore.setState({ selectedCode: null, hoveredCode: null })
   })
 
-  it('keeps aria-label with nama, skor, and risiko', () => {
+  it('keeps aria-label with nama, risiko, and skor', () => {
     renderPin()
-    expect(
-      screen.getByRole('button', {
-        name: 'Kab. Pulang Pisau, skor 82, risiko Sangat tinggi',
-      }),
-    ).toBeTruthy()
+    expect(pinButton()).toBeTruthy()
   })
 
-  it('keeps skor only inside the pin; name stays in tooltip when selected', async () => {
-    useMapStore.setState({ selectedCode: region.kode })
+  it('sangat_tinggi pin shows Flame with risk-high colors, no skor digit', () => {
     renderPin()
-    const pin = screen.getByRole('button', {
-      name: 'Kab. Pulang Pisau, skor 82, risiko Sangat tinggi',
+    const pin = pinButton()
+    const icon = pin.querySelector('svg')
+    expect(icon).toBeTruthy()
+    expect(icon?.classList.contains('fill-risk-high')).toBe(true)
+    expect(icon?.classList.contains('stroke-risk-high')).toBe(true)
+    expect(pin.textContent).toBe('')
+  })
+
+  it('sedang pin shows Flame with risk-mid colors', () => {
+    renderPin({
+      kode: '62.12',
+      nama: 'Kab. Sedang',
+      skor: 55,
+      kategori: 'sedang',
+      titik_panas_24j: 4,
     })
-    expect(pin.textContent).toBe('82')
-    expect((await screen.findByRole('tooltip')).textContent).toContain(
-      'Kab. Pulang Pisau',
-    )
+    const pin = pinButton('Kab. Sedang, risiko Sedang, skor 55')
+    const icon = pin.querySelector('svg')
+    expect(icon?.classList.contains('fill-risk-mid')).toBe(true)
+    expect(icon?.classList.contains('stroke-risk-mid')).toBe(true)
   })
 
-  it('shows wilayah name in tooltip on click', async () => {
+  it('rendah pin shows a risk-low dot without Flame', () => {
+    renderPin({
+      kode: '62.13',
+      nama: 'Kab. Rendah',
+      skor: 12,
+      kategori: 'rendah',
+      titik_panas_24j: 0,
+    })
+    const pin = pinButton('Kab. Rendah, risiko Rendah, skor 12')
+    expect(pin.querySelector('svg')).toBeNull()
+    const dot = pin.querySelector('.bg-risk-low')
+    expect(dot).toBeTruthy()
+    expect(dot?.classList.contains('size-2')).toBe(true)
+  })
+
+  it('tooltip shows nama and skor on hover; hidden when selected', async () => {
     const user = userEvent.setup()
     renderPin()
-    await user.click(
-      screen.getByRole('button', {
-        name: 'Kab. Pulang Pisau, skor 82, risiko Sangat tinggi',
-      }),
-    )
-    expect((await screen.findByRole('tooltip')).textContent).toContain(
-      'Kab. Pulang Pisau',
-    )
+    const pin = pinButton()
+    await user.hover(pin)
+    const tip = await screen.findByRole('tooltip')
+    expect(tip.textContent).toContain('Kab. Pulang Pisau')
+    expect(tip.textContent).toContain('Skor')
+    expect(tip.textContent).toContain('82')
+    expect(tip.querySelector('.font-mono')?.textContent).toBe('82')
+
+    await user.click(pin)
+    expect(screen.queryByRole('tooltip')).toBeNull()
   })
 })

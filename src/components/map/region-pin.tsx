@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Flame } from 'lucide-react'
 
 import { focusRing } from '@/components/common/focus-ring'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
@@ -17,7 +18,11 @@ import {
 } from '@/lib/halo'
 import { getMapPadding } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
-import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
+import {
+  PIN_ACTIVE_BOX_SHADOW,
+  RISK_CATEGORIES,
+  withAlpha,
+} from '@/lib/risk-category'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -29,12 +34,27 @@ type RegionPinProps = {
 }
 
 const ACTIVE_PIN: Record<RiskCategory, string> = {
-  sangat_tinggi:
-    'border-[1.5px] border-risk-high bg-risk-high-tint text-risk-high-text shadow-md',
-  sedang:
-    'border-[1.5px] border-risk-mid bg-risk-mid-tint text-risk-mid-text shadow-md',
-  rendah:
-    'border-[1.5px] border-risk-low bg-risk-low-tint text-risk-low-text shadow-md',
+  sangat_tinggi: 'border-[1.5px] border-risk-high bg-risk-high-tint',
+  sedang: 'border-[1.5px] border-risk-mid bg-risk-mid-tint',
+  rendah: 'border-[1.5px] border-risk-low bg-risk-low-tint',
+}
+
+function PinGlyph({ kategori }: { kategori: RiskCategory }) {
+  if (kategori === 'rendah') {
+    return <span className="size-2 rounded-full bg-risk-low" aria-hidden />
+  }
+  return (
+    <Flame
+      className={cn(
+        'size-4',
+        kategori === 'sangat_tinggi'
+          ? 'fill-risk-high stroke-risk-high'
+          : 'fill-risk-mid stroke-risk-mid',
+      )}
+      strokeWidth={2}
+      aria-hidden
+    />
+  )
 }
 
 export function RegionPin({ region, showHalo = true }: RegionPinProps) {
@@ -45,18 +65,17 @@ export function RegionPin({ region, showHalo = true }: RegionPinProps) {
   const select = useMapStore((s) => s.select)
   const hover = useMapStore((s) => s.hover)
   const panelOpen = useUiStore((s) => s.panelOpen)
-  const [tipHover, setTipHover] = useState(false)
+  const [tipOpen, setTipOpen] = useState(false)
 
   const style = RISK_CATEGORIES[region.kategori]
   const selected = selectedCode === region.kode
   const active = selected || hoveredCode === region.kode
-  const tipOpen = tipHover || selected
   const circle = showHalo && shouldShowHalo(region.titik_panas_24j)
   const pulse = circle && showHaloPulse(region.kategori)
   const haloSize = haloDiameter(region.titik_panas_24j)
   const pulseClass =
     region.kategori === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
-  const label = copy.map.pinAria(region.nama, region.skor, style.label)
+  const label = copy.map.pinAria(region.nama, style.label, region.skor)
 
   return (
     <MapMarker
@@ -98,19 +117,21 @@ export function RegionPin({ region, showHalo = true }: RegionPinProps) {
 
         <Tooltip
           delayDuration={150}
-          open={tipOpen}
-          onOpenChange={setTipHover}
+          open={selected ? false : tipOpen}
+          onOpenChange={(open) => {
+            if (!selected) setTipOpen(open)
+          }}
         >
           <TooltipTrigger asChild>
             <button
               type="button"
               className={cn(
-                'relative flex h-7 items-center gap-2 rounded-full border border-line bg-surface text-ink shadow-map',
-                'origin-center transition-[transform,box-shadow,background-color,border-color,color] duration-150 ease-in-out',
+                'relative flex size-7 items-center justify-center rounded-full border border-line bg-surface shadow-map',
+                'origin-center transition-[transform,box-shadow,background-color,border-color] duration-150 ease-in-out',
                 focusRing,
                 active && cn('scale-110', ACTIVE_PIN[region.kategori]),
               )}
-              style={{ paddingLeft: 8, paddingRight: 10 }}
+              style={active ? { boxShadow: PIN_ACTIVE_BOX_SHADOW } : undefined}
               aria-label={label}
               onClick={(e) => {
                 e.stopPropagation()
@@ -124,12 +145,7 @@ export function RegionPin({ region, showHalo = true }: RegionPinProps) {
                 })
               }}
             >
-              <span
-                className="size-2 shrink-0 rounded-full"
-                style={{ backgroundColor: style.dot }}
-                aria-hidden
-              />
-              <span className="font-mono text-sm font-semibold">{region.skor}</span>
+              <PinGlyph kategori={region.kategori} />
             </button>
           </TooltipTrigger>
           <TooltipContent
@@ -137,7 +153,8 @@ export function RegionPin({ region, showHalo = true }: RegionPinProps) {
             sideOffset={8}
             className="rounded-ctl bg-ink px-2 py-1 text-xs text-surface"
           >
-            {region.nama}
+            {copy.map.pinTooltip(region.nama)}{' '}
+            <span className="font-mono">{region.skor}</span>
           </TooltipContent>
         </Tooltip>
       </MarkerContent>

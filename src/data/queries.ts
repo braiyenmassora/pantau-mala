@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
 
 import {
   parseDaftarWilayah,
@@ -8,7 +7,8 @@ import {
   parseMeta,
   parseRegions,
 } from '@/data/schema'
-import { computeHotspotAreas } from '@/lib/hotspot-areas'
+import type { HotspotFeatureCollection, Region } from '@/data/types'
+import type { HotspotAreaFeatureCollection } from '@/lib/hotspot-areas'
 
 const STALE_MS = 5 * 60 * 1000
 const REFETCH_MS = 15 * 60 * 1000
@@ -77,10 +77,26 @@ export function useHotspotAreas() {
     retry: false,
   })
 
-  const computed = useMemo(() => {
-    if (!hotspots.data || !regions.data) return null
-    return computeHotspotAreas(hotspots.data, regions.data)
-  }, [hotspots.data, regions.data])
+  const computeQuery = useQuery({
+    queryKey: [
+      'hotspot-areas-computed',
+      hotspots.dataUpdatedAt,
+      regions.dataUpdatedAt,
+    ],
+    enabled:
+      fileQuery.data == null &&
+      !fileQuery.isPending &&
+      !!hotspots.data &&
+      !!regions.data,
+    queryFn: async (): Promise<HotspotAreaFeatureCollection> => {
+      const { computeHotspotAreas } = await import('@/lib/hotspot-areas')
+      return computeHotspotAreas(
+        hotspots.data as HotspotFeatureCollection,
+        regions.data as Region[],
+      )
+    },
+    staleTime: STALE_MS,
+  })
 
   if (fileQuery.data) {
     return {
@@ -92,20 +108,28 @@ export function useHotspotAreas() {
   }
 
   const pending =
-    fileQuery.isPending || hotspots.isPending || regions.isPending
+    fileQuery.isPending ||
+    hotspots.isPending ||
+    regions.isPending ||
+    computeQuery.isPending
   const error = fileQuery.isError
     ? false // 404 → fallback; other errors still fall back to compute
-    : hotspots.isError || regions.isError
+    : hotspots.isError || regions.isError || computeQuery.isError
 
   return {
-    data: computed ?? undefined,
+    data: computeQuery.data,
     isPending: pending,
     isError: error,
-    isFetching: hotspots.isFetching || regions.isFetching || fileQuery.isFetching,
+    isFetching:
+      hotspots.isFetching ||
+      regions.isFetching ||
+      fileQuery.isFetching ||
+      computeQuery.isFetching,
     refetch: () => {
       void hotspots.refetch()
       void regions.refetch()
       void fileQuery.refetch()
+      void computeQuery.refetch()
     },
   }
 }

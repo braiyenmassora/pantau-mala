@@ -1,8 +1,8 @@
 import { useEffect, useState, type RefObject } from 'react'
+import { Flame } from 'lucide-react'
 
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
-import { AREA_MIN_ZOOM } from '@/lib/hotspot-areas'
 import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
@@ -13,6 +13,7 @@ type MapLegendProps = {
 }
 
 const ICON_BOX = 'flex size-9 shrink-0 items-center justify-center'
+const AREA_MIN_ZOOM = 7
 
 export function MapLegend({ panelOpen, mapRef }: MapLegendProps) {
   const high = RISK_CATEGORIES.sangat_tinggi.dot
@@ -58,17 +59,22 @@ export function MapLegend({ panelOpen, mapRef }: MapLegendProps) {
       {...mapOverlayGestureProps}
     >
       <div className="flex items-center gap-2 rounded-card border border-line bg-surface px-3 py-2 shadow-sm">
-        <span className={ICON_BOX} aria-hidden>
-          <span
-            className="size-2 rounded-full"
-            style={{ backgroundColor: high }}
+        <span className="flex h-9 shrink-0 items-center gap-1" aria-hidden>
+          <Flame
+            className="size-3.5 fill-risk-high stroke-risk-high"
+            strokeWidth={2}
           />
+          <Flame
+            className="size-3.5 fill-risk-mid stroke-risk-mid"
+            strokeWidth={2}
+          />
+          <span className="size-3.5 rounded-full bg-risk-low" />
         </span>
         <span className="flex flex-col gap-1">
-          <span className="font-mono text-xs font-semibold text-ink">
-            {copy.legend.scoreTitle}
+          <span className="text-xs font-semibold text-ink">
+            {copy.legend.colorTitle}
           </span>
-          <span className="text-xs text-ink-2">{copy.legend.scoreHint}</span>
+          <span className="text-xs text-ink-2">{copy.legend.colorHint}</span>
         </span>
       </div>
 
@@ -97,10 +103,11 @@ export function MapLegend({ panelOpen, mapRef }: MapLegendProps) {
         <div className="flex items-center gap-2 rounded-card border border-line bg-surface px-3 py-2 shadow-sm">
           <span className={ICON_BOX} aria-hidden>
             <span
-              className="size-5 rounded-[2px] border-[1.5px]"
+              className="size-5 border-[1.5px]"
               style={{
                 backgroundColor: withAlpha(high, 0.16),
                 borderColor: withAlpha(high, 0.7),
+                borderRadius: 2,
               }}
             />
           </span>
