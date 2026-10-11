@@ -13,7 +13,10 @@ function readKey(file, key) {
     const i = t.indexOf('=')
     if (i < 0) continue
     if (t.slice(0, i).trim() !== key) continue
-    return t.slice(i + 1).trim().replace(/^['"]|['"]$/g, '')
+    return t
+      .slice(i + 1)
+      .trim()
+      .replace(/^['"]|['"]$/g, '')
   }
   return null
 }

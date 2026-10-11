@@ -22,12 +22,12 @@ export function DetectionFlag({ region, className }: DetectionFlagProps) {
         className,
       )}
     >
-      <div className="rounded-card border-line bg-surface relative w-max max-w-56 border px-2.5 py-1.5 shadow-md">
+      <div className="rounded-card border-line bg-surface relative w-max max-w-56 border px-3 py-2 shadow-sm">
         <p className="text-ink truncate text-xs font-semibold" title={content.title}>
           {content.title}
         </p>
         <p
-          className="text-ink-2 mt-0.5 truncate text-xs leading-4"
+          className="text-ink-2 mt-1 truncate text-xs leading-4"
           title={content.subtitle}
         >
           {content.subtitle}

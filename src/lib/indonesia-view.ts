@@ -47,6 +47,64 @@ function clearMapLimits(map: MaplibreMap) {
   map.setMaxBounds(null)
 }
 
+/** Pending maxBounds apply — batalkan saat fit baru supaya moveend lama tidak mengunci kamera. */
+let pendingMaxBoundsMap: MaplibreMap | null = null
+let pendingMaxBoundsHandler: (() => void) | null = null
+
+function cancelPendingMaxBounds() {
+  if (pendingMaxBoundsMap && pendingMaxBoundsHandler) {
+    pendingMaxBoundsMap.off('moveend', pendingMaxBoundsHandler)
+  }
+  pendingMaxBoundsMap = null
+  pendingMaxBoundsHandler = null
+}
+
+function scheduleMaxBounds(map: MaplibreMap, duration: number) {
+  cancelPendingMaxBounds()
+  if (duration <= 0) {
+    applyDynamicMaxBounds(map)
+    return
+  }
+  // Pakai on/off (bukan once): MapLibre once() membungkus listener sehingga off(handler) gagal.
+  const handler = () => {
+    if (pendingMaxBoundsHandler !== handler) return
+    pendingMaxBoundsMap = null
+    pendingMaxBoundsHandler = null
+    map.off('moveend', handler)
+    applyDynamicMaxBounds(map)
+  }
+  pendingMaxBoundsMap = map
+  pendingMaxBoundsHandler = handler
+  map.on('moveend', handler)
+}
+
+/** Zoom ke bbox wilayah — longgarkan maxBounds dulu (bisa terkunci setelah zoom dalam). */
+export function fitProvinceBounds(
+  map: MaplibreMap,
+  bbox: [number, number, number, number],
+  panelOpen: boolean,
+  duration = 600,
+): void {
+  const [minLon, minLat, maxLon, maxLat] = bbox
+  const padding = getMapPadding(panelOpen)
+  cancelPendingMaxBounds()
+  map.setMaxBounds(null)
+  map.stop()
+  map.fitBounds(
+    [
+      [minLon, minLat],
+      [maxLon, maxLat],
+    ],
+    {
+      padding,
+      absolutePadding: true,
+      duration,
+      easing: easeOutSoft,
+    },
+  )
+  scheduleMaxBounds(map, duration)
+}
+
 /** Read current view bounds and lock maxBounds to +10% padding. */
 export function applyDynamicMaxBounds(map: MaplibreMap) {
   map.setMaxBounds(expandBounds10(map.getBounds()))
@@ -58,7 +116,9 @@ export function applyDynamicMaxBounds(map: MaplibreMap) {
  */
 export function fitIndonesia(map: MaplibreMap, panelOpen: boolean, duration = 0): number {
   const padding = getMapPadding(panelOpen)
+  cancelPendingMaxBounds()
   clearMapLimits(map)
+  map.stop()
   map.fitBounds(INDONESIA_BOUNDS, {
     padding,
     absolutePadding: true,
@@ -72,11 +132,7 @@ export function fitIndonesia(map: MaplibreMap, panelOpen: boolean, duration = 0)
   const fitZoom = camera?.zoom ?? map.getZoom()
   map.setMinZoom(fitZoom - 0.5)
 
-  if (duration <= 0) {
-    applyDynamicMaxBounds(map)
-  } else {
-    map.once('moveend', () => applyDynamicMaxBounds(map))
-  }
+  scheduleMaxBounds(map, duration)
   return fitZoom
 }
 

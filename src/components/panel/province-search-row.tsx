@@ -2,63 +2,65 @@ import { Map as MapIcon } from 'lucide-react'
 import type { RefObject } from 'react'
 
 import { ListRow } from '@/components/common/list-row'
+import { RiskMarker } from '@/components/common/risk-marker'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
-import type { CatalogProvince } from '@/data/types'
+import type { CatalogProvince, RiskCategory } from '@/data/types'
 import { formatNumber } from '@/lib/format'
-import { easeOutSoft, getMapPadding } from '@/lib/indonesia-view'
-import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { useMapStore } from '@/store/map'
-import { useUiStore } from '@/store/ui'
 
 type ProvinceSearchRowProps = {
   province: CatalogProvince
   hotspotCount: number
+  /** Tetap di props untuk pemanggil; kamera di ProvinceFocus. */
   mapRef: RefObject<MapRef | null>
+  /** `wilayah` = jumlah kab (search); `titik` = Σ hotspots_24h (top provinsi). */
+  countKind?: 'wilayah' | 'titik'
+  /** Samakan ikon Flame dengan pin peta (top 5). */
+  riskCategory?: RiskCategory
 }
 
 export function ProvinceSearchRow({
   province,
   hotspotCount,
-  mapRef,
+  mapRef: _mapRef,
+  countKind = 'wilayah',
+  riskCategory,
 }: ProvinceSearchRowProps) {
+  void _mapRef
   const setProvince = useMapStore((s) => s.setProvince)
   const setQuery = useMapStore((s) => s.setQuery)
-  const panelOpen = useUiStore((s) => s.panelOpen)
-  const reducedMotion = usePrefersReducedMotion()
-  const [minLon, minLat, maxLon, maxLat] = province.bbox
+  const countLabel = formatNumber(hotspotCount)
+  const meta =
+    hotspotCount <= 0
+      ? copy.search.noHotspots
+      : countKind === 'titik'
+        ? copy.map.regionMetaHotspots(countLabel)
+        : copy.search.withHotspots(countLabel)
+  // Top list: nama saja (seperti pin). Search: "Provinsi …".
+  const title =
+    countKind === 'titik' ? province.name : copy.search.provinceTitle(province.name)
 
   return (
     <ListRow
       leading={
-        <span
-          className="bg-brand-soft text-brand flex size-10 items-center justify-center rounded-full"
-          aria-hidden
-        >
-          <MapIcon className="size-4" strokeWidth={2} />
-        </span>
+        riskCategory ? (
+          <RiskMarker kategori={riskCategory} />
+        ) : (
+          <span
+            className="bg-brand-soft text-brand flex size-10 items-center justify-center rounded-full"
+            aria-hidden
+          >
+            <MapIcon className="size-4" strokeWidth={2} />
+          </span>
+        )
       }
-      title={copy.search.provinceTitle(province.name)}
-      meta={
-        hotspotCount > 0
-          ? copy.search.withHotspots(formatNumber(hotspotCount))
-          : copy.search.noHotspots
-      }
+      title={title}
+      meta={meta}
       onClick={() => {
+        // Zoom hanya lewat ProvinceFocus — hindari double fitBounds + moveend race.
         setProvince(province.name)
         setQuery('')
-        mapRef.current?.fitBounds(
-          [
-            [minLon, minLat],
-            [maxLon, maxLat],
-          ],
-          {
-            padding: getMapPadding(panelOpen),
-            absolutePadding: true,
-            duration: reducedMotion ? 0 : 600,
-            easing: easeOutSoft,
-          },
-        )
       }}
     />
   )

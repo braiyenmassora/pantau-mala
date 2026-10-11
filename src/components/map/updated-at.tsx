@@ -71,7 +71,7 @@ export function UpdatedAtBadge() {
           </button>
         </TooltipTrigger>
         <TooltipContent side="top" className="rounded-ctl max-w-xs">
-          {tipParts.join('. ')}
+          {tipParts.join(' · ')}
         </TooltipContent>
       </Tooltip>
     </div>

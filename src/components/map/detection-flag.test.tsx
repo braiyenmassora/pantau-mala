@@ -43,7 +43,7 @@ describe('DetectionFlag', () => {
     const card = container.querySelector('.rounded-card')
     expect(card?.className).toContain('border-line')
     expect(card?.className).toContain('bg-surface')
-    expect(card?.className).toContain('shadow-md')
+    expect(card?.className).toContain('shadow-sm')
 
     expect(screen.getByText('Kab. Merauke')).toBeTruthy()
     expect(screen.getByText('Provinsi Papua Selatan')).toBeTruthy()

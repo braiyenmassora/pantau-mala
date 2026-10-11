@@ -1,13 +1,15 @@
 # forever-young — PRD + API handoff untuk FE
 
-|                           |                                                                       |
-| ------------------------- | --------------------------------------------------------------------- |
-| **Versi**                 | 2.3-live — 11 Oktober 2026                                            |
-| **Audiens**               | Frontend (Vite · React · TanStack Query · Zod)                        |
-| **Sumber kebenaran wire** | Dokumen ini + OpenAPI `{base}/docs` pada BE yang jalan                |
-| **Keputusan produk**      | §0 di bawah (binding untuk migrasi v2)                                |
-| **Copy / ikon / tooltip** | [`fe-ui-copy.md`](fe-ui-copy.md) — wajib dibaca FE (anti-menyesatkan) |
-| **Schema live**           | OpenAPI `{VITE_DATA_URL}/docs`                                        |
+|                             |                                                                       |
+| --------------------------- | --------------------------------------------------------------------- |
+| **Versi**                   | 2.3-live — 11 Oktober 2026                                            |
+| **Audiens**                 | Frontend (Vite · React · TanStack Query · Zod)                        |
+| **Sumber kebenaran wire**   | Dokumen ini + OpenAPI `{base}/docs` pada BE yang jalan                |
+| **Contract schema panjang** | [`api-contract.md`](api-contract.md)                                  |
+| **Keputusan produk**        | §0 di bawah (binding untuk migrasi v2)                                |
+| **Copy / ikon / tooltip**   | [`fe-ui-copy.md`](fe-ui-copy.md) — wajib dibaca FE (anti-menyesatkan) |
+| **Design system**           | [`fe-design-system.md`](fe-design-system.md) — token, spacing, type   |
+| **Design system**           | [`fe-design-system.md`](fe-design-system.md) — token, spacing, type   |
 
 Salin file ini **dan** `fe-ui-copy.md` ke chat/repo FE. Jangan pakai dummy v1 key Indonesia (`kode`, `bahaya_cuaca`, …).
 
@@ -229,10 +231,10 @@ Tooltip risiko (contoh): “Risiko dari jumlah titik panas satelit NASA FIRMS (2
 }
 ```
 
-| Properti                                    | Wajib                                      |
-| ------------------------------------------- | ------------------------------------------ |
-| `time`, `satellite`, `confidence`, `frp_mw` | ya                                         |
-| `region_code`                               | **opsional** (~2% absen di jendela 24 jam) |
+| Properti                                    | Wajib                                                                                            |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `time`, `satellite`, `confidence`, `frp_mw` | ya                                                                                               |
+| `region_code`                               | **opsional** (~6% absen di 24 jam — biasanya lepas pantai; BE match `ST_Within` + nearest ~5 km) |
 
 - Boleh `confidence: "rendah"` di layer ini.
 - Jangan pakai layer ini untuk kartu nasional — pakai `/v1/regions`.
@@ -341,10 +343,12 @@ Contoh nama: `DKI Jakarta`, `Kalimantan Tengah`, `Kep. Bangka Belitung`, `DI Yog
 
 | Artifact                 | Path                        |
 | ------------------------ | --------------------------- |
+| Contract detail          | `docs/api-contract.md`      |
+| PRD BE                   | `docs/prd.md`               |
 | UI copy / ikon / tooltip | `docs/fe-ui-copy.md`        |
-| Flag pin                 | `docs/spek-flag-deteksi.md` |
 | OpenAPI                  | `{VITE_DATA_URL}/docs`      |
-| FE types / Zod / queries | `src/data/*`                |
+| Normalisasi nama / tz    | `app/jobs/time_zone.py`     |
+| FE types / Zod / queries | `src/data/*` (update ke v2) |
 
 ---
 

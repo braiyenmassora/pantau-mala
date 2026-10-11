@@ -31,11 +31,27 @@ vi.mock('@/components/map/indonesia-map-framing', () => ({
   },
 }))
 
+vi.mock('@/data/queries', () => ({
+  useRegionCatalog: () => ({ data: { provinces: [], regencies: [] } }),
+}))
+
 vi.mock('@/components/map/region-layers', () => ({
   RegionLayers: () => {
     if (regionLayersShouldThrow) throw new Error('pin crash')
     return <div data-testid="layer-regions" />
   },
+}))
+
+vi.mock('@/components/map/selected-hotspots-layer', () => ({
+  SelectedHotspotsLayer: () => null,
+}))
+
+vi.mock('@/components/map/hotspot-heatmap-layer', () => ({
+  HotspotHeatmapLayer: () => null,
+}))
+
+vi.mock('@/components/map/province-focus', () => ({
+  ProvinceFocus: () => null,
 }))
 
 vi.mock('@/components/map/user-location-layer', () => ({

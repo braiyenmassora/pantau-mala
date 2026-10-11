@@ -20,7 +20,7 @@ export function IconButton({
     <button
       type="button"
       className={cn(
-        'border-line bg-surface text-ink-2 flex size-10 shrink-0 items-center justify-center border shadow-sm',
+        'border-line bg-surface text-ink-2 flex size-11 shrink-0 items-center justify-center border shadow-sm',
         'transition-[background-color,color] duration-150 ease-in-out',
         'hover:bg-surface-muted hover:text-ink',
         focusRing,
