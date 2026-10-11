@@ -23,10 +23,8 @@ for (const r of rows) {
   )
 }
 
-/** JS needed before the deferred map chunk (exclude maplibre / map-shell). */
-const initial = rows.filter(
-  (r) => !/maplibre|map-shell/i.test(r.name),
-)
+/** JS needed before deferred map chunks (exclude maplibre, map-shell). */
+const initial = rows.filter((r) => !/maplibre|map-shell/i.test(r.name))
 
 const initialGzip = initial.reduce((s, r) => s + r.gzip, 0)
 const LIMIT = 200 * 1024

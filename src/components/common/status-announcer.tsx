@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 
-import { useDaftarWilayah, useRegions } from '@/data/queries'
+import { useRegionCatalog, useRegions } from '@/data/queries'
 import { copy } from '@/copy/id'
 import { searchWilayah } from '@/lib/search-wilayah'
 import { useMapStore } from '@/store/map'
@@ -11,18 +11,18 @@ export function StatusAnnouncer() {
   const selectedCode = useMapStore((s) => s.selectedCode)
   const location = useMapStore((s) => s.location)
   const { data: regions } = useRegions()
-  const { data: daftar } = useDaftarWilayah()
+  const { data: daftar } = useRegionCatalog()
 
   const message = useMemo(() => {
     const parts: string[] = []
 
     if (selectedCode && regions) {
-      const region = regions.find((r) => r.kode === selectedCode)
+      const region = regions.find((r) => r.code === selectedCode)
       if (region) {
-        parts.push(`Wilayah dipilih: ${region.nama}`)
+        parts.push(copy.a11y.regionSelected(region.name))
       } else if (daftar) {
-        const kab = daftar.kabkota.find((k) => k.kode === selectedCode)
-        if (kab) parts.push(`Wilayah dipilih: ${kab.nama}`)
+        const kab = daftar.regencies.find((k) => k.code === selectedCode)
+        if (kab) parts.push(copy.a11y.regionSelected(kab.name))
       }
     }
 
@@ -30,11 +30,7 @@ export function StatusAnnouncer() {
     if (q && daftar && regions && !selectedCode) {
       const hits = searchWilayah(daftar, regions, q)
       const n = hits.provinces.length + hits.kabkota.length
-      parts.push(
-        n === 0
-          ? copy.empty.searchMiss.title
-          : `${copy.panel.searchResults}: ${n} lokasi`,
-      )
+      parts.push(n === 0 ? copy.empty.searchMiss.title : copy.a11y.searchHits(n))
     }
 
     if (location.status === 'active') {

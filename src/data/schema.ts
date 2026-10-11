@@ -1,49 +1,60 @@
 import { z } from 'zod'
 
-import type {
-  DaftarWilayah,
-  HotspotFeatureCollection,
-  Meta,
-  Region,
-} from '@/data/types'
+import type { HotspotFeatureCollection, Meta, Region, RegionCatalog } from '@/data/types'
 
 const timeZoneId = z.enum(['WIB', 'WITA', 'WIT'])
 const riskCategory = z.enum(['rendah', 'sedang', 'sangat_tinggi'])
+const weatherDangerClass = z.enum(['aman', 'waspada', 'bahaya', 'ekstrem'])
+const weatherDangerSource = z.enum(['BMKG', 'FWI dihitung'])
 const airQualityCategory = z.enum(['baik', 'sedang', 'tidak_sehat'])
 const confidenceLevel = z.enum(['rendah', 'sedang', 'tinggi'])
 const sourceStatus = z.enum(['ok', 'terlambat', 'gagal'])
 const lonLat = z.tuple([z.number(), z.number()])
 
+const weatherDangerSchema = z.object({
+  class: weatherDangerClass,
+  fwi: z.number(),
+  source: weatherDangerSource,
+})
+
 const weatherSchema = z.object({
-  suhu_c: z.number(),
-  kondisi: z.string(),
-  kelembapan: z.number(),
-  angin_kmj: z.number(),
-  hari_tanpa_hujan: z.number(),
+  temp_c: z.number(),
+  condition: z.string(),
+  humidity: z.number(),
+  wind_kmh: z.number(),
+  dry_days: z.number(),
 })
 
 const airQualitySchema = z.object({
   pm25: z.number(),
-  kategori: airQualityCategory,
+  category: airQualityCategory,
 })
 
+/** BE may send JSON null for missing optional strings. */
+const optionalString = z
+  .string()
+  .nullish()
+  .transform((v) => v ?? undefined)
+
 const lastDetectionSchema = z.object({
-  waktu: z.string(),
-  satelit: z.string(),
-  keyakinan: confidenceLevel,
+  time: z.string(),
+  satellite: z.string(),
+  confidence: confidenceLevel,
   frp_mw: z.number(),
+  village: optionalString,
+  district: optionalString,
 })
 
 export const regionSchema = z.object({
-  kode: z.string(),
-  nama: z.string(),
-  provinsi: z.string(),
-  zona_waktu: timeZoneId,
-  pusat: lonLat,
-  skor: z.number(),
-  kategori: riskCategory,
-  titik_panas_24j: z.number(),
-  tren_7h: z.tuple([
+  code: z.string(),
+  name: z.string(),
+  province: z.string(),
+  time_zone: timeZoneId,
+  center: lonLat,
+  risk_category: riskCategory,
+  weather_danger: weatherDangerSchema,
+  hotspots_24h: z.number(),
+  trend_7d: z.tuple([
     z.number(),
     z.number(),
     z.number(),
@@ -52,30 +63,31 @@ export const regionSchema = z.object({
     z.number(),
     z.number(),
   ]),
-  cuaca: weatherSchema,
-  udara: airQualitySchema,
-  deteksi_terakhir: lastDetectionSchema,
-  ringkasan: z.string(),
-  saran: z.array(z.string()),
+  weather: weatherSchema,
+  air_quality: airQualitySchema,
+  last_detection: lastDetectionSchema,
+  summary: z.string(),
+  actions: z.array(z.string()),
 })
 
 export const regionsSchema = z.array(regionSchema)
 
 export const metaSchema = z.object({
-  diperbarui: z.string(),
+  updated_at: z.string(),
   status: z.object({
     firms: sourceStatus,
-    cuaca: sourceStatus,
-    udara: sourceStatus,
+    weather: sourceStatus,
+    air: sourceStatus,
   }),
 })
 
 const hotspotPropertiesSchema = z.object({
-  waktu: z.string(),
-  satelit: z.string(),
-  keyakinan: confidenceLevel,
+  time: z.string(),
+  satellite: z.string(),
+  confidence: confidenceLevel,
   frp_mw: z.number(),
-  kode_wilayah: z.string(),
+  // exclude_none: sering absen (~2%)
+  region_code: optionalString,
 })
 
 export const hotspotsSchema = z.object({
@@ -93,24 +105,24 @@ export const hotspotsSchema = z.object({
 })
 
 const catalogProvinceSchema = z.object({
-  kode: z.string(),
-  nama: z.string(),
+  code: z.string(),
+  name: z.string(),
   bbox: z.tuple([z.number(), z.number(), z.number(), z.number()]),
-  pusat: lonLat,
+  center: lonLat,
 })
 
-const catalogKabKotaSchema = z.object({
-  kode: z.string(),
-  nama: z.string(),
-  provinsi: z.string(),
-  pusat: lonLat,
-  zona_waktu: timeZoneId,
+const catalogRegencySchema = z.object({
+  code: z.string(),
+  name: z.string(),
+  province: z.string(),
+  center: lonLat,
+  time_zone: timeZoneId,
 })
 
-export const daftarWilayahSchema = z.object({
-  _catatan: z.string().optional(),
-  provinsi: z.array(catalogProvinceSchema),
-  kabkota: z.array(catalogKabKotaSchema),
+export const regionCatalogSchema = z.object({
+  note: z.string().optional(),
+  provinces: z.array(catalogProvinceSchema),
+  regencies: z.array(catalogRegencySchema),
 })
 
 export function parseRegions(data: unknown): Region[] {
@@ -125,6 +137,6 @@ export function parseHotspots(data: unknown): HotspotFeatureCollection {
   return hotspotsSchema.parse(data) as HotspotFeatureCollection
 }
 
-export function parseDaftarWilayah(data: unknown): DaftarWilayah {
-  return daftarWilayahSchema.parse(data) as DaftarWilayah
+export function parseRegionCatalog(data: unknown): RegionCatalog {
+  return regionCatalogSchema.parse(data) as RegionCatalog
 }

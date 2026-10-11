@@ -1,11 +1,9 @@
 import circle from '@turf/circle'
 import { useMemo } from 'react'
 
-import {
-  MapGeoJSON,
-  MapMarker,
-  MarkerContent,
-} from '@/components/ui/map'
+import { Badge } from '@/components/common'
+import { MapGeoJSON, MapMarker, MarkerContent } from '@/components/ui/map'
+import { copy } from '@/copy/id'
 import { NEARBY_HOTSPOT_RADIUS_KM } from '@/lib/nearby'
 import { BRAND_HEX, withAlpha } from '@/lib/risk-category'
 import { useMapStore } from '@/store/map'
@@ -61,19 +59,14 @@ export function UserLocationLayer() {
             style={{ backgroundColor: withAlpha(BRAND_HEX, 0.16) }}
           />
           <span
-            className="relative size-4 rounded-full border-[3px] border-surface bg-brand shadow-map"
-            aria-label="Lokasi kamu"
+            className="border-surface bg-brand shadow-map relative size-4 rounded-full border-[3px]"
+            aria-label={copy.location.yourLocation}
           />
         </MarkerContent>
       </MapMarker>
       <MapMarker longitude={labelPos[0]} latitude={labelPos[1]} anchor="center">
         <MarkerContent className="z-[15]">
-          <span
-            className="inline-flex h-6 items-center rounded-full border border-line bg-surface text-xs font-medium text-ink shadow-sm"
-            style={{ paddingLeft: 10, paddingRight: 10 }}
-          >
-            Radius 25 km
-          </span>
+          <Badge variant="meta">{copy.location.radiusBadge}</Badge>
         </MarkerContent>
       </MapMarker>
     </>

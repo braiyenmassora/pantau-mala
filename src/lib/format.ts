@@ -21,15 +21,31 @@ const ZONE_OFFSET_HOURS: Record<TimeZoneId, number> = {
   WIT: 9,
 }
 
-const numberId = new Intl.NumberFormat('id-ID')
-
 /** Format number with id-ID decimal comma. */
 export function formatNumber(n: number, options?: Intl.NumberFormatOptions): string {
   return new Intl.NumberFormat('id-ID', options).format(n)
 }
 
-export function formatPercent(n: number): string {
-  return `${numberId.format(Math.round(n))}%`
+/** Relatif untuk badge meta; clock = sekarang. Contoh: "46 menit lalu". */
+export function formatRelativeAge(iso: string, nowMs: number = Date.now()): string {
+  const t = new Date(iso).getTime()
+  if (Number.isNaN(t)) return iso
+  const mins = Math.max(0, Math.round((nowMs - t) / 60_000))
+  if (mins < 1) return 'baru saja'
+  if (mins < 60) return `${mins} menit lalu`
+  const hours = Math.round(mins / 60)
+  if (hours < 48) return `${hours} jam lalu`
+  const days = Math.round(hours / 24)
+  return `${days} hari lalu`
+}
+
+/** Cadence ingest ~3 jam → stale setelah 3,5 jam. */
+export const META_STALE_MS = 3.5 * 60 * 60 * 1000
+
+export function isMetaStale(iso: string, nowMs: number = Date.now()): boolean {
+  const t = new Date(iso).getTime()
+  if (Number.isNaN(t)) return false
+  return nowMs - t > META_STALE_MS
 }
 
 function toZonedParts(iso: string, zone: TimeZoneId) {
@@ -54,30 +70,4 @@ export function formatDateTime(iso: string, zone: TimeZoneId): string {
   const hh = String(p.hour).padStart(2, '0')
   const mm = String(p.minute).padStart(2, '0')
   return `${dd} ${mon} ${p.year}, ${hh}:${mm} ${zone}`
-}
-
-/** Example: "03 Okt" */
-export function formatDayMonth(iso: string, zone: TimeZoneId = 'WIB'): string {
-  const p = toZonedParts(iso, zone)
-  if (!p) return iso
-  return `${String(p.day).padStart(2, '0')} ${SHORT_MONTHS[p.month]}`
-}
-
-/** Trend window labels from meta.diperbarui (end) back 6 days (start). */
-export function trendWindowLabels(updatedAtIso: string): { start: string; end: string } {
-  const end = new Date(updatedAtIso)
-  if (Number.isNaN(end.getTime())) {
-    return { start: '—', end: '—' }
-  }
-  const start = new Date(end)
-  start.setUTCDate(start.getUTCDate() - 6)
-  return {
-    start: formatDayMonth(start.toISOString(), 'WIB'),
-    end: formatDayMonth(end.toISOString(), 'WIB'),
-  }
-}
-
-/** Lat, lon with 4 decimal places and dot separator: "-2.7500, 114.2500". */
-export function formatCoordinates(lon: number, lat: number): string {
-  return `${lat.toFixed(4)}, ${lon.toFixed(4)}`
 }

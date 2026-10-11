@@ -12,23 +12,34 @@ import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 
 type IndonesiaMapFramingProps = {
   panelOpen: boolean
+  /** Fired once after the first fit — keep soft-loading until then to avoid a camera jump. */
+  onReady?: () => void
 }
 
 /** Fits Indonesia into the visible (non-overlay) map area; keeps minZoom/padding in sync. */
-export function IndonesiaMapFraming({ panelOpen }: IndonesiaMapFramingProps) {
+export function IndonesiaMapFraming({ panelOpen, onReady }: IndonesiaMapFramingProps) {
   const { map, isLoaded } = useMap()
   const reducedMotion = usePrefersReducedMotion()
   const fitZoomRef = useRef<number | null>(null)
   const readyRef = useRef(false)
   const prevPanelRef = useRef<boolean | null>(null)
   const panelOpenRef = useRef(panelOpen)
-  panelOpenRef.current = panelOpen
+  const onReadyRef = useRef(onReady)
+
+  useEffect(() => {
+    panelOpenRef.current = panelOpen
+  }, [panelOpen])
+
+  useEffect(() => {
+    onReadyRef.current = onReady
+  }, [onReady])
 
   useEffect(() => {
     if (!map || !isLoaded || readyRef.current) return
     fitZoomRef.current = fitIndonesia(map, panelOpenRef.current, 0)
     readyRef.current = true
     prevPanelRef.current = panelOpenRef.current
+    onReadyRef.current?.()
   }, [map, isLoaded])
 
   useEffect(() => {

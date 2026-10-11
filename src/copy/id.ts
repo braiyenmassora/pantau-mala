@@ -1,11 +1,10 @@
-/** Semua teks UI berbahasa Indonesia. */
+/** Semua teks UI berbahasa Indonesia. Sapaan "kamu". */
 
 export const copy = {
   empty: {
     noHotspots: {
       title: 'Belum ada titik panas',
-      description: (wilayah: string) =>
-        `Tidak ada titik panas terdeteksi dalam 24 jam terakhir di ${wilayah}.`,
+      description: (wilayah: string) => `Tidak ada titik panas satelit di ${wilayah}.`,
     },
     noRegionsFilter: {
       title: 'Tidak ada wilayah',
@@ -16,19 +15,16 @@ export const copy = {
     searchMiss: {
       title: 'Lokasi tidak ditemukan',
       description: 'Coba nama kabupaten/kota lain.',
+      action: 'Hapus pencarian',
     },
     noHotspotsInRegion: {
-      title: 'Tidak ada titik panas',
+      title: 'Tidak ada titik panas 7 hari',
       description: (nama: string) =>
-        `Dalam 7 hari terakhir tidak ada titik panas terdeteksi di ${nama}.`,
-    },
-    nearbyClear: {
-      title: 'Tidak ada titik panas di sekitar kamu',
-      description: 'Dalam radius 25 km tidak ada titik panas terdeteksi.',
+        `Dalam 7 hari terakhir tidak ada titik panas satelit di ${nama}.`,
     },
     loadFail: {
-      title: 'Data belum bisa dimuat',
-      description: 'Periksa koneksi internet, lalu coba lagi.',
+      title: 'Gagal memuat data',
+      description: 'Coba lagi.',
       action: 'Coba lagi',
     },
     dataLate: {
@@ -49,75 +45,146 @@ export const copy = {
     mapFail: {
       title: 'Peta belum bisa ditampilkan',
       description:
-        'Browser tidak mendukung WebGL atau basemap gagal dimuat. Panel informasi tetap bisa dipakai.',
+        'Browser kamu tidak mendukung peta interaktif. Panel informasi tetap bisa dipakai.',
       action: 'Muat ulang',
     },
+    basemapFail: {
+      title: 'Peta dasar belum termuat',
+      action: 'Coba lagi',
+    },
+    mapPartial: {
+      title: 'Sebagian peta belum bisa ditampilkan',
+    },
+    mapLoading: 'Memuat data…',
   },
-  data: {
-    samplePill: 'Data contoh',
-  },
+
   panel: {
-    indonesiaToday: 'Indonesia hari ini',
-    provinceToday: (province: string) => `${province} hari ini`,
-    subtitle: 'Indikator kebakaran hutan dan lahan',
-    hotspot24h: 'Titik panas 24 jam',
+    indonesiaToday: 'Titik panas di Indonesia',
+    provinceToday: (province: string) => `Titik panas di ${province}`,
+    subtitle: 'Deteksi satelit dan indikasi risiko per kabupaten/kota',
+    hotspot24h: 'Titik panas',
     hotspotHint: 'Penjelasan titik panas',
-    hotspotTooltip:
-      'Titik panas: lokasi yang dideteksi satelit lebih panas dari sekitarnya. Belum tentu kebakaran.',
-    last7days: '7 hari terakhir',
+    hotspotTooltip: 'Jumlah titik panas dari satelit.',
     topRisk: 'Wilayah risiko tertinggi',
     searchResults: 'Hasil pencarian',
-    betaTooltip: 'Versi uji coba. Skor risiko masih dikalibrasi.',
-    newToday: 'Baru muncul hari ini',
-    sameAsYesterday: 'Sama dengan kemarin',
-    vsYesterday: (pct: string, up: boolean) =>
-      `${up ? '▲' : '▼'} ${pct} dibanding kemarin`,
+    betaTooltip: 'Bukan peringatan kebakaran.',
     searchPlaceholder: 'Cari kabupaten/kota',
     searchClear: 'Hapus pencarian dan pilihan',
     closeDetail: 'Tutup detail',
-    techTitle: 'Info teknis satelit',
-    techTime: 'Waktu',
-    techSatellite: 'Satelit',
-    techConfidence: 'Tingkat keyakinan',
-    techFrp: 'Intensitas api (FRP)',
+  },
+  detail: {
+    summary: 'Ringkasan',
+    actions: 'Yang bisa kamu lakukan',
+    conditions: 'Kondisi saat ini',
+    humidity: 'Kelembapan',
+    wind: 'Angin',
+    windUnit: 'km/jam',
+    dryDays: 'Hari tanpa hujan',
+    dayUnit: 'hari',
+    airQuality: 'Kualitas udara',
+    airHint: 'Penjelasan kualitas udara',
+    airTooltip:
+      'Cuaca dan kualitas udara untuk gambaran saja. Tidak mengatur warna pin di peta.',
+    riskTitle: 'Indikasi risiko',
+    riskHint: 'Penjelasan indikasi risiko',
+    riskTooltip: 'Makin banyak titik panas satelit, makin tinggi risikonya di peta.',
+    hotspots24hReason: (n: string) => `${n} titik panas`,
+    weatherDanger: 'Bahaya cuaca',
+    weatherDangerHint: 'Penjelasan bahaya cuaca',
+    weatherDangerTooltip:
+      'Cuaca dan kualitas udara untuk gambaran saja. Tidak mengatur warna pin di peta.',
+    fwiUnit: 'FWI',
+    flagDate: 'Deteksi',
+  },
+  /** Label tampilan untuk weather_danger.source. */
+  bahayaSumberLabel: {
+    BMKG: 'BMKG',
+    'FWI dihitung': 'dihitung, bukan BMKG',
+  },
+  bahaya: {
+    aman: 'Aman',
+    waspada: 'Waspada',
+    bahaya: 'Bahaya',
+    ekstrem: 'Ekstrem',
+  },
+  air: {
+    baik: 'Baik',
+    sedang: 'Sedang',
+    tidak_sehat: 'Tidak sehat',
   },
   location: {
-    nearbyLabel: 'Di sekitar kamu',
+    nearbyLabel: 'Titik panas dalam 25 km',
     yourLocation: 'Lokasi kamu',
     radius25: 'Dalam radius 25 km',
+    radiusBadge: 'Radius 25 km',
     hotspotUnit: 'titik panas',
+    nearbyNoHotspots: 'Tidak ada titik panas dalam radius 25 km.',
     nearest: 'Paling dekat',
     km: 'km',
-    riskTitle: 'Risiko di sekitar kamu',
-    riskSubtitle: 'Titik panas dalam radius 25 km',
-    useLocation: 'Gunakan lokasi',
-    nearbyNoHotspots: 'Tidak ada titik panas dalam radius 25 km',
+    riskTitle: 'Titik panas di sekitar kamu',
+    riskSubtitle: 'Titik panas satelit dalam radius 25 km',
+    useLocation: 'Izinkan lokasi',
+    promptTitle: 'Izinkan lokasi untuk melihat titik panas dekat kamu?',
+    promptBody: 'Browser meminta izin lokasi. Lokasi kamu tidak disimpan.',
+    promptLater: 'Nanti saja',
+    promptContinue: 'Lanjutkan',
   },
+  map: {
+    recenter: 'Pusatkan ke lokasi kamu',
+    useMyLocation: 'Gunakan lokasi kamu',
+    zoomIn: 'Perbesar',
+    zoomOut: 'Perkecil',
+    pinAria: (nama: string, risiko: string, n: string) =>
+      `${nama}, risiko ${risiko}, ${n} titik panas`,
+    regionMetaProvince: (provinsi: string) => `Provinsi ${provinsi}`,
+    regionMetaHotspots: (n: string) => `${n} titik panas`,
+  },
+  filter: {
+    allProvinces: 'Semua provinsi',
+    pickProvince: 'Pilih provinsi',
+    allStatuses: 'Semua',
+    allStatusesTitle: (count: string) => `Tampilkan semua kategori (${count} wilayah)`,
+    categoryTitle: (count: string, label: string) =>
+      `Tampilkan hanya ${count} wilayah risiko ${label}`,
+  },
+
+  updatedAt: {
+    /** Relatif dari meta.updated_at. */
+    stamp: (relatif: string) => `Diperbarui ${relatif}`,
+    cadence: 'Data diganti setiap sekitar 3 jam dari satelit dan cuaca.',
+    stale: 'Data mungkin sudah usang',
+    problems: (list: string) => `Ada sumber bermasalah: ${list}`,
+    sourceStatus: (name: string, status: string) => `${name} (${status})`,
+  },
+  app: {
+    panelAria: 'Panel informasi',
+    hidePanel: 'Sembunyikan panel',
+    showPanel: 'Tampilkan panel',
+    mapAria: 'Peta titik panas Indonesia',
+  },
+  a11y: {
+    regionSelected: (nama: string) => `Wilayah dipilih: ${nama}`,
+    searchHits: (n: number) => `Hasil pencarian: ${n} lokasi`,
+  },
+
   legend: {
-    scoreTitle: '82',
-    scoreHint: 'Skor risiko, makin tinggi makin rawan',
-    haloTitle: 'Lingkaran',
-    haloHint: 'Makin besar, makin banyak titik panas',
+    colorTitle: 'Risiko',
+    colorHint: 'Kuning sedang, merah tinggi',
+    haloTitle: 'Titik panas',
+    haloHint: 'Lingkaran besar berarti banyak.',
   },
   search: {
     provinces: 'Provinsi',
     kabkota: 'Kabupaten/kota',
     provinceTitle: (nama: string) => `Provinsi ${nama}`,
-    withHotspots: (n: number) => `${n} wilayah dengan titik panas`,
-    noHotspots: 'Tidak ada titik panas',
-    kabNoHotspotsMeta: (provinsi: string) =>
-      `${provinsi} · Tidak ada titik panas`,
+    withHotspots: (n: string) => `${n} wilayah dengan titik panas`,
+    noHotspots: 'Tidak ada titik panas aktif',
   },
   footer: {
-    sourcePrefix: 'Sumber data:',
     sources: [
       {
         name: 'NASA FIRMS',
         href: 'https://firms.modaps.eosdis.nasa.gov',
-      },
-      {
-        name: 'BMKG',
-        href: 'https://www.bmkg.go.id',
       },
       {
         name: 'Open-Meteo',
@@ -132,7 +199,8 @@ export const copy = {
     udara: 'Kualitas udara',
   },
   common: {
-    beta: 'Beta',
     retry: 'Coba lagi',
+    loading: 'Memuat data…',
+    indonesia: 'Indonesia',
   },
 } as const

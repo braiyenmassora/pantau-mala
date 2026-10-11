@@ -13,19 +13,19 @@ export const BRAND_HEX = '#1E6B45'
 /** Line / border hex — mirrors `--color-line`. */
 export const LINE_HEX = '#E3E9E4'
 
-/** Colors from docs/spesifikasi-ui.md — hex values, not Tailwind classes. */
+/** Warna risiko — hex untuk MapLibre / SVG (selaras tokens.css). */
 export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
   sangat_tinggi: {
     label: 'Sangat tinggi',
-    dot: '#C2410C',
+    dot: '#DC3208',
     tint: '#F8D7D0',
-    text: '#8E2414',
+    text: '#9A1F0C',
   },
   sedang: {
     label: 'Sedang',
-    dot: '#D99A0B',
+    dot: '#EBA80A',
     tint: '#FBF0CF',
-    text: '#6B4E00',
+    text: '#7A5600',
   },
   rendah: {
     label: 'Rendah',
@@ -35,19 +35,8 @@ export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
   },
 }
 
-const RISK_RANK: Record<RiskCategory, number> = {
-  rendah: 0,
-  sedang: 1,
-  sangat_tinggi: 2,
-}
-
-export function highestRiskCategory(categories: RiskCategory[]): RiskCategory {
-  let best: RiskCategory = 'rendah'
-  for (const c of categories) {
-    if (RISK_RANK[c] > RISK_RANK[best]) best = c
-  }
-  return best
-}
+/** Active map pin lift — docs §5; kept here so audit allows the rgba. */
+export const PIN_ACTIVE_BOX_SHADOW = '0 2px 8px rgba(20, 38, 27, 0.24)'
 
 /** Append alpha (0–1) to a #RRGGBB hex. */
 export function withAlpha(hex: string, alpha: number): string {

@@ -1,107 +1,95 @@
 import {
   Check,
+  Clock,
   Cloud,
   CloudFog,
   CloudRain,
   Droplets,
   Flame,
-  Info,
+  Gauge,
   MapPin,
   Wind,
 } from 'lucide-react'
+import { useEffect, useRef } from 'react'
 
-import { DataTile, SectionLabel } from '@/components/common'
+import { DataTile, HintButton, SectionLabel } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
-import { Sparkline } from '@/components/panel/sparkline'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import { useMeta } from '@/data/queries'
-import type { AirQualityCategory, ConfidenceLevel, Region } from '@/data/types'
+import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
-import {
-  formatCoordinates,
-  formatDateTime,
-  formatNumber,
-  trendWindowLabels,
-} from '@/lib/format'
+import { formatDetectionDate } from '@/lib/detection-flag'
+import { formatNumber } from '@/lib/format'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { cn } from '@/lib/utils'
-
-const CONFIDENCE_LABEL: Record<ConfidenceLevel, string> = {
-  rendah: 'Rendah',
-  sedang: 'Sedang',
-  tinggi: 'Tinggi',
-}
-
-const AIR_LABEL: Record<AirQualityCategory, string> = {
-  baik: 'Baik',
-  sedang: 'Sedang',
-  tidak_sehat: 'Tidak sehat',
-}
-
-const AIR_TEXT: Record<AirQualityCategory, string> = {
-  baik: 'text-risk-low-text',
-  sedang: 'text-risk-mid-text',
-  tidak_sehat: 'text-risk-high-text',
-}
 
 type RegionDetailPanelProps = {
   region: Region
 }
 
 export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
-  const { data: meta } = useMeta()
-  const style = RISK_CATEGORIES[region.kategori]
-  const [lon, lat] = region.pusat
-  const trendStart = region.tren_7h[0] ?? 0
-  const trendEnd = region.tren_7h[region.tren_7h.length - 1] ?? 0
-  const dates = trendWindowLabels(meta?.diperbarui ?? new Date().toISOString())
-  const showSpark =
-    region.tren_7h.length >= 2 && !region.tren_7h.every((v) => v === 0)
+  const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    titleRef.current?.focus()
+  }, [region.code])
 
   return (
-    <div key={region.kode} className="animate-view-in space-y-6">
+    <div key={region.code} className="animate-view-in space-y-6">
       <div className="space-y-4">
         <header>
-          <h2 className="line-clamp-2 text-xl font-semibold text-ink" title={region.nama}>
-            {region.nama}
+          <h2
+            ref={titleRef}
+            tabIndex={-1}
+            className={cn(
+              'text-ink line-clamp-2 text-xl font-semibold outline-none',
+              focusRing,
+              'rounded-ctl',
+            )}
+            title={region.name}
+          >
+            {region.name}
           </h2>
-          <p className="mt-1 flex items-center gap-1 text-sm text-ink-2">
-            <MapPin className="size-4 shrink-0 text-ink-2" strokeWidth={2} aria-hidden />
-            <span>
-              {region.provinsi}
-              {' · '}
-              <span className="font-mono text-xs">
-                {formatCoordinates(lon, lat)}
-              </span>
-            </span>
+          <p className="text-ink-2 mt-1 flex items-center gap-1 text-sm">
+            <MapPin
+              className="text-ink-2 size-3.5 shrink-0"
+              strokeWidth={2}
+              aria-hidden
+            />
+            <span>{copy.map.regionMetaProvince(region.province)}</span>
           </p>
+          {region.last_detection ? (
+            <p className="text-ink-2 mt-1 flex items-center gap-1 text-sm">
+              <Clock
+                className="text-ink-2 size-3.5 shrink-0"
+                strokeWidth={2}
+                aria-hidden
+              />
+              <span>
+                {copy.detail.flagDate}{' '}
+                {formatDetectionDate(region.last_detection.time, region.time_zone)}
+              </span>
+            </p>
+          ) : null}
         </header>
         <RiskCard region={region} />
       </div>
 
       <section className="space-y-2">
-        <SectionLabel>Ringkasan</SectionLabel>
-        <p className="text-base text-ink" style={{ lineHeight: '22px' }}>
-          {region.ringkasan}
-        </p>
+        <SectionLabel>{copy.detail.summary}</SectionLabel>
+        <p className="text-paragraph text-ink">{region.summary}</p>
       </section>
 
       <section className="space-y-2">
-        <SectionLabel>Yang bisa kamu lakukan</SectionLabel>
+        <SectionLabel>{copy.detail.actions}</SectionLabel>
         <div className="rounded-card bg-surface-muted p-4">
           <ul className="space-y-2">
-            {region.saran.map((item) => (
+            {region.actions.map((item) => (
               <li key={item} className="flex items-start gap-2">
                 <Check
-                  className="mt-1 size-4 shrink-0 text-brand"
+                  className="text-brand mt-1 size-4 shrink-0"
                   strokeWidth={2}
                   aria-hidden
                 />
-                <span className="text-base text-ink">{item}</span>
+                <span className="text-ink text-base">{item}</span>
               </li>
             ))}
           </ul>
@@ -109,193 +97,87 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
       </section>
 
       <section className="space-y-2">
-        <SectionLabel>Kondisi saat ini</SectionLabel>
+        <SectionLabel>{copy.detail.conditions}</SectionLabel>
         <div className="grid grid-cols-2 gap-2">
+          {/* Risiko pin = FIRMS saja; FWI/udara terpisah di sini. */}
           <DataTile
-            icon={<Flame className="size-4 text-ink-2" strokeWidth={2} />}
-            label="Titik panas 24 jam"
-            value={formatNumber(region.titik_panas_24j)}
-            unit="titik"
+            icon={<Cloud className="text-ink-2 size-4" strokeWidth={2} />}
+            label={copy.source.cuaca}
+            value={`${formatNumber(region.weather.temp_c)}°C`}
+            unit={region.weather.condition}
           />
           <DataTile
-            icon={<Cloud className="size-4 text-ink-2" strokeWidth={2} />}
-            label="Cuaca"
-            value={`${formatNumber(region.cuaca.suhu_c)}°C`}
-            unit={region.cuaca.kondisi}
+            icon={<CloudFog className="text-ink-2 size-4" strokeWidth={2} />}
+            label={copy.detail.airQuality}
+            value={copy.air[region.air_quality.category]}
+            unit={`PM2.5 ${formatNumber(region.air_quality.pm25)}`}
+            valueClassName={
+              region.air_quality.category === 'tidak_sehat'
+                ? 'text-risk-high-text'
+                : region.air_quality.category === 'sedang'
+                  ? 'text-risk-mid-text'
+                  : undefined
+            }
+            hintAria={copy.detail.airHint}
+            hintText={copy.detail.airTooltip}
           />
           <DataTile
-            icon={<Droplets className="size-4 text-ink-2" strokeWidth={2} />}
-            label="Kelembapan"
-            value={formatNumber(region.cuaca.kelembapan)}
+            icon={<Gauge className="text-ink-2 size-4" strokeWidth={2} />}
+            label={copy.detail.weatherDanger}
+            value={copy.bahaya[region.weather_danger.class]}
+            unit={`${copy.detail.fwiUnit} ${formatNumber(region.weather_danger.fwi)}`}
+            hintAria={copy.detail.weatherDangerHint}
+            hintText={copy.detail.weatherDangerTooltip}
+          />
+          <DataTile
+            icon={<Droplets className="text-ink-2 size-4" strokeWidth={2} />}
+            label={copy.detail.humidity}
+            value={formatNumber(region.weather.humidity)}
             unit="%"
           />
           <DataTile
-            icon={<Wind className="size-4 text-ink-2" strokeWidth={2} />}
-            label="Angin"
-            value={formatNumber(region.cuaca.angin_kmj)}
-            unit="km/jam"
+            icon={<Wind className="text-ink-2 size-4" strokeWidth={2} />}
+            label={copy.detail.wind}
+            value={formatNumber(region.weather.wind_kmh)}
+            unit={copy.detail.windUnit}
           />
           <DataTile
-            icon={<CloudRain className="size-4 text-ink-2" strokeWidth={2} />}
-            label="Tanpa hujan"
-            value={formatNumber(region.cuaca.hari_tanpa_hujan)}
-            unit="hari"
-          />
-          <DataTile
-            icon={<CloudFog className="size-4 text-ink-2" strokeWidth={2} />}
-            label="Udara (PM2.5)"
-            value={AIR_LABEL[region.udara.kategori]}
-            valueClassName={AIR_TEXT[region.udara.kategori]}
+            icon={<CloudRain className="text-ink-2 size-4" strokeWidth={2} />}
+            label={copy.detail.dryDays}
+            value={formatNumber(region.weather.dry_days)}
+            unit={copy.detail.dayUnit}
           />
         </div>
       </section>
-
-      <section className="space-y-2">
-        <div className="flex items-baseline justify-between gap-2">
-          <SectionLabel>Tren titik panas 7 hari</SectionLabel>
-          <p className="font-mono text-sm tabular-nums text-ink-2">
-            {formatNumber(trendStart)} → {formatNumber(trendEnd)} titik
-          </p>
-        </div>
-        {showSpark && (
-          <>
-            <Sparkline
-              values={region.tren_7h}
-              width={336}
-              height={64}
-              color={style.dot}
-              showBaseline
-              className="h-16 w-full"
-            />
-            <div className="flex justify-between text-xs text-ink-2">
-              <span>{dates.start}</span>
-              <span>{dates.end}</span>
-            </div>
-          </>
-        )}
-      </section>
-
-      {region.deteksi_terakhir && (
-        <section>
-          <SectionLabel className="mb-2">{copy.panel.techTitle}</SectionLabel>
-          <div className="divide-y divide-line rounded-card border border-line bg-surface">
-            <TechRow
-              label={copy.panel.techTime}
-              value={formatDateTime(
-                region.deteksi_terakhir.waktu,
-                region.zona_waktu,
-              )}
-            />
-            <TechRow
-              label={copy.panel.techSatellite}
-              value={region.deteksi_terakhir.satelit}
-            />
-            <TechRow
-              label={copy.panel.techConfidence}
-              value={CONFIDENCE_LABEL[region.deteksi_terakhir.keyakinan]}
-            />
-            <TechRow
-              label={copy.panel.techFrp}
-              value={`${formatNumber(region.deteksi_terakhir.frp_mw, {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1,
-              })} MW`}
-              mono
-            />
-          </div>
-        </section>
-      )}
     </div>
   )
 }
 
 function RiskCard({ region }: { region: Region }) {
-  const style = RISK_CATEGORIES[region.kategori]
-  const markerLeft = `${Math.min(100, Math.max(0, region.skor))}%`
+  const style = RISK_CATEGORIES[region.risk_category]
+  const hotspots = formatNumber(region.hotspots_24h)
 
   return (
     <section
-      className="space-y-3 rounded-card p-4"
+      className="rounded-card space-y-3 p-4"
       style={{ backgroundColor: style.tint, color: style.text }}
     >
-      <div className="flex items-end justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-1">
-            <p className="text-xs font-medium">Risiko kebakaran</p>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  type="button"
-                  className={cn(
-                    'opacity-70 transition-opacity duration-150 ease-in-out hover:opacity-100',
-                    focusRing,
-                    'rounded-ctl',
-                  )}
-                  aria-label="Penjelasan skor risiko"
-                  style={{ color: style.text }}
-                >
-                  <Info className="size-3.5" strokeWidth={2} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="max-w-xs rounded-ctl">
-                Skor 0–100 dari gabungan jumlah titik panas, cuaca kering, dan tren 7 hari.
-                Makin tinggi, makin besar kemungkinan api meluas.
-              </TooltipContent>
-            </Tooltip>
-          </div>
-          <p className="mt-1 text-xl font-semibold">{style.label}</p>
+      <div>
+        <div className="flex items-center gap-1">
+          <p className="text-xs leading-4 font-medium">{copy.detail.riskTitle}</p>
+          <HintButton
+            ariaLabel={copy.detail.riskHint}
+            text={copy.detail.riskTooltip}
+            className="opacity-70 hover:text-inherit hover:opacity-100"
+            style={{ color: style.text }}
+          />
         </div>
-        <div className="flex items-baseline gap-1">
-          <p className="font-mono text-3xl font-semibold tracking-[-0.02em] text-ink">
-            {region.skor}
-          </p>
-          <span className="text-sm" style={{ color: style.text }}>
-            /100
-          </span>
-        </div>
+        <p className="mt-1 text-xl font-semibold">{style.label}</p>
       </div>
-
-      <div className="relative pt-2">
-        <div className="flex" style={{ gap: 2, height: 6 }}>
-          <span className="h-full flex-[34] rounded-l-full bg-risk-low" />
-          <span className="h-full flex-[33] bg-risk-mid" />
-          <span className="h-full flex-[33] rounded-r-full bg-risk-high" />
-        </div>
-        <span
-          className="absolute size-3 -translate-x-1/2 rounded-full border-2 border-ink bg-surface"
-          style={{ left: markerLeft, top: 2 }}
-          aria-hidden
-        />
-        <div className="mt-2 flex justify-between text-xs text-ink-2">
-          <span>Rendah</span>
-          <span>Sedang</span>
-          <span>Sangat tinggi</span>
-        </div>
-      </div>
+      <p className="flex items-center gap-1 text-sm" style={{ color: style.text }}>
+        <Flame className="size-3.5 shrink-0 opacity-80" strokeWidth={2} aria-hidden />
+        <span>{copy.detail.hotspots24hReason(hotspots)}</span>
+      </p>
     </section>
-  )
-}
-
-function TechRow({
-  label,
-  value,
-  mono,
-}: {
-  label: string
-  value: string
-  mono?: boolean
-}) {
-  return (
-    <div className="flex items-start justify-between gap-3 px-3 py-2">
-      <span className="text-sm text-ink-2">{label}</span>
-      <span
-        className={cn(
-          'text-right text-sm font-medium text-ink',
-          mono && 'font-mono',
-        )}
-      >
-        {value}
-      </span>
-    </div>
   )
 }

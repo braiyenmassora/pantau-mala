@@ -2,37 +2,28 @@ import { MapPin, ShieldCheck } from 'lucide-react'
 
 import { EmptyState } from '@/components/common'
 import { copy } from '@/copy/id'
-import type { CatalogKabKota } from '@/data/types'
-import { formatCoordinates } from '@/lib/format'
+import type { CatalogRegency } from '@/data/types'
 
 type NoHotspotDetailProps = {
-  kab: CatalogKabKota
+  kab: CatalogRegency
 }
 
 export function NoHotspotDetail({ kab }: NoHotspotDetailProps) {
-  const [lon, lat] = kab.pusat
-
   return (
     <div className="animate-view-in space-y-6">
       <header>
-        <h2 className="line-clamp-2 text-xl font-semibold text-ink" title={kab.nama}>
-          {kab.nama}
+        <h2 className="text-ink line-clamp-2 text-xl font-semibold" title={kab.name}>
+          {kab.name}
         </h2>
-        <p className="mt-1 flex items-center gap-1 text-sm text-ink-2">
-            <MapPin className="size-4 shrink-0 text-ink-2" strokeWidth={2} aria-hidden />
-          <span>
-            {kab.provinsi}
-            {' · '}
-            <span className="font-mono text-xs">
-              {formatCoordinates(lon, lat)}
-            </span>
-          </span>
+        <p className="text-ink-2 mt-1 flex items-center gap-1 text-sm">
+          <MapPin className="text-ink-2 size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+          <span>{copy.map.regionMetaProvince(kab.province)}</span>
         </p>
       </header>
       <EmptyState
         icon={ShieldCheck}
         title={copy.empty.noHotspotsInRegion.title}
-        description={copy.empty.noHotspotsInRegion.description(kab.nama)}
+        description={copy.empty.noHotspotsInRegion.description(kab.name)}
       />
     </div>
   )

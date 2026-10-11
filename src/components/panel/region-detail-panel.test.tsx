@@ -1,41 +1,45 @@
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { cleanup, render, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@/lib/prefers-reduced-motion', () => ({
+  usePrefersReducedMotion: () => true,
+}))
 
 import { RegionDetailPanel } from '@/components/panel/region-detail-panel'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
-import { formatDateTime, formatNumber } from '@/lib/format'
 
-/** Snapshot of Kab. Pulang Pisau from public/data/wilayah.json (kode 62.11). */
 const pulangPisau: Region = {
-  kode: '62.11',
-  nama: 'Kab. Pulang Pisau',
-  provinsi: 'Kalimantan Tengah',
-  zona_waktu: 'WIB',
-  pusat: [114.25, -2.75],
-  skor: 82,
-  kategori: 'sangat_tinggi',
-  titik_panas_24j: 23,
-  tren_7h: [8, 10, 12, 11, 15, 18, 23],
-  cuaca: {
-    suhu_c: 34,
-    kondisi: 'Cerah berawan',
-    kelembapan: 48,
-    angin_kmj: 12,
-    hari_tanpa_hujan: 9,
+  code: '62.11',
+  name: 'Kab. Pulang Pisau',
+  province: 'Kalimantan Tengah',
+  time_zone: 'WIB',
+  center: [114.25, -2.75],
+  weather_danger: { class: 'ekstrem', fwi: 40, source: 'BMKG' },
+  risk_category: 'sangat_tinggi',
+  hotspots_24h: 23,
+  trend_7d: [8, 10, 12, 11, 15, 18, 23],
+  weather: {
+    temp_c: 34,
+    condition: 'Cerah berawan',
+    humidity: 48,
+    wind_kmh: 12,
+    dry_days: 9,
   },
-  udara: { pm25: 62, kategori: 'tidak_sehat' },
-  deteksi_terakhir: {
-    waktu: '2026-10-09T13:55:00+07:00',
-    satelit: 'MODIS Aqua',
-    keyakinan: 'tinggi',
+  air_quality: { pm25: 62, category: 'tidak_sehat' },
+  last_detection: {
+    time: '2026-10-09T13:55:00+07:00',
+    satellite: 'MODIS Aqua',
+    confidence: 'tinggi',
     frp_mw: 11.4,
+    village: 'Buntoi',
+    district: 'Kahayan Hilir',
   },
-  ringkasan: 'Ringkasan uji',
-  saran: ['Saran uji'],
+  summary: 'Ringkasan uji',
+  actions: ['Saran uji'],
 }
 
 function renderDetail(region: Region) {
@@ -52,36 +56,40 @@ function renderDetail(region: Region) {
 }
 
 describe('RegionDetailPanel', () => {
-  it('shows satellite tech open by default (Pulang Pisau)', () => {
-    renderDetail(pulangPisau)
+  afterEach(cleanup)
 
-    expect(screen.getByText(copy.panel.techTitle)).toBeTruthy()
-    expect(screen.getByText(copy.panel.techTime)).toBeTruthy()
-    expect(
-      screen.getByText(
-        formatDateTime(pulangPisau.deteksi_terakhir.waktu, pulangPisau.zona_waktu),
-      ),
-    ).toBeTruthy()
-    expect(screen.getByText(copy.panel.techSatellite)).toBeTruthy()
-    expect(screen.getByText('MODIS Aqua')).toBeTruthy()
-    expect(screen.getByText(copy.panel.techConfidence)).toBeTruthy()
-    expect(screen.getByText('Tinggi')).toBeTruthy()
-    expect(screen.getByText(copy.panel.techFrp)).toBeTruthy()
-    expect(
-      screen.getByText(
-        `${formatNumber(pulangPisau.deteksi_terakhir.frp_mw, {
-          minimumFractionDigits: 1,
-          maximumFractionDigits: 1,
-        })} MW`,
-      ),
-    ).toBeTruthy()
-    expect(screen.queryByRole('button', { name: copy.panel.techTitle })).toBeNull()
+  it('moves focus to the region title on open', () => {
+    renderDetail(pulangPisau)
+    expect(document.activeElement).toBe(
+      screen.getByRole('heading', { name: pulangPisau.name }),
+    )
   })
 
-  it('keeps score and /100 on one baseline row', () => {
-    const { container } = renderDetail(pulangPisau)
-    const scoreRow = container.querySelector('.flex.items-baseline.gap-1')
-    expect(scoreRow?.textContent).toContain('82')
-    expect(scoreRow?.textContent).toContain('/100')
+  it('shows province without coordinates in the header', () => {
+    renderDetail(pulangPisau)
+    expect(
+      screen.getByText(copy.map.regionMetaProvince(pulangPisau.province)),
+    ).toBeTruthy()
+    expect(screen.queryByText(/114\.|-2\./)).toBeNull()
+  })
+
+  it('shows detection time in header; air quality only in conditions', () => {
+    renderDetail(pulangPisau)
+    expect(screen.getByText(/Deteksi 9 Oktober 2026/)).toBeTruthy()
+    expect(screen.queryByText('Info teknis satelit')).toBeNull()
+    expect(screen.getByText(copy.detail.airQuality)).toBeTruthy()
+    expect(screen.getByText(copy.air.tidak_sehat)).toBeTruthy()
+  })
+
+  it('risk card shows FIRMS count only; FWI in conditions', () => {
+    renderDetail(pulangPisau)
+    expect(screen.getByText(copy.detail.riskTitle)).toBeTruthy()
+    expect(screen.getByText('Sangat tinggi')).toBeTruthy()
+    expect(screen.getByText(copy.detail.hotspots24hReason('23'))).toBeTruthy()
+    expect(screen.getByText(copy.detail.weatherDanger)).toBeTruthy()
+    expect(screen.getByText(copy.bahaya.ekstrem)).toBeTruthy()
+    expect(screen.queryByText('/100')).toBeNull()
+    expect(screen.queryByText(/[Ss]kor/)).toBeNull()
+    expect(screen.queryByText(copy.panel.hotspot24h)).toBeNull()
   })
 })
