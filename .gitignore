@@ -37,3 +37,4 @@ screenshots/
 .lh-chrome-profile/
 .lh-tmp/
 docs/lighthouse-last.json
+.pnpm-global-store/

@@ -8,12 +8,8 @@ type SectionLabelProps = {
   as?: 'h3' | 'p'
 }
 
-export function SectionLabel({
-  children,
-  className,
-  as: Tag = 'h3',
-}: SectionLabelProps) {
+export function SectionLabel({ children, className, as: Tag = 'h3' }: SectionLabelProps) {
   return (
-    <Tag className={cn('text-sm font-semibold text-ink-2', className)}>{children}</Tag>
+    <Tag className={cn('text-ink-2 text-sm font-semibold', className)}>{children}</Tag>
   )
 }

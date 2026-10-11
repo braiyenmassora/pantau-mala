@@ -12,31 +12,31 @@ import type { Region } from '@/data/types'
 import { useMapStore } from '@/store/map'
 
 const region: Region = {
-  kode: '62.11',
-  nama: 'Kab. Pulang Pisau',
-  provinsi: 'Kalimantan Tengah',
-  zona_waktu: 'WIB',
-  pusat: [114.25, -2.75],
-  skor: 82,
-  kategori: 'sangat_tinggi',
-  titik_panas_24j: 0,
-  tren_7h: [0, 0, 0, 0, 0, 0, 0],
-  cuaca: {
-    suhu_c: 34,
-    kondisi: 'Cerah',
-    kelembapan: 48,
-    angin_kmj: 12,
-    hari_tanpa_hujan: 9,
+  code: '62.11',
+  name: 'Kab. Pulang Pisau',
+  province: 'Kalimantan Tengah',
+  time_zone: 'WIB',
+  center: [114.25, -2.75],
+  weather_danger: { class: 'ekstrem', fwi: 40, source: 'BMKG' },
+  risk_category: 'sangat_tinggi',
+  hotspots_24h: 0,
+  trend_7d: [0, 0, 0, 0, 0, 0, 0],
+  weather: {
+    temp_c: 34,
+    condition: 'Cerah',
+    humidity: 48,
+    wind_kmh: 12,
+    dry_days: 9,
   },
-  udara: { pm25: 62, kategori: 'tidak_sehat' },
-  deteksi_terakhir: {
-    waktu: '2026-10-09T13:55:00+07:00',
-    satelit: 'MODIS Aqua',
-    keyakinan: 'tinggi',
+  air_quality: { pm25: 62, category: 'tidak_sehat' },
+  last_detection: {
+    time: '2026-10-09T13:55:00+07:00',
+    satellite: 'MODIS Aqua',
+    confidence: 'tinggi',
     frp_mw: 0,
   },
-  ringkasan: '',
-  saran: [],
+  summary: '',
+  actions: [],
 }
 
 function wrap(ui: ReactNode) {
@@ -82,7 +82,7 @@ describe('SummaryPanel states', () => {
         isError={false}
       />,
     )
-    expect(screen.getByLabelText('Memuat')).toBeTruthy()
+    expect(screen.getByLabelText(copy.common.loading)).toBeTruthy()
     expect(screen.queryByText('0')).toBeNull()
   })
 
@@ -99,9 +99,7 @@ describe('SummaryPanel states', () => {
       />,
     )
     expect(screen.getByText(copy.empty.loadFail.title)).toBeTruthy()
-    expect(
-      screen.getByRole('button', { name: copy.empty.loadFail.action }),
-    ).toBeTruthy()
+    expect(screen.getByRole('button', { name: copy.empty.loadFail.action })).toBeTruthy()
   })
 
   it('shows no-hotspots empty when totals are zero', () => {
@@ -115,9 +113,7 @@ describe('SummaryPanel states', () => {
       />,
     )
     expect(screen.getByText(copy.empty.noHotspots.title)).toBeTruthy()
-    expect(
-      screen.getByText(copy.empty.noHotspots.description('Indonesia')),
-    ).toBeTruthy()
+    expect(screen.getByText(copy.empty.noHotspots.description('Indonesia'))).toBeTruthy()
   })
 
   it('shows search miss empty', () => {
@@ -125,9 +121,9 @@ describe('SummaryPanel states', () => {
     const client = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     })
-    client.setQueryData(['daftar-wilayah'], {
-      provinsi: [],
-      kabkota: [],
+    client.setQueryData(['region-catalog'], {
+      provinces: [],
+      regencies: [],
     })
     render(
       <QueryClientProvider client={client}>
@@ -143,6 +139,9 @@ describe('SummaryPanel states', () => {
       </QueryClientProvider>,
     )
     expect(screen.getByText(copy.empty.searchMiss.title)).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: copy.empty.searchMiss.action }),
+    ).toBeTruthy()
   })
 
   it('shows filter empty with tampilkan semua', () => {

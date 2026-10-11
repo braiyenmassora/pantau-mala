@@ -6,7 +6,8 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // mapcn MapLibre shell — vendor-style file, not worth rewriting for lint rules
+  globalIgnores(['dist', 'src/components/ui/map.tsx']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

@@ -1,14 +1,7 @@
 /** @vitest-environment jsdom */
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {
-  Clock,
-  CloudOff,
-  Filter,
-  MapPinOff,
-  SearchX,
-  ShieldCheck,
-} from 'lucide-react'
+import { Clock, CloudOff, Filter, MapPinOff, SearchX, ShieldCheck } from 'lucide-react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { EmptyState } from '@/components/common/empty-state'
@@ -26,9 +19,7 @@ describe('EmptyState', () => {
       />,
     )
     expect(screen.getByText(copy.empty.noHotspots.title)).toBeTruthy()
-    expect(
-      screen.getByText(copy.empty.noHotspots.description('Indonesia')),
-    ).toBeTruthy()
+    expect(screen.getByText(copy.empty.noHotspots.description('Indonesia'))).toBeTruthy()
   })
 
   it('filter empty with clear action', async () => {
@@ -59,15 +50,15 @@ describe('EmptyState', () => {
     expect(screen.getByText(copy.empty.searchMiss.title)).toBeTruthy()
   })
 
-  it('nearby clear', () => {
+  it('no hotspots in region 7d', () => {
     render(
       <EmptyState
         icon={ShieldCheck}
-        title={copy.empty.nearbyClear.title}
-        description={copy.empty.nearbyClear.description}
+        title={copy.empty.noHotspotsInRegion.title}
+        description={copy.empty.noHotspotsInRegion.description('Merauke')}
       />,
     )
-    expect(screen.getByText(copy.empty.nearbyClear.title)).toBeTruthy()
+    expect(screen.getByText(copy.empty.noHotspotsInRegion.title)).toBeTruthy()
   })
 
   it('load fail with retry', async () => {
@@ -131,5 +122,33 @@ describe('EmptyState', () => {
       screen.getByRole('button', { name: copy.empty.locationError.action }),
     )
     expect(onClick).toHaveBeenCalledOnce()
+  })
+
+  it('action variant is bordered surface CTA', () => {
+    const { container } = render(
+      <EmptyState
+        variant="action"
+        icon={MapPinOff}
+        title={copy.location.riskTitle}
+        description={copy.location.riskSubtitle}
+      />,
+    )
+    const section = container.querySelector('section')
+    expect(section?.className).toContain('border')
+    expect(section?.className).toContain('bg-surface')
+  })
+
+  it('bare variant has no section chrome', () => {
+    const { container } = render(
+      <EmptyState
+        variant="bare"
+        icon={MapPinOff}
+        titleId="prompt-title"
+        title={copy.location.promptTitle}
+        description={copy.location.promptBody}
+      />,
+    )
+    expect(container.querySelector('section')).toBeNull()
+    expect(screen.getByRole('heading', { level: 2 })).toBeTruthy()
   })
 })

@@ -3,71 +3,70 @@ import { describe, expect, it } from 'vitest'
 import type { Region } from '@/data/types'
 import { filterRegions } from '@/lib/filter-regions'
 
+function stub(
+  partial: Partial<Region> &
+    Pick<Region, 'code' | 'name' | 'risk_category' | 'hotspots_24h'>,
+): Region {
+  return {
+    province: 'Kalimantan Tengah',
+    time_zone: 'WIB',
+    center: [114.25, -2.75],
+    weather_danger: { class: 'aman', fwi: 5, source: 'BMKG' },
+    trend_7d: [1, 1, 1, 1, 1, 1, partial.hotspots_24h],
+    weather: {
+      temp_c: 30,
+      condition: 'Cerah',
+      humidity: 60,
+      wind_kmh: 10,
+      dry_days: 2,
+    },
+    air_quality: { pm25: 10, category: 'baik' },
+    last_detection: {
+      time: '2026-10-09T13:55:00+07:00',
+      satellite: 'MODIS Aqua',
+      confidence: 'tinggi',
+      frp_mw: 2,
+    },
+    summary: 'x',
+    actions: [],
+    ...partial,
+  }
+}
+
 const sample: Region[] = [
-  {
-    kode: '62.11',
-    nama: 'Kab. Pulang Pisau',
-    provinsi: 'Kalimantan Tengah',
-    zona_waktu: 'WIB',
-    pusat: [114.25, -2.75],
-    skor: 82,
-    kategori: 'sangat_tinggi',
-    titik_panas_24j: 23,
-    tren_7h: [8, 10, 9, 14, 15, 19, 23],
-    cuaca: {
-      suhu_c: 34,
-      kondisi: 'Cerah',
-      kelembapan: 48,
-      angin_kmj: 14,
-      hari_tanpa_hujan: 9,
-    },
-    udara: { pm25: 92.4, kategori: 'tidak_sehat' },
-    deteksi_terakhir: {
-      waktu: '2026-10-09T13:55:00+07:00',
-      satelit: 'MODIS Aqua',
-      keyakinan: 'tinggi',
-      frp_mw: 11.4,
-    },
-    ringkasan: 'x',
-    saran: [],
-  },
-  {
-    kode: '64.02',
-    nama: 'Kab. Kutai Kartanegara',
-    provinsi: 'Kalimantan Timur',
-    zona_waktu: 'WITA',
-    pusat: [116.8, -0.4],
-    skor: 29,
-    kategori: 'rendah',
-    titik_panas_24j: 3,
-    tren_7h: [3, 2, 3, 3, 2, 3, 3],
-    cuaca: {
-      suhu_c: 31,
-      kondisi: 'Hujan ringan',
-      kelembapan: 74,
-      angin_kmj: 9,
-      hari_tanpa_hujan: 1,
-    },
-    udara: { pm25: 12.6, kategori: 'baik' },
-    deteksi_terakhir: {
-      waktu: '2026-10-09T13:55:00+08:00',
-      satelit: 'VIIRS SNPP',
-      keyakinan: 'sedang',
-      frp_mw: 2.1,
-    },
-    ringkasan: 'y',
-    saran: [],
-  },
+  stub({
+    code: '62.11',
+    name: 'Kab. Pulang Pisau',
+    risk_category: 'sangat_tinggi',
+    hotspots_24h: 23,
+    weather_danger: { class: 'ekstrem', fwi: 42, source: 'BMKG' },
+  }),
+  stub({
+    code: '64.02',
+    name: 'Kab. Kutai Kartanegara',
+    province: 'Kalimantan Timur',
+    risk_category: 'sedang',
+    hotspots_24h: 8,
+    weather_danger: { class: 'waspada', fwi: 11, source: 'BMKG' },
+  }),
+  stub({
+    code: '61.12',
+    name: 'Kab. Kubu Raya',
+    province: 'Kalimantan Barat',
+    risk_category: 'rendah',
+    hotspots_24h: 0,
+    weather_danger: { class: 'aman', fwi: 2, source: 'BMKG' },
+  }),
 ]
 
 describe('filterRegions', () => {
-  it('sorts by score descending and returns all when filters are empty', () => {
+  it('sorts by kategori then titik panas, all when filters empty', () => {
     const result = filterRegions(sample, {
       province: 'Semua',
       selectedCategories: new Set(),
       query: '',
     })
-    expect(result.map((r) => r.kode)).toEqual(['62.11', '64.02'])
+    expect(result.map((r) => r.code)).toEqual(['62.11', '64.02', '61.12'])
   })
 
   it('filters by province', () => {
@@ -77,7 +76,7 @@ describe('filterRegions', () => {
       query: '',
     })
     expect(result).toHaveLength(1)
-    expect(result[0]?.kode).toBe('64.02')
+    expect(result[0]?.code).toBe('64.02')
   })
 
   it('filters by selected categories', () => {
@@ -86,7 +85,7 @@ describe('filterRegions', () => {
       selectedCategories: new Set(['rendah']),
       query: '',
     })
-    expect(result.map((r) => r.kode)).toEqual(['64.02'])
+    expect(result.map((r) => r.code)).toEqual(['61.12'])
   })
 
   it('searches names with Fuse.js', () => {
@@ -95,6 +94,6 @@ describe('filterRegions', () => {
       selectedCategories: new Set(),
       query: 'pulang',
     })
-    expect(result.map((r) => r.kode)).toEqual(['62.11'])
+    expect(result.map((r) => r.code)).toEqual(['62.11'])
   })
 })

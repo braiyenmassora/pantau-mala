@@ -1,14 +1,16 @@
 import { Crosshair, Flame, MapPin, MapPinOff } from 'lucide-react'
-import { useMemo } from 'react'
+import { useMemo, type KeyboardEvent, type MouseEvent } from 'react'
 
 import { Badge, Button, EmptyState } from '@/components/common'
-import { useTitikPanas } from '@/data/queries'
+import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import { rememberFocusTrigger } from '@/lib/focus-return'
 import { formatNumber } from '@/lib/format'
 import { computeNearby } from '@/lib/nearby'
+import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
+import { useUiStore } from '@/store/ui'
 
 type LocationCardProps = {
   regions: Region[]
@@ -17,7 +19,9 @@ type LocationCardProps = {
 export function LocationCard({ regions }: LocationCardProps) {
   const location = useMapStore((s) => s.location)
   const setLocation = useMapStore((s) => s.setLocation)
-  const { data: hotspots } = useTitikPanas()
+  const select = useMapStore((s) => s.select)
+  const setPanelOpen = useUiStore((s) => s.setPanelOpen)
+  const { data: hotspots } = useHotspots()
 
   const nearby = useMemo(() => {
     if (location.status !== 'active' || !location.coords || !hotspots) return null
@@ -49,69 +53,107 @@ export function LocationCard({ regions }: LocationCardProps) {
   }
 
   if (location.status === 'active' && location.coords && nearby) {
+    const detailCode = nearby.userRegionCode ?? nearby.nearest?.regionCode ?? null
     const userRegion = nearby.userRegionCode
-      ? regions.find((r) => r.kode === nearby.userRegionCode)
+      ? regions.find((r) => r.code === nearby.userRegionCode)
       : null
     const nearestRegion = nearby.nearest
-      ? regions.find((r) => r.kode === nearby.nearest!.regionCode)
+      ? regions.find((r) => r.code === nearby.nearest!.regionCode)
       : null
+    const titleRegion = userRegion ?? nearestRegion
+
+    function openDetail(target: HTMLElement) {
+      if (!detailCode) return
+      rememberFocusTrigger(target)
+      select(detailCode)
+      setPanelOpen(true)
+    }
 
     return (
-      <section className="animate-view-in flex flex-col gap-3 rounded-card bg-surface-muted p-4">
+      <section
+        className={cn(
+          'animate-view-in rounded-card bg-surface-muted flex flex-col gap-3 p-4',
+          detailCode && 'hover:bg-line/40 cursor-pointer transition-colors duration-150',
+        )}
+        role={detailCode ? 'button' : undefined}
+        tabIndex={detailCode ? 0 : undefined}
+        onClick={
+          detailCode
+            ? (e: MouseEvent<HTMLElement>) => openDetail(e.currentTarget)
+            : undefined
+        }
+        onKeyDown={
+          detailCode
+            ? (e: KeyboardEvent<HTMLElement>) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  openDetail(e.currentTarget)
+                }
+              }
+            : undefined
+        }
+        aria-label={
+          titleRegion
+            ? `${copy.location.nearbyLabel}: ${titleRegion.name}`
+            : copy.location.nearbyLabel
+        }
+      >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="flex items-center gap-1 text-xs font-medium text-brand">
-              <span className="size-2 rounded-full bg-brand" aria-hidden />
+            <p className="text-brand flex items-center gap-1 text-xs font-medium">
+              <MapPin className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
               {copy.location.nearbyLabel}
             </p>
             <p
-              className="mt-1 truncate text-lg font-semibold text-ink"
-              title={userRegion?.nama ?? copy.location.yourLocation}
+              className="text-ink mt-1 truncate text-base font-semibold"
+              title={titleRegion?.name ?? copy.location.yourLocation}
             >
-              {userRegion?.nama ?? copy.location.yourLocation}
+              {titleRegion?.name ?? copy.location.yourLocation}
             </p>
           </div>
-          {userRegion && <Badge variant="category" category={userRegion.kategori} />}
+          {titleRegion && (
+            <Badge variant="category" category={titleRegion.risk_category} />
+          )}
         </div>
 
         {nearby.hotspotCount === 0 ? (
-          <p className="text-sm text-ink-2">{copy.location.nearbyNoHotspots}</p>
+          <p className="text-ink-2 text-sm">{copy.location.nearbyNoHotspots}</p>
         ) : (
-          <div className="grid grid-cols-2">
-            <div className="pr-3">
-              <div className="flex items-center gap-1 text-xs text-ink-2">
-                <span>{copy.location.radius25}</span>
+          <div className={nearby.nearest ? 'grid grid-cols-2' : undefined}>
+            <div className={nearby.nearest ? 'pr-3' : undefined}>
+              <div className="text-ink-2 flex items-center gap-1 text-xs font-medium">
                 <Flame className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+                <span>{copy.location.radius25}</span>
               </div>
-              <p className="mt-1 text-lg font-semibold text-ink">
+              <p className="text-ink mt-1 text-base font-semibold tabular-nums">
                 {formatNumber(nearby.hotspotCount)}
-                <span className="ml-1 text-xs font-normal text-ink-2">
+                <span className="text-ink-2 ml-1 text-xs font-normal">
                   {copy.location.hotspotUnit}
                 </span>
               </p>
             </div>
-            <div className="border-l border-line pl-3">
-              <div className="flex items-center gap-1 text-xs text-ink-2">
-                <span>{copy.location.nearest}</span>
-                <MapPin className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+            {nearby.nearest ? (
+              <div className="border-line border-l pl-3">
+                <div className="text-ink-2 flex items-center gap-1 text-xs font-medium">
+                  <MapPin className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+                  <span>{copy.location.nearest}</span>
+                </div>
+                <p className="text-ink mt-1 text-base font-semibold tabular-nums">
+                  {formatNumber(nearby.nearest.distanceKm, {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1,
+                  })}
+                  <span className="text-ink-2 ml-1 text-xs font-normal">
+                    {copy.location.km}
+                  </span>
+                </p>
+                {nearestRegion ? (
+                  <p className="text-ink-2 truncate text-xs" title={nearestRegion.name}>
+                    {nearestRegion.name}
+                  </p>
+                ) : null}
               </div>
-              {nearby.nearest && nearestRegion ? (
-                <>
-                  <p className="mt-1 text-lg font-semibold text-ink">
-                    {formatNumber(nearby.nearest.distanceKm, {
-                      minimumFractionDigits: 1,
-                      maximumFractionDigits: 1,
-                    })}
-                    <span className="ml-1 text-xs font-normal text-ink-2">
-                      {copy.location.km}
-                    </span>
-                  </p>
-                  <p className="truncate text-xs text-ink-2" title={nearestRegion.nama}>
-                    {nearestRegion.nama}
-                  </p>
-                </>
-              ) : null}
-            </div>
+            ) : null}
           </div>
         )}
       </section>
@@ -119,27 +161,23 @@ export function LocationCard({ regions }: LocationCardProps) {
   }
 
   return (
-    <section className="rounded-card border border-line bg-surface p-4">
-      <div className="flex items-start gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand">
-          <Crosshair className="size-5" strokeWidth={2} aria-hidden />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-base font-semibold text-ink">{copy.location.riskTitle}</p>
-          <p className="mt-1 text-sm text-ink-2">{copy.location.riskSubtitle}</p>
-          <Button
-            variant="soft"
-            size="sm"
-            className="mt-3"
-            onClick={(e) => {
-              rememberFocusTrigger(e.currentTarget)
-              setLocation({ status: 'requesting' })
-            }}
-          >
-            {copy.location.useLocation}
-          </Button>
-        </div>
-      </div>
-    </section>
+    <EmptyState
+      variant="action"
+      icon={Crosshair}
+      title={copy.location.riskTitle}
+      description={copy.location.riskSubtitle}
+      actions={
+        <Button
+          variant="soft"
+          size="sm"
+          onClick={(e) => {
+            rememberFocusTrigger(e.currentTarget)
+            setLocation({ status: 'requesting' })
+          }}
+        >
+          {copy.location.useLocation}
+        </Button>
+      }
+    />
   )
 }

@@ -24,6 +24,8 @@ type MapState = {
   setProvince: (province: string) => void
   toggleCategory: (category: RiskCategory) => void
   clearCategories: () => void
+  /** Clear search, selection, category filter, and province → home view. */
+  resetHome: () => void
   setQuery: (query: string) => void
   setLocation: (location: UserLocation) => void
 }
@@ -38,14 +40,22 @@ export const useMapStore = create<MapState>((set) => ({
   select: (selectedCode) => set({ selectedCode }),
   hover: (hoveredCode) => set({ hoveredCode }),
   setProvince: (province) => set({ province, selectedCode: null }),
+  /** Single-select: pick one category, or clear if the same chip is clicked again. */
   toggleCategory: (category) =>
     set((s) => {
-      const next = new Set(s.selectedCategories)
-      if (next.has(category)) next.delete(category)
-      else next.add(category)
-      return { selectedCategories: next }
+      if (s.selectedCategories.has(category)) {
+        return { selectedCategories: new Set(), selectedCode: null }
+      }
+      return { selectedCategories: new Set([category]), selectedCode: null }
     }),
-  clearCategories: () => set({ selectedCategories: new Set() }),
+  clearCategories: () => set({ selectedCategories: new Set(), selectedCode: null }),
+  resetHome: () =>
+    set({
+      query: '',
+      selectedCode: null,
+      selectedCategories: new Set(),
+      province: 'Semua',
+    }),
   setQuery: (query) => set({ query }),
   setLocation: (location) => set({ location }),
 }))

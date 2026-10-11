@@ -1,88 +1,79 @@
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { copy } from '@/copy/id'
-import { isDummyDataMode, useMeta } from '@/data/queries'
+import { useMeta } from '@/data/queries'
 import type { SourceStatus } from '@/data/types'
-import { formatDateTime } from '@/lib/format'
+import { formatDateTime, formatRelativeAge, isMetaStale } from '@/lib/format'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 
-type MetaSources = {
+type MetaStatus = {
   firms: SourceStatus
-  cuaca: SourceStatus
-  udara: SourceStatus
+  weather: SourceStatus
+  air: SourceStatus
 }
 
-const SOURCE_LABEL: Record<keyof MetaSources, string> = {
-  firms: 'NASA FIRMS',
-  cuaca: 'Cuaca',
-  udara: 'Kualitas udara',
+const SOURCE_LABEL: Record<keyof MetaStatus, string> = {
+  firms: copy.source.firms,
+  weather: copy.source.cuaca,
+  air: copy.source.udara,
 }
 
-function problemSources(status: MetaSources): (keyof MetaSources)[] {
-  return (Object.keys(status) as (keyof MetaSources)[]).filter(
+function problemSources(status: MetaStatus): (keyof MetaStatus)[] {
+  return (Object.keys(status) as (keyof MetaStatus)[]).filter(
     (k) => status[k] === 'terlambat' || status[k] === 'gagal',
   )
 }
 
 export function UpdatedAtBadge() {
   const { data, isPending, isError } = useMeta()
-  const dummy = isDummyDataMode()
   const showStamp = !isPending && !isError && !!data
 
-  if (!dummy && !showStamp) return null
+  if (!showStamp || !data) return null
 
-  const problems = data ? problemSources(data.status) : []
+  const problems = problemSources(data.status)
   const hasProblem = problems.length > 0
-  const label = data
-    ? `Diperbarui ${formatDateTime(data.diperbarui, 'WIB')}`
-    : null
-  const tip = hasProblem
-    ? `Sumber bermasalah: ${problems
-        .map((k) => `${SOURCE_LABEL[k]} (${data!.status[k]})`)
-        .join(', ')}`
-    : 'Semua sumber data normal'
+  const stale = isMetaStale(data.updated_at)
+  const label = copy.updatedAt.stamp(formatRelativeAge(data.updated_at))
+  const tipParts = [
+    copy.updatedAt.cadence,
+    formatDateTime(data.updated_at, 'WIB'),
+    stale ? copy.updatedAt.stale : null,
+    hasProblem
+      ? copy.updatedAt.problems(
+          problems
+            .map((k) => copy.updatedAt.sourceStatus(SOURCE_LABEL[k], data.status[k]))
+            .join(', '),
+        )
+      : null,
+  ].filter(Boolean)
 
   return (
     <div
       className="absolute right-4 bottom-4 z-30 flex h-6 items-center gap-2"
       {...mapOverlayGestureProps}
     >
-      {dummy && (
-        <span
-          data-testid="data-sample-pill"
-          className="flex h-6 items-center rounded-ctl bg-surface px-2 text-xs text-ink-2 shadow-sm"
-        >
-          {copy.data.samplePill}
-        </span>
-      )}
-      {showStamp && label && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <button
-              type="button"
-              data-testid="updated-at"
-              aria-label={label}
-              className="flex h-6 items-center gap-1 text-xs text-ink-2"
-            >
-              <span
-                className={cn(
-                  'size-2 rounded-full',
-                  hasProblem ? 'bg-risk-mid' : 'bg-risk-low',
-                )}
-                aria-hidden
-              />
-              <span>{label}</span>
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="top" className="rounded-ctl">
-            {tip}
-          </TooltipContent>
-        </Tooltip>
-      )}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <button
+            type="button"
+            data-testid="updated-at"
+            aria-label={label}
+            className="text-ink-2 flex h-6 items-center gap-1 text-xs"
+          >
+            <span
+              className={cn(
+                'size-2 rounded-full',
+                hasProblem || stale ? 'bg-risk-mid' : 'bg-brand',
+              )}
+              aria-hidden
+            />
+            <span>{label}</span>
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="rounded-ctl max-w-xs">
+          {tipParts.join('. ')}
+        </TooltipContent>
+      </Tooltip>
     </div>
   )
 }

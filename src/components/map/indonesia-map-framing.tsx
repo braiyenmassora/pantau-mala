@@ -17,10 +17,7 @@ type IndonesiaMapFramingProps = {
 }
 
 /** Fits Indonesia into the visible (non-overlay) map area; keeps minZoom/padding in sync. */
-export function IndonesiaMapFraming({
-  panelOpen,
-  onReady,
-}: IndonesiaMapFramingProps) {
+export function IndonesiaMapFraming({ panelOpen, onReady }: IndonesiaMapFramingProps) {
   const { map, isLoaded } = useMap()
   const reducedMotion = usePrefersReducedMotion()
   const fitZoomRef = useRef<number | null>(null)
@@ -28,8 +25,14 @@ export function IndonesiaMapFraming({
   const prevPanelRef = useRef<boolean | null>(null)
   const panelOpenRef = useRef(panelOpen)
   const onReadyRef = useRef(onReady)
-  panelOpenRef.current = panelOpen
-  onReadyRef.current = onReady
+
+  useEffect(() => {
+    panelOpenRef.current = panelOpen
+  }, [panelOpen])
+
+  useEffect(() => {
+    onReadyRef.current = onReady
+  }, [onReady])
 
   useEffect(() => {
     if (!map || !isLoaded || readyRef.current) return

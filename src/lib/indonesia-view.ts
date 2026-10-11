@@ -9,6 +9,9 @@ export const INDONESIA_BOUNDS: [[number, number], [number, number]] = [
 /** Rough center before the first fitBounds. */
 export const INDONESIA_CENTER: [number, number] = [118, -2]
 
+/** Shared flyTo zoom for wilayah / lokasi — keeps place framing consistent. */
+export const PLACE_ZOOM = 8
+
 export function getMapPadding(panelOpen: boolean): PaddingOptions {
   return {
     left: panelOpen ? 432 : 16,
@@ -53,11 +56,7 @@ export function applyDynamicMaxBounds(map: MaplibreMap) {
  * Fit Indonesia into the padded view, set minZoom = fitZoom − 0.5,
  * then lock maxBounds from the resulting view (+10% each side).
  */
-export function fitIndonesia(
-  map: MaplibreMap,
-  panelOpen: boolean,
-  duration = 0,
-): number {
+export function fitIndonesia(map: MaplibreMap, panelOpen: boolean, duration = 0): number {
   const padding = getMapPadding(panelOpen)
   clearMapLimits(map)
   map.fitBounds(INDONESIA_BOUNDS, {

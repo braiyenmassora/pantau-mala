@@ -12,8 +12,7 @@ export function parseDevLocation(): { lat: number; lon: number } | null {
 }
 
 export type GeoResult =
-  | { ok: true; lat: number; lon: number }
-  | { ok: false; reason: 'denied' | 'error' }
+  { ok: true; lat: number; lon: number } | { ok: false; reason: 'denied' | 'error' }
 
 /** Resolve user coords: DEV query wins, else browser geolocation (10s timeout). */
 export function resolveUserCoords(): Promise<GeoResult> {

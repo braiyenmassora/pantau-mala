@@ -1,7 +1,5 @@
-import { useEffect, useState, type RefObject } from 'react'
 import { Flame } from 'lucide-react'
 
-import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
@@ -9,44 +7,13 @@ import { cn } from '@/lib/utils'
 
 type MapLegendProps = {
   panelOpen: boolean
-  mapRef: RefObject<MapRef | null>
 }
 
 const ICON_BOX = 'flex size-9 shrink-0 items-center justify-center'
-const AREA_MIN_ZOOM = 7
 
-export function MapLegend({ panelOpen, mapRef }: MapLegendProps) {
+export function MapLegend({ panelOpen }: MapLegendProps) {
   const high = RISK_CATEGORIES.sangat_tinggi.dot
   const mid = RISK_CATEGORIES.sedang.dot
-  const low = RISK_CATEGORIES.rendah.dot
-  const [zoom, setZoom] = useState(0)
-
-  useEffect(() => {
-    let off: (() => void) | undefined
-    const attach = () => {
-      const map = mapRef.current
-      if (!map) return false
-      const sync = () => setZoom(map.getZoom())
-      sync()
-      map.on('zoomend', sync)
-      map.on('moveend', sync)
-      off = () => {
-        map.off('zoomend', sync)
-        map.off('moveend', sync)
-      }
-      return true
-    }
-    if (attach()) return () => off?.()
-    const id = window.setInterval(() => {
-      if (attach()) window.clearInterval(id)
-    }, 250)
-    return () => {
-      window.clearInterval(id)
-      off?.()
-    }
-  }, [mapRef])
-
-  const showArea = zoom >= AREA_MIN_ZOOM
 
   return (
     <div
@@ -54,33 +21,24 @@ export function MapLegend({ panelOpen, mapRef }: MapLegendProps) {
       className={cn(
         'absolute bottom-4 z-30 flex flex-row flex-wrap items-stretch gap-2',
         'transition-[left,right] duration-300 ease-[var(--ease-out-soft)]',
-        panelOpen ? 'left-[432px] right-[72px]' : 'left-4 w-max max-w-[calc(100vw-5rem)]',
+        panelOpen ? 'right-[72px] left-[432px]' : 'left-4 w-max max-w-[calc(100vw-5rem)]',
       )}
       {...mapOverlayGestureProps}
     >
-      <div className="flex items-center gap-2 rounded-card border border-line bg-surface px-3 py-2 shadow-sm">
-        <span className="flex h-9 shrink-0 items-center gap-1" aria-hidden>
-          <Flame
-            className="size-3.5 fill-risk-high stroke-risk-high"
-            strokeWidth={2}
-          />
-          <Flame
-            className="size-3.5 fill-risk-mid stroke-risk-mid"
-            strokeWidth={2}
-          />
-          <span className="size-3.5 rounded-full bg-risk-low" />
+      <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
+        <span className={`${ICON_BOX} gap-1`} aria-hidden>
+          <Flame className="fill-risk-mid stroke-risk-mid size-3.5" strokeWidth={2} />
+          <Flame className="fill-risk-high stroke-risk-high size-3.5" strokeWidth={2} />
         </span>
-        <span className="flex flex-col gap-1">
-          <span className="text-xs font-semibold text-ink">
-            {copy.legend.colorTitle}
-          </span>
-          <span className="text-xs text-ink-2">{copy.legend.colorHint}</span>
+        <span className="flex min-w-0 flex-col gap-0.5">
+          <span className="text-ink text-xs font-semibold">{copy.legend.colorTitle}</span>
+          <span className="text-ink-2 text-xs leading-4">{copy.legend.colorHint}</span>
         </span>
       </div>
 
-      <div className="flex items-center gap-2 rounded-card border border-line bg-surface px-3 py-2 shadow-sm">
+      <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
         <span className={`${ICON_BOX} gap-1`} aria-hidden>
-          {[low, mid, high].map((dot) => (
+          {[mid, high].map((dot) => (
             <span
               key={dot}
               className="size-2.5 rounded-full border"
@@ -91,34 +49,11 @@ export function MapLegend({ panelOpen, mapRef }: MapLegendProps) {
             />
           ))}
         </span>
-        <span className="flex flex-col gap-1">
-          <span className="text-xs font-semibold text-ink">
-            {copy.legend.haloTitle}
-          </span>
-          <span className="text-xs text-ink-2">{copy.legend.haloHint}</span>
+        <span className="flex min-w-0 flex-col gap-0.5">
+          <span className="text-ink text-xs font-semibold">{copy.legend.haloTitle}</span>
+          <span className="text-ink-2 text-xs leading-4">{copy.legend.haloHint}</span>
         </span>
       </div>
-
-      {showArea && (
-        <div className="flex items-center gap-2 rounded-card border border-line bg-surface px-3 py-2 shadow-sm">
-          <span className={ICON_BOX} aria-hidden>
-            <span
-              className="size-5 border-[1.5px]"
-              style={{
-                backgroundColor: withAlpha(high, 0.16),
-                borderColor: withAlpha(high, 0.7),
-                borderRadius: 2,
-              }}
-            />
-          </span>
-          <span className="flex flex-col gap-1">
-            <span className="text-xs font-semibold text-ink">
-              {copy.legend.areaTitle}
-            </span>
-            <span className="text-xs text-ink-2">{copy.legend.areaHint}</span>
-          </span>
-        </div>
-      )}
     </div>
   )
 }

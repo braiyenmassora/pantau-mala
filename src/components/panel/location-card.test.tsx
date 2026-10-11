@@ -9,31 +9,31 @@ import type { Region } from '@/data/types'
 import { useMapStore } from '@/store/map'
 
 const region: Region = {
-  kode: '62.11',
-  nama: 'Kab. Pulang Pisau',
-  provinsi: 'Kalimantan Tengah',
-  zona_waktu: 'WIB',
-  pusat: [114.25, -2.75],
-  skor: 82,
-  kategori: 'sangat_tinggi',
-  titik_panas_24j: 23,
-  tren_7h: [8, 10, 9, 14, 15, 19, 23],
-  cuaca: {
-    suhu_c: 34,
-    kondisi: 'Cerah',
-    kelembapan: 48,
-    angin_kmj: 12,
-    hari_tanpa_hujan: 9,
+  code: '62.11',
+  name: 'Kab. Pulang Pisau',
+  province: 'Kalimantan Tengah',
+  time_zone: 'WIB',
+  center: [114.25, -2.75],
+  weather_danger: { class: 'ekstrem', fwi: 40, source: 'BMKG' },
+  risk_category: 'sangat_tinggi',
+  hotspots_24h: 23,
+  trend_7d: [8, 10, 9, 14, 15, 19, 23],
+  weather: {
+    temp_c: 34,
+    condition: 'Cerah',
+    humidity: 48,
+    wind_kmh: 12,
+    dry_days: 9,
   },
-  udara: { pm25: 62, kategori: 'tidak_sehat' },
-  deteksi_terakhir: {
-    waktu: '2026-10-09T13:55:00+07:00',
-    satelit: 'MODIS Aqua',
-    keyakinan: 'tinggi',
+  air_quality: { pm25: 62, category: 'tidak_sehat' },
+  last_detection: {
+    time: '2026-10-09T13:55:00+07:00',
+    satellite: 'MODIS Aqua',
+    confidence: 'tinggi',
     frp_mw: 11.4,
   },
-  ringkasan: '',
-  saran: [],
+  summary: '',
+  actions: [],
 }
 
 describe('LocationCard', () => {

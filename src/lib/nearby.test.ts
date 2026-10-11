@@ -6,49 +6,49 @@ import { computeNearby } from '@/lib/nearby'
 function hotspot(
   lon: number,
   lat: number,
-  keyakinan: HotspotFeature['properties']['keyakinan'],
-  kode_wilayah: string,
+  confidence: HotspotFeature['properties']['confidence'],
+  region_code?: string,
 ): HotspotFeature {
   return {
     type: 'Feature',
     geometry: { type: 'Point', coordinates: [lon, lat] },
     properties: {
-      waktu: '2026-10-09T00:00:00+07:00',
-      satelit: 'VIIRS',
-      keyakinan,
+      time: '2026-10-09T00:00:00+07:00',
+      satellite: 'VIIRS',
+      confidence,
       frp_mw: 1,
-      kode_wilayah,
+      ...(region_code ? { region_code } : {}),
     },
   }
 }
 
-function region(kode: string, lon: number, lat: number): Region {
+function region(code: string, lon: number, lat: number): Region {
   return {
-    kode,
-    nama: kode,
-    provinsi: 'x',
-    zona_waktu: 'WIB',
-    pusat: [lon, lat],
-    skor: 1,
-    kategori: 'rendah',
-    titik_panas_24j: 1,
-    tren_7h: [0, 0, 0, 0, 0, 0, 0],
-    cuaca: {
-      suhu_c: 30,
-      kondisi: 'Cerah',
-      kelembapan: 50,
-      angin_kmj: 5,
-      hari_tanpa_hujan: 1,
+    code,
+    name: code,
+    province: 'x',
+    time_zone: 'WIB',
+    center: [lon, lat],
+    weather_danger: { class: 'ekstrem', fwi: 40, source: 'BMKG' },
+    risk_category: 'rendah',
+    hotspots_24h: 1,
+    trend_7d: [0, 0, 0, 0, 0, 0, 0],
+    weather: {
+      temp_c: 30,
+      condition: 'Cerah',
+      humidity: 50,
+      wind_kmh: 5,
+      dry_days: 1,
     },
-    udara: { pm25: 10, kategori: 'baik' },
-    deteksi_terakhir: {
-      waktu: '2026-10-09T00:00:00+07:00',
-      satelit: 'VIIRS',
-      keyakinan: 'tinggi',
+    air_quality: { pm25: 10, category: 'baik' },
+    last_detection: {
+      time: '2026-10-09T00:00:00+07:00',
+      satellite: 'VIIRS',
+      confidence: 'tinggi',
       frp_mw: 1,
     },
-    ringkasan: '',
-    saran: [],
+    summary: '',
+    actions: [],
   }
 }
 
@@ -65,7 +65,7 @@ describe('computeNearby', () => {
         hotspot(114.25, -2.9, 'rendah', 'C'),
         hotspot(115.0, -2.9, 'tinggi', 'D'),
       ],
-      [region('A', 114.2, -2.9)],
+      [region('A', 114.2, -2.9), region('B', 114.3, -2.9)],
     )
     expect(result.hotspotCount).toBe(2)
     expect(result.nearest?.regionCode).toBe('A')
@@ -76,7 +76,7 @@ describe('computeNearby', () => {
     const result = computeNearby(
       USER,
       [hotspot(114.29, -2.9, 'tinggi', 'A')],
-      [],
+      [region('A', 114.2, -2.9)],
     )
     expect(result.nearest).not.toBeNull()
     expect(String(result.nearest!.distanceKm)).toMatch(/^\d+(\.\d)?$/)
@@ -100,5 +100,26 @@ describe('computeNearby', () => {
     expect(result.userRegionCode).toBeNull()
     expect(result.hotspotCount).toBe(0)
     expect(result.nearest).toBeNull()
+  })
+
+  it('ignores hotspots whose region_code is not in /v1/regions', () => {
+    const result = computeNearby(
+      USER,
+      [hotspot(114.25, -2.9, 'tinggi', 'IDN.missing_1')],
+      [region('A', 114.2, -2.9)],
+    )
+    expect(result.hotspotCount).toBe(0)
+    expect(result.nearest).toBeNull()
+  })
+
+  it('counts raw hotspots without region_code', () => {
+    const result = computeNearby(
+      USER,
+      [hotspot(114.25, -2.9, 'tinggi')],
+      [region('A', 114.2, -2.9)],
+    )
+    expect(result.hotspotCount).toBe(1)
+    expect(result.nearest?.regionCode).toBeNull()
+    expect(result.nearest?.distanceKm).toBeGreaterThan(0)
   })
 })

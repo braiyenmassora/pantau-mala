@@ -5,8 +5,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { RegionPin } from '@/components/map/region-pin'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
 import { useMapStore } from '@/store/map'
+import { useUiStore } from '@/store/ui'
 
 vi.mock('@/components/ui/map', () => ({
   MapMarker: ({
@@ -43,31 +45,31 @@ class ResizeObserverStub {
 }
 
 const region: Region = {
-  kode: '62.11',
-  nama: 'Kab. Pulang Pisau',
-  provinsi: 'Kalimantan Tengah',
-  zona_waktu: 'WIB',
-  pusat: [114.25, -2.75],
-  skor: 82,
-  kategori: 'sangat_tinggi',
-  titik_panas_24j: 23,
-  tren_7h: [8, 10, 9, 14, 15, 19, 23],
-  cuaca: {
-    suhu_c: 34,
-    kondisi: 'Cerah',
-    kelembapan: 48,
-    angin_kmj: 12,
-    hari_tanpa_hujan: 9,
+  code: '62.11',
+  name: 'Kab. Pulang Pisau',
+  province: 'Kalimantan Tengah',
+  time_zone: 'WIB',
+  center: [114.25, -2.75],
+  weather_danger: { class: 'ekstrem', fwi: 42.5, source: 'BMKG' },
+  risk_category: 'sangat_tinggi',
+  hotspots_24h: 23,
+  trend_7d: [8, 10, 9, 14, 15, 19, 23],
+  weather: {
+    temp_c: 34,
+    condition: 'Cerah',
+    humidity: 48,
+    wind_kmh: 12,
+    dry_days: 9,
   },
-  udara: { pm25: 62, kategori: 'tidak_sehat' },
-  deteksi_terakhir: {
-    waktu: '2026-10-09T13:55:00+07:00',
-    satelit: 'MODIS Aqua',
-    keyakinan: 'tinggi',
+  air_quality: { pm25: 62, category: 'tidak_sehat' },
+  last_detection: {
+    time: '2026-10-09T13:55:00+07:00',
+    satellite: 'MODIS Aqua',
+    confidence: 'tinggi',
     frp_mw: 11.4,
   },
-  ringkasan: '',
-  saran: [],
+  summary: '',
+  actions: [],
 }
 
 function renderPin(overrides: Partial<Region> = {}) {
@@ -78,7 +80,7 @@ function renderPin(overrides: Partial<Region> = {}) {
   )
 }
 
-function pinButton(name = 'Kab. Pulang Pisau, risiko Sangat tinggi, skor 82') {
+function pinButton(name = 'Kab. Pulang Pisau, risiko Sangat tinggi, 23 titik panas') {
   return screen.getByRole('button', { name })
 }
 
@@ -86,16 +88,26 @@ describe('RegionPin', () => {
   afterEach(() => cleanup())
 
   beforeEach(() => {
-    vi.stubGlobal('ResizeObserver', ResizeObserverStub)
+    // @ts-expect-error test stub
+    global.ResizeObserver = ResizeObserverStub
     useMapStore.setState({ selectedCode: null, hoveredCode: null })
+    useUiStore.setState({ panelOpen: false })
   })
 
-  it('keeps aria-label with nama, risiko, and skor', () => {
+  it('selects region and opens panel on click', async () => {
+    const user = userEvent.setup()
+    renderPin()
+    await user.click(pinButton())
+    expect(useMapStore.getState().selectedCode).toBe('62.11')
+    expect(useUiStore.getState().panelOpen).toBe(true)
+  })
+
+  it('keeps aria-label with nama, risiko, and hotspot count', () => {
     renderPin()
     expect(pinButton()).toBeTruthy()
   })
 
-  it('sangat_tinggi pin shows Flame with risk-high colors, no skor digit', () => {
+  it('sangat_tinggi pin shows Flame with risk-high colors', () => {
     renderPin()
     const pin = pinButton()
     const icon = pin.querySelector('svg')
@@ -107,45 +119,67 @@ describe('RegionPin', () => {
 
   it('sedang pin shows Flame with risk-mid colors', () => {
     renderPin({
-      kode: '62.12',
-      nama: 'Kab. Sedang',
-      skor: 55,
-      kategori: 'sedang',
-      titik_panas_24j: 4,
+      code: '62.12',
+      name: 'Kab. Sedang',
+      weather_danger: { class: 'waspada', fwi: 12, source: 'BMKG' },
+      risk_category: 'sedang',
+      hotspots_24h: 4,
     })
-    const pin = pinButton('Kab. Sedang, risiko Sedang, skor 55')
+    const pin = pinButton('Kab. Sedang, risiko Sedang, 4 titik panas')
     const icon = pin.querySelector('svg')
     expect(icon?.classList.contains('fill-risk-mid')).toBe(true)
     expect(icon?.classList.contains('stroke-risk-mid')).toBe(true)
   })
 
-  it('rendah pin shows a risk-low dot without Flame', () => {
+  it('rendah map pin is a 10px risk-low dot (not RiskMarker circle)', () => {
     renderPin({
-      kode: '62.13',
-      nama: 'Kab. Rendah',
-      skor: 12,
-      kategori: 'rendah',
-      titik_panas_24j: 0,
+      code: '62.13',
+      name: 'Kab. Rendah',
+      weather_danger: { class: 'aman', fwi: 2, source: 'BMKG' },
+      risk_category: 'rendah',
+      hotspots_24h: 0,
     })
-    const pin = pinButton('Kab. Rendah, risiko Rendah, skor 12')
+    const pin = pinButton('Kab. Rendah, risiko Rendah, 0 titik panas')
     expect(pin.querySelector('svg')).toBeNull()
-    const dot = pin.querySelector('.bg-risk-low')
-    expect(dot).toBeTruthy()
-    expect(dot?.classList.contains('size-2')).toBe(true)
+    expect(pin.classList.contains('size-2.5')).toBe(true)
+    expect(pin.classList.contains('bg-risk-low')).toBe(true)
   })
 
-  it('tooltip shows nama and skor on hover; hidden when selected', async () => {
+  it('tooltip shows kabupaten name; hidden when selected', async () => {
     const user = userEvent.setup()
     renderPin()
     const pin = pinButton()
     await user.hover(pin)
     const tip = await screen.findByRole('tooltip')
-    expect(tip.textContent).toContain('Kab. Pulang Pisau')
-    expect(tip.textContent).toContain('Skor')
-    expect(tip.textContent).toContain('82')
-    expect(tip.querySelector('.font-mono')?.textContent).toBe('82')
+    expect(tip.textContent).toBe('Kab. Pulang Pisau')
+    expect(tip.textContent).not.toContain('titik panas')
 
     await user.click(pin)
     expect(screen.queryByRole('tooltip')).toBeNull()
+  })
+
+  it('rendah pin also shows kabupaten on hover', async () => {
+    const user = userEvent.setup()
+    renderPin({
+      code: '62.13',
+      name: 'Kab. Rendah',
+      weather_danger: { class: 'aman', fwi: 2, source: 'BMKG' },
+      risk_category: 'rendah',
+      hotspots_24h: 0,
+    })
+    await user.hover(pinButton('Kab. Rendah, risiko Rendah, 0 titik panas'))
+    expect((await screen.findByRole('tooltip')).textContent).toBe('Kab. Rendah')
+  })
+
+  it('shows detection flag with hotspots after click', async () => {
+    const user = userEvent.setup()
+    renderPin()
+    expect(screen.queryByText('NASA-MODIS')).toBeNull()
+    await user.click(pinButton())
+    expect(
+      screen.getByText(copy.map.regionMetaProvince('Kalimantan Tengah')),
+    ).toBeTruthy()
+    expect(screen.queryByText('NASA-MODIS')).toBeNull()
+    expect(screen.queryByLabelText(new RegExp(copy.detail.airQuality))).toBeNull()
   })
 })

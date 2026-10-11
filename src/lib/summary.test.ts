@@ -3,56 +3,47 @@ import { describe, expect, it } from 'vitest'
 import type { Region } from '@/data/types'
 import { computeSummary } from '@/lib/summary'
 
-function stub(partial: Pick<Region, 'kategori' | 'tren_7h'>): Region {
+function stub(partial: Partial<Pick<Region, 'risk_category' | 'hotspots_24h'>>): Region {
   return {
-    kode: 'x',
-    nama: 'x',
-    provinsi: 'x',
-    zona_waktu: 'WIB',
-    pusat: [0, 0],
-    skor: 1,
-    titik_panas_24j: 1,
-    cuaca: {
-      suhu_c: 30,
-      kondisi: 'Cerah',
-      kelembapan: 50,
-      angin_kmj: 5,
-      hari_tanpa_hujan: 1,
+    code: 'x',
+    name: 'x',
+    province: 'x',
+    time_zone: 'WIB',
+    center: [0, 0],
+    weather_danger: { class: 'ekstrem', fwi: 40, source: 'BMKG' },
+    hotspots_24h: 1,
+    trend_7d: [0, 0, 0, 0, 0, 0, 1],
+    weather: {
+      temp_c: 30,
+      condition: 'Cerah',
+      humidity: 50,
+      wind_kmh: 5,
+      dry_days: 1,
     },
-    udara: { pm25: 10, kategori: 'baik' },
-    deteksi_terakhir: {
-      waktu: '2026-10-09T00:00:00+07:00',
-      satelit: 'VIIRS',
-      keyakinan: 'tinggi',
+    air_quality: { pm25: 10, category: 'baik' },
+    last_detection: {
+      time: '2026-10-09T00:00:00+07:00',
+      satellite: 'VIIRS',
+      confidence: 'tinggi',
       frp_mw: 1,
     },
-    ringkasan: '',
-    saran: [],
+    summary: '',
+    actions: [],
     ...partial,
   }
 }
 
 describe('computeSummary', () => {
-  it('sums daily trends and counts categories', () => {
+  it('sums hotspots_24h only (no trend MVP)', () => {
     const summary = computeSummary([
-      stub({ kategori: 'sangat_tinggi', tren_7h: [1, 2, 3, 4, 5, 10, 20] }),
-      stub({ kategori: 'rendah', tren_7h: [1, 1, 1, 1, 1, 5, 3] }),
+      stub({ risk_category: 'sangat_tinggi', hotspots_24h: 20 }),
+      stub({ risk_category: 'sedang', hotspots_24h: 3 }),
     ])
-    expect(summary.totalsByDay).toEqual([2, 3, 4, 5, 6, 15, 23])
-    expect(summary.yesterdayTotal).toBe(15)
     expect(summary.todayTotal).toBe(23)
-    expect(summary.changePercent).toBeCloseTo(((23 - 15) / 15) * 100)
     expect(summary.countByCategory).toEqual({
       sangat_tinggi: 1,
-      sedang: 0,
-      rendah: 1,
+      sedang: 1,
+      rendah: 0,
     })
-  })
-
-  it('returns null change when yesterday is 0 and today > 0', () => {
-    const summary = computeSummary([
-      stub({ kategori: 'sedang', tren_7h: [0, 0, 0, 0, 0, 0, 4] }),
-    ])
-    expect(summary.changePercent).toBeNull()
   })
 })

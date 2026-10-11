@@ -26,8 +26,7 @@ const HALF_STEP_SPACING =
 const BAD_ROUNDED =
   /\brounded-(?!ctl\b|card\b|panel\b|full\b|none\b|[trblse]-(?:ctl|card|panel|full)\b)[a-z0-9\[\]\/.-]+\b/
 
-const BAD_SHADOW =
-  /\bshadow-(?!sm\b|md\b|lg\b|map\b|none\b)[a-z0-9\[\]\/.-]+\b/
+const BAD_SHADOW = /\bshadow-(?!sm\b|md\b|lg\b|map\b|none\b)[a-z0-9\[\]\/.-]+\b/
 
 const TEXT_ARBITRARY = /\btext-\[[^\]]*px[^\]]*\]/
 
@@ -37,11 +36,14 @@ const HEX_OR_RGB =
 const WHITE_CLASS = /\b(?:bg|text|border)-white\b/
 const UPPERCASE_CLASS = /\buppercase\b/
 const BANNED_VISIBLE = /\b(?:hotspot|confidence|Anda|saya)\b/i
+/** Hardcoded Indonesian aria/title that should come from src/copy/id.ts. */
+const HARDCODED_A11Y =
+  /\b(?:aria-label|title|placeholder)=["'][^"']*[A-Za-zÀ-ÿ]{3,}[^"']*["']/
 
 /** Allowed arbitrary px for h-/w-/size-[Npx] (density + sparks + hairlines). */
 const ALLOWED_PX = new Set([
-  1, 2, 3, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 68,
-  128, 200, 240, 360, 400, 416, 432,
+  1, 2, 3, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 48, 56, 64, 68, 128,
+  200, 240, 360, 400, 416, 432,
 ])
 
 const ARBITRARY_SIZE = /\b(?:h|w|size|min-h|max-h|min-w|max-w)-\[(\d+)px\]/g
@@ -73,8 +75,7 @@ function add(file, line, rule, snippet) {
 
 function visibleStrings(source) {
   const found = []
-  const attr =
-    /\b(?:aria-label|title|placeholder)=\{?\s*(['"`])([\s\S]*?)\1\s*\}?/g
+  const attr = /\b(?:aria-label|title|placeholder)=\{?\s*(['"`])([\s\S]*?)\1\s*\}?/g
   let m
   while ((m = attr.exec(source))) {
     found.push({ index: m.index, text: m[2] })
@@ -106,9 +107,11 @@ function scanFile(file) {
       if (!allowHex && HEX_OR_RGB.test(line)) add(file, n, 'hex/rgb/hsl literal', line)
       if (WHITE_CLASS.test(line)) add(file, n, 'bg/text/border-white', line)
       if (UPPERCASE_CLASS.test(line)) add(file, n, 'uppercase class', line)
-      if (BANNED_TW_COLORS.test(line)) add(file, n, 'default Tailwind palette color', line)
+      if (BANNED_TW_COLORS.test(line))
+        add(file, n, 'default Tailwind palette color', line)
       if (HALF_STEP_SPACING.test(line)) add(file, n, 'spacing not multiple of 4', line)
-      if (BAD_ROUNDED.test(line)) add(file, n, 'rounded outside ctl/card/panel/full', line)
+      if (BAD_ROUNDED.test(line))
+        add(file, n, 'rounded outside ctl/card/panel/full', line)
       if (BAD_SHADOW.test(line)) add(file, n, 'shadow outside sm/md/lg/map', line)
       if (TEXT_ARBITRARY.test(line)) add(file, n, 'arbitrary text-[..px]', line)
 
@@ -138,6 +141,19 @@ function scanFile(file) {
         add(file, lineAt(source, index), 'banned visible word', text)
       }
     }
+    lines.forEach((line, i) => {
+      if (HARDCODED_A11Y.test(line) && !line.includes('data-testid')) {
+        add(file, i + 1, 'hardcoded a11y string (use copy)', line)
+      }
+    })
+  }
+
+  if (file.endsWith('/src/copy/id.ts')) {
+    lines.forEach((line, i) => {
+      if (line.includes('→')) {
+        add(file, i + 1, 'arrow in copy string', line)
+      }
+    })
   }
 }
 

@@ -4,12 +4,12 @@ import {
   useCallback,
   useEffect,
   useState,
+  type CSSProperties,
   type ErrorInfo,
   type ReactNode,
   type RefObject,
 } from 'react'
-import { EmptyState } from '@/components/common'
-import { HotspotAreasLayer } from '@/components/map/hotspot-areas-layer'
+import { Button, EmptyState } from '@/components/common'
 import { IndonesiaMapFraming } from '@/components/map/indonesia-map-framing'
 import { RegionLayers } from '@/components/map/region-layers'
 import { UserLocationLayer } from '@/components/map/user-location-layer'
@@ -17,6 +17,7 @@ import { Map, useMap, type MapRef } from '@/components/ui/map'
 import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import { getMapPadding, INDONESIA_CENTER } from '@/lib/indonesia-view'
+import { isBasemapStyleError, webGlSupported } from '@/lib/map-support'
 import { useUiStore } from '@/store/ui'
 
 type MapShellProps = {
@@ -25,26 +26,12 @@ type MapShellProps = {
   regions: Region[]
 }
 
-function webGlSupported(): boolean {
-  if (typeof document === 'undefined') return true
-  try {
-    const canvas = document.createElement('canvas')
-    return !!(
-      canvas.getContext('webgl2') ||
-      canvas.getContext('webgl') ||
-      canvas.getContext('experimental-webgl')
-    )
-  } catch {
-    return false
-  }
-}
-
 function MapUnavailable({ onReload }: { onReload: () => void }) {
   const panelOpen = useUiStore((s) => s.panelOpen)
   const pad = getMapPadding(panelOpen)
 
   return (
-    <div className="absolute inset-0 z-10 bg-map-bg">
+    <div className="bg-map-bg absolute inset-0 z-10" data-testid="map-webgl-fail">
       <div
         className="absolute flex items-center justify-center p-6"
         style={{
@@ -66,28 +53,63 @@ function MapUnavailable({ onReload }: { onReload: () => void }) {
   )
 }
 
-function MapErrorListener({ onError }: { onError: () => void }) {
-  const { map, isLoaded } = useMap()
+function BasemapBanner({ onRetry }: { onRetry: () => void }) {
+  const panelOpen = useUiStore((s) => s.panelOpen)
+  return (
+    <div
+      data-testid="map-basemap-banner"
+      className="rounded-card border-line bg-surface pointer-events-auto absolute z-30 flex items-center gap-3 border px-3 py-2 shadow-sm"
+      style={{
+        left: panelOpen ? 432 : 16,
+        top: 68,
+      }}
+    >
+      <p className="text-ink text-sm">{copy.empty.basemapFail.title}</p>
+      <Button variant="secondary" size="sm" onClick={onRetry}>
+        {copy.empty.basemapFail.action}
+      </Button>
+    </div>
+  )
+}
+
+function PartialBanner() {
+  const panelOpen = useUiStore((s) => s.panelOpen)
+  return (
+    <div
+      data-testid="map-partial-banner"
+      className="rounded-card border-line bg-surface pointer-events-none absolute z-30 border px-3 py-2 shadow-sm"
+      style={{
+        left: panelOpen ? 432 : 16,
+        top: 68,
+      }}
+      role="status"
+    >
+      <p className="text-ink text-sm">{copy.empty.mapPartial.title}</p>
+    </div>
+  )
+}
+
+function MapBasemapListener({ onBasemapError }: { onBasemapError: () => void }) {
+  const { map } = useMap()
 
   useEffect(() => {
     if (!map) return
-    const handler = () => onError()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- MapLibre ErrorEvent shape
+    const handler = (e: any) => {
+      if (isBasemapStyleError(e)) onBasemapError()
+    }
     map.on('error', handler)
     return () => {
       map.off('error', handler)
     }
-  }, [map, onError])
-
-  useEffect(() => {
-    if (!map || !isLoaded) return
-    // Tile/source errors after load still fire 'error'; style never loading is covered by boundary.
-  }, [map, isLoaded])
+  }, [map, onBasemapError])
 
   return null
 }
 
-class MapErrorBoundary extends Component<
-  { children: ReactNode; onError: () => void },
+/** Hides a broken layer; does not unmount the rest of the map. */
+export class LayerErrorBoundary extends Component<
+  { name: string; children: ReactNode; onError?: () => void },
   { hasError: boolean }
 > {
   state = { hasError: false }
@@ -96,8 +118,11 @@ class MapErrorBoundary extends Component<
     return { hasError: true }
   }
 
-  componentDidCatch(_error: Error, _info: ErrorInfo) {
-    this.props.onError()
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    if (import.meta.env.DEV) {
+      console.error(`[LayerErrorBoundary:${this.props.name}]`, error, info.componentStack)
+    }
+    this.props.onError?.()
   }
 
   render() {
@@ -107,30 +132,50 @@ class MapErrorBoundary extends Component<
 }
 
 export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
-  const [failed, setFailed] = useState(() => !webGlSupported())
+  const [noWebGl, setNoWebGl] = useState(() => !webGlSupported())
+  const [basemapFailed, setBasemapFailed] = useState(false)
+  const [layerFailed, setLayerFailed] = useState(false)
   const [mountKey, setMountKey] = useState(0)
   const [framed, setFramed] = useState(false)
 
-  const markFailed = useCallback(() => setFailed(true), [])
+  const markBasemapFailed = useCallback(() => setBasemapFailed(true), [])
+  const markLayerFailed = useCallback(() => setLayerFailed(true), [])
   const markFramed = useCallback(() => setFramed(true), [])
-  const reload = useCallback(() => {
-    setFailed(!webGlSupported())
+
+  const remount = useCallback(() => {
+    const ok = webGlSupported()
+    setNoWebGl(!ok)
+    setBasemapFailed(false)
+    setLayerFailed(false)
     setFramed(false)
     setMountKey((k) => k + 1)
   }, [])
 
-  if (failed) {
-    return <MapUnavailable onReload={reload} />
+  if (noWebGl) {
+    return <MapUnavailable onReload={remount} />
   }
 
+  const pad = getMapPadding(panelOpen)
+
   return (
-    <MapErrorBoundary
-      key={mountKey}
-      onError={markFailed}
+    <div
+      className="relative size-full"
+      style={
+        {
+          '--map-pad-top': `${pad.top}px`,
+          '--map-pad-right': `${pad.right}px`,
+          '--map-pad-bottom': `${pad.bottom}px`,
+          '--map-pad-left': `${pad.left}px`,
+        } as CSSProperties
+      }
     >
+      {basemapFailed && <BasemapBanner onRetry={remount} />}
+      {!basemapFailed && layerFailed && <PartialBanner />}
       <Map
+        key={mountKey}
         ref={mapRef}
         theme="light"
+        blank={basemapFailed}
         className="size-full"
         center={INDONESIA_CENTER}
         zoom={4.5}
@@ -139,12 +184,15 @@ export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
         pitchWithRotate={false}
         loading={!framed}
       >
-        <MapErrorListener onError={markFailed} />
+        <MapBasemapListener onBasemapError={markBasemapFailed} />
         <IndonesiaMapFraming panelOpen={panelOpen} onReady={markFramed} />
-        <HotspotAreasLayer />
-        <RegionLayers regions={regions} />
-        <UserLocationLayer />
+        <LayerErrorBoundary name="RegionLayers" onError={markLayerFailed}>
+          <RegionLayers regions={regions} />
+        </LayerErrorBoundary>
+        <LayerErrorBoundary name="UserLocationLayer" onError={markLayerFailed}>
+          <UserLocationLayer />
+        </LayerErrorBoundary>
       </Map>
-    </MapErrorBoundary>
+    </div>
   )
 }

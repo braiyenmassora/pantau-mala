@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import { Chip } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { copy } from '@/copy/id'
 import type { Region, RiskCategory } from '@/data/types'
 import { filterRegions } from '@/lib/filter-regions'
 import { formatNumber } from '@/lib/format'
@@ -14,7 +15,8 @@ import { useMapStore } from '@/store/map'
 
 const ALL_PROVINCES = 'Semua'
 
-const CATEGORY_ORDER: RiskCategory[] = ['sangat_tinggi', 'sedang', 'rendah']
+/** MVP: BE tidak kirim pin rendah — chip Rendah disembunyikan. */
+const CATEGORY_ORDER: RiskCategory[] = ['sangat_tinggi', 'sedang']
 
 type FilterBarProps = {
   panelOpen: boolean
@@ -28,9 +30,10 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
   const query = useMapStore((s) => s.query)
   const setProvince = useMapStore((s) => s.setProvince)
   const toggleCategory = useMapStore((s) => s.toggleCategory)
+  const clearCategories = useMapStore((s) => s.clearCategories)
 
   const provinces = useMemo(() => {
-    const set = new Set(regions.map((r) => r.provinsi))
+    const set = new Set(regions.map((r) => r.province))
     return [...set].sort((a, b) => a.localeCompare(b, 'id'))
   }, [regions])
 
@@ -51,15 +54,17 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
       sedang: 0,
       rendah: 0,
     }
-    for (const r of preCategory) next[r.kategori] += 1
+    for (const r of preCategory) next[r.risk_category] += 1
     return next
   }, [preCategory])
 
-  const provinceLabel = province === ALL_PROVINCES ? 'Semua provinsi' : province
+  const provinceLabel = province === ALL_PROVINCES ? copy.filter.allProvinces : province
   const options = [
-    { value: ALL_PROVINCES, label: 'Semua provinsi' },
+    { value: ALL_PROVINCES, label: copy.filter.allProvinces },
     ...provinces.map((name) => ({ value: name, label: name })),
   ]
+  const allPressed = selectedCategories.size === 0
+  const allCount = preCategory.length
 
   return (
     <div
@@ -76,16 +81,19 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           <Chip
             aria-expanded={open}
             aria-haspopup="listbox"
-            aria-label="Pilih provinsi"
-            className="gap-1"
+            aria-label={copy.filter.pickProvince}
           >
             <span className="inline-flex min-w-0 items-center gap-2">
-              <MapIcon className="size-4 shrink-0 text-ink-2" strokeWidth={2} aria-hidden />
+              <MapIcon
+                className="text-ink-2 size-4 shrink-0"
+                strokeWidth={2}
+                aria-hidden
+              />
               <span className="max-w-48 truncate">{provinceLabel}</span>
             </span>
             <ChevronDown
               className={cn(
-                'size-4 shrink-0 text-ink-2 transition-transform duration-150 ease-in-out',
+                'text-ink-2 size-4 shrink-0 transition-transform duration-150 ease-in-out',
                 open && 'rotate-180',
               )}
               strokeWidth={2}
@@ -97,11 +105,11 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           align="start"
           side="bottom"
           sideOffset={8}
-          className="z-[60] w-60 rounded-card border-0 bg-surface p-1 text-ink shadow-lg ring-0"
+          className="rounded-card bg-surface text-ink z-[60] w-60 border-0 p-1 shadow-lg ring-0"
         >
           <div
             role="listbox"
-            aria-label="Provinsi"
+            aria-label={copy.search.provinces}
             className="max-h-72 overflow-y-auto"
           >
             {options.map((option) => {
@@ -113,8 +121,8 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
                   role="option"
                   aria-selected={selected}
                   className={cn(
-                    'flex h-9 w-full cursor-pointer items-center gap-2 rounded-ctl px-3 text-left text-sm',
-                    'transition-colors duration-150 ease-in-out hover:bg-surface-muted',
+                    'rounded-ctl flex h-9 w-full cursor-pointer items-center gap-2 px-3 text-left text-sm',
+                    'hover:bg-surface-muted transition-colors duration-150 ease-in-out',
                     focusRing,
                     selected && 'bg-surface-muted font-semibold',
                   )}
@@ -125,7 +133,11 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
                 >
                   <span className="min-w-0 flex-1 truncate">{option.label}</span>
                   {selected && (
-                    <Check className="size-4 shrink-0 text-brand" strokeWidth={2} aria-hidden />
+                    <Check
+                      className="text-brand size-4 shrink-0"
+                      strokeWidth={2}
+                      aria-hidden
+                    />
                   )}
                 </button>
               )
@@ -133,6 +145,23 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           </div>
         </PopoverContent>
       </Popover>
+
+      <Chip
+        pressed={allPressed}
+        title={copy.filter.allStatusesTitle(formatNumber(allCount))}
+        aria-label={copy.filter.allStatusesTitle(formatNumber(allCount))}
+        onClick={clearCategories}
+      >
+        <span>{copy.filter.allStatuses}</span>
+        <span
+          className={cn(
+            'font-mono text-sm',
+            allPressed ? 'text-surface/70' : 'text-ink-2',
+          )}
+        >
+          {formatNumber(allCount)}
+        </span>
+      </Chip>
 
       {CATEGORY_ORDER.map((category) => {
         const meta = RISK_CATEGORIES[category]
@@ -143,12 +172,15 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           <Chip
             key={category}
             pressed={pressed}
-            className="gap-1"
-            title={`Tampilkan hanya ${formatNumber(count)} wilayah berisiko ${meta.label}`}
+            title={copy.filter.categoryTitle(formatNumber(count), meta.label)}
+            aria-label={copy.filter.categoryTitle(formatNumber(count), meta.label)}
             onClick={() => toggleCategory(category)}
           >
             <span
-              className={cn('size-2 shrink-0 rounded-full', pressed && 'ring-[1.5px] ring-surface')}
+              className={cn(
+                'size-2 shrink-0 rounded-full',
+                pressed && 'ring-surface ring-[1.5px]',
+              )}
               style={{ backgroundColor: meta.dot }}
               aria-hidden
             />

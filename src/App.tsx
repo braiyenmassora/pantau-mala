@@ -4,6 +4,7 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { StatusAnnouncer } from '@/components/common/status-announcer'
 import { focusRing } from '@/components/common/focus-ring'
 import { FilterBar } from '@/components/map/filter-bar'
+import { LocationDetailSync } from '@/components/map/location-detail-sync'
 import { LocationPromptDialog } from '@/components/map/location-prompt-dialog'
 import { MapControls } from '@/components/map/map-controls'
 import { MapLegend } from '@/components/map/map-legend'
@@ -66,7 +67,7 @@ export default function App() {
   useEffect(() => {
     const el = panelContentRef.current
     if (el) el.scrollTop = 0
-  }, [selectedCode, province, query])
+  }, [selectedCode, province, query, selectedCategories])
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -86,14 +87,13 @@ export default function App() {
   }, [locationStatus, selectedCode, select, setLocation])
 
   const filtered = useMemo(
-    () =>
-      data ? filterRegions(data, { province, selectedCategories, query }) : [],
+    () => (data ? filterRegions(data, { province, selectedCategories, query }) : []),
     [data, province, selectedCategories, query],
   )
 
   return (
     <TooltipProvider>
-      <div className="relative h-dvh w-dvw overflow-hidden bg-map-bg text-ink">
+      <div className="bg-map-bg text-ink relative h-dvh w-dvw overflow-hidden">
         <StatusAnnouncer />
 
         {/* Tab order: search → chip → list → controls → pins (map last in DOM). */}
@@ -118,9 +118,7 @@ export default function App() {
           </header>
 
           {/* When panel open: chips sit between search and list in the tab order. */}
-          {panelOpen && data && (
-            <FilterBar panelOpen={panelOpen} regions={data} />
-          )}
+          {panelOpen && data && <FilterBar panelOpen={panelOpen} regions={data} />}
 
           <div
             ref={panelContentRef}
@@ -141,6 +139,7 @@ export default function App() {
           <PanelFooter />
         </aside>
 
+        {/* Exception: panel rail chrome — not IconButton (narrow 24×48 tab). */}
         <button
           type="button"
           onClick={togglePanel}
@@ -148,7 +147,7 @@ export default function App() {
           aria-label={panelOpen ? copy.app.hidePanel : copy.app.showPanel}
           className={cn(
             'absolute top-1/2 z-[41] flex h-12 w-6 -translate-y-1/2 items-center justify-center',
-            'rounded-r-ctl border border-l-0 border-line bg-surface text-ink-2 shadow-sm',
+            'rounded-r-ctl border-line bg-surface text-ink-2 border border-l-0 shadow-sm',
             'hover:bg-surface-muted',
             easePanel,
             'transition-[left,background-color] duration-150',
@@ -165,26 +164,18 @@ export default function App() {
         </button>
 
         {/* When panel closed: chips stay focusable outside inert aside. */}
-        {!panelOpen && data && (
-          <FilterBar panelOpen={panelOpen} regions={data} />
-        )}
+        {!panelOpen && data && <FilterBar panelOpen={panelOpen} regions={data} />}
 
+        <LocationDetailSync regions={data} />
         <LocationPromptDialog mapRef={mapRef} />
-        <MapLegend panelOpen={panelOpen} mapRef={mapRef} />
+        <MapLegend panelOpen={panelOpen} />
         <MapControls mapRef={mapRef} />
         <UpdatedAtBadge />
 
-        <main
-          aria-label={copy.app.mapAria}
-          className="absolute inset-0 z-0"
-        >
+        <main aria-label={copy.app.mapAria} className="absolute inset-0 z-0">
           {mapReady ? (
             <Suspense fallback={<MapSoftLoading />}>
-              <MapShell
-                mapRef={mapRef}
-                panelOpen={panelOpen}
-                regions={filtered}
-              />
+              <MapShell mapRef={mapRef} panelOpen={panelOpen} regions={filtered} />
             </Suspense>
           ) : (
             <MapSoftLoading />

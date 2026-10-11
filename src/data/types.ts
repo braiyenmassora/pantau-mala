@@ -1,9 +1,14 @@
 import type { Feature, FeatureCollection, Point } from 'geojson'
 
-/** API/data contract values — keep Indonesian literals from wilayah.json. */
+/** API contract v2 — English snake_case keys; enum values stay Indonesian. */
+
 export type TimeZoneId = 'WIB' | 'WITA' | 'WIT'
 
 export type RiskCategory = 'rendah' | 'sedang' | 'sangat_tinggi'
+
+export type WeatherDangerClass = 'aman' | 'waspada' | 'bahaya' | 'ekstrem'
+
+export type WeatherDangerSource = 'BMKG' | 'FWI dihitung'
 
 export type AirQualityCategory = 'baik' | 'sedang' | 'tidak_sehat'
 
@@ -11,51 +16,59 @@ export type ConfidenceLevel = 'rendah' | 'sedang' | 'tinggi'
 
 export type SourceStatus = 'ok' | 'terlambat' | 'gagal'
 
+export type WeatherDanger = {
+  class: WeatherDangerClass
+  fwi: number
+  source: WeatherDangerSource
+}
+
 export type Weather = {
-  suhu_c: number
-  kondisi: string
-  kelembapan: number
-  angin_kmj: number
-  hari_tanpa_hujan: number
+  temp_c: number
+  condition: string
+  humidity: number
+  wind_kmh: number
+  dry_days: number
 }
 
 export type AirQuality = {
   pm25: number
-  kategori: AirQualityCategory
+  category: AirQualityCategory
 }
 
 export type LastDetection = {
-  waktu: string
-  satelit: string
-  keyakinan: ConfidenceLevel
+  time: string
+  satellite: string
+  confidence: ConfidenceLevel
   frp_mw: number
+  village?: string
+  district?: string
 }
 
-/** One kabupaten/kota row from wilayah.json (field names are the contract). */
+/** One regency/city row from GET /v1/regions. */
 export type Region = {
-  kode: string
-  nama: string
-  provinsi: string
-  zona_waktu: TimeZoneId
+  code: string
+  name: string
+  province: string
+  time_zone: TimeZoneId
   /** [lon, lat] */
-  pusat: [number, number]
-  skor: number
-  kategori: RiskCategory
-  titik_panas_24j: number
-  tren_7h: [number, number, number, number, number, number, number]
-  cuaca: Weather
-  udara: AirQuality
-  deteksi_terakhir: LastDetection
-  ringkasan: string
-  saran: string[]
+  center: [number, number]
+  risk_category: RiskCategory
+  weather_danger: WeatherDanger
+  hotspots_24h: number
+  trend_7d: [number, number, number, number, number, number, number]
+  weather: Weather
+  air_quality: AirQuality
+  last_detection: LastDetection
+  summary: string
+  actions: string[]
 }
 
 export type HotspotProperties = {
-  waktu: string
-  satelit: string
-  keyakinan: ConfidenceLevel
+  time: string
+  satellite: string
+  confidence: ConfidenceLevel
   frp_mw: number
-  kode_wilayah: string
+  region_code?: string
 }
 
 export type HotspotFeature = Feature<Point, HotspotProperties>
@@ -63,35 +76,33 @@ export type HotspotFeature = Feature<Point, HotspotProperties>
 export type HotspotFeatureCollection = FeatureCollection<Point, HotspotProperties>
 
 export type Meta = {
-  diperbarui: string
+  updated_at: string
   status: {
     firms: SourceStatus
-    cuaca: SourceStatus
-    udara: SourceStatus
+    weather: SourceStatus
+    air: SourceStatus
   }
 }
 
-/** Provinsi entry in daftar-wilayah.json (search catalog). */
 export type CatalogProvince = {
-  kode: string
-  nama: string
+  code: string
+  name: string
   /** [minLon, minLat, maxLon, maxLat] */
   bbox: [number, number, number, number]
   /** [lon, lat] */
-  pusat: [number, number]
+  center: [number, number]
 }
 
-/** Kabupaten/kota entry in daftar-wilayah.json (may lack hotspot risk data). */
-export type CatalogKabKota = {
-  kode: string
-  nama: string
-  provinsi: string
-  pusat: [number, number]
-  zona_waktu: TimeZoneId
+export type CatalogRegency = {
+  code: string
+  name: string
+  province: string
+  center: [number, number]
+  time_zone: TimeZoneId
 }
 
-export type DaftarWilayah = {
-  _catatan?: string
-  provinsi: CatalogProvince[]
-  kabkota: CatalogKabKota[]
+export type RegionCatalog = {
+  note?: string
+  provinces: CatalogProvince[]
+  regencies: CatalogRegency[]
 }

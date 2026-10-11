@@ -1,6 +1,6 @@
 # forever-young
 
-Aplikasi web indikator kebakaran hutan dan lahan (karhutla) di Indonesia: peta titik panas, skor risiko per kabupaten/kota, cuaca, dan kualitas udara.
+Peta titik panas satelit dan risiko per kabupaten/kota di Indonesia (NASA FIRMS + Open-Meteo + FWI dihitung). Titik panas ≠ kebakaran; bukan peringatan resmi.
 
 ## Stack
 
@@ -9,9 +9,12 @@ Vite · React · TypeScript · Tailwind CSS · shadcn/ui · mapcn (MapLibre)
 ## Mulai
 
 ```bash
+cp .env.example .env   # set VITE_DATA_URL ke API
 pnpm install
 pnpm dev
 ```
+
+`VITE_DATA_URL` wajib (tanpa slash akhir). Tidak ada mode dummy lokal.
 
 ## Struktur
 
@@ -19,18 +22,17 @@ pnpm dev
 src/
 ├─ components/
 │  ├─ ui/       # shadcn + mapcn
-│  ├─ map/      # pin, cluster, halo, kontrol
+│  ├─ map/      # pin, halo, kontrol
 │  └─ panel/    # ringkasan, daftar, detail
 ├─ data/        # types + TanStack Query hooks
 ├─ store/       # Zustand (ui, peta)
 ├─ lib/         # filter, ringkasan, format, kategori
 └─ styles/      # tokens.css
-public/data/    # wilayah.json, titik-panas-24j.geojson, meta.json
-docs/           # PRD + spesifikasi UI
+docs/           # handoff FE + copy + spek flag
 ```
 
 ## Acuan
 
-- [Spesifikasi UI](docs/spesifikasi-ui.md)
-- [PRD ringkas](docs/prd-ringkas.md)
-- [PRD](docs/prd.md)
+- [Handoff FE v2.3](docs/prd-fe.md)
+- [UI copy / ikon / tooltip](docs/fe-ui-copy.md)
+- [Spek flag pin](docs/spek-flag-deteksi.md)
