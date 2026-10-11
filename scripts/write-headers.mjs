@@ -7,8 +7,10 @@ import { writeFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { ensureViteDataUrl } from './load-vite-data-url.mjs'
+
 const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const dataUrl = process.env.VITE_DATA_URL?.trim() ?? ''
+const dataUrl = ensureViteDataUrl()
 
 let dataOrigin = ''
 if (/^https?:\/\//i.test(dataUrl)) {
