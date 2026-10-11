@@ -15,6 +15,7 @@ import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import { filterRegions } from '@/lib/filter-regions'
 import { formatDateTime, formatNumber } from '@/lib/format'
+import { aggregateByProvince } from '@/lib/province-aggregates'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { searchWilayah } from '@/lib/search-wilayah'
 import { computeSummary } from '@/lib/summary'
@@ -115,7 +116,12 @@ export function SummaryPanel({
     province === 'Semua' ? copy.panel.indonesiaToday : copy.panel.provinceToday(province)
   const searching = query.trim().length > 0
   const filtering = selectedCategories.size > 0
-  const list = searching ? [] : filtered.slice(0, 5)
+  const nationalView = province === 'Semua'
+  const topProvinces =
+    !searching && nationalView && daftar
+      ? aggregateByProvince(viewRegions, daftar.provinces).slice(0, 5)
+      : []
+  const list = searching || nationalView ? [] : filtered.slice(0, 5)
   const summary = computeSummary(viewRegions)
   const noHotspots = summary.todayTotal === 0
 
@@ -186,7 +192,7 @@ export function SummaryPanel({
           <section className="rounded-card bg-surface-muted p-4">
             <div className="flex min-w-0 flex-col gap-1">
               <div className="text-ink-2 flex items-center gap-1">
-                <Flame className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+                <Flame className="size-4 shrink-0" strokeWidth={2} aria-hidden />
                 <p className="text-xs font-medium">{copy.panel.hotspot24h}</p>
                 <HintButton
                   ariaLabel={copy.panel.hotspotHint}
@@ -254,8 +260,51 @@ export function SummaryPanel({
         </section>
       ) : (
         <section>
-          <SectionLabel className="mb-2">{copy.panel.topRisk}</SectionLabel>
-          {list.length === 0 ? (
+          <SectionLabel className="mb-2">
+            {nationalView ? copy.panel.topRisk : copy.panel.topKab}
+          </SectionLabel>
+          {nationalView ? (
+            filtering && viewRegions.length === 0 ? (
+              <EmptyState
+                icon={Filter}
+                title={copy.empty.noRegionsFilter.title}
+                description={copy.empty.noRegionsFilter.description(
+                  [...selectedCategories].map((c) => RISK_CATEGORIES[c].label).join(', '),
+                  wilayahLabel,
+                )}
+                action={{
+                  label: copy.empty.noRegionsFilter.action,
+                  onClick: clearCategories,
+                }}
+              />
+            ) : daftarPending && !daftar ? (
+              <Skeleton className="min-h-16 w-full" />
+            ) : topProvinces.length === 0 ? (
+              <EmptyState
+                icon={ShieldCheck}
+                title={copy.empty.noHotspots.title}
+                description={copy.empty.noHotspots.description(wilayahLabel)}
+              />
+            ) : (
+              <ul className="flex flex-col">
+                {topProvinces.map((agg) => {
+                  const prov = daftar?.provinces.find((p) => p.name === agg.name)
+                  if (!prov) return null
+                  return (
+                    <li key={prov.code}>
+                      <ProvinceSearchRow
+                        province={prov}
+                        hotspotCount={agg.hotspots_24h}
+                        countKind="titik"
+                        riskCategory={agg.risk_category}
+                        mapRef={mapRef}
+                      />
+                    </li>
+                  )
+                })}
+              </ul>
+            )
+          ) : list.length === 0 ? (
             filtering ? (
               <EmptyState
                 icon={Filter}

@@ -50,7 +50,7 @@ describe('EmptyState', () => {
     expect(screen.getByText(copy.empty.searchMiss.title)).toBeTruthy()
   })
 
-  it('no hotspots in region 7d', () => {
+  it('no hotspots in region', () => {
     render(
       <EmptyState
         icon={ShieldCheck}

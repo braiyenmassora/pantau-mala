@@ -29,8 +29,5 @@ export function isBasemapStyleError(event: {
       : raw && typeof raw === 'object' && 'message' in raw
         ? String(raw.message ?? '')
         : String(raw ?? '')
-  return (
-    msg.length === 0 ||
-    /style|failed to fetch|404|cors|network|load|ajax/i.test(msg)
-  )
+  return msg.length === 0 || /style|failed to fetch|404|cors|network|load|ajax/i.test(msg)
 }

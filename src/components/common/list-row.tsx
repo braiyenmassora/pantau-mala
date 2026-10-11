@@ -41,11 +41,11 @@ export function ListRow({
       <span className="flex size-10 shrink-0 items-center justify-center self-center">
         {leading}
       </span>
-      <span className="min-w-0 flex-1 py-0.5">
+      <span className="min-w-0 flex-1 py-1">
         <span className="text-ink block truncate text-base font-semibold" title={title}>
           {title}
         </span>
-        <span className="text-ink-2 mt-0.5 flex flex-col gap-0.5 text-sm">{meta}</span>
+        <span className="text-ink-2 mt-1 flex flex-col gap-1 text-sm">{meta}</span>
       </span>
       {trailing ? <span className="flex shrink-0 self-center">{trailing}</span> : null}
     </button>

@@ -1,40 +1,60 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
-import { expandBounds10, getMapPadding, INDONESIA_BOUNDS } from './indonesia-view'
+import { fitIndonesia, fitProvinceBounds } from '@/lib/indonesia-view'
 
-describe('indonesia-view', () => {
-  it('keeps Indonesia geographic bounds', () => {
-    expect(INDONESIA_BOUNDS).toEqual([
-      [94.9, -11.2],
-      [141.1, 6.3],
-    ])
-  })
-
-  it('pads for open panel vs closed panel', () => {
-    expect(getMapPadding(true)).toEqual({
-      left: 432,
-      top: 68,
-      right: 72,
-      bottom: 64,
-    })
-    expect(getMapPadding(false)).toEqual({
-      left: 16,
-      top: 68,
-      right: 72,
-      bottom: 64,
-    })
-  })
-
-  it('expands bounds 10% on each side', () => {
-    const bounds = {
+function mockMap() {
+  const handlers = new Map<string, Set<() => void>>()
+  return {
+    setMaxBounds: vi.fn(),
+    setMinZoom: vi.fn(),
+    stop: vi.fn(),
+    fitBounds: vi.fn(),
+    cameraForBounds: vi.fn(() => ({ zoom: 4.2, center: { lng: 118, lat: -2 } })),
+    getZoom: vi.fn(() => 4.2),
+    getBounds: () => ({
       getWest: () => 100,
-      getEast: () => 120,
       getSouth: () => -10,
-      getNorth: () => 0,
-    }
-    expect(expandBounds10(bounds as never)).toEqual([
-      [98, -11],
-      [122, 1],
-    ])
+      getEast: () => 140,
+      getNorth: () => 5,
+    }),
+    on(event: string, handler: () => void) {
+      if (!handlers.has(event)) handlers.set(event, new Set())
+      handlers.get(event)!.add(handler)
+    },
+    off(event: string, handler: () => void) {
+      handlers.get(event)?.delete(handler)
+    },
+    emit(event: string) {
+      for (const h of [...(handlers.get(event) ?? [])]) h()
+    },
+    pending(event: string) {
+      return handlers.get(event)?.size ?? 0
+    },
+  }
+}
+
+describe('fitProvinceBounds', () => {
+  it('clears maxBounds before fitBounds so navigation is not stuck', () => {
+    const map = mockMap()
+    fitProvinceBounds(map as never, [110, -4, 116, 0], true, 600)
+    expect(map.setMaxBounds).toHaveBeenCalledWith(null)
+    expect(map.stop).toHaveBeenCalled()
+    expect(map.fitBounds).toHaveBeenCalled()
+    expect(map.pending('moveend')).toBe(1)
+  })
+
+  it('cancels prior moveend so Semua fit is not clamped by province bounds', () => {
+    const map = mockMap()
+    fitProvinceBounds(map as never, [110, -4, 116, 0], true, 600)
+    expect(map.pending('moveend')).toBe(1)
+
+    fitIndonesia(map as never, true, 600)
+    // Handler lama di-off; hanya satu pending dari fitIndonesia.
+    expect(map.pending('moveend')).toBe(1)
+
+    map.setMaxBounds.mockClear()
+    map.emit('moveend')
+    expect(map.setMaxBounds).toHaveBeenCalledTimes(1)
+    expect(map.pending('moveend')).toBe(0)
   })
 })

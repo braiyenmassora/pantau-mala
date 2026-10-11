@@ -101,7 +101,7 @@ export function LocationCard({ regions }: LocationCardProps) {
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-brand flex items-center gap-1 text-xs font-medium">
-              <MapPin className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+              <MapPin className="size-4 shrink-0" strokeWidth={2} aria-hidden />
               {copy.location.nearbyLabel}
             </p>
             <p
@@ -122,7 +122,7 @@ export function LocationCard({ regions }: LocationCardProps) {
           <div className={nearby.nearest ? 'grid grid-cols-2' : undefined}>
             <div className={nearby.nearest ? 'pr-3' : undefined}>
               <div className="text-ink-2 flex items-center gap-1 text-xs font-medium">
-                <Flame className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+                <Flame className="size-4 shrink-0" strokeWidth={2} aria-hidden />
                 <span>{copy.location.radius25}</span>
               </div>
               <p className="text-ink mt-1 text-base font-semibold tabular-nums">
@@ -135,7 +135,7 @@ export function LocationCard({ regions }: LocationCardProps) {
             {nearby.nearest ? (
               <div className="border-line border-l pl-3">
                 <div className="text-ink-2 flex items-center gap-1 text-xs font-medium">
-                  <MapPin className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+                  <MapPin className="size-4 shrink-0" strokeWidth={2} aria-hidden />
                   <span>{copy.location.nearest}</span>
                 </div>
                 <p className="text-ink mt-1 text-base font-semibold tabular-nums">
@@ -170,6 +170,7 @@ export function LocationCard({ regions }: LocationCardProps) {
         <Button
           variant="soft"
           size="sm"
+          aria-label={copy.location.allowLocationFull}
           onClick={(e) => {
             rememberFocusTrigger(e.currentTarget)
             setLocation({ status: 'requesting' })

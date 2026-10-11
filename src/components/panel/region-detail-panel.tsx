@@ -49,20 +49,12 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
             {region.name}
           </h2>
           <p className="text-ink-2 mt-1 flex items-center gap-1 text-sm">
-            <MapPin
-              className="text-ink-2 size-3.5 shrink-0"
-              strokeWidth={2}
-              aria-hidden
-            />
+            <MapPin className="text-ink-2 size-4 shrink-0" strokeWidth={2} aria-hidden />
             <span>{copy.map.regionMetaProvince(region.province)}</span>
           </p>
           {region.last_detection ? (
             <p className="text-ink-2 mt-1 flex items-center gap-1 text-sm">
-              <Clock
-                className="text-ink-2 size-3.5 shrink-0"
-                strokeWidth={2}
-                aria-hidden
-              />
+              <Clock className="text-ink-2 size-4 shrink-0" strokeWidth={2} aria-hidden />
               <span>
                 {copy.detail.flagDate}{' '}
                 {formatDetectionDate(region.last_detection.time, region.time_zone)}
@@ -175,7 +167,7 @@ function RiskCard({ region }: { region: Region }) {
         <p className="mt-1 text-xl font-semibold">{style.label}</p>
       </div>
       <p className="flex items-center gap-1 text-sm" style={{ color: style.text }}>
-        <Flame className="size-3.5 shrink-0 opacity-80" strokeWidth={2} aria-hidden />
+        <Flame className="size-4 shrink-0 opacity-80" strokeWidth={2} aria-hidden />
         <span>{copy.detail.hotspots24hReason(hotspots)}</span>
       </p>
     </section>

@@ -1,7 +1,7 @@
 import { Flame } from 'lucide-react'
 
 import { copy } from '@/copy/id'
-import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
+import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 
@@ -12,8 +12,9 @@ type MapLegendProps = {
 const ICON_BOX = 'flex size-9 shrink-0 items-center justify-center'
 
 export function MapLegend({ panelOpen }: MapLegendProps) {
-  const high = RISK_CATEGORIES.sangat_tinggi.dot
+  // Hex sama dengan HotspotHeatmapLayer (sedang → sangat tinggi).
   const mid = RISK_CATEGORIES.sedang.dot
+  const high = RISK_CATEGORIES.sangat_tinggi.dot
 
   return (
     <div
@@ -27,29 +28,23 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
     >
       <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
         <span className={`${ICON_BOX} gap-1`} aria-hidden>
-          <Flame className="fill-risk-mid stroke-risk-mid size-3.5" strokeWidth={2} />
-          <Flame className="fill-risk-high stroke-risk-high size-3.5" strokeWidth={2} />
+          <Flame className="size-4" strokeWidth={2} style={{ color: mid, fill: mid }} />
+          <Flame className="size-4" strokeWidth={2} style={{ color: high, fill: high }} />
         </span>
-        <span className="flex min-w-0 flex-col gap-0.5">
+        <span className="flex min-w-0 flex-col gap-1">
           <span className="text-ink text-xs font-semibold">{copy.legend.colorTitle}</span>
           <span className="text-ink-2 text-xs leading-4">{copy.legend.colorHint}</span>
         </span>
       </div>
 
       <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
-        <span className={`${ICON_BOX} gap-1`} aria-hidden>
-          {[mid, high].map((dot) => (
-            <span
-              key={dot}
-              className="size-2.5 rounded-full border"
-              style={{
-                backgroundColor: withAlpha(dot, 0.1),
-                borderColor: withAlpha(dot, 0.24),
-              }}
-            />
-          ))}
+        <span className={`${ICON_BOX}`} aria-hidden>
+          <span
+            className="h-3 w-8 rounded-full"
+            style={{ background: `linear-gradient(90deg, ${mid}, ${high})` }}
+          />
         </span>
-        <span className="flex min-w-0 flex-col gap-0.5">
+        <span className="flex min-w-0 flex-col gap-1">
           <span className="text-ink text-xs font-semibold">{copy.legend.haloTitle}</span>
           <span className="text-ink-2 text-xs leading-4">{copy.legend.haloHint}</span>
         </span>

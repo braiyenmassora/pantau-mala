@@ -18,9 +18,8 @@ export const copy = {
       action: 'Hapus pencarian',
     },
     noHotspotsInRegion: {
-      title: 'Tidak ada titik panas 7 hari',
-      description: (nama: string) =>
-        `Dalam 7 hari terakhir tidak ada titik panas satelit di ${nama}.`,
+      title: 'Tidak ada titik panas aktif',
+      description: (nama: string) => `Tidak ada titik panas satelit (24 jam) di ${nama}.`,
     },
     loadFail: {
       title: 'Gagal memuat data',
@@ -62,10 +61,11 @@ export const copy = {
     indonesiaToday: 'Titik panas di Indonesia',
     provinceToday: (province: string) => `Titik panas di ${province}`,
     subtitle: 'Deteksi satelit dan indikasi risiko per kabupaten/kota',
-    hotspot24h: 'Titik panas',
+    hotspot24h: 'Titik panas 24 jam',
     hotspotHint: 'Penjelasan titik panas',
-    hotspotTooltip: 'Jumlah titik panas dari satelit.',
-    topRisk: 'Wilayah risiko tertinggi',
+    hotspotTooltip: 'Total titik panas dalam 24 jam',
+    topRisk: '5 provinsi dengan titik panas terbanyak',
+    topKab: 'Wilayah dengan titik panas terbanyak',
     searchResults: 'Hasil pencarian',
     betaTooltip: 'Bukan peringatan kebakaran.',
     searchPlaceholder: 'Cari kabupaten/kota',
@@ -84,10 +84,10 @@ export const copy = {
     airQuality: 'Kualitas udara',
     airHint: 'Penjelasan kualitas udara',
     airTooltip:
-      'Cuaca dan kualitas udara untuk gambaran saja. Tidak mengatur warna pin di peta.',
-    riskTitle: 'Indikasi risiko',
-    riskHint: 'Penjelasan indikasi risiko',
-    riskTooltip: 'Makin banyak titik panas satelit, makin tinggi risikonya di peta.',
+      'Cuaca dan kualitas udara untuk gambaran saja — tidak mengatur warna pin di peta.',
+    riskTitle: 'Risiko',
+    riskHint: 'Penjelasan risiko',
+    riskTooltip: 'Risiko dari jumlah titik panas FIRMS (24 jam). Belum tentu kebakaran.',
     hotspots24hReason: (n: string) => `${n} titik panas`,
     weatherDanger: 'Bahaya cuaca',
     weatherDangerHint: 'Penjelasan bahaya cuaca',
@@ -128,6 +128,8 @@ export const copy = {
     promptBody: 'Browser meminta izin lokasi. Lokasi kamu tidak disimpan.',
     promptLater: 'Nanti saja',
     promptContinue: 'Lanjutkan',
+    /** Label tombol utama — selaras kamus fe-ui-copy. */
+    allowLocationFull: 'Izinkan lokasi untuk melihat titik panas dekat kamu',
   },
   map: {
     recenter: 'Pusatkan ke lokasi kamu',
@@ -151,7 +153,7 @@ export const copy = {
   updatedAt: {
     /** Relatif dari meta.updated_at. */
     stamp: (relatif: string) => `Diperbarui ${relatif}`,
-    cadence: 'Data diganti setiap sekitar 3 jam dari satelit dan cuaca.',
+    cadence: 'Diperbarui setiap ~3 jam',
     stale: 'Data mungkin sudah usang',
     problems: (list: string) => `Ada sumber bermasalah: ${list}`,
     sourceStatus: (name: string, status: string) => `${name} (${status})`,
@@ -169,9 +171,9 @@ export const copy = {
 
   legend: {
     colorTitle: 'Risiko',
-    colorHint: 'Kuning sedang, merah tinggi',
+    colorHint: 'Kuning sedang, merah sangat tinggi',
     haloTitle: 'Titik panas',
-    haloHint: 'Lingkaran besar berarti banyak.',
+    haloHint: 'Saat zoom: kuning jarang, merah padat.',
   },
   search: {
     provinces: 'Provinsi',

@@ -122,7 +122,7 @@ export default function App() {
 
           <div
             ref={panelContentRef}
-            className="soft-scroll soft-fade min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-5 pb-8"
+            className="soft-scroll soft-fade min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-4 pb-8"
           >
             <SummaryPanel
               regions={data ?? []}
@@ -157,9 +157,9 @@ export default function App() {
           {...mapOverlayGestureProps}
         >
           {panelOpen ? (
-            <ChevronLeft className="size-3.5" strokeWidth={2} aria-hidden />
+            <ChevronLeft className="size-4" strokeWidth={2} aria-hidden />
           ) : (
-            <ChevronRight className="size-3.5" strokeWidth={2} aria-hidden />
+            <ChevronRight className="size-4" strokeWidth={2} aria-hidden />
           )}
         </button>
 

@@ -20,6 +20,7 @@
   /* Brand (satu aksen, tidak ada biru) */
   --color-brand: #1e6b45;
   --color-brand-soft: #edf4ef;
+  --color-focus: #1e6b45; /* ring fokus = brand */
 
   /* Kategori risiko: dot / tint / text (saturasi naik sedikit vs #C2410C / #D99A0B) */
   --color-risk-high: #dc3208;
@@ -32,15 +33,23 @@
   --color-risk-low-tint: #e4f0e8;
   --color-risk-low-text: #1e5a3a;
 
-  /* Tipografi (ukuran / line-height) – body + paragraph (14/22) untuk prose */
+  /* Spacing — pakai HANYA skala 4px: 4 / 8 / 12 / 16 / 24 / 32 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Tipografi — ukuran selaras skala 4 */
   --text-xs: 12px;
   --text-xs--line-height: 16px; /* caption, label, badge */
-  --text-sm: 13px;
-  --text-sm--line-height: 18px; /* small, chip, section-label, button kecil */
-  --text-base: 14px;
-  --text-base--line-height: 20px; /* body, button besar */
+  --text-sm: 12px;
+  --text-sm--line-height: 16px; /* small, chip, section-label */
+  --text-base: 14px; /* body — 14 diizinkan untuk keterbacaan */
+  --text-base--line-height: 20px;
   --text-paragraph: 14px;
-  --text-paragraph--line-height: 22px; /* ringkasan / prose */
+  --text-paragraph--line-height: 20px; /* ringkasan / prose */
   --text-lg: 16px;
   --text-lg--line-height: 24px; /* title */
   --text-xl: 20px;
@@ -48,12 +57,12 @@
   --text-3xl: 28px;
   --text-3xl--line-height: 32px; /* number-lg (Mono) */
 
-  /* Radius */
-  --radius-ctl: 8px; /* kontrol peta, item menu */
-  --radius-card: 12px; /* kartu, tile */
-  --radius-panel: 16px; /* panel, dialog */
+  /* Radius: ctl (kontrol) + card; panel untuk shell besar */
+  --radius-ctl: 8px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
 
-  /* Bayangan */
+  /* Bayangan: sm = UI default; map = pin; md/lg hemat (dialog saja) */
   --shadow-sm: 0 1px 3px rgba(20, 38, 27, 0.16);
   --shadow-md: 0 4px 16px rgba(20, 38, 27, 0.12);
   --shadow-lg: 0 8px 28px rgba(20, 38, 27, 0.18);
@@ -62,18 +71,18 @@
   /* Motion */
   --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
 
-  /* Animasi halo — merah (tinggi) lebih cepat dari oranye (sedang) */
-  --animate-halo-high: halo-pulse 2s ease-out infinite;
-  --animate-halo-mid: halo-pulse 3.2s ease-out infinite;
+  /* Animasi halo — detak tegas, easing tetap soft */
+  --animate-halo-high: halo-pulse 2.2s var(--ease-out-soft) infinite;
+  --animate-halo-mid: halo-pulse 3.4s var(--ease-out-soft) infinite;
   --animate-view-in: view-in 0.22s ease-out both;
 
   @keyframes halo-pulse {
     0% {
       transform: translate(-50%, -50%) scale(0.85);
-      opacity: 0.55;
+      opacity: 0.58;
     }
     100% {
-      transform: translate(-50%, -50%) scale(1.55);
+      transform: translate(-50%, -50%) scale(1.52);
       opacity: 0;
     }
   }

@@ -16,7 +16,7 @@ export function NoHotspotDetail({ kab }: NoHotspotDetailProps) {
           {kab.name}
         </h2>
         <p className="text-ink-2 mt-1 flex items-center gap-1 text-sm">
-          <MapPin className="text-ink-2 size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+          <MapPin className="text-ink-2 size-4 shrink-0" strokeWidth={2} aria-hidden />
           <span>{copy.map.regionMetaProvince(kab.province)}</span>
         </p>
       </header>

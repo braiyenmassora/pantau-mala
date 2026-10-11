@@ -29,11 +29,7 @@ export function PanelFooter() {
                 'rounded-ctl',
               )}
             >
-              <Icon
-                className="text-ink-2 size-3.5 shrink-0"
-                strokeWidth={2}
-                aria-hidden
-              />
+              <Icon className="text-ink-2 size-4 shrink-0" strokeWidth={2} aria-hidden />
               <span>{source.name}</span>
             </a>
           )

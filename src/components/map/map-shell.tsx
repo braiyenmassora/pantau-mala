@@ -11,9 +11,13 @@ import {
 } from 'react'
 import { Button, EmptyState } from '@/components/common'
 import { IndonesiaMapFraming } from '@/components/map/indonesia-map-framing'
+import { HotspotHeatmapLayer } from '@/components/map/hotspot-heatmap-layer'
+import { ProvinceFocus } from '@/components/map/province-focus'
 import { RegionLayers } from '@/components/map/region-layers'
+import { SelectedHotspotsLayer } from '@/components/map/selected-hotspots-layer'
 import { UserLocationLayer } from '@/components/map/user-location-layer'
 import { Map, useMap, type MapRef } from '@/components/ui/map'
+import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import { getMapPadding, INDONESIA_CENTER } from '@/lib/indonesia-view'
@@ -132,6 +136,7 @@ export class LayerErrorBoundary extends Component<
 }
 
 export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
+  const { data: catalog } = useRegionCatalog()
   const [noWebGl, setNoWebGl] = useState(() => !webGlSupported())
   const [basemapFailed, setBasemapFailed] = useState(false)
   const [layerFailed, setLayerFailed] = useState(false)
@@ -186,8 +191,15 @@ export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
       >
         <MapBasemapListener onBasemapError={markBasemapFailed} />
         <IndonesiaMapFraming panelOpen={panelOpen} onReady={markFramed} />
+        {catalog && <ProvinceFocus provinces={catalog.provinces} />}
         <LayerErrorBoundary name="RegionLayers" onError={markLayerFailed}>
           <RegionLayers regions={regions} />
+        </LayerErrorBoundary>
+        <LayerErrorBoundary name="HotspotHeatmapLayer" onError={markLayerFailed}>
+          <HotspotHeatmapLayer regions={regions} />
+        </LayerErrorBoundary>
+        <LayerErrorBoundary name="SelectedHotspotsLayer" onError={markLayerFailed}>
+          <SelectedHotspotsLayer regions={regions} />
         </LayerErrorBoundary>
         <LayerErrorBoundary name="UserLocationLayer" onError={markLayerFailed}>
           <UserLocationLayer />

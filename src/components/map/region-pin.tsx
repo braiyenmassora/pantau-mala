@@ -71,9 +71,8 @@ export function RegionPin({ region }: RegionPinProps) {
   const active = selected || hoveredCode === region.code
   const isLow = region.risk_category === 'rendah'
   const circle = shouldShowHalo(region.hotspots_24h)
-  // Denyut untuk merah/oranye walau < 5 titik (lingkaran ukuran tetap butuh ≥5).
-  const pulse = !reducedMotion && !isLow && showHaloPulse(region.risk_category)
   const haloSize = haloDiameter(region.hotspots_24h)
+  const pulse = !reducedMotion && !isLow && showHaloPulse(region.risk_category)
   const pulseSize = circle ? haloSize : 36
   const pulseClass =
     region.risk_category === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
@@ -129,7 +128,7 @@ export function RegionPin({ region }: RegionPinProps) {
             style={{
               width: pulseSize,
               height: pulseSize,
-              borderColor: withAlpha(style.dot, 0.45),
+              borderColor: withAlpha(style.dot, 0.55),
             }}
           />
         )}
