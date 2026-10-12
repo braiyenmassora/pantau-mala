@@ -1,6 +1,6 @@
 # pantau-mala FE — integrasi Go
 
-Frontend React untuk API Go pantau-mala. Repo ini tetap terpisah dari [backend](https://github.com/braiyenmassora/api-forever-young/tree/feat/pantau-mala-go-backend); branch integrasi FE adalah `feat/pantau-mala-go-integration`. Branch `main` mempertahankan implementasi teman sebelum merge.
+Frontend React untuk API Go pantau-mala. Mode dev aktif memakai API key client dari env server, tanpa login pengunjung. Repo ini tetap terpisah dari [backend](https://github.com/braiyenmassora/api-forever-young/tree/feat/pantau-mala-go-backend); branch integrasi FE adalah `feat/pantau-mala-go-integration`. Branch `main` mempertahankan implementasi teman sebelum merge.
 
 ```sh
 bun install --frozen-lockfile
@@ -38,3 +38,11 @@ PANTAU_DEV_TEST_CONFIG=/path/to/private/dev-access.json bun run test -- run src/
 Produksi membutuhkan **origin yang sama**: host FE melayani assets dan mem-proxy `/api/*` serta `/auth/*` ke Go dengan Host/Origin yang benar. Static Pages tanpa route/proxy tersebut belum bisa memakai pemulihan cookie ini. Tidak menyisipkan key privat ke VITE_* untuk mengakali deployment. Belum deploy ke VPS atau mengganti domain produksi pada perubahan ini.
 
 Bun1.4.3 mengelola dependency, dev dan build (`bun.lock`). Tes memakai Vitest melalui Node karena worker jsdom30 gagal di runtime Bun; jalankan tetap lewat `bun run test`.
+
+## Peta melalui token client server
+
+Mode client tidak meminta username/password pengunjung. Salin `.env.example` ke `.env`, isi `PANTAU_CLIENT_SLUG` dan `PANTAU_API_KEY` hasil CMS Go `/api-keys` dengan scope `data:read`. Client berasal dari token; slug digunakan untuk menolak salah konfigurasi, bukan memilih tenant bebas. Key dev yang dipasang berlaku30hari; buat/rotasi/revoke melalui CMS. Jangan prefix secret dengan `VITE_`. Semua pengunjung memakai data client tersebut dan berbagi kuota client.
+
+`bun run --bun dev` menyediakan gateway dev. Untuk hasil build jalankan `bun run --bun build` lalu `bun run start`; server Bun menyajikan dist dan proxy read-only yang sama. HTTPS dapat diterminasi pada reverse proxy yang sudah ada, tanpa menambahkan provisioning. Static hosting/`vite preview` saja tidak dapat menyimpan secret atau menjalankan gateway. `FE_ACCESS_MODE=account` hanya untuk alur akun sebelumnya pada dev dengan proxy auth.
+
+Gateway mengecek scope/key/client setiap request, menolak mutasi/management, credential pengunjung, query pemilih tenant dan cross-origin. Env kosong/mismatch/revoked menghasilkan error, bukan fallback ke akses tanpa key. `/frontend/session` hanya mengembalikan identitas reader tanpa token. CMS tetap di backend Go. Tidak ada credential FE di Git atau browser.

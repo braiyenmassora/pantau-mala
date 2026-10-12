@@ -7,15 +7,15 @@ export async function getData<T>(
   parse: (data: unknown) => T,
   signal?: AbortSignal,
 ): Promise<T> {
-  const { token, generation } = useSession.getState()
-  if (!token) throw new Error('Sesi diperlukan.')
+  const { token, generation, accessMode } = useSession.getState()
+  if (!token && accessMode !== 'client') throw new Error('Sesi diperlukan.')
   const configured = import.meta.env.VITE_DATA_URL?.trim() || '/api/v1'
   if (configured !== '/api/v1')
     throw new Error(
       'FE dan API Go memerlukan proxy origin yang sama dengan base /api/v1.',
     )
   const res = await fetch(configured + path, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
     credentials: 'same-origin',
     cache: 'no-store',
     signal: signal

@@ -1,5 +1,5 @@
 import { beforeEach, afterEach, it, expect, vi } from 'vitest'
-import { useSession, login, switchClient, logout, expireSession } from './session'
+import { useSession, login, switchClient, logout, expireSession, restoreSession } from './session'
 import { queryClient } from '@/data/query-client'
 import { useMapStore } from '@/store/map'
 import { getData } from '@/data/queries'
@@ -16,7 +16,7 @@ const b = {
 }
 beforeEach(() => {
   expireSession()
-  useSession.setState({ generation: 0 })
+  useSession.setState({ generation: 0, accessMode: 'account', accessError: '' })
 })
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -95,4 +95,25 @@ it('current-client 401 clears authenticated state and client data', async () => 
   await expect(getData('/regions', (x) => x)).rejects.toThrow()
   expect(useSession.getState().status).toBe('anonymous')
   expect(queryClient.getQueryData(['private'])).toBeUndefined()
+})
+
+it('client gateway restores without bearer and data requests contain no credential', async () => {
+  const fetcher = vi.fn().mockResolvedValueOnce(Response.json({ mode: 'client', principal: { ...a, kind: 'key', scope: 'data:read' } }, { headers: { 'X-Frontend-Access': 'client' } })).mockResolvedValueOnce(Response.json({ data: [] }))
+  vi.stubGlobal('fetch', fetcher)
+  await restoreSession()
+  expect(useSession.getState().token).toBeNull()
+  expect(useSession.getState().accessMode).toBe('client')
+  expect(useSession.getState().status).toBe('authenticated')
+  await getData('/regions', (x) => x)
+  expect(fetcher.mock.calls[1][1].headers.Authorization).toBeUndefined()
+  await expect(switchClient('fixture-b')).rejects.toThrow('CMS Go')
+})
+it('client gateway outage fails closed without account login fallback', async () => {
+  const fetcher = vi.fn().mockResolvedValue(Response.json({ error: 'unavailable' }, { status: 503, headers: { 'X-Frontend-Access': 'client' } }))
+  vi.stubGlobal('fetch', fetcher)
+  await restoreSession()
+  expect(useSession.getState().accessMode).toBe('client')
+  expect(useSession.getState().status).toBe('anonymous')
+  expect(fetcher).toHaveBeenCalledTimes(1)
+  expect(useSession.getState().accessError).toContain('konfigurasi')
 })

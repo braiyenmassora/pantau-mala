@@ -13,7 +13,8 @@
     "audit:ui": "bun scripts/audit-ui.mjs",
     "layout:check": "bun scripts/layout-check.mjs",
     "a11y:check": "bun scripts/a11y-check.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "bun server/start.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",

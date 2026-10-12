@@ -130,3 +130,7 @@ Override copy/count-only Python: Go kategori/score tetap sumber kebenaran, provi
 ## Identitas bersama CMS Go
 
 Brand menggunakan salinan identik `api/brand-symbol.svg` dan `api/brand-wordmark.svg` dari backend. Komponen Brand digunakan pada login dan footer panel: simbol dekoratif, lettering bernama pantau mala, proporsi asli dan gap8px. Favicon memakai simbol yang sama; apple-touch-icon180px dan Open Graph1200×630 dirasterisasi dari SVG sumber, tanpa font untuk lettering. Warna di SVG dan theme-color merupakan pengecualian statis brand CMS, bukan palet komponen baru. Verifikasi browser/mobile akhir tetap manual oleh owner.
+
+## Mode client melalui server env
+
+Peta modeclient langsung terbuka setelah identitas reader terverifikasi. Footer hanya menunjukkan workspace, tanpa logout/switch/username. Kegagalan key/service memakai cardbrand+teksstatus dan tombol Coba lagi, tanpa formpassword. Modeaccount lama hanya optional; server tetap menegakkan scope/client. Pemeriksaan viewport/browser tetap manual oleh owner.

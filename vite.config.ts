@@ -1,14 +1,35 @@
 /// <reference types="vitest/config" />
 import path from 'path'
 import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
+import { createClientGateway } from './server/client-gateway.mjs'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url))
 
-export default defineConfig({
-  plugins: [react(), tailwindcss()],
+export default defineConfig(({ mode }) => {
+  const env = { ...loadEnv(mode, rootDir, ''), ...process.env }
+  const gateway = createClientGateway(env)
+  return {
+
+  plugins: [react(), tailwindcss(), {
+    name: 'server-client-access',
+    configureServer(server) {
+      server.middlewares.use(async (req, res, next) => {
+        if (env.FE_ACCESS_MODE !== 'client') return next()
+        const headers = new Headers()
+        for (const [key, value] of Object.entries(req.headers)) {
+          if (typeof value === 'string') headers.set(key, value)
+        }
+        const response = await gateway(new Request(`http://${req.headers.host}${req.url}`, { method: req.method, headers }))
+        if (!response) return next()
+        res.statusCode = response.status
+        response.headers.forEach((value, key) => res.setHeader(key, value))
+        res.end(Buffer.from(await response.arrayBuffer()))
+      })
+    },
+  }],
   server: {
     host: '127.0.0.1',
     port: 5173,
@@ -48,4 +69,5 @@ export default defineConfig({
   test: {
     environment: 'node',
   },
+}
 })

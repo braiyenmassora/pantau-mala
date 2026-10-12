@@ -34,3 +34,7 @@ Feed tambahan tidak dimuat sebelum dibuka/diminta. BMKG weather/GloFAS adalah ad
 6. Jika ada dua client yang diizinkan, switch; data/filter/selection/cache client sebelumnya harus hilang. Logout harus kembali/login dan token lama ditolak.
 
 UI final panel tambahan belum ditest browser otomatis setelah owner meminta berhenti. Build/lint/unit/live-API-contract tetap dilakukan. Script browser fixture hanyalah alat optional untuk permintaan eksplisit berikutnya; tidak ada browser job otomatis pada CI branch ini.
+
+## Override: mode client server dari env
+
+Mode default contoh env sekarang client. GET `/frontend/session` mengembalikan modeclient+principalreader tanpa token; REST melewati gateway dan server menyisipkan API key scope data:read. Login/switch/logout dan management tidak tersedia pada peta modeclient; gunakan CMS Go8080. Semua pengunjung berbagi client tetap dan kuota server; isolasi antar integrasi menggunakan key/client berbeda. Bun `start` menjalankan gateway produksi dengan staticdist. Checklist login di atas berlaku hanya modeaccount; untuk modeclient uji langsung peta, error expired/revoked, dan tidak ada Authorization/API key di browser.

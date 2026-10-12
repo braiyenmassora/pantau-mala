@@ -64,7 +64,7 @@
   },
   "validation": {
     "unit_contract_tests": {
-      "passed": 113
+      "passed": 120
     },
     "live_go_api_contract": {
       "passed": 1
@@ -73,7 +73,7 @@
     "lint": "PASS",
     "ui_static_audit": "PASS",
     "production_build": "PASS",
-    "initial_js_gzip_kb": 160.5,
+    "initial_js_gzip_kb": 160.8,
     "final_browser_validation": "OWNER_MANUAL_PENDING; automation stopped on owner instruction",
     "prior_browser_smoke": "Login/reload/logout/width emulation passed before new source panels; not full final-UI verification",
     "prior_a11y_script": "Login scan passed; subsequent fixture navigation timeout, not claimed as complete",
@@ -84,6 +84,16 @@
       "vitest_runtime": "Node: Bun/jsdom EventTarget incompatibility verified",
       "brand_svg_matches_go": "PASS byte-identical symbol and wordmark",
       "brand_raster_dimensions": "Open Graph1200x630; apple touch180x180"
+    },
+    "client_gateway": {
+      "dev_http": "PASS",
+      "built_server_http": "PASS",
+      "browser_credentials": "none",
+      "bundle_contains_key": false,
+      "management_denied": 403,
+      "visitor_client_selection_denied": 400,
+      "revoked_key_test": "unit mocked upstream401, live revocation not performed",
+      "browser_review": "OWNER_MANUAL_PENDING"
     }
   },
   "limitations": [

@@ -9,6 +9,8 @@ import { login, logout, restoreSession, useSession } from './session'
 import { focusRing } from '@/components/common/focus-ring'
 
 export function AccessGate({ children }: { children: ReactNode }) {
+  const accessMode = useSession((s) => s.accessMode)
+  const accessError = useSession((s) => s.accessError)
   const status = useSession((s) => s.status)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -17,10 +19,10 @@ export function AccessGate({ children }: { children: ReactNode }) {
     void restoreSession()
   }, [])
   useEffect(() => {
-    if (status === 'anonymous') window.history.replaceState(null, '', '/login')
+    if (status === 'anonymous' && accessMode === 'account') window.history.replaceState(null, '', '/login')
     else if (status === 'authenticated' && window.location.pathname === '/login')
       window.history.replaceState(null, '', '/')
-  }, [status])
+  }, [status, accessMode])
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const form = e.currentTarget
@@ -47,7 +49,9 @@ export function AccessGate({ children }: { children: ReactNode }) {
           <Brand />
         </h1>
         <p className="text-ink-2 text-base">Masuk untuk mengakses data workspace kamu.</p>
-        {status === 'restoring' ? (
+        {accessMode === 'client' && status !== 'restoring' ? (
+          <div className="space-y-4"><p role="alert">{accessError || 'Akses client belum tersedia.'}</p><button type="button" className={`rounded-ctl border-line h-11 border px-4 ${focusRing}`} onClick={() => void restoreSession()}>Coba lagi</button></div>
+        ) : status === 'restoring' ? (
           <p role="status">Memeriksa sesi…</p>
         ) : (
           <form
@@ -116,6 +120,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
   )
 }
 export function SessionControl() {
+  const accessMode = useSession((s) => s.accessMode)
   const principal = useSession((s) => s.principal)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -137,7 +142,9 @@ export function SessionControl() {
         .parse(await sessionRequest('/auth/clients', 'GET'))
         .data.filter((c) => c.enabled),
     staleTime: 300000,
+    enabled: accessMode === 'account',
   })
+  if (accessMode === 'client') return <p className="text-ink-2 pt-2 text-xs">Workspace · {principal?.client_slug}</p>
   return (
     <div className="border-line flex flex-wrap items-center gap-2 border-t pt-2 text-xs">
       <span className="text-ink-2 min-w-0 flex-1 break-words">
