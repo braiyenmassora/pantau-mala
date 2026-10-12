@@ -13,6 +13,8 @@ export const INDONESIA_CENTER: [number, number] = [118, -2]
 export const PLACE_ZOOM = 8
 
 export function getMapPadding(panelOpen: boolean): PaddingOptions {
+  if (typeof window !== 'undefined' && window.innerWidth < 640)
+    return { left: 16, top: 68, right: 16, bottom: 64 }
   return {
     left: panelOpen ? 432 : 16,
     top: 68,

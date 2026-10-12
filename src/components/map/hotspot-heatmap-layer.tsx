@@ -1,3 +1,4 @@
+import { HEATMAP_TRANSPARENT } from '@/lib/risk-category'
 import { useEffect, useMemo } from 'react'
 import type { GeoJSONSource } from 'maplibre-gl'
 
@@ -77,7 +78,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
             ['linear'],
             ['heatmap-density'],
             0,
-            'rgba(0,0,0,0)',
+            HEATMAP_TRANSPARENT,
             0.12,
             `${mid}40`,
             0.28,

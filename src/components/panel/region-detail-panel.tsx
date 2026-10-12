@@ -1,3 +1,4 @@
+import { RegionHistoryPanel } from './region-history-panel'
 import {
   Check,
   Clock,
@@ -17,7 +18,7 @@ import { focusRing } from '@/components/common/focus-ring'
 import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import { formatDetectionDate } from '@/lib/detection-flag'
-import { formatNumber } from '@/lib/format'
+import { formatNumber, formatDateTime } from '@/lib/format'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { cn } from '@/lib/utils'
 
@@ -63,6 +64,17 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
           ) : null}
         </header>
         <RiskCard region={region} />
+        <DataTile
+          label={copy.extra.score}
+          value={formatNumber(region.score ?? null)}
+          unit={copy.extra.provisional}
+        />
+        {region.quality && region.quality !== 'ok' && (
+          <p role="status" className="text-ink-2 text-sm">
+            Indikator {region.quality === 'stale' ? 'kedaluwarsa' : 'belum lengkap'};
+            bukan peringatan resmi.
+          </p>
+        )}
       </div>
 
       <section className="space-y-2">
@@ -88,6 +100,40 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
         </div>
       </section>
 
+      {region.last_detection && (
+        <section className="space-y-2">
+          <SectionLabel>{copy.extra.detection}</SectionLabel>
+          <div className="grid grid-cols-2 gap-2">
+            <DataTile
+              label={copy.extra.satellite}
+              value={region.last_detection.satellite}
+            />
+            <DataTile
+              label={copy.extra.confidence}
+              value={region.last_detection.confidence}
+            />
+            <DataTile
+              label={copy.extra.frp}
+              value={formatNumber(region.last_detection.frp_mw)}
+              unit="MW"
+            />
+          </div>
+        </section>
+      )}
+      <section className="space-y-2">
+        <SectionLabel>{copy.extra.freshness}</SectionLabel>
+        {[
+          [copy.extra.computedAt, region.computed_at],
+          [copy.extra.weatherAt, region.weather_updated_at],
+          [copy.extra.airAt, region.air_updated_at],
+        ].map(([label, time]) => (
+          <p key={label} className="text-ink-2 text-xs">
+            {label}:{' '}
+            {time ? formatDateTime(time, region.time_zone) : copy.extra.noTimestamp}
+          </p>
+        ))}
+      </section>
+      <RegionHistoryPanel key={region.code} code={region.code} />
       <section className="space-y-2">
         <SectionLabel>{copy.detail.conditions}</SectionLabel>
         <div className="grid grid-cols-2 gap-2">
@@ -116,8 +162,16 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
           <DataTile
             icon={<Gauge className="text-ink-2 size-4" strokeWidth={2} />}
             label={copy.detail.weatherDanger}
-            value={copy.bahaya[region.weather_danger.class]}
-            unit={`${copy.detail.fwiUnit} ${formatNumber(region.weather_danger.fwi)}`}
+            value={
+              region.weather_danger
+                ? copy.bahaya[region.weather_danger.class]
+                : 'Tidak tersedia'
+            }
+            unit={
+              region.weather_danger
+                ? `${copy.detail.fwiUnit} ${formatNumber(region.weather_danger.fwi)}`
+                : 'Belum ada FWI terverifikasi'
+            }
             hintAria={copy.detail.weatherDangerHint}
             hintText={copy.detail.weatherDangerTooltip}
           />

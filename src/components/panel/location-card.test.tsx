@@ -1,3 +1,4 @@
+import { useSession } from '@/auth/session'
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, render, screen } from '@testing-library/react'
@@ -40,6 +41,17 @@ describe('LocationCard', () => {
   afterEach(() => cleanup())
 
   beforeEach(() => {
+    useSession.setState({
+      status: 'authenticated',
+      token: 'pms_synthetic-test-only',
+      principal: {
+        client_id: '00000000-0000-4000-8000-000000000001',
+        client_slug: 'fixture',
+        username: 'fixture',
+        role: 'reader',
+      },
+      generation: 0,
+    })
     useMapStore.setState({
       location: { status: 'off' },
     })
@@ -52,7 +64,10 @@ describe('LocationCard', () => {
     const client = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     })
-    client.setQueryData(['hotspots'], { type: 'FeatureCollection', features: [] })
+    client.setQueryData(['hotspots', '00000000-0000-4000-8000-000000000001', 0], {
+      type: 'FeatureCollection',
+      features: [],
+    })
 
     render(
       <QueryClientProvider client={client}>

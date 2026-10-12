@@ -15,6 +15,7 @@ export type MapHotspotProps = {
 }
 
 const RISK_WEIGHT: Record<RiskCategory, number> = {
+  tidak_tersedia: 0,
   sangat_tinggi: 1,
   sedang: 0.55,
   rendah: 0.2,

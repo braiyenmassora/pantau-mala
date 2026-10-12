@@ -18,5 +18,5 @@ export function shouldShowHalo(hotspots24h: number): boolean {
 
 /** Pulse ring only for Sedang and Sangat tinggi (not Rendah). */
 export function showHaloPulse(category: RiskCategory): boolean {
-  return category !== 'rendah'
+  return category === 'sedang' || category === 'sangat_tinggi'
 }

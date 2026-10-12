@@ -15,7 +15,7 @@ export function Chip({ pressed, className, children, ...props }: ChipProps) {
       aria-pressed={pressed}
       className={cn(
         'border-line bg-surface inline-flex h-9 items-center gap-1 rounded-full border',
-        'text-ink pr-3.5 pl-3 text-sm font-medium shadow-sm',
+        'text-ink pr-3 pl-3 text-sm font-medium shadow-sm',
         'transition-[background-color,color] duration-150 ease-in-out',
         'hover:bg-surface-muted [&_svg]:shrink-0',
         focusRing,

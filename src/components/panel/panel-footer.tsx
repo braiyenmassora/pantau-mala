@@ -1,3 +1,5 @@
+import { Brand } from '@/components/common/brand'
+import { SessionControl } from '@/auth/access-gate'
 import { CloudSun, Satellite } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -35,6 +37,8 @@ export function PanelFooter() {
           )
         })}
       </p>
+      <div className="mt-3"><Brand /></div>
+      <SessionControl />
     </footer>
   )
 }

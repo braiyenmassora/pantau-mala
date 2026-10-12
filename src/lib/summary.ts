@@ -11,6 +11,7 @@ export function computeSummary(list: Region[]): RegionSummary {
   const todayTotal = list.reduce((sum, r) => sum + r.hotspots_24h, 0)
 
   const countByCategory: Record<RiskCategory, number> = {
+    tidak_tersedia: 0,
     sangat_tinggi: 0,
     sedang: 0,
     rendah: 0,

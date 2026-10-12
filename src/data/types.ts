@@ -4,13 +4,14 @@ import type { Feature, FeatureCollection, Point } from 'geojson'
 
 export type TimeZoneId = 'WIB' | 'WITA' | 'WIT'
 
-export type RiskCategory = 'rendah' | 'sedang' | 'sangat_tinggi'
+export type RiskCategory = 'rendah' | 'sedang' | 'sangat_tinggi' | 'tidak_tersedia'
 
 export type WeatherDangerClass = 'aman' | 'waspada' | 'bahaya' | 'ekstrem'
 
 export type WeatherDangerSource = 'BMKG' | 'FWI dihitung'
 
-export type AirQualityCategory = 'baik' | 'sedang' | 'tidak_sehat'
+export type AirQualityCategory =
+  'baik' | 'sedang' | 'tidak_sehat' | 'pending_validation' | 'missing'
 
 export type ConfidenceLevel = 'rendah' | 'sedang' | 'tinggi'
 
@@ -23,15 +24,15 @@ export type WeatherDanger = {
 }
 
 export type Weather = {
-  temp_c: number
+  temp_c: number | null
   condition: string
-  humidity: number
-  wind_kmh: number
-  dry_days: number
+  humidity: number | null
+  wind_kmh: number | null
+  dry_days: number | null
 }
 
 export type AirQuality = {
-  pm25: number
+  pm25: number | null
   category: AirQualityCategory
 }
 
@@ -53,14 +54,19 @@ export type Region = {
   /** [lon, lat] */
   center: [number, number]
   risk_category: RiskCategory
-  weather_danger: WeatherDanger
+  weather_danger: WeatherDanger | null
   hotspots_24h: number
   trend_7d: [number, number, number, number, number, number, number]
   weather: Weather
   air_quality: AirQuality
-  last_detection: LastDetection
+  last_detection: LastDetection | null
   summary: string
   actions: string[]
+  quality?: string
+  score?: number | null
+  computed_at?: string | null
+  weather_updated_at?: string | null
+  air_updated_at?: string | null
 }
 
 export type HotspotProperties = {
@@ -76,7 +82,7 @@ export type HotspotFeature = Feature<Point, HotspotProperties>
 export type HotspotFeatureCollection = FeatureCollection<Point, HotspotProperties>
 
 export type Meta = {
-  updated_at: string
+  updated_at: string | null
   status: {
     firms: SourceStatus
     weather: SourceStatus

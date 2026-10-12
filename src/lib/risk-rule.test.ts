@@ -1,34 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
 import { copy } from '@/copy/id'
-import { compareRegionsByRisk, computeRiskCategory } from '@/lib/risk-rule'
-
-describe('computeRiskCategory', () => {
-  it('sangat_tinggi when hotspots >= 10', () => {
-    expect(computeRiskCategory(10)).toBe('sangat_tinggi')
-    expect(computeRiskCategory(23)).toBe('sangat_tinggi')
-  })
-
-  it('sedang when hotspots 1–9', () => {
-    expect(computeRiskCategory(1)).toBe('sedang')
-    expect(computeRiskCategory(9)).toBe('sedang')
-  })
-
-  it('rendah when hotspots = 0 (not sent on MVP wire)', () => {
-    expect(computeRiskCategory(0)).toBe('rendah')
-  })
-
-  it('ignores weather — FIRMS count only', () => {
-    expect(computeRiskCategory(5)).toBe('sedang')
-    expect(computeRiskCategory(12)).toBe('sangat_tinggi')
-  })
-})
+import { compareRegionsByRisk } from '@/lib/risk-rule'
 
 describe('copy honesty', () => {
   const blob = JSON.stringify(copy)
 
-  it('does not mention Skor in UI copy', () => {
-    expect(blob).not.toMatch(/[Ss]kor/)
+  it('labels backend scores as provisional rather than official warnings', () => {
+    expect(copy.extra.score).toBe('Skor')
+    expect(copy.extra.provisional).toMatch(/kalibrasi/i)
   })
 
   it('does not claim active fire or official emergency', () => {

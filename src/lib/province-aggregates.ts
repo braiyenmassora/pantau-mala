@@ -1,5 +1,5 @@
 import type { CatalogProvince, Region, RiskCategory } from '@/data/types'
-import { computeRiskCategory } from '@/lib/risk-rule'
+import { RISK_SORT_RANK } from '@/lib/risk-rule'
 
 export type ProvinceAggregate = {
   name: string
@@ -24,7 +24,11 @@ export function aggregateByProvince(
   opts?: AggregateOpts,
 ): ProvinceAggregate[] {
   const byName = new Map<string, number>()
+  const riskByName = new Map<string, RiskCategory>()
   for (const r of regions) {
+    const prev = riskByName.get(r.province)
+    if (!prev || RISK_SORT_RANK[r.risk_category] < RISK_SORT_RANK[prev])
+      riskByName.set(r.province, r.risk_category)
     byName.set(r.province, (byName.get(r.province) ?? 0) + r.hotspots_24h)
   }
 
@@ -37,7 +41,7 @@ export function aggregateByProvince(
       center: p.center,
       bbox: p.bbox,
       hotspots_24h,
-      risk_category: opts?.pinRisk ?? computeRiskCategory(hotspots_24h),
+      risk_category: opts?.pinRisk ?? riskByName.get(p.name) ?? 'tidak_tersedia',
     })
   }
   return out.sort((a, b) => b.hotspots_24h - a.hotspots_24h)

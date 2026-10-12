@@ -22,7 +22,9 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
       className={cn(
         'absolute bottom-4 z-30 flex flex-row flex-wrap items-stretch gap-2',
         'transition-[left,right] duration-300 ease-[var(--ease-out-soft)]',
-        panelOpen ? 'right-[72px] left-[432px]' : 'left-4 w-max max-w-[calc(100vw-5rem)]',
+        panelOpen
+          ? 'hidden sm:right-[72px] sm:left-[432px] sm:flex'
+          : 'left-4 w-max max-w-[calc(100vw-5rem)]',
       )}
       {...mapOverlayGestureProps}
     >

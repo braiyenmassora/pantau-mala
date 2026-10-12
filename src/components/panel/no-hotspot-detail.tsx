@@ -1,3 +1,4 @@
+import { useMeta } from '@/data/queries'
 import { MapPin, ShieldCheck } from 'lucide-react'
 
 import { EmptyState } from '@/components/common'
@@ -9,6 +10,7 @@ type NoHotspotDetailProps = {
 }
 
 export function NoHotspotDetail({ kab }: NoHotspotDetailProps) {
+  const { data: meta } = useMeta()
   return (
     <div className="animate-view-in space-y-6">
       <header>
@@ -22,8 +24,16 @@ export function NoHotspotDetail({ kab }: NoHotspotDetailProps) {
       </header>
       <EmptyState
         icon={ShieldCheck}
-        title={copy.empty.noHotspotsInRegion.title}
-        description={copy.empty.noHotspotsInRegion.description(kab.name)}
+        title={
+          meta?.status.firms === 'ok'
+            ? copy.empty.noHotspotsInRegion.title
+            : copy.extra.noDataset
+        }
+        description={
+          meta?.status.firms === 'ok'
+            ? copy.empty.noHotspotsInRegion.description(kab.name)
+            : copy.extra.noDatasetNote
+        }
       />
     </div>
   )

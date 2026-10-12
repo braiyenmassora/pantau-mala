@@ -15,6 +15,12 @@ export const LINE_HEX = '#E3E9E4'
 
 /** Warna risiko — hex untuk MapLibre / SVG (selaras tokens.css). */
 export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
+  tidak_tersedia: {
+    label: 'Tidak tersedia',
+    dot: '#7A8A80',
+    tint: '#F6F8F6',
+    text: '#52645A',
+  },
   sangat_tinggi: {
     label: 'Sangat tinggi',
     dot: '#DC3208',
@@ -45,3 +51,6 @@ export function withAlpha(hex: string, alpha: number): string {
     .padStart(2, '0')
   return `${hex}${a}`
 }
+
+/** Transparent terminal stop for MapLibre heatmap; centralized renderer color. */
+export const HEATMAP_TRANSPARENT = 'rgba(0,0,0,0)'

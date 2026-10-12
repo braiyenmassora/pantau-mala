@@ -1,3 +1,4 @@
+import { SourceDataPanel } from './source-data-panel'
 import { Clock, CloudOff, Filter, Flame, SearchX, ShieldCheck } from 'lucide-react'
 import type { RefObject } from 'react'
 import { useMemo } from 'react'
@@ -173,20 +174,29 @@ export function SummaryPanel({
           icon={Clock}
           title={copy.empty.dataLate.title}
           description={copy.empty.dataLate.description(
-            formatDateTime(meta.updated_at, 'WIB'),
+            meta.updated_at ? formatDateTime(meta.updated_at, 'WIB') : 'Belum tersedia',
             lateSources.map((k) => SOURCE_LABEL[k]).join(', '),
           )}
         />
       )}
 
       {!searching && <LocationCard regions={regions} />}
+      {!searching && <SourceDataPanel />}
 
       {!searching &&
         (noHotspots ? (
           <EmptyState
             icon={ShieldCheck}
-            title={copy.empty.noHotspots.title}
-            description={copy.empty.noHotspots.description(wilayahLabel)}
+            title={
+              meta?.status.firms === 'ok'
+                ? copy.empty.noHotspots.title
+                : copy.extra.noDataset
+            }
+            description={
+              meta?.status.firms === 'ok'
+                ? copy.empty.noHotspots.description(wilayahLabel)
+                : copy.extra.noDatasetNote
+            }
           />
         ) : (
           <section className="rounded-card bg-surface-muted p-4">
@@ -282,8 +292,16 @@ export function SummaryPanel({
             ) : topProvinces.length === 0 ? (
               <EmptyState
                 icon={ShieldCheck}
-                title={copy.empty.noHotspots.title}
-                description={copy.empty.noHotspots.description(wilayahLabel)}
+                title={
+                  meta?.status.firms === 'ok'
+                    ? copy.empty.noHotspots.title
+                    : copy.extra.noDataset
+                }
+                description={
+                  meta?.status.firms === 'ok'
+                    ? copy.empty.noHotspots.description(wilayahLabel)
+                    : copy.extra.noDatasetNote
+                }
               />
             ) : (
               <ul className="flex flex-col">
@@ -321,8 +339,16 @@ export function SummaryPanel({
             ) : (
               <EmptyState
                 icon={ShieldCheck}
-                title={copy.empty.noHotspots.title}
-                description={copy.empty.noHotspots.description(wilayahLabel)}
+                title={
+                  meta?.status.firms === 'ok'
+                    ? copy.empty.noHotspots.title
+                    : copy.extra.noDataset
+                }
+                description={
+                  meta?.status.firms === 'ok'
+                    ? copy.empty.noHotspots.description(wilayahLabel)
+                    : copy.extra.noDatasetNote
+                }
               />
             )
           ) : (

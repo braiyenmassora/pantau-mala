@@ -5,6 +5,7 @@
 import { spawn } from 'node:child_process'
 import AxeBuilder from '@axe-core/playwright'
 import { chromium } from 'playwright'
+import { installGoFixtures } from './browser-fixtures.mjs'
 
 const PORT = 5176
 const BASE = `http://127.0.0.1:${PORT}`
@@ -47,7 +48,7 @@ async function scan(page, label) {
   console.log(`axe ok: ${label}`)
 }
 
-const child = spawn('pnpm', ['dev', '--port', String(PORT), '--host', '127.0.0.1'], {
+const child = spawn('bun', ['run', '--bun', 'dev', '--port', String(PORT), '--host', '127.0.0.1'], {
   cwd: ROOT,
   stdio: 'pipe',
   env: { ...process.env },
@@ -61,14 +62,25 @@ process.on('exit', shutdown)
 
 try {
   await waitForServer(BASE)
-  const browser = await chromium.launch()
+  const browser = await chromium.launch({
+    executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH,
+    args: ['--enable-unsafe-swiftshader'],
+  })
   const context = await browser.newContext({
     viewport: { width: 1440, height: 900 },
   })
+  await installGoFixtures(context, false)
   const page = await context.newPage()
 
   await page.goto(BASE, { waitUntil: 'networkidle' })
   await wait(1500)
+  await page.locator('#username').waitFor()
+  await scan(page, 'login')
+  await page.locator('#username').fill('fixture')
+  await page.locator('#password').fill('synthetic-password')
+  await page.getByRole('button', { name: 'Masuk', exact: true }).click()
+  await page.getByRole('button', { name: 'Keluar', exact: true }).waitFor()
+  await wait(500)
   await scan(page, 'home summary')
 
   await page.getByRole('button', { name: 'Pilih provinsi' }).click()
@@ -77,7 +89,7 @@ try {
   await page.keyboard.press('Escape')
   await wait(200)
 
-  await page.getByRole('button', { name: 'Sangat tinggi 11' }).click()
+  await page.getByRole('button', { name: /Sangat tinggi/ }).click()
   await wait(300)
   await scan(page, 'category filter')
 

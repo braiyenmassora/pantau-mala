@@ -24,6 +24,7 @@ type RegionPinProps = {
 const ACTIVE_PIN: Record<Exclude<RiskCategory, 'rendah'>, string> = {
   sangat_tinggi: 'scale-110',
   sedang: 'scale-110',
+  tidak_tersedia: '',
 }
 
 /** 10px risk-low map dot (not RiskMarker). */

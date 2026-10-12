@@ -22,8 +22,11 @@ const ZONE_OFFSET_HOURS: Record<TimeZoneId, number> = {
 }
 
 /** Format number with id-ID decimal comma. */
-export function formatNumber(n: number, options?: Intl.NumberFormatOptions): string {
-  return new Intl.NumberFormat('id-ID', options).format(n)
+export function formatNumber(
+  n: number | null,
+  options?: Intl.NumberFormatOptions,
+): string {
+  return n == null ? '—' : new Intl.NumberFormat('id-ID', options).format(n)
 }
 
 /** Relatif untuk badge meta; clock = sekarang. Contoh: "46 menit lalu". */
@@ -40,7 +43,7 @@ export function formatRelativeAge(iso: string, nowMs: number = Date.now()): stri
 }
 
 /** Cadence ingest ~3 jam → stale setelah 3,5 jam. */
-export const META_STALE_MS = 3.5 * 60 * 60 * 1000
+export const META_STALE_MS = 2 * 60 * 60 * 1000
 
 export function isMetaStale(iso: string, nowMs: number = Date.now()): boolean {
   const t = new Date(iso).getTime()

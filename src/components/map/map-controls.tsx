@@ -32,7 +32,10 @@ export function MapControls({ mapRef }: MapControlsProps) {
   return (
     <div
       data-testid="map-controls"
-      className="absolute right-4 bottom-12 z-30 flex flex-col gap-2"
+      className={cn(
+        'absolute right-4 bottom-12 z-30 flex flex-col gap-2',
+        panelOpen && 'hidden sm:flex',
+      )}
       {...mapOverlayGestureProps}
     >
       <IconButton

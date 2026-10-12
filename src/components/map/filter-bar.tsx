@@ -1,3 +1,4 @@
+import { useRegionCatalog } from '@/data/queries'
 import { Check, ChevronDown, Map as MapIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
@@ -16,7 +17,12 @@ import { useMapStore } from '@/store/map'
 const ALL_PROVINCES = 'Semua'
 
 /** MVP: BE tidak kirim pin rendah — chip Rendah disembunyikan. */
-const CATEGORY_ORDER: RiskCategory[] = ['sangat_tinggi', 'sedang']
+const CATEGORY_ORDER: RiskCategory[] = [
+  'sangat_tinggi',
+  'sedang',
+  'rendah',
+  'tidak_tersedia',
+]
 
 type FilterBarProps = {
   panelOpen: boolean
@@ -25,6 +31,7 @@ type FilterBarProps = {
 
 export function FilterBar({ panelOpen, regions }: FilterBarProps) {
   const [open, setOpen] = useState(false)
+  const { data: catalog } = useRegionCatalog()
   const province = useMapStore((s) => s.province)
   const selectedCategories = useMapStore((s) => s.selectedCategories)
   const query = useMapStore((s) => s.query)
@@ -33,9 +40,12 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
   const clearCategories = useMapStore((s) => s.clearCategories)
 
   const provinces = useMemo(() => {
-    const set = new Set(regions.map((r) => r.province))
+    const set = new Set([
+      ...(catalog?.provinces.map((p) => p.name) ?? []),
+      ...regions.map((r) => r.province),
+    ])
     return [...set].sort((a, b) => a.localeCompare(b, 'id'))
-  }, [regions])
+  }, [regions, catalog])
 
   /** Counts after province + search, before category filter. */
   const preCategory = useMemo(
@@ -50,6 +60,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
 
   const counts = useMemo(() => {
     const next: Record<RiskCategory, number> = {
+      tidak_tersedia: 0,
       sangat_tinggi: 0,
       sedang: 0,
       rendah: 0,
@@ -70,9 +81,11 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
     <div
       className={cn(
         // fixed: keeps map-area placement when rendered inside the panel for tab order
-        'fixed top-4 right-4 z-30 flex flex-wrap items-center gap-2',
+        'z-30 flex flex-wrap items-center gap-2',
         'transition-[left] duration-300 ease-[var(--ease-out-soft)]',
-        panelOpen ? 'left-[432px]' : 'left-4',
+        panelOpen
+          ? 'relative mx-4 mt-4 sm:fixed sm:top-4 sm:right-4 sm:left-[432px]'
+          : 'fixed top-4 right-4 left-4',
       )}
       {...mapOverlayGestureProps}
     >

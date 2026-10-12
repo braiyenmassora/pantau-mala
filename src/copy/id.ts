@@ -1,6 +1,62 @@
 /** Semua teks UI berbahasa Indonesia. Sapaan "kamu". */
 
 export const copy = {
+  extra: {
+    sources: 'Sumber dan data tambahan',
+    noDataset: 'Data FIRMS belum siap',
+    noDatasetNote:
+      'Data sumber belum tersedia atau sudah usang; jangan menafsirkan data kosong sebagai tidak ada kejadian.',
+    shakemap: 'Lihat peta guncangan BMKG',
+    national: 'Ringkasan seluruh client',
+    nationalNote:
+      'Seluruh wilayah pada client aktif; tidak mengikuti filter peta. Bukan peringatan resmi.',
+    today: 'Titik 24 jam',
+    yesterday: '24 jam sebelumnya',
+    dailyChange: 'Perubahan harian',
+    highRegions: 'Wilayah indikator tinggi',
+    freshness: 'Status semua sumber',
+    earthquakes: 'Gempa BMKG',
+    feed: 'Jenis feed',
+    latest: 'Kejadian terbaru',
+    felt: 'Gempa dirasakan',
+    m5: 'Magnitudo 5+',
+    loadEarthquakes: 'Ambil data gempa',
+    bmkg: 'Prakiraan desa BMKG',
+    villageCode: 'Kode desa resmi (adm4)',
+    villageHelp:
+      'Format NN.NN.NN.NNNN. Masukkan kode resmi desa; kode kabupaten tidak cukup.',
+    loadForecast: 'Ambil prakiraan',
+    unavailable: 'Data belum tersedia atau sumber gagal. Coba muat kembali.',
+    empty: 'Belum ada data pada respons sumber.',
+    noTimestamp: 'Belum ada waktu sumber',
+    historyAndRiver: 'Riwayat dan debit sungai',
+    history: 'Riwayat 7 hari',
+    date: 'Tanggal',
+    detections: 'Titik panas',
+    score: 'Skor',
+    provisional: '/100 · kalibrasi belum final',
+    computedAt: 'Indikator dihitung',
+    weatherAt: 'Cuaca diperbarui',
+    airAt: 'Udara diperbarui',
+    detection: 'Detail deteksi',
+    satellite: 'Satelit',
+    confidence: 'Keyakinan',
+    frp: 'FRP',
+
+    river: 'Debit sungai model',
+    riverNote:
+      'Model Open-Meteo/GloFAS pada grid wilayah, bukan kejadian atau peringatan banjir. Tanggal UTC.',
+    loadRiver: 'Ambil debit sungai',
+  },
+
+  auth: {
+    logout: 'Keluar',
+    username: 'Username',
+    password: 'Password',
+    workspace: 'Workspace',
+    showPassword: 'Tampilkan password',
+    hidePassword: 'Sembunyikan password',
+  },
   empty: {
     noHotspots: {
       title: 'Belum ada titik panas',
@@ -87,7 +143,8 @@ export const copy = {
       'Cuaca dan kualitas udara untuk gambaran saja — tidak mengatur warna pin di peta.',
     riskTitle: 'Risiko',
     riskHint: 'Penjelasan risiko',
-    riskTooltip: 'Risiko dari jumlah titik panas FIRMS (24 jam). Belum tentu kebakaran.',
+    riskTooltip:
+      'Indikator komposit dari backend: titik panas, cuaca dan tren. Kalibrasi masih perlu validasi; bukan peringatan resmi.',
     hotspots24hReason: (n: string) => `${n} titik panas`,
     weatherDanger: 'Bahaya cuaca',
     weatherDangerHint: 'Penjelasan bahaya cuaca',
@@ -108,6 +165,8 @@ export const copy = {
     ekstrem: 'Ekstrem',
   },
   air: {
+    pending_validation: 'Belum dikalibrasi',
+    missing: 'Tidak tersedia',
     baik: 'Baik',
     sedang: 'Sedang',
     tidak_sehat: 'Tidak sehat',
@@ -153,7 +212,7 @@ export const copy = {
   updatedAt: {
     /** Relatif dari meta.updated_at. */
     stamp: (relatif: string) => `Diperbarui ${relatif}`,
-    cadence: 'Diperbarui setiap ~3 jam',
+    cadence: 'Target pembaruan per jam; lihat waktu dan status sumber',
     stale: 'Data mungkin sudah usang',
     problems: (list: string) => `Ada sumber bermasalah: ${list}`,
     sourceStatus: (name: string, status: string) => `${name} (${status})`,
@@ -171,7 +230,7 @@ export const copy = {
 
   legend: {
     colorTitle: 'Risiko',
-    colorHint: 'Kuning sedang, merah sangat tinggi',
+    colorHint: 'Kuning sedang, merah sangat tinggi; abu-abu belum tersedia',
     haloTitle: 'Titik panas',
     haloHint: 'Saat zoom: kuning jarang, merah padat.',
   },

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * UI consistency gate for forever-young.
+ * UI consistency gate for pantau-mala.
  * Scans app components (not shadcn/mapcn vendor under src/components/ui/).
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs'

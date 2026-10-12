@@ -9,6 +9,15 @@ const rootDir = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: {
+    host: '127.0.0.1',
+    port: 5173,
+    strictPort: true,
+    proxy: {
+      '/api': { target: 'http://127.0.0.1:8080', changeOrigin: false },
+      '/auth': { target: 'http://127.0.0.1:8080', changeOrigin: false },
+    },
+  },
   resolve: { alias: { '@': path.resolve(rootDir, './src') } },
   build: {
     // MapLibre chunk is large by design; initial JS stays under the 200 KB gzip gate.

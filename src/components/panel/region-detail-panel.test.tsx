@@ -81,7 +81,7 @@ describe('RegionDetailPanel', () => {
     expect(screen.getByText(copy.air.tidak_sehat)).toBeTruthy()
   })
 
-  it('risk card shows FIRMS count only; FWI in conditions', () => {
+  it('shows backend indicator score provisionally and separates weather metrics', () => {
     renderDetail(pulangPisau)
     expect(screen.getByText(copy.detail.riskTitle)).toBeTruthy()
     expect(screen.getByText('Sangat tinggi')).toBeTruthy()
@@ -89,7 +89,8 @@ describe('RegionDetailPanel', () => {
     expect(screen.getByText(copy.detail.weatherDanger)).toBeTruthy()
     expect(screen.getByText(copy.bahaya.ekstrem)).toBeTruthy()
     expect(screen.queryByText('/100')).toBeNull()
-    expect(screen.queryByText(/[Ss]kor/)).toBeNull()
+    expect(screen.getByText(copy.extra.score)).toBeTruthy()
+    expect(screen.getByText(copy.extra.provisional)).toBeTruthy()
     expect(screen.queryByText(copy.panel.hotspot24h)).toBeNull()
   })
 })

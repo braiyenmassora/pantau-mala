@@ -1,3 +1,4 @@
+import { useSession } from '@/auth/session'
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, render, screen } from '@testing-library/react'
@@ -43,6 +44,10 @@ function wrap(ui: ReactNode) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
+  client.setQueryData(['meta', '00000000-0000-4000-8000-000000000001', 0], {
+    updated_at: '2026-10-12T00:00:00Z',
+    status: { firms: 'ok', weather: 'ok', air: 'ok' },
+  })
   return render(
     <QueryClientProvider client={client}>
       <TooltipProvider>{ui}</TooltipProvider>
@@ -54,6 +59,17 @@ describe('SummaryPanel states', () => {
   afterEach(() => cleanup())
 
   beforeEach(() => {
+    useSession.setState({
+      status: 'authenticated',
+      token: 'pms_synthetic-test-only',
+      principal: {
+        client_id: '00000000-0000-4000-8000-000000000001',
+        client_slug: 'fixture',
+        username: 'fixture',
+        role: 'reader',
+      },
+      generation: 0,
+    })
     Object.defineProperty(window, 'matchMedia', {
       writable: true,
       value: (query: string) => ({
@@ -121,7 +137,7 @@ describe('SummaryPanel states', () => {
     const client = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     })
-    client.setQueryData(['region-catalog'], {
+    client.setQueryData(['region-catalog', '00000000-0000-4000-8000-000000000001', 0], {
       provinces: [],
       regencies: [],
     })

@@ -34,6 +34,13 @@ export default function App() {
   const mapRef = useRef<MapRef | null>(null)
   const panelContentRef = useRef<HTMLDivElement>(null)
   const [mapReady, setMapReady] = useState(false)
+  const [mobile, setMobile] = useState(() => window.innerWidth < 640)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)')
+    const sync = () => setMobile(mq.matches)
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
   const panelOpen = useUiStore((s) => s.panelOpen)
   const togglePanel = useUiStore((s) => s.togglePanel)
 
@@ -101,7 +108,7 @@ export default function App() {
           aria-label={copy.app.panelAria}
           inert={!panelOpen || undefined}
           className={cn(
-            'absolute top-4 bottom-4 left-4 z-40 flex w-[400px] flex-col overflow-hidden',
+            'absolute top-4 bottom-4 left-4 z-40 flex w-[calc(100vw-32px)] flex-col overflow-hidden sm:w-[400px]',
             'rounded-panel bg-surface shadow-md',
             easePanel,
             'transition-[transform,opacity]',
@@ -152,7 +159,7 @@ export default function App() {
             easePanel,
             'transition-[left,background-color] duration-150',
             focusRing,
-            panelOpen ? 'left-[416px]' : 'left-0',
+            panelOpen ? 'left-[calc(100vw-24px)] sm:left-[416px]' : 'left-0',
           )}
           {...mapOverlayGestureProps}
         >
@@ -172,7 +179,12 @@ export default function App() {
         <MapControls mapRef={mapRef} />
         <UpdatedAtBadge />
 
-        <main aria-label={copy.app.mapAria} className="absolute inset-0 z-0">
+        <main
+          inert={(mobile && panelOpen) || undefined}
+          aria-hidden={(mobile && panelOpen) || undefined}
+          aria-label={copy.app.mapAria}
+          className="absolute inset-0 z-0"
+        >
           {mapReady ? (
             <Suspense fallback={<MapSoftLoading />}>
               <MapShell mapRef={mapRef} panelOpen={panelOpen} regions={filtered} />
