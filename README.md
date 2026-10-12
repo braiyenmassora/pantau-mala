@@ -23,12 +23,12 @@ Kategori memakai hasil backend; tidak dihitung ulang dengan rule jumlah titik Py
 ## Verifikasi
 
 ```sh
-bun run --bun test
+bun run test
 bun run --bun lint
 bun run --bun audit:ui
 bun run --bun build
 # Opt-in memakai file konfigurasi dev privat yang tidak masuk Git:
-PANTAU_DEV_TEST_CONFIG=/path/to/private/dev-access.json bun run --bun test -- run src/data/go-live.integration.test.ts
+PANTAU_DEV_TEST_CONFIG=/path/to/private/dev-access.json bun run test -- run src/data/go-live.integration.test.ts
 ```
 
 113 unit/contract tests dan satu live Go API contract test sudah lulus saat integrasi ini dibuat. Build mencakup TypeScript dan gate ukuran initial JS. Browser validation akhir dilakukan owner secara manual sesuai instruksi; CI tidak meluncurkan browser. Browser emulation yang sempat dijalankan sebelum instruksi tersebut bukan bukti validasi seluruh panel tambahan. Lihat [handoff](docs/GO_API_HANDOFF.md), [design system](docs/fe-design-system.md), [audit data](docs/DATA_COMPARISON.md) dan bukti di docs/evidence.

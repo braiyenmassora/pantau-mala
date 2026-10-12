@@ -22,7 +22,7 @@ jobs:
           node-version: 22
       - run: bun install --frozen-lockfile
       - run: bun run --bun tsc -b --pretty false
-      - run: bun run --bun test
+      - run: bun run test
       - run: bun run --bun audit:ui
       - name: Reject production build without VITE_DATA_URL
         run: |
