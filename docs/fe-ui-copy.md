@@ -59,7 +59,7 @@ Sebelum ship copy, tanya: _Kalau dibaca warga tanpa konteks teknis, apakah merek
    - legend peta: ukuran tetap, sama di mobile/desktop
 3. **Arti tetap:** satu makna = satu ikon di semua layar (cari, filter, lokasi, info, tutup).
 4. Ikon **melengkapi** label, bukan mengganti arti. Tombol penting tetap punya teks (kecuali icon-only yang punya `aria-label`).
-5. Jangan pakai ikon api/flame untuk menyiratkan “kebakaran aktif” — pakai untuk “titik panas / risiko” konsisten dengan legend.
+5. **Risiko / titik panas = lingkaran (circle) berwarna**, bukan api/flame — flame menyesatkan seolah kebakaran aktif.
 6. Warna ikon mengikuti token status (sedang / sangat tinggi / netral), bukan warna acak per komponen.
 7. Info (`ⓘ`): **hanya** untuk penjelasan singkat; pattern sama di mana pun muncul (ukuran, posisi kanan label, hover/focus/tap).
 

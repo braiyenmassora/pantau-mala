@@ -1,5 +1,3 @@
-import { Flame } from 'lucide-react'
-
 import { copy } from '@/copy/id'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
@@ -28,8 +26,8 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
     >
       <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
         <span className={`${ICON_BOX} gap-1`} aria-hidden>
-          <Flame className="size-4" strokeWidth={2} style={{ color: mid, fill: mid }} />
-          <Flame className="size-4" strokeWidth={2} style={{ color: high, fill: high }} />
+          <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: mid }} />
+          <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: high }} />
         </span>
         <span className="flex min-w-0 flex-col gap-1">
           <span className="text-ink text-xs font-semibold">{copy.legend.colorTitle}</span>

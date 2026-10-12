@@ -1,4 +1,4 @@
-import { Crosshair, Flame, MapPin, MapPinOff } from 'lucide-react'
+import { Circle, Crosshair, MapPin, MapPinOff } from 'lucide-react'
 import { useMemo, type KeyboardEvent, type MouseEvent } from 'react'
 
 import { Badge, Button, EmptyState } from '@/components/common'
@@ -122,7 +122,11 @@ export function LocationCard({ regions }: LocationCardProps) {
           <div className={nearby.nearest ? 'grid grid-cols-2' : undefined}>
             <div className={nearby.nearest ? 'pr-3' : undefined}>
               <div className="text-ink-2 flex items-center gap-1 text-xs font-medium">
-                <Flame className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                <Circle
+                  className="size-4 shrink-0 fill-ink-2 stroke-ink-2"
+                  strokeWidth={2}
+                  aria-hidden
+                />
                 <span>{copy.location.radius25}</span>
               </div>
               <p className="text-ink mt-1 text-base font-semibold tabular-nums">

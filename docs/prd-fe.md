@@ -31,7 +31,7 @@ Salin file ini **dan** `fe-ui-copy.md` ke chat/repo FE. Jangan pakai dummy v1 ke
 ### Implikasi UI FE (wajib)
 
 1. Sembunyikan / nonaktifkan chip filter **Rendah** (jangan biarkan kosong seperti chip lain).
-2. Legend peta: hanya flame **merah** + **kuning** — hapus copy titik hijau.
+2. Legend peta: hanya lingkaran **merah** + **kuning** (risiko) — hapus copy titik hijau; jangan pakai flame.
 3. Search catalog tanpa match di `/v1/regions` → **“Tidak ada titik panas aktif”**, tanpa badge kategori.
 4. Copy badge: **“Diperbarui setiap ~3 jam”** (relatif dari `meta.updated_at`).
 5. Tooltip risiko: pendek — “makin banyak titik panas satelit (NASA FIRMS), makin tinggi risikonya”. **Tidak** perlu disclaimer FWI/BMKG di kartu risiko.
