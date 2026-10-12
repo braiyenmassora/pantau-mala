@@ -1,4 +1,4 @@
-import { Clock, CloudOff, Filter, Flame, SearchX, ShieldCheck } from 'lucide-react'
+import { Clock, CloudOff, Filter, SearchX, ShieldCheck } from 'lucide-react'
 import type { RefObject } from 'react'
 import { useMemo } from 'react'
 
@@ -192,7 +192,6 @@ export function SummaryPanel({
           <section className="rounded-card bg-surface-muted p-4">
             <div className="flex min-w-0 flex-col gap-1">
               <div className="text-ink-2 flex items-center gap-1">
-                <Flame className="size-4 shrink-0" strokeWidth={2} aria-hidden />
                 <p className="text-xs font-medium">{copy.panel.hotspot24h}</p>
                 <HintButton
                   ariaLabel={copy.panel.hotspotHint}

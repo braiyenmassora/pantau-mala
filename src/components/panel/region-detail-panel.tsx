@@ -5,7 +5,7 @@ import {
   CloudFog,
   CloudRain,
   Droplets,
-  Flame,
+  Circle,
   Gauge,
   MapPin,
   Wind,
@@ -167,7 +167,11 @@ function RiskCard({ region }: { region: Region }) {
         <p className="mt-1 text-xl font-semibold">{style.label}</p>
       </div>
       <p className="flex items-center gap-1 text-sm" style={{ color: style.text }}>
-        <Flame className="size-4 shrink-0 opacity-80" strokeWidth={2} aria-hidden />
+        <Circle
+          className="size-4 shrink-0 fill-current opacity-80"
+          strokeWidth={2}
+          aria-hidden
+        />
         <span>{copy.detail.hotspots24hReason(hotspots)}</span>
       </p>
     </section>

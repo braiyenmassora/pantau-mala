@@ -72,7 +72,8 @@
   --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   /* Animasi halo — detak tegas, easing tetap soft */
-  --animate-halo-high: halo-pulse 2.2s var(--ease-out-soft) infinite;
+  /* Merah lebih cepat (2,6s), kuning lebih pelan (3,4s) — spek UI. */
+  --animate-halo-high: halo-pulse 2.6s var(--ease-out-soft) infinite;
   --animate-halo-mid: halo-pulse 3.4s var(--ease-out-soft) infinite;
   --animate-view-in: view-in 0.22s ease-out both;
 

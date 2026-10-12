@@ -1,5 +1,3 @@
-import { Flame } from 'lucide-react'
-
 import type { RiskCategory } from '@/data/types'
 import { cn } from '@/lib/utils'
 
@@ -17,7 +15,16 @@ const ACTIVE: Record<RiskCategory, string> = {
   rendah: 'border-[1.5px] border-risk-low bg-risk-low-tint',
 }
 
-/** Shared 28×28 risk glyph for map pins (tinggi/sedang) and list rows (all). */
+const DOT: Record<RiskCategory, string> = {
+  sangat_tinggi: 'bg-risk-high',
+  sedang: 'bg-risk-mid',
+  rendah: 'bg-risk-low',
+}
+
+/**
+ * Shared 28×28 risk glyph: filled circle (bukan flame — titik panas ≠ kebakaran).
+ * Dipakai pin peta (tinggi/sedang) dan baris daftar (semua).
+ */
 export function RiskMarker({
   kategori,
   shadow = false,
@@ -34,19 +41,7 @@ export function RiskMarker({
       )}
       aria-hidden
     >
-      {kategori === 'rendah' ? (
-        <span className="bg-risk-low size-2 rounded-full" />
-      ) : (
-        <Flame
-          className={cn(
-            'size-4',
-            kategori === 'sangat_tinggi'
-              ? 'fill-risk-high stroke-risk-high'
-              : 'fill-risk-mid stroke-risk-mid',
-          )}
-          strokeWidth={2}
-        />
-      )}
+      <span className={cn('size-2.5 shrink-0 rounded-full', DOT[kategori])} />
     </span>
   )
 }
