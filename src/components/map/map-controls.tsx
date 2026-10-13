@@ -1,4 +1,4 @@
-import { Crosshair, Minus, Plus, Wind } from 'lucide-react'
+import { Crosshair, Minus, Plus, Thermometer, Wind } from 'lucide-react'
 import type { RefObject } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
@@ -23,6 +23,8 @@ export function MapControls({ mapRef }: MapControlsProps) {
   const setLocation = useMapStore((s) => s.setLocation)
   const showWind = useMapStore((s) => s.showWind)
   const toggleWind = useMapStore((s) => s.toggleWind)
+  const showTemperature = useMapStore((s) => s.showTemperature)
+  const toggleTemperature = useMapStore((s) => s.toggleTemperature)
   const select = useMapStore((s) => s.select)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
@@ -54,6 +56,20 @@ export function MapControls({ mapRef }: MapControlsProps) {
         onClick={toggleWind}
       >
         <Wind className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+      </button>
+
+      <button
+        type="button"
+        className={cn(
+          'rounded-ctl border-line bg-surface text-ink-2 flex size-9 shrink-0 items-center justify-center border shadow-sm',
+          'transition-[background-color,color,border-color] duration-150 ease-in-out hover:bg-surface-muted hover:text-ink',
+          showTemperature && 'border-brand text-brand bg-brand-soft shadow-sm', focusRing,
+        )}
+        aria-label={copy.map.toggleTemperature}
+        aria-pressed={showTemperature}
+        onClick={toggleTemperature}
+      >
+        <Thermometer className="size-4 shrink-0" strokeWidth={2} aria-hidden />
       </button>
 
       <button

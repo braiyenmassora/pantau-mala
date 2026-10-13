@@ -249,6 +249,7 @@ export const copy = {
     recenter: 'Pusatkan ke lokasi kamu',
     useMyLocation: 'Gunakan lokasi kamu',
     toggleWind: 'Aliran angin atmosfer',
+    toggleTemperature: 'Tampilkan suhu udara',
     zoomIn: 'Perbesar',
     zoomOut: 'Perkecil',
     pinAria: (nama: string, risiko: string, n: string) =>
@@ -297,6 +298,8 @@ export const copy = {
     seismicHint: 'Episentrum gempa terkini dari feed resmi BMKG',
     windTitle: 'Aliran angin',
     windHint: 'Vektor kecepatan dan arah angin atmosfer',
+    temperatureTitle: 'Suhu udara',
+    temperatureHint: 'Data Open-Meteo; terpisah dari titik panas satelit.',
   },
   search: {
     searchProvince: 'Cari provinsi',

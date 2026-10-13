@@ -20,7 +20,9 @@ type MapState = {
   query: string
   location: UserLocation
   showWind: boolean
+  showTemperature: boolean
   toggleWind: () => void
+  toggleTemperature: () => void
   select: (code: string | null) => void
   hover: (code: string | null) => void
   setProvince: (province: string) => void
@@ -40,7 +42,9 @@ export const useMapStore = create<MapState>((set) => ({
   query: '',
   location: { status: 'off' },
   showWind: false,
+  showTemperature: false,
   toggleWind: () => set((s) => ({ showWind: !s.showWind })),
+  toggleTemperature: () => set((s) => ({ showTemperature: !s.showTemperature })),
   select: (selectedCode) => set({ selectedCode }),
   hover: (hoveredCode) => set({ hoveredCode }),
   setProvince: (province) => set({ province, selectedCode: null }),

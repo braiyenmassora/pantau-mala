@@ -12,6 +12,11 @@ export const BRAND_HEX = '#C2410C'
 
 export const LOCATION_HEX = '#0369A1'
 
+/** Atmospheric extreme heat accent — unified single-hue brand tint, no rainbow. */
+export const TEMP_HOT_HEX = '#C2410C'
+export const TEMP_TEXT_HEX = '#0F172A'
+export const TEMP_HALO_HEX = '#FFFFFF'
+
 /** Line / border hex — mirrors `--color-line`. */
 export const LINE_HEX = '#E2E8F0'
 
