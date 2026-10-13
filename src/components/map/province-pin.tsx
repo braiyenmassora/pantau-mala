@@ -10,6 +10,7 @@ import { haloDiameter, shouldShowHalo, showHaloPulse } from '@/lib/halo'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import type { ProvinceAggregate } from '@/lib/province-aggregates'
 import { PIN_ACTIVE_BOX_SHADOW, RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
+import { mapTipClass } from '@/lib/ui-chrome'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -102,7 +103,7 @@ export function ProvincePin({ aggregate }: ProvincePinProps) {
           <TooltipContent
             side="top"
             sideOffset={8}
-            className="rounded-ctl bg-ink text-surface px-2 py-1 text-xs"
+            className={mapTipClass}
           >
             {aggregate.name}
           </TooltipContent>

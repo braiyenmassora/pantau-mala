@@ -105,7 +105,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           align="start"
           side="bottom"
           sideOffset={8}
-          className="rounded-card bg-surface text-ink z-[60] w-60 border-0 p-1 shadow-lg ring-0"
+          className="rounded-card bg-surface text-ink z-[60] w-60 border-0 p-1 shadow-md ring-0"
         >
           <div
             role="listbox"

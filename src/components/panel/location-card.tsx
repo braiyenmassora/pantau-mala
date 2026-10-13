@@ -1,7 +1,14 @@
-import { Circle, Crosshair, MapPin, MapPinOff } from 'lucide-react'
+import { Crosshair, MapPinOff } from 'lucide-react'
 import { useMemo, type KeyboardEvent, type MouseEvent } from 'react'
 
-import { Badge, Button, EmptyState } from '@/components/common'
+import {
+  Badge,
+  Button,
+  DataTile,
+  EmptyState,
+  MetaLabel,
+  PanelCard,
+} from '@/components/common'
 import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
@@ -61,6 +68,8 @@ export function LocationCard({ regions }: LocationCardProps) {
       ? regions.find((r) => r.code === nearby.nearest!.regionCode)
       : null
     const titleRegion = userRegion ?? nearestRegion
+    const nearestElsewhere =
+      nearestRegion && nearestRegion.code !== titleRegion?.code ? nearestRegion : null
 
     function openDetail(target: HTMLElement) {
       if (!detailCode) return
@@ -70,9 +79,9 @@ export function LocationCard({ regions }: LocationCardProps) {
     }
 
     return (
-      <section
+      <PanelCard
         className={cn(
-          'animate-view-in rounded-card bg-surface-muted flex flex-col gap-3 p-4',
+          'animate-view-in flex flex-col gap-3',
           detailCode && 'hover:bg-line/40 cursor-pointer transition-colors duration-150',
         )}
         role={detailCode ? 'button' : undefined}
@@ -100,10 +109,7 @@ export function LocationCard({ regions }: LocationCardProps) {
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-brand flex items-center gap-1 text-xs font-medium">
-              <MapPin className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-              {copy.location.nearbyLabel}
-            </p>
+            <MetaLabel>{copy.location.nearbyLabel}</MetaLabel>
             <p
               className="text-ink mt-1 truncate text-base font-semibold"
               title={titleRegion?.name ?? copy.location.yourLocation}
@@ -119,29 +125,20 @@ export function LocationCard({ regions }: LocationCardProps) {
         {nearby.hotspotCount === 0 ? (
           <p className="text-ink-2 text-sm">{copy.location.nearbyNoHotspots}</p>
         ) : (
-          <div className={nearby.nearest ? 'grid grid-cols-2' : undefined}>
-            <div className={nearby.nearest ? 'pr-3' : undefined}>
-              <div className="text-ink-2 flex items-center gap-1 text-xs font-medium">
-                <Circle
-                  className="size-4 shrink-0 fill-ink-2 stroke-ink-2"
-                  strokeWidth={2}
-                  aria-hidden
-                />
-                <span>{copy.location.radius25}</span>
-              </div>
-              <p className="text-ink mt-1 text-base font-semibold tabular-nums">
-                {formatNumber(nearby.hotspotCount)}
-                <span className="text-ink-2 ml-1 text-xs font-normal">
-                  {copy.location.hotspotUnit}
-                </span>
-              </p>
-            </div>
+          <div
+            className={cn(
+              'grid gap-2',
+              nearby.nearest ? 'grid-cols-2' : 'grid-cols-1',
+            )}
+          >
+            <DataTile
+              className="bg-surface"
+              label={copy.location.radius25}
+              value={formatNumber(nearby.hotspotCount)}
+              unit={copy.location.hotspotUnit}
+            />
             {nearby.nearest ? (
-              <div className="border-line border-l pl-3">
-                <div className="text-ink-2 flex items-center gap-1 text-xs font-medium">
-                  <MapPin className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-                  <span>{copy.location.nearest}</span>
-                </div>
+              <DataTile className="bg-surface" label={copy.location.nearest}>
                 <p className="text-ink mt-1 text-base font-semibold tabular-nums">
                   {formatNumber(nearby.nearest.distanceKm, {
                     minimumFractionDigits: 1,
@@ -151,16 +148,19 @@ export function LocationCard({ regions }: LocationCardProps) {
                     {copy.location.km}
                   </span>
                 </p>
-                {nearestRegion ? (
-                  <p className="text-ink-2 truncate text-xs" title={nearestRegion.name}>
-                    {nearestRegion.name}
+                {nearestElsewhere ? (
+                  <p
+                    className="text-ink-2 mt-1 truncate text-xs"
+                    title={nearestElsewhere.name}
+                  >
+                    {nearestElsewhere.name}
                   </p>
                 ) : null}
-              </div>
+              </DataTile>
             ) : null}
           </div>
         )}
-      </section>
+      </PanelCard>
     )
   }
 
