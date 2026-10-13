@@ -1,6 +1,7 @@
 import { copy } from '@/copy/id'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
+import { mapChromeClass } from '@/lib/ui-chrome'
 import { cn } from '@/lib/utils'
 
 type MapLegendProps = {
@@ -24,7 +25,7 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
       )}
       {...mapOverlayGestureProps}
     >
-      <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
+      <div className={cn(mapChromeClass, 'flex items-center gap-2')}>
         <span className={`${ICON_BOX} gap-1`} aria-hidden>
           <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: mid }} />
           <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: high }} />
@@ -35,7 +36,7 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
         </span>
       </div>
 
-      <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
+      <div className={cn(mapChromeClass, 'flex items-center gap-2')}>
         <span className={`${ICON_BOX}`} aria-hidden>
           <span
             className="h-3 w-8 rounded-full"

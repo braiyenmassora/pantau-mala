@@ -2,7 +2,14 @@ import { Clock, CloudOff, Filter, SearchX, ShieldCheck } from 'lucide-react'
 import type { RefObject } from 'react'
 import { useMemo } from 'react'
 
-import { EmptyState, HintButton, SectionLabel, Skeleton } from '@/components/common'
+import {
+  EmptyState,
+  HintButton,
+  MetaLabel,
+  PanelCard,
+  SectionLabel,
+  Skeleton,
+} from '@/components/common'
 import { CatalogRegionRow } from '@/components/panel/catalog-region-row'
 import { LocationCard } from '@/components/panel/location-card'
 import { NoHotspotDetail } from '@/components/panel/no-hotspot-detail'
@@ -189,20 +196,21 @@ export function SummaryPanel({
             description={copy.empty.noHotspots.description(wilayahLabel)}
           />
         ) : (
-          <section className="rounded-card bg-surface-muted p-4">
-            <div className="flex min-w-0 flex-col gap-1">
-              <div className="text-ink-2 flex items-center gap-1">
-                <p className="text-xs font-medium">{copy.panel.hotspot24h}</p>
+          <PanelCard>
+            <MetaLabel
+              hint={
                 <HintButton
                   ariaLabel={copy.panel.hotspotHint}
                   text={copy.panel.hotspotTooltip}
                 />
-              </div>
-              <p className="text-ink font-mono text-3xl font-semibold tracking-[-0.02em]">
-                {formatNumber(summary.todayTotal)}
-              </p>
-            </div>
-          </section>
+              }
+            >
+              {copy.panel.hotspot24h}
+            </MetaLabel>
+            <p className="text-ink mt-1 font-mono text-3xl font-semibold">
+              {formatNumber(summary.todayTotal)}
+            </p>
+          </PanelCard>
         ))}
 
       {searching ? (

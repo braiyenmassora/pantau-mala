@@ -40,21 +40,21 @@ describe('fitProvinceBounds', () => {
     expect(map.setMaxBounds).toHaveBeenCalledWith(null)
     expect(map.stop).toHaveBeenCalled()
     expect(map.fitBounds).toHaveBeenCalled()
-    expect(map.pending('moveend')).toBe(1)
+    // Jangan schedule maxBounds ke viewport provinsi (blokir zoom-out).
+    expect(map.pending('moveend')).toBe(0)
   })
 
-  it('cancels prior moveend so Semua fit is not clamped by province bounds', () => {
+  it('cancels prior national moveend so province fit is not clamped later', () => {
     const map = mockMap()
-    fitProvinceBounds(map as never, [110, -4, 116, 0], true, 600)
+    fitIndonesia(map as never, true, 600)
     expect(map.pending('moveend')).toBe(1)
 
-    fitIndonesia(map as never, true, 600)
-    // Handler lama di-off; hanya satu pending dari fitIndonesia.
-    expect(map.pending('moveend')).toBe(1)
+    fitProvinceBounds(map as never, [110, -4, 116, 0], true, 600)
+    // Handler fitIndonesia di-off; province fit tidak menambah pending.
+    expect(map.pending('moveend')).toBe(0)
 
     map.setMaxBounds.mockClear()
     map.emit('moveend')
-    expect(map.setMaxBounds).toHaveBeenCalledTimes(1)
-    expect(map.pending('moveend')).toBe(0)
+    expect(map.setMaxBounds).not.toHaveBeenCalled()
   })
 })

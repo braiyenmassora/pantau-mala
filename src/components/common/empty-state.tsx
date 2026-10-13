@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import { Button } from '@/components/common/button'
+import { panelCardClass } from '@/lib/ui-chrome'
 import { cn } from '@/lib/utils'
 
 type EmptyStateProps = {
@@ -62,8 +63,9 @@ export function EmptyState({
   return (
     <section
       className={cn(
-        'rounded-card p-4',
-        variant === 'action' ? 'border-line bg-surface border' : 'bg-surface-muted',
+        variant === 'action'
+          ? 'rounded-card border-line bg-surface border p-4'
+          : panelCardClass,
         className,
       )}
       role="status"

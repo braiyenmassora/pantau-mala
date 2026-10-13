@@ -13,6 +13,7 @@ import { haloDiameter, shouldShowHalo, showHaloPulse } from '@/lib/halo'
 import { getMapPadding, PLACE_ZOOM } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { PIN_ACTIVE_BOX_SHADOW, RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
+import { mapTipClass } from '@/lib/ui-chrome'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -166,7 +167,7 @@ export function RegionPin({ region }: RegionPinProps) {
           <TooltipContent
             side="top"
             sideOffset={8}
-            className="rounded-ctl bg-ink text-surface px-2 py-1 text-xs"
+            className={mapTipClass}
           >
             {region.name}
           </TooltipContent>
