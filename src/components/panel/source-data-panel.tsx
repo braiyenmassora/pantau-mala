@@ -1,16 +1,24 @@
 import { useState } from 'react'
+import { ChevronDown } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { useSession } from '@/auth/session'
-import { Button, DataTile, SectionLabel } from '@/components/common'
+import {
+  Button,
+  DataTile,
+  SectionLabel,
+  ProgressBar,
+} from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { useOptionalData } from '@/data/queries'
 import {
   summarySchema,
   sourceStatusSchema,
   earthquakesSchema,
-  forecastSchema,
 } from '@/data/extended-contract'
 import { formatDateTime, formatNumber } from '@/lib/format'
 import { copy } from '@/copy/id'
+import { VillageWeatherPanel } from './village-weather-panel'
+
 export function SourceDataPanel() {
   const [opened, setOpened] = useState(false)
   const generation = useSession((s) => s.generation)
@@ -19,13 +27,27 @@ export function SourceDataPanel() {
       className="rounded-card border-line border p-3"
       onToggle={(e) => setOpened(e.currentTarget.open)}
     >
-      <summary className={`text-ink cursor-pointer text-sm font-semibold ${focusRing}`}>
-        {copy.extra.sources}
+      <summary
+        className={cn(
+          'text-ink-2 hover:text-ink flex cursor-pointer list-none items-center justify-between gap-2 text-xs font-medium [&::-webkit-details-marker]:hidden',
+          focusRing,
+        )}
+      >
+        <span>{copy.extra.sources}</span>
+        <ChevronDown
+          className={cn(
+            'size-4 shrink-0 transition-transform duration-200',
+            opened && 'rotate-180',
+          )}
+          strokeWidth={2}
+          aria-hidden
+        />
       </summary>
       {opened && <SourceDataContent key={generation} />}
     </details>
   )
 }
+
 function SourceDataContent() {
   const national = useOptionalData(
     'national-summary',
@@ -47,19 +69,16 @@ function SourceDataContent() {
     (raw) => earthquakesSchema.parse(raw),
     earthquakeRequested,
   )
-  const [adm4, setAdm4] = useState('')
-  const [requestedVillage, setRequestedVillage] = useState('')
-  const forecast = useOptionalData(
-    'bmkg-weather',
-    `/weather/bmkg?adm4=${encodeURIComponent(requestedVillage)}`,
-    (raw) => forecastSchema.parse(raw),
-    !!requestedVillage,
-  )
+
   return (
     <div className="mt-4 space-y-4">
+      {/* 1. National Summary */}
       <section className="space-y-2">
         <SectionLabel>{copy.extra.national}</SectionLabel>
         <p className="text-ink-2 text-xs">{copy.extra.nationalNote}</p>
+        {(national.isFetching || freshness.isFetching) && (
+          <ProgressBar className="my-2" />
+        )}
         {national.isPending ? (
           <p role="status" className="text-xs">
             {copy.common.loading}
@@ -92,8 +111,9 @@ function SourceDataContent() {
           </div>
         )}
         <Button
-          size="md"
-          disabled={national.isFetching || freshness.isFetching}
+          size="sm"
+          variant="secondary"
+          loading={national.isFetching || freshness.isFetching}
           onClick={() => {
             void national.refetch()
             void freshness.refetch()
@@ -102,6 +122,8 @@ function SourceDataContent() {
           {copy.common.retry}
         </Button>
       </section>
+
+      {/* 2. Source Freshness */}
       <section className="space-y-2">
         <SectionLabel>{copy.extra.freshness}</SectionLabel>
         {freshness.isPending && (
@@ -130,40 +152,47 @@ function SourceDataContent() {
           </ul>
         )}
       </section>
+
+      {/* 3. Earthquakes */}
       <section className="space-y-2">
         <SectionLabel>{copy.extra.earthquakes}</SectionLabel>
-        <label htmlFor="earthquake-kind" className="block text-xs">
-          {copy.extra.feed}
-        </label>
-        <select
-          id="earthquake-kind"
-          value={kind}
-          onChange={(e) => {
-            setKind(e.target.value)
-            setEarthquakeRequested(false)
-          }}
-          className={`rounded-ctl border-line h-11 w-full border px-3 text-lg ${focusRing}`}
-        >
-          <option value="latest">{copy.extra.latest}</option>
-          <option value="felt">{copy.extra.felt}</option>
-          <option value="m5">{copy.extra.m5}</option>
-        </select>
+        <div className="flex flex-wrap gap-2">
+          {(['latest', 'felt', 'm5'] as const).map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => {
+                setKind(k)
+                setEarthquakeRequested(true)
+              }}
+              className={cn(
+                'border-line bg-surface text-ink-2 hover:bg-surface-muted hover:text-ink rounded-full border px-3 py-1 text-xs transition-colors',
+                focusRing,
+                kind === k && 'border-brand text-brand bg-brand-soft font-medium',
+              )}
+            >
+              {copy.extra[k]}
+            </button>
+          ))}
+        </div>
         <Button
-          size="md"
-          disabled={earthquakes.isFetching}
+          size="sm"
+          variant="secondary"
+          loading={earthquakes.isFetching}
           onClick={() => {
             setEarthquakeRequested(true)
             if (earthquakeRequested) void earthquakes.refetch()
           }}
         >
-          {earthquakes.isFetching ? copy.common.loading : copy.extra.loadEarthquakes}
+          {copy.extra.loadEarthquakes}
         </Button>
+        {earthquakes.isFetching && <ProgressBar className="my-2" />}
         {earthquakes.isError && (
           <p role="alert" className="text-xs">
             {copy.extra.unavailable}
           </p>
         )}
-        {earthquakeRequested && earthquakes.data && (
+        {earthquakes.data && (
           <>
             <p className="text-ink-2 text-xs">{earthquakes.data.keterangan}</p>
             <p className="text-ink-2 text-xs">
@@ -209,72 +238,8 @@ function SourceDataContent() {
           </>
         )}
       </section>
-      <section className="space-y-2">
-        <SectionLabel>{copy.extra.bmkg}</SectionLabel>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault()
-            if (requestedVillage === adm4) void forecast.refetch()
-            else setRequestedVillage(adm4)
-          }}
-          className="space-y-2"
-        >
-          <label htmlFor="adm4" className="block text-xs">
-            {copy.extra.villageCode}
-          </label>
-          <input
-            id="adm4"
-            value={adm4}
-            onChange={(e) => setAdm4(e.target.value)}
-            required
-            pattern="[0-9]{2}\.[0-9]{2}\.[0-9]{2}\.[0-9]{4}"
-            maxLength={13}
-            className={`rounded-ctl border-line h-11 w-full border px-3 text-lg ${focusRing}`}
-            aria-describedby="adm4-help"
-          />
-          <p id="adm4-help" className="text-ink-2 text-xs">
-            {copy.extra.villageHelp}
-          </p>
-          <Button
-            size="md"
-            type="submit"
-            disabled={!/^\d{2}\.\d{2}\.\d{2}\.\d{4}$/.test(adm4) || forecast.isFetching}
-          >
-            {forecast.isFetching ? copy.common.loading : copy.extra.loadForecast}
-          </Button>
-        </form>
-        {forecast.isError && (
-          <p role="alert" className="text-xs">
-            {copy.extra.unavailable}
-          </p>
-        )}
-        {forecast.data && (
-          <>
-            <p className="text-sm font-medium">{forecast.data.data.nama}</p>
-            <p className="text-ink-2 text-xs">{forecast.data.keterangan}</p>
-            <p className="text-ink-2 text-xs">
-              {forecast.data.sumber} · {formatDateTime(forecast.data.diambil, 'WIB')}
-            </p>
-            {forecast.data.data.prakiraan.length === 0 && (
-              <p className="text-xs">{copy.extra.empty}</p>
-            )}
-            <ul className="space-y-2">
-              {forecast.data.data.prakiraan.map((point, i) => (
-                <li
-                  key={point.waktu + i}
-                  className="rounded-ctl bg-surface-muted p-2 text-xs"
-                >
-                  {formatDateTime(point.waktu, 'WIB')} · {point.kondisi}
-                  <p>
-                    {formatNumber(point.suhu_c)}°C · {formatNumber(point.kelembapan)}% ·{' '}
-                    {formatNumber(point.angin_kmj)} km/jam
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-      </section>
+
+      <VillageWeatherPanel />
     </div>
   )
 }

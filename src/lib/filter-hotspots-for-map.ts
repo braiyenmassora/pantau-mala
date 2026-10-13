@@ -1,6 +1,6 @@
 import type { Feature, FeatureCollection, Point } from 'geojson'
 
-import type { HotspotFeatureCollection, Region, RiskCategory } from '@/data/types'
+import type { HotspotFeatureCollection, Region } from '@/data/types'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 
 export type MapHotspotProps = {
@@ -9,23 +9,16 @@ export type MapHotspotProps = {
   confidence: string
   frp_mw: number
   region_code?: string
-  /** 0–1 bobot heatmap dari risk kab. */
+  /** Relative satellite confidence weight, independent of stale/null risk scores. */
   weight: number
   color: string
 }
 
-const RISK_WEIGHT: Record<RiskCategory, number> = {
-  tidak_tersedia: 0,
-  sangat_tinggi: 1,
-  sedang: 0.55,
-  rendah: 0.2,
-}
-
-/** Titik untuk layer zoom (heatmap / cluster) — kosong di overview nasional. */
+/** Satellite observations follow the active region filter, including national overview. */
 export function filterHotspotsForMap(
   data: HotspotFeatureCollection | undefined,
   regions: Region[],
-  province: string,
+  _province: string,
   selectedCode: string | null,
 ): FeatureCollection<Point, MapHotspotProps> {
   const empty: FeatureCollection<Point, MapHotspotProps> = {
@@ -33,9 +26,7 @@ export function filterHotspotsForMap(
     features: [],
   }
   if (!data) return empty
-  if (province === 'Semua' && !selectedCode) return empty
 
-  const regionByCode = new Map(regions.map((r) => [r.code, r]))
   const codes = new Set(regions.map((r) => r.code))
   const features: Feature<Point, MapHotspotProps>[] = []
 
@@ -44,12 +35,9 @@ export function filterHotspotsForMap(
     if (!code || !codes.has(code)) continue
     if (selectedCode) {
       if (code !== selectedCode) continue
-    } else if (province === 'Semua') {
-      continue
     }
     const c = f.properties.confidence
     if (c !== 'sedang' && c !== 'tinggi') continue
-    const risk = regionByCode.get(code)?.risk_category ?? 'sedang'
     features.push({
       type: 'Feature',
       geometry: f.geometry,
@@ -59,8 +47,8 @@ export function filterHotspotsForMap(
         confidence: f.properties.confidence,
         frp_mw: f.properties.frp_mw,
         region_code: code,
-        weight: RISK_WEIGHT[risk],
-        color: RISK_CATEGORIES[risk].dot,
+        weight: c === 'tinggi' ? 1 : 0.55,
+        color: RISK_CATEGORIES[c === 'tinggi' ? 'sangat_tinggi' : 'sedang'].dot,
       },
     })
   }

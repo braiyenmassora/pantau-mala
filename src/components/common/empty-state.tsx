@@ -27,11 +27,11 @@ export function EmptyState({
   titleId,
   className,
 }: EmptyStateProps) {
-  const titleClass = 'text-base font-semibold text-ink'
+  const titleClass = 'text-xs font-semibold text-ink'
   const body = (
-    <div className="flex items-start gap-3">
-      <span className="bg-brand-soft text-brand flex size-10 shrink-0 items-center justify-center rounded-full">
-        <Icon className="size-5" strokeWidth={2} aria-hidden />
+    <div className="flex items-start gap-2">
+      <span className="bg-brand-soft text-brand flex size-8 shrink-0 items-center justify-center rounded-full">
+        <Icon className="size-4" strokeWidth={2} aria-hidden />
       </span>
       <div className="min-w-0 flex-1">
         {titleId ? (
@@ -41,12 +41,12 @@ export function EmptyState({
         ) : (
           <p className={titleClass}>{title}</p>
         )}
-        <p className="text-ink-2 mt-1 text-sm">{description}</p>
+        <p className="text-ink-2 mt-1 text-xs leading-4">{description}</p>
         {actions ? (
-          <div className="mt-3 flex flex-wrap gap-2">{actions}</div>
+          <div className="mt-2 flex flex-wrap gap-2">{actions}</div>
         ) : (
           action && (
-            <Button variant="soft" size="sm" className="mt-3" onClick={action.onClick}>
+            <Button variant="soft" size="sm" className="mt-2" onClick={action.onClick}>
               {action.label}
             </Button>
           )
@@ -62,7 +62,7 @@ export function EmptyState({
   return (
     <section
       className={cn(
-        'rounded-card p-4',
+        'rounded-card p-3',
         variant === 'action' ? 'border-line bg-surface border' : 'bg-surface-muted',
         className,
       )}

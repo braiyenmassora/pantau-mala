@@ -8,18 +8,22 @@ type ChipProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode
 }
 
+/**
+ * Chip kontrol filter compact clean untuk toolbar peta.
+ * Setiap chip berdiri sendiri dengan ruang mandiri (independent pill).
+ */
 export function Chip({ pressed, className, children, ...props }: ChipProps) {
   return (
     <button
       type="button"
       aria-pressed={pressed}
       className={cn(
-        'border-line bg-surface inline-flex h-9 items-center gap-1 rounded-full border',
-        'text-ink pr-3 pl-3 text-sm font-medium shadow-sm',
-        'transition-[background-color,color] duration-150 ease-in-out',
+        'border-line bg-surface inline-flex h-8 items-center gap-1 rounded-full border',
+        'text-ink px-3 text-xs font-medium shadow-sm',
+        'transition-[background-color,color,border-color] duration-150 ease-in-out',
         'hover:bg-surface-muted [&_svg]:shrink-0',
         focusRing,
-        pressed && 'border-ink bg-ink text-surface hover:bg-ink hover:text-surface',
+        pressed && 'border-ink bg-ink text-surface font-semibold shadow-sm hover:bg-ink hover:text-surface',
         className,
       )}
       {...props}

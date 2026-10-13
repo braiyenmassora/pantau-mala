@@ -1,5 +1,5 @@
 import { useRegionCatalog } from '@/data/queries'
-import { Check, ChevronDown, Map as MapIcon } from 'lucide-react'
+import { Check, ChevronDown, Map as MapIcon, Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { Chip } from '@/components/common'
@@ -16,7 +16,6 @@ import { useMapStore } from '@/store/map'
 
 const ALL_PROVINCES = 'Semua'
 
-/** MVP: BE tidak kirim pin rendah — chip Rendah disembunyikan. */
 const CATEGORY_ORDER: RiskCategory[] = [
   'sangat_tinggi',
   'sedang',
@@ -29,8 +28,13 @@ type FilterBarProps = {
   regions: Region[]
 }
 
+/**
+ * Bilah filter peta dengan chip mandiri (independent spaced chips).
+ * Mempertahankan ruang mandiri antar-kontrol dengan tata letak compact clean.
+ */
 export function FilterBar({ panelOpen, regions }: FilterBarProps) {
   const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
   const { data: catalog } = useRegionCatalog()
   const province = useMapStore((s) => s.province)
   const selectedCategories = useMapStore((s) => s.selectedCategories)
@@ -70,17 +74,26 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
   }, [preCategory])
 
   const provinceLabel = province === ALL_PROVINCES ? copy.filter.allProvinces : province
-  const options = [
-    { value: ALL_PROVINCES, label: copy.filter.allProvinces },
-    ...provinces.map((name) => ({ value: name, label: name })),
-  ]
+  const options = useMemo(
+    () => [
+      { value: ALL_PROVINCES, label: copy.filter.allProvinces },
+      ...provinces.map((name) => ({ value: name, label: name })),
+    ],
+    [provinces],
+  )
+
+  const filteredOptions = useMemo(() => {
+    if (!search.trim()) return options
+    const q = search.toLowerCase()
+    return options.filter((o) => o.label.toLowerCase().includes(q))
+  }, [options, search])
+
   const allPressed = selectedCategories.size === 0
   const allCount = preCategory.length
 
   return (
     <div
       className={cn(
-        // fixed: keeps map-area placement when rendered inside the panel for tab order
         'z-30 flex flex-wrap items-center gap-2',
         'transition-[left] duration-300 ease-[var(--ease-out-soft)]',
         panelOpen
@@ -89,24 +102,28 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
       )}
       {...mapOverlayGestureProps}
     >
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next)
+          if (!next) setSearch('')
+        }}
+      >
         <PopoverTrigger asChild>
           <Chip
             aria-expanded={open}
             aria-haspopup="listbox"
             aria-label={copy.filter.pickProvince}
           >
-            <span className="inline-flex min-w-0 items-center gap-2">
-              <MapIcon
-                className="text-ink-2 size-4 shrink-0"
-                strokeWidth={2}
-                aria-hidden
-              />
-              <span className="max-w-48 truncate">{provinceLabel}</span>
-            </span>
+            <MapIcon
+              className="text-ink-2 size-3.5 shrink-0"
+              strokeWidth={2}
+              aria-hidden
+            />
+            <span className="max-w-36 truncate">{provinceLabel}</span>
             <ChevronDown
               className={cn(
-                'text-ink-2 size-4 shrink-0 transition-transform duration-150 ease-in-out',
+                'text-ink-2 size-3.5 shrink-0 transition-transform duration-200 ease-[var(--ease-out-soft)]',
                 open && 'rotate-180',
               )}
               strokeWidth={2}
@@ -117,44 +134,73 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         <PopoverContent
           align="start"
           side="bottom"
-          sideOffset={8}
-          className="rounded-card bg-surface text-ink z-[60] w-60 border-0 p-1 shadow-lg ring-0"
+          sideOffset={6}
+          className="rounded-card bg-surface text-ink z-[60] w-64 border border-line p-1 shadow-md"
         >
+          <div className="border-b border-line p-1">
+            <div className="flex items-center gap-2 rounded-ctl bg-surface-muted px-2 py-1">
+              <Search className="text-ink-3 size-4 shrink-0" strokeWidth={2} aria-hidden />
+              <input
+                type="text"
+                placeholder={copy.search.searchProvince}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="text-ink placeholder:text-ink-3 w-full bg-transparent text-xs outline-none"
+                autoFocus
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  className="text-ink-3 hover:text-ink"
+                >
+                  <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+                </button>
+              )}
+            </div>
+          </div>
           <div
             role="listbox"
             aria-label={copy.search.provinces}
-            className="max-h-72 overflow-y-auto"
+            className="soft-scroll max-h-60 overflow-y-auto p-1"
           >
-            {options.map((option) => {
-              const selected = province === option.value
-              return (
-                <button
-                  key={option.value}
-                  type="button"
-                  role="option"
-                  aria-selected={selected}
-                  className={cn(
-                    'rounded-ctl flex h-9 w-full cursor-pointer items-center gap-2 px-3 text-left text-sm',
-                    'hover:bg-surface-muted transition-colors duration-150 ease-in-out',
-                    focusRing,
-                    selected && 'bg-surface-muted font-semibold',
-                  )}
-                  onClick={() => {
-                    setProvince(option.value)
-                    setOpen(false)
-                  }}
-                >
-                  <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                  {selected && (
-                    <Check
-                      className="text-brand size-4 shrink-0"
-                      strokeWidth={2}
-                      aria-hidden
-                    />
-                  )}
-                </button>
-              )
-            })}
+            {filteredOptions.length === 0 ? (
+              <p className="text-ink-3 px-3 py-2 text-center text-xs">
+                {copy.search.noProvinceFound}
+              </p>
+            ) : (
+              filteredOptions.map((option) => {
+                const selected = province === option.value
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    role="option"
+                    aria-selected={selected}
+                    className={cn(
+                      'rounded-ctl flex h-8 w-full cursor-pointer items-center gap-2 px-2 text-left text-xs',
+                      'hover:bg-surface-muted transition-colors duration-150 ease-in-out',
+                      focusRing,
+                      selected && 'bg-surface-muted font-semibold',
+                    )}
+                    onClick={() => {
+                      setProvince(option.value)
+                      setOpen(false)
+                      setSearch('')
+                    }}
+                  >
+                    <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                    {selected && (
+                      <Check
+                        className="text-brand size-4 shrink-0"
+                        strokeWidth={2}
+                        aria-hidden
+                      />
+                    )}
+                  </button>
+                )
+              })
+            )}
           </div>
         </PopoverContent>
       </Popover>
@@ -168,8 +214,8 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         <span>{copy.filter.allStatuses}</span>
         <span
           className={cn(
-            'font-mono text-sm',
-            allPressed ? 'text-surface/70' : 'text-ink-2',
+            'font-mono text-xs tabular-nums',
+            allPressed ? 'text-surface/80' : 'text-ink-2',
           )}
         >
           {formatNumber(allCount)}
@@ -181,6 +227,8 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         const count = counts[category]
         const pressed = selectedCategories.has(category)
 
+        if (category === 'tidak_tersedia' && count === 0) return null
+
         return (
           <Chip
             key={category}
@@ -190,18 +238,15 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
             onClick={() => toggleCategory(category)}
           >
             <span
-              className={cn(
-                'size-2 shrink-0 rounded-full',
-                pressed && 'ring-surface ring-[1.5px]',
-              )}
+              className="size-2 shrink-0 rounded-full"
               style={{ backgroundColor: meta.dot }}
               aria-hidden
             />
             <span>{meta.label}</span>
             <span
               className={cn(
-                'font-mono text-sm',
-                pressed ? 'text-surface/70' : 'text-ink-2',
+                'font-mono text-xs tabular-nums',
+                pressed ? 'text-surface/80' : 'text-ink-2',
               )}
             >
               {formatNumber(count)}

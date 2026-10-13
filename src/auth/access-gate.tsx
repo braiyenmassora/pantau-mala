@@ -7,6 +7,7 @@ import { Eye, EyeOff, LogOut } from 'lucide-react'
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { login, logout, restoreSession, useSession } from './session'
 import { focusRing } from '@/components/common/focus-ring'
+import { SearchableSelect } from '@/components/common'
 
 export function AccessGate({ children }: { children: ReactNode }) {
   const accessMode = useSession((s) => s.accessMode)
@@ -144,7 +145,7 @@ export function SessionControl() {
     staleTime: 300000,
     enabled: accessMode === 'account',
   })
-  if (accessMode === 'client') return <p className="text-ink-2 pt-2 text-xs">Workspace · {principal?.client_slug}</p>
+  if (accessMode === 'client') return null
   return (
     <div className="border-line flex flex-wrap items-center gap-2 border-t pt-2 text-xs">
       <span className="text-ink-2 min-w-0 flex-1 break-words">
@@ -155,15 +156,18 @@ export function SessionControl() {
           <label htmlFor="workspace" className="mb-1 block text-xs">
             Workspace
           </label>
-          <select
+          <SearchableSelect
             id="workspace"
-            value={principal?.client_slug}
+            value={principal?.client_slug ?? ''}
             disabled={busy}
-            className={`border-line rounded-ctl h-11 w-full border px-3 text-lg ${focusRing}`}
-            onChange={(e) => {
+            options={clients.data.map((c) => ({
+              value: c.slug,
+              label: c.name || c.slug,
+            }))}
+            onChange={(val) => {
               setBusy(true)
               setError('')
-              void switchClient(e.target.value)
+              void switchClient(val)
                 .catch((err) =>
                   setError(
                     err instanceof Error ? err.message : 'Workspace belum dapat diganti.',
@@ -171,13 +175,10 @@ export function SessionControl() {
                 )
                 .finally(() => setBusy(false))
             }}
-          >
-            {clients.data.map((client) => (
-              <option key={client.id} value={client.slug}>
-                {client.name}
-              </option>
-            ))}
-          </select>
+            searchPlaceholder="Cari workspace…"
+            emptyText="Workspace tidak ditemukan"
+            ariaLabel="Workspace"
+          />
         </div>
       )}
       {clients.isError && (

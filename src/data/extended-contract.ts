@@ -79,3 +79,58 @@ export const sourceStatusSchema = z.object({
     ),
   }),
 })
+export const nearbyHotspotSchema = z.object({
+  id: number,
+  longitude: number,
+  latitude: number,
+  waktu: z.string(),
+  satelit: z.string(),
+  keyakinan: z.string(),
+  frp_mw: number,
+  kode_wilayah: z.string().nullable().optional(),
+})
+
+export const nearbyHotspotsSchema = z.object({
+  data: z.array(nearbyHotspotSchema),
+})
+
+export type NearbyHotspot = z.infer<typeof nearbyHotspotSchema>
+export type NearbyHotspotsResponse = z.infer<typeof nearbyHotspotsSchema>
+
+export const windyPointSchema = z.object({
+  ts: number,
+  suhu_c: number,
+  angin_u: number,
+  angin_v: number,
+  kecepatan_angin_kmj: number,
+  hembusan_kmj: number,
+  kelembapan: number,
+})
+
+export const windyForecastSchema = z.object({
+  data: z.object({
+    latitude: number,
+    longitude: number,
+    model: z.string(),
+    titik: z.array(windyPointSchema),
+  }),
+  sumber: z.string(),
+  keterangan: z.string(),
+  diambil: z.string(),
+})
+
+export type WindyPoint = z.infer<typeof windyPointSchema>
+export type WindyForecastResponse = z.infer<typeof windyForecastSchema>
+
+export const villageSchema = z.object({
+  kode: z.string(),
+  nama: z.string(),
+  kode_kecamatan: z.string(),
+  kecamatan: z.string(),
+  kode_kabupaten: z.string(),
+  kabupaten: z.string(),
+  kode_provinsi: z.string(),
+  provinsi: z.string(),
+})
+export const villagesSchema = z.object({ data: z.array(villageSchema) })
+export type Village = z.infer<typeof villageSchema>

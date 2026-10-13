@@ -36,7 +36,7 @@ export function resolveUserCoords(): Promise<GeoResult> {
           ok: false,
           reason: err.code === err.PERMISSION_DENIED ? 'denied' : 'error',
         }),
-      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 0 },
+      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 300_000 },
     )
   })
 }

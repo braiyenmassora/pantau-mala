@@ -67,16 +67,27 @@ export function RegionPin({ region }: RegionPinProps) {
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
   const [tipOpen, setTipOpen] = useState(false)
 
-  const style = RISK_CATEGORIES[region.risk_category]
+  const hotspotRisk: RiskCategory =
+    region.risk_category !== 'tidak_tersedia'
+      ? region.risk_category
+      : region.hotspots_24h >= 10
+        ? 'sangat_tinggi'
+        : region.hotspots_24h >= 3
+          ? 'sedang'
+          : region.hotspots_24h > 0
+            ? 'rendah'
+            : 'tidak_tersedia'
+
+  const style = RISK_CATEGORIES[hotspotRisk]
   const selected = selectedCode === region.code
   const active = selected || hoveredCode === region.code
-  const isLow = region.risk_category === 'rendah'
+  const isLow = hotspotRisk === 'rendah'
   const circle = shouldShowHalo(region.hotspots_24h)
   const haloSize = haloDiameter(region.hotspots_24h)
-  const pulse = !reducedMotion && !isLow && showHaloPulse(region.risk_category)
+  const pulse = !reducedMotion && !isLow && showHaloPulse(hotspotRisk, region.hotspots_24h)
   const pulseSize = circle ? haloSize : 36
   const pulseClass =
-    region.risk_category === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
+    hotspotRisk === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
   const hotspotLabel = formatNumber(region.hotspots_24h)
   const label = copy.map.pinAria(region.name, style.label, hotspotLabel)
 
@@ -114,8 +125,8 @@ export function RegionPin({ region }: RegionPinProps) {
             style={{
               width: haloSize,
               height: haloSize,
-              backgroundColor: withAlpha(style.dot, 0.1),
-              borderColor: withAlpha(style.dot, 0.24),
+              backgroundColor: withAlpha(style.dot, 0.12),
+              borderColor: withAlpha(style.dot, 0.3),
             }}
           />
         )}
@@ -129,7 +140,7 @@ export function RegionPin({ region }: RegionPinProps) {
             style={{
               width: pulseSize,
               height: pulseSize,
-              borderColor: withAlpha(style.dot, 0.55),
+              borderColor: withAlpha(style.dot, 0.75),
             }}
           />
         )}
@@ -154,13 +165,13 @@ export function RegionPin({ region }: RegionPinProps) {
                   'transition-[transform,box-shadow] duration-150 ease-in-out',
                   focusRing,
                   active &&
-                    ACTIVE_PIN[region.risk_category as 'sangat_tinggi' | 'sedang'],
+                    ACTIVE_PIN[hotspotRisk as 'sangat_tinggi' | 'sedang'],
                 )}
                 style={active ? { boxShadow: PIN_ACTIVE_BOX_SHADOW } : undefined}
                 aria-label={label}
                 onClick={onSelect}
               >
-                <RiskMarker kategori={region.risk_category} shadow active={active} />
+                <RiskMarker kategori={hotspotRisk} shadow active={active} />
               </button>
             )}
           </TooltipTrigger>

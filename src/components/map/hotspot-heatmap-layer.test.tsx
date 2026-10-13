@@ -10,6 +10,13 @@ import {
 import type { Region } from '@/data/types'
 import { useMapStore } from '@/store/map'
 
+vi.mock('@/data/queries', () => ({
+  useHotspots: () => ({ data: { type: 'FeatureCollection', features: [{
+    type: 'Feature', geometry: { type: 'Point', coordinates: [140.1, -8.1] },
+    properties: { time: '2026-10-11T00:00:00Z', satellite: 'VIIRS', confidence: 'tinggi', frp_mw: 1, region_code: 'IDN.1.1_1' },
+  }] } }),
+}))
+
 const addSource = vi.fn()
 const addLayer = vi.fn()
 const removeLayer = vi.fn()
@@ -69,7 +76,7 @@ describe('HotspotHeatmapLayer', () => {
     setData.mockClear()
     getSource.mockReturnValue(undefined)
     getLayer.mockReturnValue(undefined)
-    useMapStore.setState({ selectedCode: 'IDN.1.1_1', province: 'Semua' })
+    useMapStore.setState({ selectedCode: null, province: 'Semua' })
   })
 
   it('adds heatmap source/layer from existing hotspots', () => {
@@ -105,11 +112,12 @@ describe('HotspotHeatmapLayer', () => {
 
     render(
       <QueryClientProvider client={client}>
-        <HotspotHeatmapLayer regions={[region]} />
+        <HotspotHeatmapLayer regions={[{ ...region, risk_category: 'tidak_tersedia', quality: 'stale' }]} />
       </QueryClientProvider>,
     )
 
-    expect(addSource).toHaveBeenCalled()
+    expect(addSource).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ data: expect.objectContaining({ features: expect.arrayContaining([expect.objectContaining({ properties: expect.objectContaining({ weight: 1 }) })]) }) }))
+    expect(HEATMAP_MIN_ZOOM).toBe(0)
     expect(addLayer).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'heatmap',

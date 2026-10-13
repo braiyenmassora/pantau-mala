@@ -1,28 +1,33 @@
+import { Loader2 } from 'lucide-react'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
 import { cn } from '@/lib/utils'
 
 const variantClass = {
-  primary: 'bg-brand text-surface hover:opacity-90',
-  secondary: 'border border-line bg-surface text-ink hover:bg-surface-muted',
-  soft: 'bg-brand-soft text-brand hover:opacity-90',
+  primary: 'bg-brand text-surface hover:opacity-95 shadow-sm active:translate-y-px',
+  secondary: 'border border-line bg-surface text-ink-2 hover:text-ink hover:bg-surface-muted shadow-sm',
+  soft: 'border border-brand/20 bg-brand-soft text-brand hover:bg-brand-soft/80 shadow-sm',
 } as const
 
 const sizeClass = {
-  md: 'h-10 px-4 text-base',
-  sm: 'h-9 px-3 text-sm',
+  md: 'h-8 px-3 text-xs',
+  sm: 'h-7 px-3 text-xs',
+  xs: 'h-6 px-2 text-xs',
 } as const
 
 type AppButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: keyof typeof variantClass
   size?: keyof typeof sizeClass
+  loading?: boolean
   children: ReactNode
 }
 
 export function Button({
   variant = 'primary',
   size = 'sm',
+  loading = false,
+  disabled,
   className,
   children,
   ...props
@@ -30,19 +35,29 @@ export function Button({
   return (
     <button
       type="button"
+      disabled={disabled || loading}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-full font-semibold',
-        'transition-[opacity,background-color,color] duration-150 ease-in-out',
+        'relative inline-flex items-center justify-center gap-2 rounded-ctl font-medium overflow-hidden',
+        'transition-[opacity,background-color,color,border-color] duration-150 ease-in-out',
         '[&_svg]:shrink-0',
         focusRing,
         variantClass[variant],
         sizeClass[size],
-        'disabled:opacity-50',
+        (disabled || loading) && 'opacity-60 cursor-not-allowed pointer-events-none',
         className,
       )}
       {...props}
     >
-      {children}
+      {loading && <Loader2 className="size-4 shrink-0 animate-spin" aria-hidden />}
+      <span>{children}</span>
+      {loading && (
+        <span
+          aria-hidden
+          className="bg-brand/30 absolute bottom-0 left-0 h-1 w-full overflow-hidden"
+        >
+          <span className="bg-brand block h-full w-1/3 animate-indeterminate" />
+        </span>
+      )}
     </button>
   )
 }

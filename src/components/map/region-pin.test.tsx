@@ -107,7 +107,7 @@ describe('RegionPin', () => {
     expect(pinButton()).toBeTruthy()
   })
 
-  it('sangat_tinggi pin shows Flame with risk-high colors', () => {
+  it('sangat_tinggi pin shows Radar with risk-high colors', () => {
     renderPin()
     const pin = pinButton()
     const icon = pin.querySelector('svg')
@@ -117,7 +117,7 @@ describe('RegionPin', () => {
     expect(pin.textContent).toBe('')
   })
 
-  it('sedang pin shows Flame with risk-mid colors', () => {
+  it('sedang pin shows Radar with risk-mid colors', () => {
     renderPin({
       code: '62.12',
       name: 'Kab. Sedang',

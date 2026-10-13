@@ -134,3 +134,7 @@ Brand menggunakan salinan identik `api/brand-symbol.svg` dan `api/brand-wordmark
 ## Mode client melalui server env
 
 Peta modeclient langsung terbuka setelah identitas reader terverifikasi. Footer hanya menunjukkan workspace, tanpa logout/switch/username. Kegagalan key/service memakai cardbrand+teksstatus dan tombol Coba lagi, tanpa formpassword. Modeaccount lama hanya optional; server tetap menegakkan scope/client. Pemeriksaan viewport/browser tetap manual oleh owner.
+
+## Kepadatan satelit pada overview
+
+Heatmap terlihat sejak overview nasional dan tetap mengikuti region/province/category selection. Bobot relatif berasal dari confidence observasi, bukan kategori risiko yang mungkin null/stale. Sedang/tinggi confidence ditampilkan; low confidence tetap tidak dipromosikan. Gradient existing kuning→merah menunjukkan kepadatan relatif, bukan skor atau peringatan. Pin risiko tetap kategori server, unknown netral. Label unknown menjadi Belum dinilai; detail stale menyebut Indikator kedaluwarsa. FWI absent dijelaskan spesifik, tanpa substitusi nilai. Browser final tetap manual owner.

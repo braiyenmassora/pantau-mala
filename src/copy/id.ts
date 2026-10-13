@@ -1,6 +1,33 @@
 /** Semua teks UI berbahasa Indonesia. Sapaan "kamu". */
 
 export const copy = {
+  weather: {
+    title: 'Cuaca & angin',
+    locationLabel: 'Desa atau kelurahan',
+    searchPlaceholder: 'Cari desa atau kelurahan',
+    clearSearch: 'Hapus pencarian atau pilihan desa',
+    resultsLabel: 'Hasil pencarian desa',
+    searchResults: (count: number) => `${count} desa ditemukan`,
+    chooseLocation:
+      'Pilih desa untuk melihat prakiraan BMKG dan angin Windy di lokasi yang sama.',
+    tabsLabel: 'Prakiraan untuk desa terpilih',
+    weatherTab: 'Cuaca',
+    windTab: 'Angin',
+    bmkg: 'BMKG',
+    windy: 'Windy',
+    refresh: 'Segarkan prakiraan untuk desa terpilih',
+    humidity: 'Kelembapan',
+    windSpeed: 'Angin',
+    gust: 'Hembusan',
+    fetched: 'Diambil',
+    model: (name: string) => `Model ${name}; bukan pengukuran langsung.`,
+    bmkgUnavailable:
+      'Prakiraan desa belum tersedia dari BMKG atau sumber sedang tidak dapat dihubungi. Coba lagi.',
+    windyUnavailable:
+      'Data angin Windy belum dapat dimuat. Prakiraan BMKG tetap tersedia di tab Cuaca.',
+    windNeedsLocation:
+      'Angin Windy memakai titik desa dari BMKG. Muat kembali prakiraan cuaca untuk memperoleh titiknya.',
+  },
   extra: {
     sources: 'Sumber dan data tambahan',
     noDataset: 'Data FIRMS belum siap',
@@ -21,11 +48,22 @@ export const copy = {
     felt: 'Gempa dirasakan',
     m5: 'Magnitudo 5+',
     loadEarthquakes: 'Ambil data gempa',
-    bmkg: 'Prakiraan desa BMKG',
-    villageCode: 'Kode desa resmi (adm4)',
+    bmkg: 'Prakiraan cuaca desa BMKG',
+    weatherSources: 'Cuaca desa & atmosfer',
+    windyShort: 'Angin & atmosfer',
+    gust: 'hembusan',
+    villageCode: 'Desa atau kelurahan',
     villageHelp:
-      'Format NN.NN.NN.NNNN. Masukkan kode resmi desa; kode kabupaten tidak cukup.',
+      'Cari desa atau kelurahan berdasarkan nama, kecamatan, atau kode. Kode resmi akan dipilih otomatis.',
     loadForecast: 'Ambil prakiraan',
+    villagePlaceholder: 'Cari desa atau kelurahan',
+    villageSelectPlaceholder: 'Pilih desa atau kelurahan',
+    villageSearch: 'Ketik nama desa, kecamatan, atau kode',
+    villageEmpty: 'Desa tidak ditemukan',
+    villageMinChars: 'Ketik minimal 2 karakter',
+    villageLoading: 'Mencari...',
+    villageSearchUnavailable: 'Pencarian desa belum tersedia. Coba lagi.',
+    villageLabel: 'Pilih desa atau kelurahan untuk prakiraan BMKG',
     unavailable: 'Data belum tersedia atau sumber gagal. Coba muat kembali.',
     empty: 'Belum ada data pada respons sumber.',
     noTimestamp: 'Belum ada waktu sumber',
@@ -47,6 +85,11 @@ export const copy = {
     riverNote:
       'Model Open-Meteo/GloFAS pada grid wilayah, bukan kejadian atau peringatan banjir. Tanggal UTC.',
     loadRiver: 'Ambil debit sungai',
+
+    windy: 'Prakiraan atmosfer & angin (Windy)',
+    windyNote:
+      'Data titik cuaca numerik ECMWF dari Windy API. Kecepatan, hembusan, dan vektor angin.',
+    loadWindy: 'Ambil prakiraan angin',
   },
 
   auth: {
@@ -114,19 +157,27 @@ export const copy = {
   },
 
   panel: {
-    indonesiaToday: 'Titik panas di Indonesia',
-    provinceToday: (province: string) => `Titik panas di ${province}`,
-    subtitle: 'Deteksi satelit dan indikasi risiko per kabupaten/kota',
+    indonesiaToday: 'Surveilans Risiko Bencana Indonesia',
+    provinceToday: (province: string) => `Surveilans Risiko ${province}`,
+    subtitle:
+      'Deteksi dini multirisiko bencana: anomali termal satelit, kegempaan BMKG, dan hidrometeorologi',
     hotspot24h: 'Titik panas 24 jam',
     hotspotHint: 'Penjelasan titik panas',
     hotspotTooltip: 'Total titik panas dalam 24 jam',
-    topRisk: '5 provinsi dengan titik panas terbanyak',
-    topKab: 'Wilayah dengan titik panas terbanyak',
+    topRisk: '5 provinsi dengan pantauan anomali terbanyak',
+    topKab: 'Wilayah dengan pantauan anomali terbanyak',
     searchResults: 'Hasil pencarian',
     betaTooltip: 'Bukan peringatan kebakaran.',
     searchPlaceholder: 'Cari kabupaten/kota',
     searchClear: 'Hapus pencarian dan pilihan',
     closeDetail: 'Tutup detail',
+    seismicTitle: 'Gempa Terkini BMKG',
+    atmosphereTitle: 'Kondisi Atmosfer & Udara',
+    avgTemp: 'Suhu rata-rata',
+    avgHumidity: 'Kelembapan',
+    avgWind: 'Angin rata-rata',
+    maxPm25: 'PM2.5 tertinggi',
+    seismicEmpty: 'Belum ada data gempa terkini',
   },
   detail: {
     summary: 'Ringkasan',
@@ -193,10 +244,15 @@ export const copy = {
   map: {
     recenter: 'Pusatkan ke lokasi kamu',
     useMyLocation: 'Gunakan lokasi kamu',
+    toggleWind: 'Aliran angin atmosfer',
     zoomIn: 'Perbesar',
     zoomOut: 'Perkecil',
     pinAria: (nama: string, risiko: string, n: string) =>
       `${nama}, risiko ${risiko}, ${n} titik panas`,
+    provincePinTitle: (nama: string) => `Provinsi ${nama}`,
+    provincePinDetails: (n: string, risiko: string) =>
+      `${n} titik panas · Risiko ${risiko}`,
+    provincePinPeriod: 'Data 24 jam terakhir',
     regionMetaProvince: (provinsi: string) => `Provinsi ${provinsi}`,
     regionMetaHotspots: (n: string) => `${n} titik panas`,
   },
@@ -230,11 +286,17 @@ export const copy = {
 
   legend: {
     colorTitle: 'Risiko',
-    colorHint: 'Kuning sedang, merah sangat tinggi; abu-abu belum tersedia',
-    haloTitle: 'Titik panas',
-    haloHint: 'Saat zoom: kuning jarang, merah padat.',
+    colorHint: 'Pin radar: kuning sedang, merah sangat tinggi',
+    haloTitle: 'Kepadatan titik satelit',
+    haloHint: 'Kuning jarang, merah padat; bukan kelas risiko.',
+    seismicTitle: 'Gempa bumi',
+    seismicHint: 'Episentrum gempa terkini dari feed resmi BMKG',
+    windTitle: 'Aliran angin',
+    windHint: 'Vektor kecepatan dan arah angin atmosfer',
   },
   search: {
+    searchProvince: 'Cari provinsi',
+    noProvinceFound: 'Provinsi tidak ditemukan',
     provinces: 'Provinsi',
     kabkota: 'Kabupaten/kota',
     provinceTitle: (nama: string) => `Provinsi ${nama}`,
@@ -263,5 +325,6 @@ export const copy = {
     retry: 'Coba lagi',
     loading: 'Memuat data…',
     indonesia: 'Indonesia',
+    refresh: 'Segarkan',
   },
 } as const

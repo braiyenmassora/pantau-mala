@@ -19,6 +19,8 @@ type MapState = {
   selectedCategories: Set<RiskCategory>
   query: string
   location: UserLocation
+  showWind: boolean
+  toggleWind: () => void
   select: (code: string | null) => void
   hover: (code: string | null) => void
   setProvince: (province: string) => void
@@ -37,6 +39,8 @@ export const useMapStore = create<MapState>((set) => ({
   selectedCategories: new Set(),
   query: '',
   location: { status: 'off' },
+  showWind: false,
+  toggleWind: () => set((s) => ({ showWind: !s.showWind })),
   select: (selectedCode) => set({ selectedCode }),
   hover: (hoveredCode) => set({ hoveredCode }),
   setProvince: (province) => set({ province, selectedCode: null }),

@@ -8,41 +8,44 @@ export type RiskCategoryStyle = {
 }
 
 /** Mirrors `--color-brand` in tokens.css — for MapLibre / SVG that need resolved colors. */
-export const BRAND_HEX = '#1E6B45'
+export const BRAND_HEX = '#C2410C'
 
 /** Line / border hex — mirrors `--color-line`. */
-export const LINE_HEX = '#E3E9E4'
+export const LINE_HEX = '#E2E8F0'
 
-/** Warna risiko — hex untuk MapLibre / SVG (selaras tokens.css). */
+/** Warna risiko — hex untuk MapLibre / SVG (selaras tokens.css Pantau Mala). */
 export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
   tidak_tersedia: {
-    label: 'Tidak tersedia',
-    dot: '#7A8A80',
-    tint: '#F6F8F6',
-    text: '#52645A',
+    label: 'Belum dinilai',
+    dot: '#64748B',
+    tint: '#F8FAFC',
+    text: '#475569',
   },
   sangat_tinggi: {
     label: 'Sangat tinggi',
-    dot: '#DC3208',
-    tint: '#F8D7D0',
-    text: '#9A1F0C',
+    dot: '#DC2626',
+    tint: '#FEE2E2',
+    text: '#991B1B',
   },
   sedang: {
     label: 'Sedang',
-    dot: '#EBA80A',
-    tint: '#FBF0CF',
-    text: '#7A5600',
+    dot: '#D97706',
+    tint: '#FEF3C7',
+    text: '#92400E',
   },
   rendah: {
     label: 'Rendah',
-    dot: '#2E8B57',
-    tint: '#E4F0E8',
-    text: '#1E5A3A',
+    dot: '#15803D',
+    tint: '#F0FDF4',
+    text: '#166534',
   },
 }
 
 /** Active map pin lift — docs §5; kept here so audit allows the rgba. */
-export const PIN_ACTIVE_BOX_SHADOW = '0 2px 8px rgba(20, 38, 27, 0.24)'
+export const PIN_ACTIVE_BOX_SHADOW = '0 2px 8px rgba(15, 23, 42, 0.2)'
+
+/** Mid-high transition color for heatmap gradients. */
+export const HEATMAP_ORANGE = '#F97316'
 
 /** Append alpha (0–1) to a #RRGGBB hex. */
 export function withAlpha(hex: string, alpha: number): string {
@@ -54,3 +57,7 @@ export function withAlpha(hex: string, alpha: number): string {
 
 /** Transparent terminal stop for MapLibre heatmap; centralized renderer color. */
 export const HEATMAP_TRANSPARENT = 'rgba(0,0,0,0)'
+
+/** Wind particle animation colors for Windy simulation. */
+export const WIND_PARTICLE_COLOR = "rgba(14, 165, 233, 0.75)"
+export const WIND_FADE_CLEAR = "rgba(0, 0, 0, 0.08)"

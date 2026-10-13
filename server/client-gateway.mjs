@@ -11,7 +11,7 @@ export function createClientGateway(env, fetcher = fetch) {
       !(origin.protocol === 'https:' || (origin.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(origin.hostname))))
     throw new Error('API origin must be HTTPS or loopback HTTP without credentials/path')
   const reply = (status, body) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff', 'X-Frontend-Access': 'client' } })
-  const allowed = /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/bmkg)$/
+  const allowed = /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages)$/
   async function upstream(path) {
     return fetcher(new URL(path, origin), { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' }, redirect: 'manual', signal: AbortSignal.timeout(20000) })
   }
@@ -24,7 +24,7 @@ export function createClientGateway(env, fetcher = fetch) {
     if (request.headers.get('sec-fetch-site') === 'cross-site') return reply(403, { error: 'Origin denied' })
     if (url.pathname.startsWith('/auth/')) return reply(403, { error: 'Management is available in the Go console' })
     if (url.pathname !== '/frontend/session' && !allowed.test(url.pathname)) return reply(404, { error: 'Unknown data route' })
-    const queryNames = new Set(['limit','offset','bbox','kategori','kode_wilayah','from','to','days','kind','adm4','start','end'])
+  const queryNames = new Set(['limit','offset','bbox','kategori','kode_wilayah','from','to','days','kind','adm4','start','end','lat','lon','radius_km','q'])
     for (const key of url.searchParams.keys()) if (!queryNames.has(key)) return reply(400, { error: 'Unsupported query parameter' })
     try {
       // Validate fixed identity for every request, including revocation and client disablement.

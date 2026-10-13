@@ -1,6 +1,7 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 
+import { Brand } from '@/components/common/brand'
 import { StatusAnnouncer } from '@/components/common/status-announcer'
 import { focusRing } from '@/components/common/focus-ring'
 import { FilterBar } from '@/components/map/filter-bar'
@@ -19,6 +20,8 @@ import { copy } from '@/copy/id'
 import { useRegions } from '@/data/queries'
 import { filterRegions } from '@/lib/filter-regions'
 import { restoreFocusTrigger } from '@/lib/focus-return'
+import { fitIndonesia } from '@/lib/indonesia-view'
+import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -43,6 +46,7 @@ export default function App() {
   }, [])
   const panelOpen = useUiStore((s) => s.panelOpen)
   const togglePanel = useUiStore((s) => s.togglePanel)
+  const reducedMotion = usePrefersReducedMotion()
 
   // Defer MapLibre so panel paints first; keeps main-thread free for LCP/TBT.
   useEffect(() => {
@@ -70,6 +74,32 @@ export default function App() {
   const select = useMapStore((s) => s.select)
   const setLocation = useMapStore((s) => s.setLocation)
   const locationStatus = useMapStore((s) => s.location.status)
+
+  useEffect(() => {
+    let cancelled = false
+    if (!navigator.permissions?.query || !('geolocation' in navigator)) return
+    void navigator.permissions
+      .query({ name: 'geolocation' })
+      .then((permission) => {
+        if (cancelled || permission.state !== 'granted') return
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            if (cancelled) return
+            setLocation({
+              status: 'active',
+              coords: { lat: position.coords.latitude, lon: position.coords.longitude },
+            })
+          },
+          () => {
+            // A previously granted permission can still fail when the device is offline.
+          },
+          { enableHighAccuracy: false, timeout: 10_000, maximumAge: 300_000 },
+        )
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [setLocation])
 
   useEffect(() => {
     const el = panelContentRef.current
@@ -120,8 +150,34 @@ export default function App() {
           aria-hidden={!panelOpen}
           {...mapOverlayGestureProps}
         >
-          <header className="shrink-0 px-4 pt-4">
-            <SearchBox mapRef={mapRef} />
+          <header className="shrink-0 border-b border-line px-4 py-3">
+            <div className="flex items-center justify-between">
+              <Brand compact />
+              {selectedCode && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    select(null)
+                    restoreFocusTrigger()
+                    const map = mapRef.current
+                    if (map) fitIndonesia(map, panelOpen, reducedMotion ? 0 : 600)
+                  }}
+                  aria-label={copy.panel.closeDetail}
+                  className={cn(
+                    'flex size-7 items-center justify-center rounded-ctl text-ink-2',
+                    'hover:bg-surface-muted hover:text-ink transition-colors duration-150',
+                    focusRing,
+                  )}
+                >
+                  <X className="size-4" strokeWidth={2} aria-hidden />
+                </button>
+              )}
+            </div>
+            {!selectedCode && (
+              <div className="mt-2">
+                <SearchBox mapRef={mapRef} />
+              </div>
+            )}
           </header>
 
           {/* When panel open: chips sit between search and list in the tab order. */}
@@ -173,7 +229,7 @@ export default function App() {
         {/* When panel closed: chips stay focusable outside inert aside. */}
         {!panelOpen && data && <FilterBar panelOpen={panelOpen} regions={data} />}
 
-        <LocationDetailSync regions={data} />
+        <LocationDetailSync mapRef={mapRef} />
         <LocationPromptDialog mapRef={mapRef} />
         <MapLegend panelOpen={panelOpen} />
         <MapControls mapRef={mapRef} />

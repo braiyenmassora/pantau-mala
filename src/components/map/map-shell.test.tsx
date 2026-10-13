@@ -54,6 +54,14 @@ vi.mock('@/components/map/province-focus', () => ({
   ProvinceFocus: () => null,
 }))
 
+vi.mock('@/components/map/earthquake-layer', () => ({
+  EarthquakeLayer: () => null,
+}))
+
+vi.mock('@/components/map/wind-particle-layer', () => ({
+  WindParticleLayer: () => null,
+}))
+
 vi.mock('@/components/map/user-location-layer', () => ({
   UserLocationLayer: () => <div data-testid="layer-user" />,
 }))

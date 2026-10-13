@@ -6,7 +6,7 @@ import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import { restoreFocusTrigger } from '@/lib/focus-return'
 import { resolveUserCoords } from '@/lib/geolocation'
-import { getMapPadding, PLACE_ZOOM } from '@/lib/indonesia-view'
+import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
@@ -41,7 +41,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
   const flyToUser = (lon: number, lat: number) => {
     mapRef.current?.flyTo({
       center: [lon, lat],
-      zoom: PLACE_ZOOM,
+      zoom: LOCATION_ZOOM,
       padding: getMapPadding(panelOpen),
       duration: reducedMotion ? 0 : 600,
     })

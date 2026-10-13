@@ -6,7 +6,7 @@ import {
   CloudFog,
   CloudRain,
   Droplets,
-  Flame,
+  Radar,
   Gauge,
   MapPin,
   Wind,
@@ -34,7 +34,7 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
   }, [region.code])
 
   return (
-    <div key={region.code} className="animate-view-in space-y-6">
+    <div key={region.code} className="animate-view-in space-y-4">
       <div className="space-y-4">
         <header>
           <h2
@@ -165,7 +165,7 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
             value={
               region.weather_danger
                 ? copy.bahaya[region.weather_danger.class]
-                : 'Tidak tersedia'
+                : 'FWI belum tersedia'
             }
             unit={
               region.weather_danger
@@ -176,19 +176,19 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
             hintText={copy.detail.weatherDangerTooltip}
           />
           <DataTile
-            icon={<Droplets className="text-ink-2 size-4" strokeWidth={2} />}
+            icon={<Droplets className="text-ink-2 size-4 animate-water-ripple" strokeWidth={2} />}
             label={copy.detail.humidity}
             value={formatNumber(region.weather.humidity)}
             unit="%"
           />
           <DataTile
-            icon={<Wind className="text-ink-2 size-4" strokeWidth={2} />}
+            icon={<Wind className="text-ink-2 size-4 animate-wind-drift" strokeWidth={2} />}
             label={copy.detail.wind}
             value={formatNumber(region.weather.wind_kmh)}
             unit={copy.detail.windUnit}
           />
           <DataTile
-            icon={<CloudRain className="text-ink-2 size-4" strokeWidth={2} />}
+            icon={<CloudRain className="text-ink-2 size-4 animate-water-ripple" strokeWidth={2} />}
             label={copy.detail.dryDays}
             value={formatNumber(region.weather.dry_days)}
             unit={copy.detail.dayUnit}
@@ -205,7 +205,7 @@ function RiskCard({ region }: { region: Region }) {
 
   return (
     <section
-      className="rounded-card space-y-3 p-4"
+      className="rounded-card space-y-2 p-3"
       style={{ backgroundColor: style.tint, color: style.text }}
     >
       <div>
@@ -218,10 +218,10 @@ function RiskCard({ region }: { region: Region }) {
             style={{ color: style.text }}
           />
         </div>
-        <p className="mt-1 text-xl font-semibold">{style.label}</p>
+        <p className="mt-1 text-xl font-semibold">{region.risk_category === 'tidak_tersedia' && region.quality === 'stale' ? 'Indikator kedaluwarsa' : style.label}</p>
       </div>
       <p className="flex items-center gap-1 text-sm" style={{ color: style.text }}>
-        <Flame className="size-4 shrink-0 opacity-80" strokeWidth={2} aria-hidden />
+        <Radar className="size-4 shrink-0 opacity-80 animate-radar-pulse" strokeWidth={2} aria-hidden />
         <span>{copy.detail.hotspots24hReason(hotspots)}</span>
       </p>
     </section>

@@ -16,7 +16,9 @@ export function shouldShowHalo(hotspots24h: number): boolean {
   return hotspots24h >= HALO_MIN_TITIK
 }
 
-/** Pulse ring only for Sedang and Sangat tinggi (not Rendah). */
-export function showHaloPulse(category: RiskCategory): boolean {
-  return category === 'sedang' || category === 'sangat_tinggi'
+/** Pulse ring for Sedang and Sangat tinggi, or whenever active hotspots >= 5 (never for calibrated Rendah). */
+export function showHaloPulse(category: RiskCategory, hotspots24h?: number): boolean {
+  if (category === 'rendah') return false
+  if (category === 'sedang' || category === 'sangat_tinggi') return true
+  return Boolean(hotspots24h && hotspots24h >= HALO_MIN_TITIK)
 }
