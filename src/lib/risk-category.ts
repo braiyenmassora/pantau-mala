@@ -10,6 +10,8 @@ export type RiskCategoryStyle = {
 /** Mirrors `--color-brand` in tokens.css — for MapLibre / SVG that need resolved colors. */
 export const BRAND_HEX = '#C2410C'
 
+export const LOCATION_HEX = '#0369A1'
+
 /** Line / border hex — mirrors `--color-line`. */
 export const LINE_HEX = '#E2E8F0'
 

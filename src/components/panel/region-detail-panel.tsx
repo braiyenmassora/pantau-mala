@@ -148,9 +148,15 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
             icon={<CloudFog className="text-ink-2 size-4" strokeWidth={2} />}
             label={copy.detail.airQuality}
             value={copy.air[region.air_quality.category]}
-            unit={`PM2.5 ${formatNumber(region.air_quality.pm25)}`}
+            unit={
+              region.air_quality.ispu != null
+                ? `ISPU ${region.air_quality.ispu} · PM2.5 ${formatNumber(region.air_quality.pm25)}`
+                : `PM2.5 ${formatNumber(region.air_quality.pm25)}`
+            }
             valueClassName={
-              region.air_quality.category === 'tidak_sehat'
+              region.air_quality.category === 'tidak_sehat' ||
+              region.air_quality.category === 'sangat_tidak_sehat' ||
+              region.air_quality.category === 'berbahaya'
                 ? 'text-risk-high-text'
                 : region.air_quality.category === 'sedang'
                   ? 'text-risk-mid-text'

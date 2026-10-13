@@ -10,7 +10,11 @@ const airQualityCategory = z.enum([
   'baik',
   'sedang',
   'tidak_sehat',
+  'sangat_tidak_sehat',
+  'berbahaya',
   'pending_validation',
+  'insufficient_data',
+  'stale',
   'missing',
 ])
 const confidenceLevel = z.enum(['rendah', 'sedang', 'tinggi'])
@@ -33,7 +37,14 @@ const weatherSchema = z.object({
 
 const airQualitySchema = z.object({
   pm25: z.number().nullable(),
+  ispu: z.number().nullable().optional(),
+  pm25_24h: z.number().nullable().optional(),
+  valid_hours: z.number().optional(),
   category: airQualityCategory,
+  method: z.string().optional(),
+  source: z.string().optional(),
+  status: z.string().optional(),
+  window_end: z.string().nullable().optional(),
 })
 
 /** BE may send JSON null for missing optional strings. */

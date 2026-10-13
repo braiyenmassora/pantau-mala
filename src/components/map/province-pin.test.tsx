@@ -53,7 +53,11 @@ describe('ProvincePin', () => {
     const pin = screen.getByRole('button', {
       name: /Kalimantan Selatan.*212 titik panas/,
     })
-    expect(pin.querySelector('svg')?.classList.contains('fill-risk-high')).toBe(true)
+    expect(pin.querySelector('svg')?.classList.contains('stroke-risk-high')).toBe(true)
+    expect(pin.querySelector('svg')?.classList.contains('fill-none')).toBe(true)
+    expect(pin.querySelector('span[aria-hidden]')?.classList.contains('size-6')).toBe(true)
+    const count = pin.querySelector('span[aria-hidden].tabular-nums')
+    expect(count?.textContent).toBe('212')
     expect(pin.textContent).toContain('212')
     await user.hover(pin)
     const tip = await screen.findByRole('tooltip')

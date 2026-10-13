@@ -87,8 +87,8 @@ export const copy = {
     loadRiver: 'Ambil debit sungai',
 
     windy: 'Prakiraan atmosfer & angin (Windy)',
-    windyNote:
-      'Data titik cuaca numerik ECMWF dari Windy API. Kecepatan, hembusan, dan vektor angin.',
+    windyNote: (model: string) =>
+      `Prakiraan model ${model.toUpperCase()} dari Windy API, bukan pengukuran langsung. Menampilkan kecepatan, hembusan, dan arah angin.`,
     loadWindy: 'Ambil prakiraan angin',
   },
 
@@ -191,7 +191,7 @@ export const copy = {
     airQuality: 'Kualitas udara',
     airHint: 'Penjelasan kualitas udara',
     airTooltip:
-      'Cuaca dan kualitas udara untuk gambaran saja — tidak mengatur warna pin di peta.',
+      'Estimasi skala ISPU Permen LHK 14/2020 dari model Open-Meteo, bukan stasiun pemantauan resmi KLHK. Tidak mengatur warna pin di peta.',
     riskTitle: 'Risiko',
     riskHint: 'Penjelasan risiko',
     riskTooltip:
@@ -217,10 +217,14 @@ export const copy = {
   },
   air: {
     pending_validation: 'Belum dikalibrasi',
+    insufficient_data: 'Data belum cukup',
+    stale: 'Data kedaluwarsa',
     missing: 'Tidak tersedia',
     baik: 'Baik',
     sedang: 'Sedang',
     tidak_sehat: 'Tidak sehat',
+    sangat_tidak_sehat: 'Sangat tidak sehat',
+    berbahaya: 'Berbahaya',
   },
   location: {
     nearbyLabel: 'Titik panas dalam 25 km',

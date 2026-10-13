@@ -37,7 +37,7 @@ export function ProvincePin({ aggregate }: ProvincePinProps) {
         ? 'sangat_tinggi'
         : aggregate.hotspots_24h >= 5
           ? 'sedang'
-          : 'tidak_tersedia'
+          : 'rendah'
 
   const style = RISK_CATEGORIES[hotspotRisk]
   const circle = shouldShowHalo(aggregate.hotspots_24h)
@@ -100,10 +100,10 @@ export function ProvincePin({ aggregate }: ProvincePinProps) {
                 if (!panelOpen) setPanelOpen(true)
               }}
             >
-              <RiskMarker kategori={hotspotRisk} shadow active />
+              <RiskMarker kategori={hotspotRisk} shadow active className="size-6" />
               <span
                 aria-hidden
-                className="border-surface bg-ink text-surface shadow-sm absolute -top-1 -right-1 min-w-4 rounded-full border px-1 text-center font-mono text-xs leading-4 font-semibold tabular-nums"
+                className="border-surface bg-ink text-surface shadow-sm pointer-events-none absolute -top-1 -right-1 min-w-4 rounded-full border px-1 text-center font-mono text-xs leading-4 font-semibold tabular-nums"
               >
                 {countLabel}
               </span>
@@ -112,15 +112,19 @@ export function ProvincePin({ aggregate }: ProvincePinProps) {
           <TooltipContent
             side="top"
             sideOffset={8}
-            className="rounded-card bg-ink text-surface space-y-1 px-3 py-2 text-xs"
+            className="rounded-card border-line/10 bg-ink text-surface z-50 flex w-60 flex-col items-start gap-1 p-2 text-xs shadow-md"
           >
-            <span className="block font-medium">
-              {copy.map.provincePinTitle(aggregate.name)}
+            <span className="border-line/20 flex w-full items-center justify-between gap-2 border-b pb-1">
+              <span className="text-surface font-medium">
+                {copy.map.provincePinTitle(aggregate.name)}
+              </span>
+              <span className="text-surface/70 shrink-0 font-mono text-xs tabular-nums">
+                {copy.map.provincePinPeriod}
+              </span>
             </span>
-            <span className="text-surface/80 block">
+            <span className="text-surface/90">
               {copy.map.provincePinDetails(countLabel, style.label)}
             </span>
-            <span className="text-surface/60 block">{copy.map.provincePinPeriod}</span>
           </TooltipContent>
         </Tooltip>
       </MarkerContent>

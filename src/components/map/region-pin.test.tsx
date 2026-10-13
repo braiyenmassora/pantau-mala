@@ -112,7 +112,7 @@ describe('RegionPin', () => {
     const pin = pinButton()
     const icon = pin.querySelector('svg')
     expect(icon).toBeTruthy()
-    expect(icon?.classList.contains('fill-risk-high')).toBe(true)
+    expect(icon?.classList.contains('fill-none')).toBe(true)
     expect(icon?.classList.contains('stroke-risk-high')).toBe(true)
     expect(pin.textContent).toBe('')
   })
@@ -127,7 +127,7 @@ describe('RegionPin', () => {
     })
     const pin = pinButton('Kab. Sedang, risiko Sedang, 4 titik panas')
     const icon = pin.querySelector('svg')
-    expect(icon?.classList.contains('fill-risk-mid')).toBe(true)
+    expect(icon?.classList.contains('fill-none')).toBe(true)
     expect(icon?.classList.contains('stroke-risk-mid')).toBe(true)
   })
 

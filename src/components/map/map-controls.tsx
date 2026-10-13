@@ -35,7 +35,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
     <div
       data-testid="map-controls"
       className={cn(
-        'absolute right-4 bottom-4 z-30 flex flex-col items-center gap-2',
+        'absolute right-4 bottom-12 z-30 flex flex-col items-center gap-2',
         panelOpen && 'hidden sm:flex',
       )}
       {...mapOverlayGestureProps}

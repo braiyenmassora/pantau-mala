@@ -22,6 +22,9 @@
   --color-brand-soft: #fff7ed;
   --color-focus: #c2410c; /* ring fokus = brand */
 
+  --color-location: #0369a1;
+  --color-location-tint: #e0f2fe;
+
   /* Kategori risiko Pantau Mala: dot / tint / text */
   --color-risk-high: #dc2626;
   --color-risk-high-tint: #fee2e2;

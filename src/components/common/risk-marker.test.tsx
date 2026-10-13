@@ -10,14 +10,15 @@ describe('RiskMarker', () => {
   it('sangat_tinggi shows Radar risk-high', () => {
     const { container } = render(<RiskMarker kategori="sangat_tinggi" />)
     const svg = container.querySelector('svg')
-    expect(svg?.classList.contains('fill-risk-high')).toBe(true)
+    expect(svg?.classList.contains('fill-none')).toBe(true)
     expect(svg?.classList.contains('stroke-risk-high')).toBe(true)
   })
 
   it('sedang shows Radar risk-mid', () => {
     const { container } = render(<RiskMarker kategori="sedang" />)
     const svg = container.querySelector('svg')
-    expect(svg?.classList.contains('fill-risk-mid')).toBe(true)
+    expect(svg?.classList.contains('fill-none')).toBe(true)
+    expect(svg?.classList.contains('stroke-risk-mid')).toBe(true)
   })
 
   it('rendah shows 8px risk-low dot without icon', () => {

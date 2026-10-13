@@ -37,7 +37,12 @@ export function filterHotspotsForMap(
       if (code !== selectedCode) continue
     }
     const c = f.properties.confidence
-    if (c !== 'sedang' && c !== 'tinggi') continue
+    const visual =
+      c === 'tinggi'
+        ? { weight: 1, category: 'sangat_tinggi' as const }
+        : c === 'sedang'
+          ? { weight: 0.55, category: 'sedang' as const }
+          : { weight: 0.2, category: 'rendah' as const }
     features.push({
       type: 'Feature',
       geometry: f.geometry,
@@ -47,8 +52,8 @@ export function filterHotspotsForMap(
         confidence: f.properties.confidence,
         frp_mw: f.properties.frp_mw,
         region_code: code,
-        weight: c === 'tinggi' ? 1 : 0.55,
-        color: RISK_CATEGORIES[c === 'tinggi' ? 'sangat_tinggi' : 'sedang'].dot,
+        weight: visual.weight,
+        color: RISK_CATEGORIES[visual.category].dot,
       },
     })
   }

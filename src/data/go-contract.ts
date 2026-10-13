@@ -22,7 +22,17 @@ const wireRegion = z.object({
     angin_kmj: maybe,
     hari_tanpa_hujan: maybe,
   }),
-  udara: z.object({ pm25: maybe, kategori: z.string() }),
+  udara: z.object({
+    pm25: maybe,
+    ispu: maybe.optional(),
+    pm25_24j: maybe.optional(),
+    jam_valid: z.number().optional(),
+    kategori: z.string(),
+    metode: z.string().optional(),
+    sumber: z.string().optional(),
+    status: z.string().optional(),
+    periode_selesai: z.string().nullable().optional(),
+  }),
   deteksi_terakhir: z
     .object({
       waktu: z.string(),
@@ -62,11 +72,24 @@ export function decodeRegions(raw: unknown) {
         },
         air_quality: {
           pm25: r.udara.pm25,
-          category: ['baik', 'sedang', 'tidak_sehat'].includes(r.udara.kategori)
-            ? r.udara.kategori
-            : r.udara.kategori === 'pending_validation'
-              ? 'pending_validation'
+          ispu: r.udara.ispu ?? null,
+          pm25_24h: r.udara.pm25_24j ?? null,
+          valid_hours: r.udara.jam_valid,
+          category:
+            r.udara.kategori === 'baik' ||
+            r.udara.kategori === 'sedang' ||
+            r.udara.kategori === 'tidak_sehat' ||
+            r.udara.kategori === 'sangat_tidak_sehat' ||
+            r.udara.kategori === 'berbahaya' ||
+            r.udara.kategori === 'pending_validation' ||
+            r.udara.kategori === 'insufficient_data' ||
+            r.udara.kategori === 'stale'
+              ? r.udara.kategori
               : 'missing',
+          method: r.udara.metode,
+          source: r.udara.sumber,
+          status: r.udara.status,
+          window_end: r.udara.periode_selesai,
         },
         last_detection: r.deteksi_terakhir
           ? {

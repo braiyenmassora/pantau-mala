@@ -197,6 +197,7 @@ export function VillageWeatherPanel() {
             )}
             {center && windy.data && (
               <>
+                <p className="text-ink-2 text-xs leading-4">{copy.extra.windyNote(windy.data.data.model)}</p>
                 <p className="text-ink-2 text-xs">
                   {copy.weather.model(windy.data.data.model.toUpperCase())}
                 </p>

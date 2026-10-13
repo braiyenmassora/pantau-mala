@@ -42,10 +42,10 @@ export function RiskMarker({
       ) : (
         <Radar
           className={cn(
-            'size-4',
+            'size-4 fill-none',
             kategori === 'sangat_tinggi'
-              ? 'stroke-risk-high fill-risk-high'
-              : 'stroke-risk-mid fill-risk-mid',
+              ? 'stroke-risk-high'
+              : 'stroke-risk-mid',
           )}
           strokeWidth={2}
         />

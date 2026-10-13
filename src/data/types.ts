@@ -11,7 +11,15 @@ export type WeatherDangerClass = 'aman' | 'waspada' | 'bahaya' | 'ekstrem'
 export type WeatherDangerSource = 'BMKG' | 'FWI dihitung'
 
 export type AirQualityCategory =
-  'baik' | 'sedang' | 'tidak_sehat' | 'pending_validation' | 'missing'
+  | 'baik'
+  | 'sedang'
+  | 'tidak_sehat'
+  | 'sangat_tidak_sehat'
+  | 'berbahaya'
+  | 'pending_validation'
+  | 'insufficient_data'
+  | 'stale'
+  | 'missing'
 
 export type ConfidenceLevel = 'rendah' | 'sedang' | 'tinggi'
 
@@ -33,7 +41,14 @@ export type Weather = {
 
 export type AirQuality = {
   pm25: number | null
+  ispu?: number | null
+  pm25_24h?: number | null
+  valid_hours?: number
   category: AirQualityCategory
+  method?: string
+  source?: string
+  status?: string
+  window_end?: string | null
 }
 
 export type LastDetection = {
