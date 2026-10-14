@@ -12,7 +12,7 @@
   },
   "vars": {
     "FE_ACCESS_MODE": "client",
-    "PANTAU_API_ORIGIN": "https://pantau.mala.pandanteknik.com",
+    "PANTAU_API_ORIGIN": "http://127.0.0.1:8080",
     "PANTAU_CLIENT_SLUG": "pantau-mala"
   }
 }

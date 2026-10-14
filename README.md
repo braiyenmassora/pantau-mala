@@ -55,7 +55,7 @@ PANTAU_DEV_TEST_CONFIG=/path/to/private/dev-access.json bun run test -- run src/
 
 ### Cloudflare Workers
 
-Konfigurasi `wrangler.jsonc` mengirim assets `dist` bersama `worker.ts`. Route `/api`, `/api/*`, `/auth`, `/auth/*`, dan `/frontend/session` dijalankan melalui Worker sebelum fallback SPA. Gateway memakai mode client read-only dengan backend `https://pantau.mala.pandanteknik.com`.
+Konfigurasi `wrangler.jsonc` mengirim assets `dist` bersama `worker.ts`. Route `/api`, `/api/*`, `/auth`, `/auth/*`, dan `/frontend/session` dijalankan melalui Worker sebelum fallback SPA. Gateway memakai mode client read-only. Contoh `PANTAU_API_ORIGIN` memakai backend lokal `http://127.0.0.1:8080`; sebelum deploy, atur origin HTTPS backend milik deployment tujuan dan slug client yang sesuai. Worker cloud tidak dapat mengakses backend loopback komputer lokal.
 
 ```sh
 bun run --bun build
@@ -65,9 +65,9 @@ bun x wrangler deploy
 bun x wrangler secret put PANTAU_API_KEY
 ```
 
-Key harus memiliki scope `data:read` dan client slug `pantau-mala`. Secret yang sudah terpasang dipertahankan saat deploy; jangan masukkan key ke konfigurasi Wrangler, Git, atau `VITE_*`.
+Key harus memiliki scope `data:read` dan client slug yang sama dengan `PANTAU_CLIENT_SLUG`. Secret yang sudah terpasang dipertahankan saat deploy; jangan masukkan key ke konfigurasi Wrangler, Git, atau `VITE_*`.
 
-URL: https://pantaumala.pantaumala.workers.dev. Deploy 14 Oktober 2026 berhasil dengan versi `c8114f6f-fe33-474e-81ed-2da2cab2eb77`; 137 tes lulus, satu live integration test dilewati, lint/build/dry-run lulus. Setelah owner menonaktifkan Cloudflare Access melalui dashboard, verifikasi publik tanpa login menghasilkan HTTP 200 untuk halaman utama, `/frontend/session`, `/api/v1/regions?limit=1`, `/api/v1/hotspots.geojson`, dan `/api/v1/data-status`. Sesi mengembalikan identitas client `pantau-mala` dengan scope `data:read`; endpoint data mengembalikan JSON dari backend VPS. Verifikasi ini mencakup HTTP/API; interaksi peta di browser tetap perlu dicek secara manual.
+Alamat deployment ditentukan oleh akun dan konfigurasi pengguna. Hasil tes deployment sebelumnya adalah catatan lingkungan pengujian, bukan jaminan readiness instalasi baru; jalankan cek health, gateway, dan data pada lingkungan tujuan.
 
 Produksi membutuhkan **origin yang sama**: host FE melayani assets dan mem-proxy `/api/*` serta `/auth/*` ke Go dengan Host/Origin yang benar. Static Pages tanpa route/proxy tersebut belum bisa memakai pemulihan cookie ini. Tidak menyisipkan key privat ke VITE_* untuk mengakali deployment. Belum deploy ke VPS atau mengganti domain produksi pada perubahan ini.
 
