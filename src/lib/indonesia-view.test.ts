@@ -70,4 +70,14 @@ describe('fitProvinceBounds', () => {
       expect.objectContaining({ zoom: 4.2 }),
     )
   })
+
+  it('handles coordinate array center from cameraForBounds correctly', () => {
+    const map = mockMap()
+    map.cameraForBounds = vi.fn(() => ({ zoom: 4.5, center: [115, -1] as never }))
+    const zoom = fitIndonesia(map as never, false, 0)
+    expect(zoom).toBe(4.5)
+    expect(map.jumpTo).toHaveBeenCalledWith(
+      expect.objectContaining({ center: [115, -1], zoom: 4.5 }),
+    )
+  })
 })

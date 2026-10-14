@@ -1,3 +1,4 @@
+import { copy } from '@/copy/id'
 import { cn } from '@/lib/utils'
 
 /** Wordmark IBM Plex: pantau (hijau) + mala (orange). */
@@ -16,7 +17,7 @@ export function Brand({ compact = false }: { compact?: boolean } = {}) {
           'font-semibold tracking-tight lowercase',
           compact ? 'text-base leading-5' : 'text-lg leading-6',
         )}
-        aria-label="pantaumala"
+        aria-label={copy.a11y.brand}
       >
         <span className="text-brand">pantau</span>
         <span className="text-brand-mala">mala</span>

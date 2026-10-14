@@ -291,6 +291,7 @@ export const copy = {
     mapAria: 'Peta titik panas Indonesia',
   },
   a11y: {
+    brand: 'pantaumala',
     regionSelected: (nama: string) => `Wilayah dipilih: ${nama}`,
     searchHits: (n: number) => `Hasil pencarian: ${n} lokasi`,
   },

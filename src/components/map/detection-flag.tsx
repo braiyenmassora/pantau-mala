@@ -23,7 +23,7 @@ export function DetectionFlag({ region, className }: DetectionFlagProps) {
       )}
     >
       <div className="border-line bg-surface relative rounded-card w-max max-w-52 border px-3 py-2 shadow-md">
-        <div className="flex min-w-0 flex-col gap-0.5 text-left">
+        <div className="flex min-w-0 flex-col gap-1 text-left">
           <p
             className="text-ink truncate text-xs leading-4 font-semibold"
             title={content.title}

@@ -33,18 +33,18 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
           />
           <span className="relative size-3 rounded-full" style={{ backgroundColor: high }} />
         </span>
-        <span className="flex min-w-0 flex-col gap-0.5">
+        <span className="flex min-w-0 flex-col gap-1">
           <span className="text-ink text-sm font-semibold">{copy.legend.haloTitle}</span>
           <span className="text-ink-2 text-xs leading-4">{copy.legend.haloHint}</span>
         </span>
       </div>
 
       <div className="rounded-card border-line bg-surface flex items-center gap-2 border px-3 py-2 shadow-sm">
-        <span className="flex size-10 shrink-0 items-center justify-center gap-1.5" aria-hidden>
+        <span className="flex size-10 shrink-0 items-center justify-center gap-2" aria-hidden>
           <span className="size-3 rounded-full" style={{ backgroundColor: mid }} />
           <span className="size-3 rounded-full" style={{ backgroundColor: high }} />
         </span>
-        <span className="flex min-w-0 flex-col gap-0.5">
+        <span className="flex min-w-0 flex-col gap-1">
           <span className="text-ink text-sm font-semibold">{copy.legend.pinTitle}</span>
           <span className="text-ink-2 text-xs leading-4">{copy.legend.pinHint}</span>
         </span>

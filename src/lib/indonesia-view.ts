@@ -41,9 +41,17 @@ function overviewCamera(map: MaplibreMap, panelOpen: boolean) {
   })
   // Pakai zoom natural fitBounds; lantai hanya cegah zoom terlalu jauh ke luar negeri.
   const zoom = Math.max(camera?.zoom ?? OVERVIEW_ZOOM_FLOOR, OVERVIEW_ZOOM_FLOOR)
-  const center =
-    camera?.center != null
-      ? ([camera.center.lng, camera.center.lat] as [number, number])
+  const rawCenter = camera?.center
+  const center: [number, number] =
+    rawCenter != null
+      ? Array.isArray(rawCenter)
+        ? [rawCenter[0], rawCenter[1]]
+        : typeof rawCenter === 'object' &&
+            rawCenter !== null &&
+            'lng' in rawCenter &&
+            'lat' in rawCenter
+          ? [(rawCenter as { lng: number }).lng, (rawCenter as { lat: number }).lat]
+          : INDONESIA_CENTER
       : INDONESIA_CENTER
   return { center, zoom, padding }
 }
