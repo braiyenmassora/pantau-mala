@@ -85,7 +85,7 @@ export const copy = {
 
     river: 'Debit sungai model',
     riverNote:
-      'Model debit di grid wilayah — gambaran hidrologi, bukan peringatan banjir.',
+      'Prakiraan model pada grid sekitar pusat wilayah, bukan kejadian atau peringatan banjir. Tanggal dalam UTC.',
     riverAttribution: 'Open-Meteo / GloFAS / Copernicus',
     loadRiver: 'Muat ulang debit sungai',
 
@@ -181,6 +181,10 @@ export const copy = {
     searchPlaceholder: 'Cari kabupaten/kota',
     searchClear: 'Hapus pencarian dan pilihan',
     closeDetail: 'Tutup detail',
+    backHome: 'Kembali ke pantauan',
+    tabSummary: 'Ringkasan',
+    tabDetail: 'Detail',
+    tabSources: 'Sumber',
     seismicTitle: 'Gempa Terkini BMKG',
     atmosphereTitle: 'Kondisi Atmosfer & Udara',
     avgTemp: 'Suhu rata-rata',
@@ -192,6 +196,8 @@ export const copy = {
   detail: {
     summary: 'Ringkasan',
     actions: 'Yang bisa kamu lakukan',
+    actionFireContact:
+      'Bila melihat kebakaran, hubungi Damkar di 113 atau 112. Nomor bisa berbeda di tiap daerah.',
     conditions: 'Kondisi saat ini',
     humidity: 'Kelembapan',
     wind: 'Angin',

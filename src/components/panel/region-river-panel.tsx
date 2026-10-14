@@ -1,7 +1,6 @@
 import { Waves } from 'lucide-react'
 
 import { Button, ProgressBar } from '@/components/common'
-import { DetailAccordion } from '@/components/panel/detail-accordion'
 import { useOptionalData } from '@/data/queries'
 import { dischargeSchema } from '@/data/extended-contract'
 import { copy } from '@/copy/id'
@@ -9,18 +8,12 @@ import { formatNumber } from '@/lib/format'
 
 type RegionRiverPanelProps = {
   code: string
+  /** Jika true, tanpa judul (judul digambar parent sekali). */
+  embedded?: boolean
 }
 
-/** Debit sungai model — accordion tertutup; data dimuat otomatis saat dibuka. */
-export function RegionRiverPanel({ code }: RegionRiverPanelProps) {
-  return (
-    <DetailAccordion title={copy.extra.river}>
-      <RiverBody code={code} />
-    </DetailAccordion>
-  )
-}
-
-function RiverBody({ code }: { code: string }) {
+/** Debit sungai model — dimuat otomatis; tanpa tombol ambil data. */
+export function RegionRiverPanel({ code, embedded = false }: RegionRiverPanelProps) {
   const river = useOptionalData(
     'river',
     `/regions/${encodeURIComponent(code)}/river-discharge`,
@@ -30,6 +23,9 @@ function RiverBody({ code }: { code: string }) {
 
   return (
     <div className="space-y-2">
+      {!embedded ? (
+        <h3 className="text-ink-2 text-sm font-semibold">{copy.extra.river}</h3>
+      ) : null}
       <p className="text-ink-2 text-xs leading-4">{copy.extra.riverNote}</p>
       {river.isFetching && !river.data ? <ProgressBar className="my-1" /> : null}
       {river.isError && (

@@ -27,14 +27,7 @@ export function MapSoftLoading({ className }: { className?: string }) {
           } as CSSProperties
         }
       >
-        <div className="flex flex-col items-center gap-2">
-          <div className="flex gap-1" aria-hidden>
-            <span className="bg-ink-3 size-1.5 rounded-full opacity-70" />
-            <span className="bg-ink-3 size-1.5 rounded-full opacity-50" />
-            <span className="bg-ink-3 size-1.5 rounded-full opacity-30" />
-          </div>
-          <span className="text-ink-2 text-xs">{copy.empty.mapLoading}</span>
-        </div>
+        <span className="text-ink-2 text-xs">{copy.empty.mapLoading}</span>
       </div>
     </div>
   )

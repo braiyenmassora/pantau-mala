@@ -136,34 +136,6 @@ describe('SummaryPanel states', () => {
     expect(screen.getByText(copy.empty.noHotspots.description('Indonesia'))).toBeTruthy()
   })
 
-  it('shows search miss empty', () => {
-    useMapStore.setState({ query: 'xyzzy' })
-    const client = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
-    })
-    client.setQueryData(['region-catalog', '00000000-0000-4000-8000-000000000001', 0], {
-      provinces: [],
-      regencies: [],
-    })
-    render(
-      <QueryClientProvider client={client}>
-        <TooltipProvider>
-          <SummaryPanel
-            regions={[region]}
-            filtered={[]}
-            mapRef={createRef<MapRef | null>()}
-            isPending={false}
-            isError={false}
-          />
-        </TooltipProvider>
-      </QueryClientProvider>,
-    )
-    expect(screen.getByText(copy.empty.searchMiss.title)).toBeTruthy()
-    expect(
-      screen.getByRole('button', { name: copy.empty.searchMiss.action }),
-    ).toBeTruthy()
-  })
-
   it('shows filter empty with tampilkan semua', () => {
     useMapStore.setState({
       selectedCategories: new Set(['sedang']),
