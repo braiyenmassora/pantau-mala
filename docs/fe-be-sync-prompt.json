@@ -15,7 +15,7 @@
     "backend_origin": "http://127.0.0.1:8080",
     "backend_start": "make run (repo BE, layanan dan .env existing)",
     "frontend_origin": "http://127.0.0.1:5173",
-    "frontend_start": "bun install --frozen-lockfile && bun run --bun dev",
+    "frontend_start": "pnpm install --frozen-lockfile && pnpm run dev",
     "frontend_env": {
       "VITE_DATA_URL": "/api/v1",
       "FE_ACCESS_MODE": "client",
@@ -28,7 +28,7 @@
     "backend_live": "GET /health/live -> status ok",
     "backend_ready": "GET /health/ready -> status ready",
     "frontend_session": "GET /frontend/session -> mode client, principal reader tanpa token",
-    "data_check": "bun run audit:parity",
+    "data_check": "pnpm run audit:parity",
     "limits": "Health ready bukan bukti kelengkapan/freshness provider; audit panel vs rolling GeoJSON dapat berbeda akibat waktu worker."
   },
   "wire": {

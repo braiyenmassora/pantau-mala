@@ -8,5 +8,5 @@ alwaysApply: true
 Semua perubahan kode, konfigurasi, atau dokumentasi **wajib dikerjakan di branch `develop` terlebih dahulu**:
 
 - Dilarang commit atau push langsung ke `main`.
-- Buat cabang atau kerjakan di `develop`, uji secara menyeluruh (`bun run lint`, `bun run test`, `bun run build`), lalu gabungkan (merge) ke `main` bila sudah diverifikasi.
+- Buat cabang atau kerjakan di `develop`, uji secara menyeluruh (`pnpm run lint`, `pnpm run test`, `pnpm run build`), lalu gabungkan (merge) ke `main` bila sudah diverifikasi.
 - Wajib baca file `AGENTS.md` sebelum memulai pekerjaan.

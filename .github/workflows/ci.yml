@@ -13,24 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
+      - uses: pnpm/action-setup@v4
         with:
-          bun-version-file: .bun-version
-      # Vitest/jsdom currently require Node for DOM workers. Bun owns install/dev/build.
+          version: 10.11.1
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: bun install --frozen-lockfile
-      - run: bun run --bun tsc -b --pretty false
-      - run: bun run test
-      - run: bun run --bun audit:ui
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec tsc -b --pretty false
+      - run: pnpm test
+      - run: pnpm run audit:ui
       - name: Reject production build without VITE_DATA_URL
         run: |
-          if VITE_DATA_URL= bun scripts/check-prod-data-url.mjs; then
+          if VITE_DATA_URL= node scripts/check-prod-data-url.mjs; then
             echo "expected check-prod-data-url to fail when VITE_DATA_URL is empty"
             exit 1
           fi
       - name: Production build with data URL
         env:
           VITE_DATA_URL: /api/v1
-        run: bun run --bun build
+        run: pnpm run build

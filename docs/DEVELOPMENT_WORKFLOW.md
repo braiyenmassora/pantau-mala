@@ -30,9 +30,9 @@ Baca juga `AGENTS.md`, `README.md`, dan dokumen yang relevan dengan scope peruba
 Jalankan pemeriksaan dari root repository:
 
 ```bash
-bun run lint
-bun run test
-bun run build
+pnpm run lint
+pnpm run test
+pnpm run build
 ```
 
 Untuk perubahan Worker atau gateway, lakukan juga smoke test terhadap `/frontend/session` dan endpoint data yang terdampak. Pastikan tidak ada secret di `VITE_*`, source code, `wrangler.jsonc`, atau file yang akan di-commit.
@@ -67,4 +67,4 @@ Jika repository memiliki konfigurasi berikut di GitHub Actions, deploy akan dija
 - Secret `CLOUDFLARE_API_TOKEN`: API token Cloudflare khusus deployment Worker, bukan token OAuth laptop.
 - Variable `CLOUDFLARE_ACCOUNT_ID`: account ID Cloudflare untuk Worker `pantaumala`.
 
-Jika secret tersebut belum dikonfigurasi di GitHub Actions, pipeline CI tetap lulus dan langkah deploy otomatis akan dilewati (*skipped*). Deployment preview pribadi dapat dijalankan secara langsung dari laptop melalui `bun x wrangler deploy`.
+Jika secret tersebut belum dikonfigurasi di GitHub Actions, pipeline CI tetap lulus dan langkah deploy otomatis akan dilewati (*skipped*). Deployment preview pribadi dapat dijalankan secara langsung dari laptop melalui `pnpm exec wrangler deploy`.
