@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 
 import { HintButton } from '@/components/common/hint-button'
-import { MetaLabel } from '@/components/common/meta-label'
 import { cn } from '@/lib/utils'
 
 type DataTileProps = {
@@ -30,16 +29,11 @@ export function DataTile({
   return (
     <div className={cn('rounded-card bg-surface-muted p-3', className)}>
       {(icon || label) && (
-        <MetaLabel
-          icon={icon}
-          hint={
-            hintAria && hintText ? (
-              <HintButton ariaLabel={hintAria} text={hintText} />
-            ) : undefined
-          }
-        >
-          {label}
-        </MetaLabel>
+        <div className="text-ink-2 flex items-center gap-1">
+          {icon}
+          <span className="text-xs font-medium">{label}</span>
+          {hintAria && hintText && <HintButton ariaLabel={hintAria} text={hintText} />}
+        </div>
       )}
       {children ?? (
         <p

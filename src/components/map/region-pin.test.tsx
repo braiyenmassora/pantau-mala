@@ -107,15 +107,17 @@ describe('RegionPin', () => {
     expect(pinButton()).toBeTruthy()
   })
 
-  it('sangat_tinggi pin shows risk-high circle (no Flame)', () => {
+  it('sangat_tinggi pin shows Radar with risk-high colors', () => {
     renderPin()
     const pin = pinButton()
-    expect(pin.querySelector('svg')).toBeNull()
-    expect(pin.querySelector('.bg-risk-high')?.classList.contains('rounded-full')).toBe(true)
+    const icon = pin.querySelector('svg')
+    expect(icon).toBeTruthy()
+    expect(icon?.classList.contains('fill-none')).toBe(true)
+    expect(icon?.classList.contains('stroke-risk-high')).toBe(true)
     expect(pin.textContent).toBe('')
   })
 
-  it('sedang pin shows risk-mid circle', () => {
+  it('sedang pin shows Radar with risk-mid colors', () => {
     renderPin({
       code: '62.12',
       name: 'Kab. Sedang',
@@ -124,7 +126,9 @@ describe('RegionPin', () => {
       hotspots_24h: 4,
     })
     const pin = pinButton('Kab. Sedang, risiko Sedang, 4 titik panas')
-    expect(pin.querySelector('.bg-risk-mid')?.classList.contains('rounded-full')).toBe(true)
+    const icon = pin.querySelector('svg')
+    expect(icon?.classList.contains('fill-none')).toBe(true)
+    expect(icon?.classList.contains('stroke-risk-mid')).toBe(true)
   })
 
   it('rendah map pin is a 10px risk-low dot (not RiskMarker circle)', () => {

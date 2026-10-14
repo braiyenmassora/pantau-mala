@@ -1,6 +1,5 @@
 import { buildDetectionFlag } from '@/lib/detection-flag'
 import type { Region } from '@/data/types'
-import { mapChromeClass } from '@/lib/ui-chrome'
 import { cn } from '@/lib/utils'
 
 type DetectionFlagProps = {
@@ -23,7 +22,7 @@ export function DetectionFlag({ region, className }: DetectionFlagProps) {
         className,
       )}
     >
-      <div className={cn(mapChromeClass, 'relative w-max max-w-56')}>
+      <div className="rounded-card border-line bg-surface relative w-max max-w-56 border px-3 py-2 shadow-sm">
         <p className="text-ink truncate text-xs font-semibold" title={content.title}>
           {content.title}
         </p>

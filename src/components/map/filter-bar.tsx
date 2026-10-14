@@ -134,8 +134,8 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         <PopoverContent
           align="start"
           side="bottom"
-          sideOffset={8}
-          className="rounded-card bg-surface text-ink z-[60] w-60 border-0 p-1 shadow-md ring-0"
+          sideOffset={6}
+          className="rounded-card bg-surface text-ink z-[60] w-64 border border-line p-1 shadow-md"
         >
           <div className="border-b border-line p-1">
             <div className="flex items-center gap-2 rounded-ctl bg-surface-muted px-2 py-1">

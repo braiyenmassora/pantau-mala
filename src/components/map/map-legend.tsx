@@ -1,17 +1,17 @@
 import { Thermometer, Wind } from 'lucide-react'
 
-import { copy } from '@/copy/id'
-import { RISK_CATEGORIES } from '@/lib/risk-category'
-import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
-import { mapChromeClass } from '@/lib/ui-chrome'
-import { cn } from '@/lib/utils'
-import { useMapStore } from '@/store/map'
+import { RiskMarker } from "@/components/common/risk-marker"
+import { copy } from "@/copy/id"
+import { RISK_CATEGORIES } from "@/lib/risk-category"
+import { mapOverlayGestureProps } from "@/lib/stop-map-gesture"
+import { cn } from "@/lib/utils"
+import { useMapStore } from "@/store/map"
 
 type MapLegendProps = {
   panelOpen: boolean
 }
 
-const ICON_BOX = 'flex size-9 shrink-0 items-center justify-center'
+const ICON_BOX = "flex size-9 shrink-0 items-center justify-center"
 
 export function MapLegend({ panelOpen }: MapLegendProps) {
   const showWind = useMapStore((s) => s.showWind)
@@ -23,18 +23,18 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
     <div
       data-testid="map-legend"
       className={cn(
-        'absolute bottom-4 z-30 flex flex-row flex-wrap items-stretch gap-2',
-        'transition-[left,right] duration-300 ease-[var(--ease-out-soft)]',
+        "absolute bottom-4 z-30 flex flex-row flex-wrap items-stretch gap-2",
+        "transition-[left,right] duration-300 ease-[var(--ease-out-soft)]",
         panelOpen
-          ? 'hidden sm:right-[72px] sm:left-[432px] sm:flex'
-          : 'left-4 w-max max-w-[calc(100vw-5rem)]',
+          ? "hidden sm:right-[72px] sm:left-[432px] sm:flex"
+          : "left-4 w-max max-w-[calc(100vw-5rem)]",
       )}
       {...mapOverlayGestureProps}
     >
-      <div className={cn(mapChromeClass, 'flex items-center gap-2')}>
+      <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
         <span className={`${ICON_BOX} gap-1`} aria-hidden>
-          <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: mid }} />
-          <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: high }} />
+          <RiskMarker kategori="sedang" active className="size-5 [&_svg]:size-3" />
+          <RiskMarker kategori="sangat_tinggi" active className="size-5 [&_svg]:size-3" />
         </span>
         <span className="flex min-w-0 flex-col gap-1">
           <span className="text-ink text-xs font-semibold">{copy.legend.colorTitle}</span>
@@ -42,7 +42,7 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
         </span>
       </div>
 
-      <div className={cn(mapChromeClass, 'flex items-center gap-2')}>
+      <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
         <span className={`${ICON_BOX}`} aria-hidden>
           <span className="border-line bg-surface shadow-map inline-flex items-center gap-1 rounded-full border px-2 py-1 text-risk-mid">
             <svg
@@ -67,7 +67,7 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
         </span>
       </div>
 
-      <div className={cn(mapChromeClass, 'flex items-center gap-2')}>
+      <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
         <span className={`${ICON_BOX}`} aria-hidden>
           <span
             className="h-3 w-8 rounded-full"
@@ -81,7 +81,7 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
       </div>
 
       {showTemperature && (
-        <div className={cn(mapChromeClass, 'flex items-center gap-2')}>
+        <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
           <span className={`${ICON_BOX}`} aria-hidden>
             <Thermometer className="text-brand size-4 shrink-0" strokeWidth={2} />
           </span>
@@ -93,7 +93,7 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
       )}
 
       {showWind && (
-        <div className={cn(mapChromeClass, 'flex items-center gap-2')}>
+        <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
           <span className={`${ICON_BOX}`} aria-hidden>
             <Wind className="text-ink-2 size-4 shrink-0 animate-wind-drift" strokeWidth={2} />
           </span>

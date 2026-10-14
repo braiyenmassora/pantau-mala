@@ -16,7 +16,7 @@ type ProvinceSearchRowProps = {
   mapRef: RefObject<MapRef | null>
   /** `wilayah` = jumlah kab (search); `titik` = Σ hotspots_24h (top provinsi). */
   countKind?: 'wilayah' | 'titik'
-  /** Samakan lingkaran risiko dengan pin peta (top 5). */
+  /** Samakan ikon Flame dengan pin peta (top 5). */
   riskCategory?: RiskCategory
 }
 
