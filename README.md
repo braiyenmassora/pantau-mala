@@ -55,7 +55,7 @@ PANTAU_DEV_TEST_CONFIG=/path/to/private/dev-access.json bun run test -- run src/
 
 ### Cloudflare Workers
 
-Konfigurasi `wrangler.jsonc` mengirim assets `dist` bersama `worker.ts`. Route `/api`, `/api/*`, `/auth`, `/auth/*`, dan `/frontend/session` dijalankan melalui Worker sebelum fallback SPA. Gateway memakai mode client read-only. Contoh `PANTAU_API_ORIGIN` memakai backend lokal `http://127.0.0.1:8080`; sebelum deploy, atur origin HTTPS backend milik deployment tujuan dan slug client yang sesuai. Worker cloud tidak dapat mengakses backend loopback komputer lokal.
+Konfigurasi `wrangler.jsonc` mengirim assets `dist` bersama `worker.ts`. Route `/api`, `/api/*`, `/auth`, `/auth/*`, dan `/frontend/session` dijalankan melalui Worker sebelum fallback SPA. Gateway memakai mode client read-only. Deployment Worker memakai `PANTAU_API_ORIGIN=https://api.pantaumala.live`. Pengembangan lokal tetap memakai `http://127.0.0.1:8080` dari `.env.example`. Untuk deployment lain, atur origin HTTPS backend dan slug client yang sesuai. Worker cloud tidak dapat mengakses backend loopback komputer lokal.
 
 ```sh
 bun run --bun build
