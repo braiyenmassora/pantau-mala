@@ -76,9 +76,9 @@
   /* Motion — PDF §5 */
   --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
   --animate-view-in: view-in 0.22s var(--ease-out-soft) both;
-  /* Merah beat lebih cepat; oranye lebih longgar. */
-  --animate-halo-high: halo-pulse 1.6s var(--ease-out-soft) infinite;
-  --animate-halo-mid: halo-pulse 3.2s var(--ease-out-soft) infinite;
+  /* PDF §4: Sangat tinggi 2,6 s · Sedang 3,4 s. */
+  --animate-halo-high: halo-pulse 2.6s var(--ease-out-soft) infinite;
+  --animate-halo-mid: halo-pulse 3.4s var(--ease-out-soft) infinite;
 }
 
 @layer base {
@@ -114,13 +114,14 @@
   animation: indeterminate 1.5s var(--ease-out-soft) infinite;
 }
 
+/* Scale/opacity only — Tailwind v4 `translate` must not fight `transform`. */
 @keyframes halo-pulse {
   0% {
-    transform: translate(-50%, -50%) scale(0.85);
+    transform: scale(0.85);
     opacity: 0.58;
   }
   100% {
-    transform: translate(-50%, -50%) scale(1.52);
+    transform: scale(1.52);
     opacity: 0;
   }
 }

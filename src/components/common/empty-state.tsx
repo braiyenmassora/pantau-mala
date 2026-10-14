@@ -27,7 +27,7 @@ export function EmptyState({
   titleId,
   className,
 }: EmptyStateProps) {
-  const titleClass = 'text-xs font-semibold text-ink'
+  const titleClass = 'text-sm font-semibold text-ink'
   const body = (
     <div className="flex items-start gap-2">
       <span className="bg-brand-soft text-brand flex size-8 shrink-0 items-center justify-center rounded-full">

@@ -2,18 +2,22 @@ import { CloudOff, Filter, SearchX, ShieldCheck } from 'lucide-react'
 import type { RefObject } from 'react'
 import { useMemo } from 'react'
 
-import { EmptyState, HintButton, SectionLabel, Skeleton } from '@/components/common'
+import { EmptyState, SectionLabel, Skeleton } from '@/components/common'
+import { Brand } from '@/components/common/brand'
 import { CatalogRegionRow } from '@/components/panel/catalog-region-row'
 import { LocationCard } from '@/components/panel/location-card'
 import { NoHotspotDetail } from '@/components/panel/no-hotspot-detail'
+import { PanelFilters } from '@/components/panel/panel-filters'
 import { ProvinceSearchRow } from '@/components/panel/province-search-row'
 import { RegionDetailPanel } from '@/components/panel/region-detail-panel'
 import { RegionRow } from '@/components/panel/region-row'
+import { TopProvincesList } from '@/components/panel/top-provinces-list'
 import type { MapRef } from '@/components/ui/map'
 import { useRegionCatalog, useMeta } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import { filterRegions } from '@/lib/filter-regions'
+import { formatDateTime } from '@/lib/format'
 import { aggregateByProvince } from '@/lib/province-aggregates'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { searchWilayah } from '@/lib/search-wilayah'
@@ -61,7 +65,6 @@ export function SummaryPanel({
     return daftar.regencies.find((k) => k.code === selectedCode) ?? null
   }, [selected, selectedCode, daftar])
 
-  /** Daftar top ignore search query — province + category only. */
   const viewRegions = useMemo(
     () =>
       filterRegions(regions, {
@@ -114,6 +117,9 @@ export function SummaryPanel({
       : []
   const list = searching || nationalView ? [] : filtered.slice(0, 5)
   const noHotspots = computeSummary(viewRegions).todayTotal === 0
+  const updatedStamp = meta?.updated_at
+    ? copy.detail.updatedAt(formatDateTime(meta.updated_at, 'WIB'))
+    : null
 
   const searchEmpty =
     searching &&
@@ -138,37 +144,31 @@ export function SummaryPanel({
   }
 
   return (
-    <div key={`summary-${province}`} className="space-y-4">
-      <header className="space-y-2">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="text-ink min-w-0 text-lg font-semibold sm:text-xl">{title}</h2>
-          <HintButton
-            className="shrink-0"
-            ariaLabel={copy.panel.betaTooltip}
-            text={copy.panel.betaTooltip}
-          />
-        </div>
-        <p className="text-ink-2 text-sm text-pretty">{copy.panel.subtitle}</p>
-      </header>
-
-      {!searching && <LocationCard regions={regions} />}
-
-      {!searching && noHotspots && !filtering && (
-        <EmptyState
-          icon={ShieldCheck}
-          title={
-            meta?.status.firms === 'ok'
-              ? copy.empty.noHotspots.title
-              : copy.extra.noDataset
-          }
-          description={
-            meta?.status.firms === 'ok'
-              ? copy.empty.noHotspots.description(wilayahLabel)
-              : copy.extra.noDatasetNote
-          }
-        />
+    <div key={`summary-${province}`} className="space-y-6">
+      {/* 1–3. Brand, judul, catatan */}
+      {!searching && (
+        <header className="space-y-3">
+          <Brand textOnly />
+          <div className="space-y-1">
+            <h2 className="text-ink text-xl font-semibold">{title}</h2>
+            <p className="text-ink-2 text-sm">{copy.panel.subtitle}</p>
+            {updatedStamp ? (
+              <p className="text-ink-3 text-xs">{updatedStamp}</p>
+            ) : null}
+          </div>
+          <p role="note" className="text-ink-2 text-xs leading-4">
+            {copy.panel.limitationNote}
+          </p>
+        </header>
       )}
 
+      {/* 4. Filter */}
+      {!searching && <PanelFilters regions={regions} />}
+
+      {/* 5. Dekat kamu */}
+      {!searching && <LocationCard regions={regions} />}
+
+      {/* Search results */}
       {searching ? (
         <section className="space-y-4">
           <SectionLabel>{copy.panel.searchResults}</SectionLabel>
@@ -221,18 +221,29 @@ export function SummaryPanel({
             </>
           )}
         </section>
-      ) : noHotspots && !filtering ? null : (
-        <section>
-          <SectionLabel className="mb-2">
-            {nationalView ? copy.panel.topRisk : copy.panel.topKab}
-          </SectionLabel>
+      ) : (
+        /* 6. Provinsi / kab terbanyak */
+        <section className="space-y-2">
+          <div>
+            <SectionLabel>
+              {nationalView ? copy.panel.topRisk : copy.panel.topKab}
+            </SectionLabel>
+            {nationalView ? (
+              <p className="text-ink-2 mt-1 text-xs leading-4">
+                {copy.panel.topRiskHint}
+              </p>
+            ) : null}
+          </div>
+
           {nationalView ? (
             filtering && viewRegions.length === 0 ? (
               <EmptyState
                 icon={Filter}
                 title={copy.empty.noRegionsFilter.title}
                 description={copy.empty.noRegionsFilter.description(
-                  [...selectedCategories].map((c) => RISK_CATEGORIES[c].label).join(', '),
+                  [...selectedCategories]
+                    .map((c) => RISK_CATEGORIES[c].label)
+                    .join(', '),
                   wilayahLabel,
                 )}
                 action={{
@@ -242,7 +253,7 @@ export function SummaryPanel({
               />
             ) : daftarPending && !daftar ? (
               <Skeleton className="min-h-16 w-full" />
-            ) : topProvinces.length === 0 ? (
+            ) : topProvinces.length === 0 || (noHotspots && !filtering) ? (
               <EmptyState
                 icon={ShieldCheck}
                 title={
@@ -257,23 +268,14 @@ export function SummaryPanel({
                 }
               />
             ) : (
-              <ul className="flex flex-col">
-                {topProvinces.map((agg) => {
+              <TopProvincesList
+                items={topProvinces.flatMap((agg) => {
                   const prov = daftar?.provinces.find((p) => p.name === agg.name)
-                  if (!prov) return null
-                  return (
-                    <li key={prov.code}>
-                      <ProvinceSearchRow
-                        province={prov}
-                        hotspotCount={agg.hotspots_24h}
-                        countKind="titik"
-                        riskCategory={agg.risk_category}
-                        mapRef={mapRef}
-                      />
-                    </li>
-                  )
+                  return prov
+                    ? [{ province: prov, hotspots_24h: agg.hotspots_24h }]
+                    : []
                 })}
-              </ul>
+              />
             )
           ) : list.length === 0 ? (
             filtering ? (
@@ -281,7 +283,9 @@ export function SummaryPanel({
                 icon={Filter}
                 title={copy.empty.noRegionsFilter.title}
                 description={copy.empty.noRegionsFilter.description(
-                  [...selectedCategories].map((c) => RISK_CATEGORIES[c].label).join(', '),
+                  [...selectedCategories]
+                    .map((c) => RISK_CATEGORIES[c].label)
+                    .join(', '),
                   wilayahLabel,
                 )}
                 action={{
@@ -321,8 +325,9 @@ export function SummaryPanel({
 
 function SummarySkeleton() {
   return (
-    <div className="space-y-4" aria-busy aria-label={copy.common.loading}>
-      <Skeleton className="h-32 w-full" />
+    <div className="space-y-6" aria-busy>
+      <Skeleton className="h-24 w-full" />
+      <Skeleton className="h-20 w-full" />
       <ul className="flex flex-col gap-2">
         {Array.from({ length: 5 }, (_, i) => (
           <li key={i}>

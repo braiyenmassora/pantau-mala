@@ -83,7 +83,7 @@ export async function sessionRequest(path: string, method = 'POST', body: unknow
       res.status === 429
         ? 'Terlalu banyak percobaan. Coba lagi setelah satu menit.'
         : res.status === 401
-          ? 'Username atau password salah, atau sesi telah berakhir.'
+          ? 'Nama pengguna atau kata sandi salah, atau sesi telah berakhir.'
           : 'Layanan akses belum tersedia. Coba lagi.',
     )
   return res.status === 204 ? null : (res.json() as Promise<unknown>)

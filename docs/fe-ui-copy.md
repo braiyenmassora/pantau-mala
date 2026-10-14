@@ -96,7 +96,7 @@ Sebelum ship copy, tanya: _Kalau dibaca warga tanpa konteks teknis, apakah merek
 | Catalog tanpa match regions | Tidak ada titik panas aktif                         |
 | Nearby                      | Titik panas dalam 25 km                             |
 | Gagal load                  | Gagal memuat data. Coba lagi.                       |
-| Izinkan lokasi              | Izinkan lokasi untuk melihat titik panas dekat Anda |
+| Izinkan lokasi              | Izinkan lokasi untuk melihat titik panas dekat kamu |
 | Loading                     | Memuat data…                                        |
 
 Hindari di label utama: “hotspot”, “api”, “kebakaran”, “anomali termal”, “BREAKING”, ALL CAPS, emoji berlebihan.

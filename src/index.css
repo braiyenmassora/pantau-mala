@@ -65,7 +65,8 @@
   --muted-foreground: var(--color-ink-2);
   --accent: var(--color-surface-muted);
   --accent-foreground: var(--color-ink);
-  --destructive: var(--color-risk-high);
+  /* Error UI ≠ warna risiko pin. */
+  --destructive: var(--color-ink);
   --border: var(--color-line);
   --input: var(--color-line);
   --ring: var(--color-brand);

@@ -60,13 +60,13 @@ const sample: Region[] = [
 ]
 
 describe('filterRegions', () => {
-  it('sorts by kategori then titik panas; excludes rendah', () => {
+  it('sorts by kategori then titik panas; includes rendah', () => {
     const result = filterRegions(sample, {
       province: 'Semua',
       selectedCategories: new Set(),
       query: '',
     })
-    expect(result.map((r) => r.code)).toEqual(['62.11', '64.02'])
+    expect(result.map((r) => r.code)).toEqual(['62.11', '64.02', '61.12'])
   })
 
   it('filters by province', () => {
@@ -79,7 +79,7 @@ describe('filterRegions', () => {
     expect(result[0]?.code).toBe('64.02')
   })
 
-  it('filters by selected categories within map risks only', () => {
+  it('filters by selected categories', () => {
     const result = filterRegions(sample, {
       province: 'Semua',
       selectedCategories: new Set(['sedang']),
@@ -88,13 +88,13 @@ describe('filterRegions', () => {
     expect(result.map((r) => r.code)).toEqual(['64.02'])
   })
 
-  it('drops rendah even when that chip is selected', () => {
+  it('keeps rendah when that chip is selected', () => {
     const result = filterRegions(sample, {
       province: 'Semua',
       selectedCategories: new Set(['rendah']),
       query: '',
     })
-    expect(result).toEqual([])
+    expect(result.map((r) => r.code)).toEqual(['61.12'])
   })
 
   it('searches names with Fuse.js', () => {
@@ -132,6 +132,7 @@ describe('filterRegions', () => {
       selectedCategories: new Set(),
       query: '',
     })
-    expect(result.map((r) => r.code)).toEqual(['35.17', '35.01'])
+    // 11 → sangat tinggi, 4 → sedang, 0 → rendah (tetap masuk daftar)
+    expect(result.map((r) => r.code)).toEqual(['35.17', '35.01', '35.99'])
   })
 })

@@ -14,7 +14,6 @@ const variantClass = {
 const sizeClass = {
   md: 'h-10 px-4 text-base font-semibold',
   sm: 'h-9 px-3 text-sm font-semibold',
-  xs: 'h-9 px-3 text-sm font-semibold',
 } as const
 
 type AppButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {

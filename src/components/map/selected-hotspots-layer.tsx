@@ -99,7 +99,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                 <span
                   aria-hidden
                   className={cn(
-                    'pointer-events-none absolute top-1/2 left-1/2 size-3.5 rounded-full border-2',
+                    'pointer-events-none absolute top-1/2 left-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2',
                     pulseClass,
                   )}
                   style={{ borderColor: withAlpha(style.dot, 0.65) }}
