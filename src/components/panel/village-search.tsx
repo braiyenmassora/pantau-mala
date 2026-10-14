@@ -48,7 +48,7 @@ export function VillageSearch({ value, onChange }: VillageSearchProps) {
         <div
           ref={anchorRef}
           className={cn(
-            'group flex h-9 items-center gap-2 rounded-ctl border border-line/60 bg-surface-muted px-2 shadow-none',
+            'group flex h-12 items-center gap-2 rounded-full border border-line bg-surface px-3 shadow-sm',
             'transition-all duration-200 ease-[var(--ease-out-soft)]',
             'focus-within:border-brand focus-within:bg-surface focus-within:shadow-sm',
           )}
@@ -123,7 +123,7 @@ export function VillageSearch({ value, onChange }: VillageSearchProps) {
                 inputRef.current?.focus()
               }}
             >
-              <X className="size-3.5" strokeWidth={2} aria-hidden />
+              <X className="size-4" strokeWidth={2} aria-hidden />
             </button>
           )}
         </div>

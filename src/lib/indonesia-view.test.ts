@@ -9,6 +9,8 @@ function mockMap() {
     setMinZoom: vi.fn(),
     stop: vi.fn(),
     fitBounds: vi.fn(),
+    jumpTo: vi.fn(),
+    easeTo: vi.fn(),
     cameraForBounds: vi.fn(() => ({ zoom: 4.2, center: { lng: 118, lat: -2 } })),
     getZoom: vi.fn(() => 4.2),
     getBounds: () => ({
@@ -47,6 +49,7 @@ describe('fitProvinceBounds', () => {
   it('cancels prior national moveend so province fit is not clamped later', () => {
     const map = mockMap()
     fitIndonesia(map as never, true, 600)
+    expect(map.easeTo).toHaveBeenCalled()
     expect(map.pending('moveend')).toBe(1)
 
     fitProvinceBounds(map as never, [110, -4, 116, 0], true, 600)
@@ -56,5 +59,15 @@ describe('fitProvinceBounds', () => {
     map.setMaxBounds.mockClear()
     map.emit('moveend')
     expect(map.setMaxBounds).not.toHaveBeenCalled()
+  })
+
+  it('uses natural fit zoom so Sabang–Merauke (Papua) stays in view', () => {
+    const map = mockMap()
+    const zoom = fitIndonesia(map as never, false, 0)
+    // mock cameraForBounds zoom 4.2 — jangan diangkat ke floor tinggi yang memotong Papua
+    expect(zoom).toBe(4.2)
+    expect(map.jumpTo).toHaveBeenCalledWith(
+      expect.objectContaining({ zoom: 4.2 }),
+    )
   })
 })

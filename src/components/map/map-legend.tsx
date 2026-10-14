@@ -1,21 +1,16 @@
-import { Thermometer, Wind } from 'lucide-react'
-
-import { RiskMarker } from "@/components/common/risk-marker"
-import { copy } from "@/copy/id"
-import { RISK_CATEGORIES } from "@/lib/risk-category"
-import { mapOverlayGestureProps } from "@/lib/stop-map-gesture"
-import { cn } from "@/lib/utils"
-import { useMapStore } from "@/store/map"
+import { copy } from '@/copy/id'
+import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
+import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
+import { cn } from '@/lib/utils'
 
 type MapLegendProps = {
   panelOpen: boolean
 }
 
-const ICON_BOX = "flex size-9 shrink-0 items-center justify-center"
+const ICON_BOX = 'relative flex size-10 shrink-0 items-center justify-center'
 
+/** Legend kiri bawah — pin + beat (merah cepat, oranye lebih pelan). */
 export function MapLegend({ panelOpen }: MapLegendProps) {
-  const showWind = useMapStore((s) => s.showWind)
-  const showTemperature = useMapStore((s) => s.showTemperature)
   const mid = RISK_CATEGORIES.sedang.dot
   const high = RISK_CATEGORIES.sangat_tinggi.dot
 
@@ -23,86 +18,37 @@ export function MapLegend({ panelOpen }: MapLegendProps) {
     <div
       data-testid="map-legend"
       className={cn(
-        "absolute bottom-4 z-30 flex flex-row flex-wrap items-stretch gap-2",
-        "transition-[left,right] duration-300 ease-[var(--ease-out-soft)]",
+        'absolute bottom-4 z-30 flex flex-row flex-wrap items-stretch gap-2',
         panelOpen
-          ? "hidden sm:right-[72px] sm:left-[432px] sm:flex"
-          : "left-4 w-max max-w-[calc(100vw-5rem)]",
+          ? 'hidden sm:right-[72px] sm:left-[432px] sm:flex'
+          : 'left-4 w-max max-w-[calc(100vw-5rem)]',
       )}
       {...mapOverlayGestureProps}
     >
-      <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
-        <span className={`${ICON_BOX} gap-1`} aria-hidden>
-          <RiskMarker kategori="sedang" active className="size-5 [&_svg]:size-3" />
-          <RiskMarker kategori="sangat_tinggi" active className="size-5 [&_svg]:size-3" />
-        </span>
-        <span className="flex min-w-0 flex-col gap-1">
-          <span className="text-ink text-xs font-semibold">{copy.legend.colorTitle}</span>
-          <span className="text-ink-2 text-xs leading-4">{copy.legend.colorHint}</span>
-        </span>
-      </div>
-
-      <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
-        <span className={`${ICON_BOX}`} aria-hidden>
-          <span className="border-line bg-surface shadow-map inline-flex items-center gap-1 rounded-full border px-2 py-1 text-risk-mid">
-            <svg
-              viewBox="0 0 20 20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.75}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="size-3.5 shrink-0"
-              aria-hidden="true"
-            >
-              <circle cx="10" cy="10" r="2" fill="currentColor" stroke="none" />
-              <path d="M13.5 6.5a5 5 0 0 1 0 7m-7 0a5 5 0 0 1 0-7" />
-            </svg>
-            <span className="font-mono text-xs font-semibold text-ink">M</span>
-          </span>
-        </span>
-        <span className="flex min-w-0 flex-col gap-1">
-          <span className="text-ink text-xs font-semibold">{copy.legend.seismicTitle}</span>
-          <span className="text-ink-2 text-xs leading-4">{copy.legend.seismicHint}</span>
-        </span>
-      </div>
-
-      <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
-        <span className={`${ICON_BOX}`} aria-hidden>
+      <div className="rounded-card border-line bg-surface flex items-center gap-2 border px-3 py-2 shadow-sm">
+        <span className={ICON_BOX} aria-hidden>
           <span
-            className="h-3 w-8 rounded-full"
-            style={{ background: `linear-gradient(90deg, ${mid}, ${high})` }}
+            className="animate-halo-high pointer-events-none absolute top-1/2 left-1/2 size-7 -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
+            style={{ borderColor: withAlpha(high, 0.55) }}
           />
+          <span className="relative size-3 rounded-full" style={{ backgroundColor: high }} />
         </span>
-        <span className="flex min-w-0 flex-col gap-1">
-          <span className="text-ink text-xs font-semibold">{copy.legend.haloTitle}</span>
+        <span className="flex min-w-0 flex-col gap-0.5">
+          <span className="text-ink text-sm font-semibold">{copy.legend.haloTitle}</span>
           <span className="text-ink-2 text-xs leading-4">{copy.legend.haloHint}</span>
         </span>
       </div>
 
-      {showTemperature && (
-        <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
-          <span className={`${ICON_BOX}`} aria-hidden>
-            <Thermometer className="text-brand size-4 shrink-0" strokeWidth={2} />
-          </span>
-          <span className="flex min-w-0 flex-col gap-1">
-            <span className="text-ink text-xs font-semibold">{copy.legend.temperatureTitle}</span>
-            <span className="text-ink-2 text-xs leading-4">{copy.legend.temperatureHint}</span>
-          </span>
-        </div>
-      )}
-
-      {showWind && (
-        <div className="rounded-card border-line bg-surface-muted flex items-center gap-2 border px-3 py-2 shadow-sm">
-          <span className={`${ICON_BOX}`} aria-hidden>
-            <Wind className="text-ink-2 size-4 shrink-0 animate-wind-drift" strokeWidth={2} />
-          </span>
-          <span className="flex min-w-0 flex-col gap-1">
-            <span className="text-ink text-xs font-semibold">{copy.legend.windTitle}</span>
-            <span className="text-ink-2 text-xs leading-4">{copy.legend.windHint}</span>
-          </span>
-        </div>
-      )}
+      <div className="rounded-card border-line bg-surface flex items-center gap-2 border px-3 py-2 shadow-sm">
+        <span className="flex size-10 shrink-0 items-center justify-center gap-1.5" aria-hidden>
+          <span className="size-3 rounded-full" style={{ backgroundColor: mid }} />
+          <span className="size-3 rounded-full" style={{ backgroundColor: high }} />
+        </span>
+        <span className="flex min-w-0 flex-col gap-0.5">
+          <span className="text-ink text-sm font-semibold">{copy.legend.pinTitle}</span>
+          <span className="text-ink-2 text-xs leading-4">{copy.legend.pinHint}</span>
+        </span>
+      </div>
     </div>
   )
 }

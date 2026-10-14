@@ -7,24 +7,21 @@ import { RiskMarker } from '@/components/common/risk-marker'
 describe('RiskMarker', () => {
   afterEach(() => cleanup())
 
-  it('sangat_tinggi shows Radar risk-high', () => {
+  it('sangat_tinggi shows red round dot', () => {
     const { container } = render(<RiskMarker kategori="sangat_tinggi" />)
-    const svg = container.querySelector('svg')
-    expect(svg?.classList.contains('fill-none')).toBe(true)
-    expect(svg?.classList.contains('stroke-risk-high')).toBe(true)
+    expect(container.querySelector('svg')).toBeNull()
+    expect(container.querySelector('.bg-risk-high')?.classList.contains('rounded-full')).toBe(true)
   })
 
-  it('sedang shows Radar risk-mid', () => {
+  it('sedang shows orange round dot', () => {
     const { container } = render(<RiskMarker kategori="sedang" />)
-    const svg = container.querySelector('svg')
-    expect(svg?.classList.contains('fill-none')).toBe(true)
-    expect(svg?.classList.contains('stroke-risk-mid')).toBe(true)
+    expect(container.querySelector('svg')).toBeNull()
+    expect(container.querySelector('.bg-risk-mid')?.classList.contains('rounded-full')).toBe(true)
   })
 
-  it('rendah shows 8px risk-low dot without icon', () => {
+  it('rendah shows green round dot', () => {
     const { container } = render(<RiskMarker kategori="rendah" />)
     expect(container.querySelector('svg')).toBeNull()
-    const dot = container.querySelector('.bg-risk-low')
-    expect(dot?.classList.contains('size-2')).toBe(true)
+    expect(container.querySelector('.bg-risk-low')?.classList.contains('rounded-full')).toBe(true)
   })
 })

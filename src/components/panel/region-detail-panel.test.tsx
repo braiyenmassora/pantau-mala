@@ -40,6 +40,7 @@ const pulangPisau: Region = {
   },
   summary: 'Ringkasan uji',
   actions: ['Saran uji'],
+  score: 82,
 }
 
 function renderDetail(region: Region) {

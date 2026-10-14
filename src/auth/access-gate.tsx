@@ -3,7 +3,7 @@ import { copy } from '@/copy/id'
 import { sessionRequest, switchClient } from './session'
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
-import { Eye, EyeOff, LogOut } from 'lucide-react'
+import { Eye, EyeOff, Loader2, LogOut } from 'lucide-react'
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { login, logout, restoreSession, useSession } from './session'
 import { focusRing } from '@/components/common/focus-ring'
@@ -40,6 +40,16 @@ export function AccessGate({ children }: { children: ReactNode }) {
     }
   }
   if (status === 'authenticated') return children
+  if (status === 'restoring') {
+    return (
+      <main className="bg-map-bg text-ink flex min-h-dvh flex-col items-center justify-center gap-3 p-4">
+        <Loader2 className="text-brand size-8 animate-spin" strokeWidth={2} aria-hidden />
+        <p role="status" className="text-ink-2 text-sm">
+          {copy.common.loading}
+        </p>
+      </main>
+    )
+  }
   return (
     <main className="bg-map-bg text-ink flex min-h-dvh items-center justify-center p-4">
       <section
@@ -50,10 +60,8 @@ export function AccessGate({ children }: { children: ReactNode }) {
           <Brand />
         </h1>
         <p className="text-ink-2 text-base">Masuk untuk mengakses data workspace kamu.</p>
-        {accessMode === 'client' && status !== 'restoring' ? (
+        {accessMode === 'client' ? (
           <div className="space-y-4"><p role="alert">{accessError || 'Akses client belum tersedia.'}</p><button type="button" className={`rounded-ctl border-line h-11 border px-4 ${focusRing}`} onClick={() => void restoreSession()}>Coba lagi</button></div>
-        ) : status === 'restoring' ? (
-          <p role="status">Memeriksa sesi…</p>
         ) : (
           <form
             onSubmit={(e) => {
@@ -96,9 +104,9 @@ export function AccessGate({ children }: { children: ReactNode }) {
                   className={`absolute top-0 right-0 flex size-11 items-center justify-center ${focusRing}`}
                 >
                   {show ? (
-                    <EyeOff size={18} aria-hidden />
+                    <EyeOff className="size-4.5" strokeWidth={2} aria-hidden />
                   ) : (
-                    <Eye size={18} aria-hidden />
+                    <Eye className="size-4.5" strokeWidth={2} aria-hidden />
                   )}
                 </button>
               </div>
@@ -199,7 +207,7 @@ export function SessionControl() {
             .finally(() => setBusy(false))
         }}
       >
-        <LogOut className="size-4" aria-hidden />
+        <LogOut className="size-4" strokeWidth={2} aria-hidden />
       </button>
       {error && (
         <p role="alert" className="w-full">

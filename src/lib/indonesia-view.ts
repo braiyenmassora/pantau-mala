@@ -13,16 +13,39 @@ export const INDONESIA_CENTER: [number, number] = [118, -2]
 export const PLACE_ZOOM = 8
 /** Location framing: nearby context without hiding the national overview. */
 export const LOCATION_ZOOM = 5.5
+/**
+ * Lantai zoom overview nasional — jangan naikkan di atas cameraForBounds:
+ * Sabang→Merauke harus muat (Papua tidak boleh terpotong).
+ */
+export const OVERVIEW_ZOOM_FLOOR = 3.8
 
+/**
+ * Padding area aman agar fit nasional tidak ketutup chip/legend/panel.
+ */
 export function getMapPadding(panelOpen: boolean): PaddingOptions {
   if (typeof window !== 'undefined' && window.innerWidth < 640)
-    return { left: 16, top: 68, right: 16, bottom: 64 }
+    return { left: 16, top: 72, right: 16, bottom: 88 }
   return {
-    left: panelOpen ? 432 : 16,
-    top: 68,
-    right: 72,
-    bottom: 64,
+    left: panelOpen ? 432 : 24,
+    top: 72,
+    right: 80,
+    bottom: 96,
   }
+}
+
+function overviewCamera(map: MaplibreMap, panelOpen: boolean) {
+  const padding = getMapPadding(panelOpen)
+  const camera = map.cameraForBounds(INDONESIA_BOUNDS, {
+    padding,
+    absolutePadding: true,
+  })
+  // Pakai zoom natural fitBounds; lantai hanya cegah zoom terlalu jauh ke luar negeri.
+  const zoom = Math.max(camera?.zoom ?? OVERVIEW_ZOOM_FLOOR, OVERVIEW_ZOOM_FLOOR)
+  const center =
+    camera?.center != null
+      ? ([camera.center.lng, camera.center.lat] as [number, number])
+      : INDONESIA_CENTER
+  return { center, zoom, padding }
 }
 
 /** Matches --ease-out-soft cubic-bezier(0.2, 0.7, 0.2, 1). */
@@ -118,29 +141,30 @@ export function applyDynamicMaxBounds(map: MaplibreMap) {
 }
 
 /**
- * Fit Indonesia into the padded view, set minZoom = fitZoom − 0.5,
- * then lock maxBounds from the resulting view (+10% each side).
+ * Overview nasional dengan zoom lantai agar nama provinsi kebaca.
+ * Lalu kunci maxBounds dari viewport (+10%).
  */
 export function fitIndonesia(map: MaplibreMap, panelOpen: boolean, duration = 0): number {
-  const padding = getMapPadding(panelOpen)
+  const { center, zoom, padding } = overviewCamera(map, panelOpen)
   cancelPendingMaxBounds()
   clearMapLimits(map)
   map.stop()
-  map.fitBounds(INDONESIA_BOUNDS, {
-    padding,
-    absolutePadding: true,
-    duration,
-    easing: easeOutSoft,
-  })
-  const camera = map.cameraForBounds(INDONESIA_BOUNDS, {
-    padding,
-    absolutePadding: true,
-  })
-  const fitZoom = camera?.zoom ?? map.getZoom()
-  map.setMinZoom(fitZoom - 0.5)
-
+  if (duration <= 0) {
+    map.jumpTo({ center, zoom, bearing: 0, pitch: 0, padding })
+  } else {
+    map.easeTo({
+      center,
+      zoom,
+      bearing: 0,
+      pitch: 0,
+      padding,
+      duration,
+      easing: easeOutSoft,
+    })
+  }
+  map.setMinZoom(Math.max(OVERVIEW_ZOOM_FLOOR, zoom - 0.35))
   scheduleMaxBounds(map, duration)
-  return fitZoom
+  return zoom
 }
 
 /**
@@ -148,44 +172,31 @@ export function fitIndonesia(map: MaplibreMap, panelOpen: boolean, duration = 0)
  * camera on the fit view when the user was zoomed in.
  */
 export function refreshFitMinZoom(map: MaplibreMap, panelOpen: boolean): number {
-  const padding = getMapPadding(panelOpen)
+  const { center, zoom, padding } = overviewCamera(map, panelOpen)
   const prev = {
     center: map.getCenter(),
     zoom: map.getZoom(),
     bearing: map.getBearing(),
     pitch: map.getPitch(),
   }
+  const minZoom = Math.max(OVERVIEW_ZOOM_FLOOR, zoom - 0.35)
+  const wasOverview = prev.zoom <= zoom + 0.15
 
   clearMapLimits(map)
-  const camera = map.cameraForBounds(INDONESIA_BOUNDS, {
-    padding,
-    absolutePadding: true,
-  })
-  const fitZoom = camera?.zoom ?? map.getZoom()
-  const wasOverview = prev.zoom <= fitZoom + 0.15
-
-  if (camera?.center != null && camera.zoom != null) {
-    map.jumpTo({
-      center: camera.center,
-      zoom: camera.zoom,
-      bearing: 0,
-      pitch: 0,
-      padding,
-    })
-  }
+  map.jumpTo({ center, zoom, bearing: 0, pitch: 0, padding })
   applyDynamicMaxBounds(map)
-  map.setMinZoom(fitZoom - 0.5)
+  map.setMinZoom(minZoom)
 
   if (!wasOverview) {
     map.jumpTo({
       center: prev.center,
-      zoom: Math.max(prev.zoom, fitZoom - 0.5),
+      zoom: Math.max(prev.zoom, minZoom),
       bearing: prev.bearing,
       pitch: prev.pitch,
     })
   }
 
-  return fitZoom
+  return zoom
 }
 
 export function isIndonesiaView(map: MaplibreMap, fitZoom: number): boolean {

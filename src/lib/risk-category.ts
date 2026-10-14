@@ -7,52 +7,53 @@ export type RiskCategoryStyle = {
   text: string
 }
 
-/** Mirrors `--color-brand` in tokens.css — for MapLibre / SVG that need resolved colors. */
-export const BRAND_HEX = '#C2410C'
+/** Mirrors `--color-brand` — PDF §1 hijau brand. */
+export const BRAND_HEX = '#1E6B45'
 
-export const LOCATION_HEX = '#0369A1'
+/** Lokasi pengguna = brand (PDF: tidak ada biru). */
+export const LOCATION_HEX = '#1E6B45'
 
-/** Atmospheric extreme heat accent — unified single-hue brand tint, no rainbow. */
+/** Atmospheric extreme heat — brand/risk-high family. */
 export const TEMP_HOT_HEX = '#C2410C'
-export const TEMP_TEXT_HEX = '#0F172A'
+export const TEMP_TEXT_HEX = '#14261B'
 export const TEMP_HALO_HEX = '#FFFFFF'
 
 /** Line / border hex — mirrors `--color-line`. */
-export const LINE_HEX = '#E2E8F0'
+export const LINE_HEX = '#E3E9E4'
 
-/** Warna risiko — hex untuk MapLibre / SVG (selaras tokens.css Pantau Mala). */
+/** Warna risiko — hex MapLibre / SVG (PDF §1). */
 export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
   tidak_tersedia: {
     label: 'Belum dinilai',
-    dot: '#64748B',
-    tint: '#F8FAFC',
-    text: '#475569',
+    dot: '#7A8A80',
+    tint: '#F6F8F6',
+    text: '#52645A',
   },
   sangat_tinggi: {
     label: 'Sangat tinggi',
-    dot: '#DC2626',
-    tint: '#FEE2E2',
-    text: '#991B1B',
+    dot: '#C2410C',
+    tint: '#F8D7D0',
+    text: '#8E2414',
   },
   sedang: {
     label: 'Sedang',
-    dot: '#D97706',
-    tint: '#FEF3C7',
-    text: '#92400E',
+    dot: '#D99A0B',
+    tint: '#FBF0CF',
+    text: '#6B4E00',
   },
   rendah: {
     label: 'Rendah',
-    dot: '#15803D',
-    tint: '#F0FDF4',
-    text: '#166534',
+    dot: '#2E8B57',
+    tint: '#E4F0E8',
+    text: '#1E5A3A',
   },
 }
 
-/** Active map pin lift — docs §5; kept here so audit allows the rgba. */
-export const PIN_ACTIVE_BOX_SHADOW = '0 2px 8px rgba(15, 23, 42, 0.2)'
+/** Active map pin lift — PDF shadow-map family. */
+export const PIN_ACTIVE_BOX_SHADOW = '0 2px 8px rgba(20, 38, 27, 0.2)'
 
-/** Mid-high transition color for heatmap gradients. */
-export const HEATMAP_ORANGE = '#F97316'
+/** Mid-high transition for heatmap gradients. */
+export const HEATMAP_ORANGE = '#D99A0B'
 
 /** Append alpha (0–1) to a #RRGGBB hex. */
 export function withAlpha(hex: string, alpha: number): string {
@@ -62,9 +63,9 @@ export function withAlpha(hex: string, alpha: number): string {
   return `${hex}${a}`
 }
 
-/** Transparent terminal stop for MapLibre heatmap; centralized renderer color. */
+/** Transparent terminal stop for MapLibre heatmap. */
 export const HEATMAP_TRANSPARENT = 'rgba(0,0,0,0)'
 
-/** Wind particle animation colors for Windy simulation. */
-export const WIND_PARTICLE_COLOR = "rgba(14, 165, 233, 0.75)"
-export const WIND_FADE_CLEAR = "rgba(0, 0, 0, 0.08)"
+/** Wind stream (canvas fade-trail). Brand hijau; fade rendah = ekor panjang. */
+export const WIND_PARTICLE_COLOR = 'rgba(30, 107, 69, 0.5)'
+export const WIND_FADE_CLEAR = 'rgba(0, 0, 0, 0.022)'

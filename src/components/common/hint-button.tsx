@@ -27,7 +27,7 @@ export function HintButton({ ariaLabel, text, className, style }: HintButtonProp
           style={style}
           aria-label={ariaLabel}
         >
-          <Info className="size-4" strokeWidth={2} />
+          <Info className="size-3.5" strokeWidth={2} />
         </button>
       </TooltipTrigger>
       <TooltipContent side="top" className="rounded-ctl max-w-xs">

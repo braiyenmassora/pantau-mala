@@ -9,7 +9,10 @@ import type { Region } from '@/data/types'
 import { useMapStore } from '@/store/map'
 
 vi.mock('@/components/ui/map', () => ({
-  useMap: () => ({ map: { flyTo: vi.fn() }, isLoaded: true }),
+  useMap: () => ({
+    map: { flyTo: vi.fn(), setMaxBounds: vi.fn(), stop: vi.fn() },
+    isLoaded: true,
+  }),
   MapMarker: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="hotspot-marker">{children}</div>
   ),

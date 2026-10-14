@@ -166,7 +166,7 @@ function SourceDataContent() {
                 setEarthquakeRequested(true)
               }}
               className={cn(
-                'border-line bg-surface text-ink-2 hover:bg-surface-muted hover:text-ink rounded-full border px-3 py-1 text-xs transition-colors',
+                'border-line bg-surface text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl border px-3 py-1 text-xs transition-colors',
                 focusRing,
                 kind === k && 'border-brand text-brand bg-brand-soft font-medium',
               )}

@@ -21,7 +21,6 @@ import { useRegions } from '@/data/queries'
 import { filterRegions } from '@/lib/filter-regions'
 import { restoreFocusTrigger } from '@/lib/focus-return'
 import { fitIndonesia } from '@/lib/indonesia-view'
-import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -46,7 +45,6 @@ export default function App() {
   }, [])
   const panelOpen = useUiStore((s) => s.panelOpen)
   const togglePanel = useUiStore((s) => s.togglePanel)
-  const reducedMotion = usePrefersReducedMotion()
 
   // Defer MapLibre so panel paints first; keeps main-thread free for LCP/TBT.
   useEffect(() => {
@@ -160,7 +158,7 @@ export default function App() {
                     select(null)
                     restoreFocusTrigger()
                     const map = mapRef.current
-                    if (map) fitIndonesia(map, panelOpen, reducedMotion ? 0 : 600)
+                    if (map) fitIndonesia(map, panelOpen, 0)
                   }}
                   aria-label={copy.panel.closeDetail}
                   className={cn(
@@ -202,7 +200,7 @@ export default function App() {
           <PanelFooter />
         </aside>
 
-        {/* Exception: panel rail chrome — not IconButton (narrow 24×48 tab). */}
+        {/* Exception: panel rail — PDF tab 24×48. */}
         <button
           type="button"
           onClick={togglePanel}
@@ -220,9 +218,9 @@ export default function App() {
           {...mapOverlayGestureProps}
         >
           {panelOpen ? (
-            <ChevronLeft className="size-4" strokeWidth={2} aria-hidden />
+            <ChevronLeft className="size-3.5" strokeWidth={2} aria-hidden />
           ) : (
-            <ChevronRight className="size-4" strokeWidth={2} aria-hidden />
+            <ChevronRight className="size-3.5" strokeWidth={2} aria-hidden />
           )}
         </button>
 
@@ -231,9 +229,13 @@ export default function App() {
 
         <LocationDetailSync mapRef={mapRef} />
         <LocationPromptDialog mapRef={mapRef} />
-        <MapLegend panelOpen={panelOpen} />
-        <MapControls mapRef={mapRef} />
-        <UpdatedAtBadge />
+        {!isPending && (
+          <>
+            <MapLegend panelOpen={panelOpen} />
+            <MapControls mapRef={mapRef} />
+            <UpdatedAtBadge />
+          </>
+        )}
 
         <main
           inert={(mobile && panelOpen) || undefined}
@@ -241,14 +243,20 @@ export default function App() {
           aria-label={copy.app.mapAria}
           className="absolute inset-0 z-0"
         >
-          {mapReady ? (
+          {isPending || !mapReady ? (
+            <MapSoftLoading />
+          ) : (
             <Suspense fallback={<MapSoftLoading />}>
               <MapShell mapRef={mapRef} panelOpen={panelOpen} regions={filtered} />
             </Suspense>
-          ) : (
-            <MapSoftLoading />
           )}
         </main>
+
+        {isPending && (
+          <div className="bg-map-bg absolute inset-0 z-[60]">
+            <MapSoftLoading />
+          </div>
+        )}
       </div>
     </TooltipProvider>
   )

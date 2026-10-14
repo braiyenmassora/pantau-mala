@@ -31,7 +31,9 @@ vi.mock('@/components/ui/map', () => ({
     children: React.ReactNode
     className?: string
   }) => <div className={className}>{children}</div>,
-  useMap: () => ({ map: { flyTo: vi.fn() } }),
+  useMap: () => ({
+    map: { flyTo: vi.fn(), setMaxBounds: vi.fn(), stop: vi.fn() },
+  }),
 }))
 
 vi.mock('@/lib/prefers-reduced-motion', () => ({
@@ -107,17 +109,17 @@ describe('RegionPin', () => {
     expect(pinButton()).toBeTruthy()
   })
 
-  it('sangat_tinggi pin shows Radar with risk-high colors', () => {
+  it('sangat_tinggi pin is a single red circle', () => {
     renderPin()
     const pin = pinButton()
-    const icon = pin.querySelector('svg')
-    expect(icon).toBeTruthy()
-    expect(icon?.classList.contains('fill-none')).toBe(true)
-    expect(icon?.classList.contains('stroke-risk-high')).toBe(true)
+    expect(pin.querySelector('svg')).toBeNull()
+    const dot = pin.querySelector('.bg-risk-high')
+    expect(dot?.classList.contains('rounded-full')).toBe(true)
+    expect(dot?.querySelector('.rounded-full')).toBeNull()
     expect(pin.textContent).toBe('')
   })
 
-  it('sedang pin shows Radar with risk-mid colors', () => {
+  it('sedang pin is a single orange circle', () => {
     renderPin({
       code: '62.12',
       name: 'Kab. Sedang',
@@ -126,9 +128,10 @@ describe('RegionPin', () => {
       hotspots_24h: 4,
     })
     const pin = pinButton('Kab. Sedang, risiko Sedang, 4 titik panas')
-    const icon = pin.querySelector('svg')
-    expect(icon?.classList.contains('fill-none')).toBe(true)
-    expect(icon?.classList.contains('stroke-risk-mid')).toBe(true)
+    expect(pin.querySelector('svg')).toBeNull()
+    expect(pin.querySelector('.bg-risk-mid')?.classList.contains('rounded-full')).toBe(
+      true,
+    )
   })
 
   it('rendah map pin is a 10px risk-low dot (not RiskMarker circle)', () => {
@@ -145,7 +148,7 @@ describe('RegionPin', () => {
     expect(pin.classList.contains('bg-risk-low')).toBe(true)
   })
 
-  it('tooltip shows kabupaten name; hidden when selected', async () => {
+  it('tooltip shows nama only; hidden when selected', async () => {
     const user = userEvent.setup()
     renderPin()
     const pin = pinButton()
@@ -158,7 +161,7 @@ describe('RegionPin', () => {
     expect(screen.queryByRole('tooltip')).toBeNull()
   })
 
-  it('rendah pin also shows kabupaten on hover', async () => {
+  it('rendah pin hover shows nama only', async () => {
     const user = userEvent.setup()
     renderPin({
       code: '62.13',
@@ -168,7 +171,8 @@ describe('RegionPin', () => {
       hotspots_24h: 0,
     })
     await user.hover(pinButton('Kab. Rendah, risiko Rendah, 0 titik panas'))
-    expect((await screen.findByRole('tooltip')).textContent).toBe('Kab. Rendah')
+    const tip = await screen.findByRole('tooltip')
+    expect(tip.textContent).toBe('Kab. Rendah')
   })
 
   it('shows detection flag with hotspots after click', async () => {
@@ -183,3 +187,4 @@ describe('RegionPin', () => {
     expect(screen.queryByLabelText(new RegExp(copy.detail.airQuality))).toBeNull()
   })
 })
+

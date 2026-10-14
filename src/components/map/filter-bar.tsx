@@ -1,6 +1,6 @@
 import { useRegionCatalog } from '@/data/queries'
 import { Check, ChevronDown, Map as MapIcon, Search, X } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { Chip } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
@@ -10,28 +10,22 @@ import type { Region, RiskCategory } from '@/data/types'
 import { filterRegions } from '@/lib/filter-regions'
 import { formatNumber } from '@/lib/format'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 
 const ALL_PROVINCES = 'Semua'
 
-const CATEGORY_ORDER: RiskCategory[] = [
-  'sangat_tinggi',
-  'sedang',
-  'rendah',
-  'tidak_tersedia',
-]
+/** Chip filter — hanya sangat tinggi & sedang (rendah tidak di peta). */
+const CATEGORY_ORDER: RiskCategory[] = ['sangat_tinggi', 'sedang']
 
 type FilterBarProps = {
   panelOpen: boolean
   regions: Region[]
 }
 
-/**
- * Bilah filter peta dengan chip mandiri (independent spaced chips).
- * Mempertahankan ruang mandiri antar-kontrol dengan tata letak compact clean.
- */
+/** Filter overlay di kanvas peta (pola Maps-like); chip pakai radius-ctl + gap token. */
 export function FilterBar({ panelOpen, regions }: FilterBarProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -69,7 +63,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
       sedang: 0,
       rendah: 0,
     }
-    for (const r of preCategory) next[r.risk_category] += 1
+    for (const r of preCategory) next[effectiveRiskCategory(r)] += 1
     return next
   }, [preCategory])
 
@@ -90,6 +84,16 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
 
   const allPressed = selectedCategories.size === 0
   const allCount = preCategory.length
+
+  // Chip rendah / belum dinilai dihapus — bersihkan seleksi lama.
+  useEffect(() => {
+    if (
+      selectedCategories.has('tidak_tersedia') ||
+      selectedCategories.has('rendah')
+    ) {
+      clearCategories()
+    }
+  }, [selectedCategories, clearCategories])
 
   return (
     <div
@@ -116,14 +120,14 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
             aria-label={copy.filter.pickProvince}
           >
             <MapIcon
-              className="text-ink-2 size-3.5 shrink-0"
+              className="text-ink-2 size-4 shrink-0"
               strokeWidth={2}
               aria-hidden
             />
             <span className="max-w-36 truncate">{provinceLabel}</span>
             <ChevronDown
               className={cn(
-                'text-ink-2 size-3.5 shrink-0 transition-transform duration-200 ease-[var(--ease-out-soft)]',
+                'text-ink-2 size-4 shrink-0 transition-transform duration-200 ease-[var(--ease-out-soft)]',
                 open && 'rotate-180',
               )}
               strokeWidth={2}
@@ -178,7 +182,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
                     role="option"
                     aria-selected={selected}
                     className={cn(
-                      'rounded-ctl flex h-8 w-full cursor-pointer items-center gap-2 px-2 text-left text-xs',
+                      'rounded-ctl flex h-9 w-full cursor-pointer items-center gap-2 px-2 text-left text-sm',
                       'hover:bg-surface-muted transition-colors duration-150 ease-in-out',
                       focusRing,
                       selected && 'bg-surface-muted font-semibold',
@@ -226,8 +230,6 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         const meta = RISK_CATEGORIES[category]
         const count = counts[category]
         const pressed = selectedCategories.has(category)
-
-        if (category === 'tidak_tersedia' && count === 0) return null
 
         return (
           <Chip

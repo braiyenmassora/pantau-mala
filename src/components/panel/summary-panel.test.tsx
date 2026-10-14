@@ -162,7 +162,7 @@ describe('SummaryPanel states', () => {
 
   it('shows filter empty with tampilkan semua', () => {
     useMapStore.setState({
-      selectedCategories: new Set(['rendah']),
+      selectedCategories: new Set(['sedang']),
     })
     wrap(
       <SummaryPanel
@@ -179,3 +179,4 @@ describe('SummaryPanel states', () => {
     ).toBeTruthy()
   })
 })
+

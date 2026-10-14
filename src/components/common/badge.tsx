@@ -11,8 +11,9 @@ type BadgeProps =
       category: RiskCategory
     } & HTMLAttributes<HTMLSpanElement>)
 
+/** Badge kategori — PDF §4: tinggi 24, tint + text. */
 const badgeBase =
-  'inline-flex h-6 shrink-0 items-center rounded-full px-2 text-xs font-semibold'
+  'inline-flex h-6 shrink-0 items-center rounded-full px-3 text-xs font-semibold'
 
 export function Badge(props: BadgeProps) {
   if (props.variant === 'meta') {
