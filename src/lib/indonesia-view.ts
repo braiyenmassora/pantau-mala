@@ -82,7 +82,11 @@ function scheduleMaxBounds(map: MaplibreMap, duration: number) {
   map.on('moveend', handler)
 }
 
-/** Zoom ke bbox wilayah — longgarkan maxBounds dulu (bisa terkunci setelah zoom dalam). */
+/**
+ * Zoom ke bbox wilayah. Longgarkan maxBounds untuk fit; jangan kunci ulang ke
+ * viewport provinsi — itu memblokir pinch/scroll zoom-out.
+ * Batas nasional dipulihkan lewat fitIndonesia saat kembali ke "Semua".
+ */
 export function fitProvinceBounds(
   map: MaplibreMap,
   bbox: [number, number, number, number],
@@ -106,7 +110,6 @@ export function fitProvinceBounds(
       easing: easeOutSoft,
     },
   )
-  scheduleMaxBounds(map, duration)
 }
 
 /** Read current view bounds and lock maxBounds to +10% padding. */

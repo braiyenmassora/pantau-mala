@@ -25,6 +25,8 @@ import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import { getMapPadding, INDONESIA_CENTER } from '@/lib/indonesia-view'
 import { isBasemapStyleError, webGlSupported } from '@/lib/map-support'
+import { mapChromeClass } from '@/lib/ui-chrome'
+import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui'
 
 type MapShellProps = {
@@ -65,7 +67,10 @@ function BasemapBanner({ onRetry }: { onRetry: () => void }) {
   return (
     <div
       data-testid="map-basemap-banner"
-      className="rounded-card border-line bg-surface pointer-events-auto absolute z-30 flex items-center gap-3 border px-3 py-2 shadow-sm"
+      className={cn(
+        mapChromeClass,
+        'pointer-events-auto absolute z-30 flex items-center gap-3',
+      )}
       style={{
         left: panelOpen ? 432 : 16,
         top: 68,
@@ -84,7 +89,7 @@ function PartialBanner() {
   return (
     <div
       data-testid="map-partial-banner"
-      className="rounded-card border-line bg-surface pointer-events-none absolute z-30 border px-3 py-2 shadow-sm"
+      className={cn(mapChromeClass, 'pointer-events-none absolute z-30')}
       style={{
         left: panelOpen ? 432 : 16,
         top: 68,

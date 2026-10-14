@@ -1,0 +1,108 @@
+{
+  "title": "Sinkron lokal forever-young FE ↔ BE (contract v2)",
+  "repos": {
+    "be": "api-forever-young (FastAPI, repo terpisah)",
+    "fe": "Vite + React (repo FE)"
+  },
+  "source_of_truth": [
+    "docs/api-contract.md",
+    "docs/prd-fe.md",
+    "OpenAPI: {VITE_DATA_URL}/docs"
+  ],
+  "wire": {
+    "json_keys": "English snake_case",
+    "enum_values": "domain literals (sedang, tinggi, sangat_tinggi, ok, …)",
+    "endpoints": [
+      "GET /v1/regions",
+      "GET /v1/hotspots",
+      "GET /v1/meta",
+      "GET /v1/region-catalog",
+      "GET /health"
+    ]
+  },
+  "local_ports": {
+    "fe_vite": {
+      "default": 5173,
+      "urls": [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+      ],
+      "fallback_if_busy": 5174,
+      "note": "Origin browser harus ada di CORS_ORIGINS BE"
+    },
+    "be_fastapi": {
+      "readme_default": 8000,
+      "dev_common": 8080,
+      "urls": {
+        "8000": "http://127.0.0.1:8000",
+        "8080": "http://127.0.0.1:8080"
+      },
+      "start_command": "poetry run uvicorn app.main:app --reload --port <PORT>"
+    },
+    "fe_env": {
+      "variable": "VITE_DATA_URL",
+      "examples": {
+        "be_on_8080": "http://127.0.0.1:8080",
+        "be_on_8000": "http://127.0.0.1:8000"
+      },
+      "rules": ["no trailing slash", "must match running uvicorn port"]
+    }
+  },
+  "preflight_checks": [
+    "GET {VITE_DATA_URL}/health → {\"status\":\"ok\"}",
+    "GET {VITE_DATA_URL}/docs loads",
+    "Browser origin (5173/5174) allowed in BE CORS_ORIGINS"
+  ],
+  "invariants_panel_vs_map": {
+    "hotspots_24h_equals": "count(features where properties.region_code === region.code AND confidence IN (sedang, tinggi))",
+    "geojson_may_include_rendah": true,
+    "map_filter": ["sedang", "tinggi"],
+    "risk_category": "FIRMS count only: 0 rendah, 1-9 sedang, >=10 sangat_tinggi",
+    "weather_danger": "display only, not in risk formula",
+    "be_fix_note": "After BE deploy, /v1/regions hotspots_24h uses rolling 24h aligned with /v1/hotspots"
+  },
+  "fe_behavior_not_a_bug": [
+    "National overview: no per-location dots until province or kab detail",
+    "Heatmap only if >= 65 filtered points; else DOM dots",
+    "Pulse pin = risk_category, not hotspot count"
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "task": "Set VITE_DATA_URL to local BE port (8080 or 8000), no trailing slash"
+    },
+    {
+      "id": 2,
+      "task": "Wire TanStack Query + Zod to /v1/*; no v1 Indonesian keys"
+    },
+    {
+      "id": 3,
+      "task": "Map join: region_code + confidence sedang|tinggi only"
+    },
+    {
+      "id": 4,
+      "task": "Panel: show hotspots_24h, summary, actions from API as-is"
+    },
+    {
+      "id": 5,
+      "task": "Optional audit script: fetch regions + hotspots, report n !== hotspots_24h per code"
+    }
+  ],
+  "production": {
+    "api_base": "https://api-forever-young.onrender.com",
+    "cors": "FE origin (e.g. *.pages.dev) must be in BE CORS_ORIGINS"
+  },
+  "do_not": [
+    "Recompute risk_category on client",
+    "Use trend_7d for MVP UI",
+    "Server-side geolocation / nearby"
+  ],
+  "verification_script_hint": {
+    "language": "node",
+    "steps": [
+      "fetch VITE_DATA_URL + /v1/regions and /v1/hotspots",
+      "for each region: n = features.filter(f => f.properties.region_code === region.code && ['sedang','tinggi'].includes(f.properties.confidence)).length",
+      "report where n !== region.hotspots_24h"
+    ]
+  }
+}

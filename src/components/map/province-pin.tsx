@@ -11,6 +11,7 @@ import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import type { ProvinceAggregate } from '@/lib/province-aggregates'
 import { PIN_ACTIVE_BOX_SHADOW, RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
 import type { RiskCategory } from '@/data/types'
+import { mapTipClass } from '@/lib/ui-chrome'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -112,7 +113,7 @@ export function ProvincePin({ aggregate }: ProvincePinProps) {
           <TooltipContent
             side="top"
             sideOffset={8}
-            className="rounded-card border-line/10 bg-ink text-surface z-50 flex w-60 flex-col items-start gap-1 p-2 text-xs shadow-md"
+            className={mapTipClass}
           >
             <span className="border-line/20 flex w-full items-center justify-between gap-2 border-b pb-1">
               <span className="text-surface font-medium">

@@ -6,7 +6,6 @@ import {
   CloudOff,
   Droplets,
   Filter,
-  Radar,
   SearchX,
   ShieldCheck,
   Wind,
@@ -14,7 +13,14 @@ import {
 import type { RefObject } from 'react'
 import { useMemo } from 'react'
 
-import { EmptyState, HintButton, SectionLabel, Skeleton } from '@/components/common'
+import {
+  EmptyState,
+  HintButton,
+  MetaLabel,
+  PanelCard,
+  SectionLabel,
+  Skeleton,
+} from '@/components/common'
 import { CatalogRegionRow } from '@/components/panel/catalog-region-row'
 import { LocationCard } from '@/components/panel/location-card'
 import { NoHotspotDetail } from '@/components/panel/no-hotspot-detail'
@@ -252,20 +258,18 @@ export function SummaryPanel({
         ) : (
           <div className="space-y-3">
             {/* Kartu 1: Anomali Termal Satelit */}
-            <section className="rounded-card bg-surface-muted p-3">
+            <PanelCard>
               <div className="flex items-center justify-between gap-2">
-                <div className="text-ink-2 flex items-center gap-1">
-                  <Radar
-                    className="text-brand size-4 shrink-0 animate-radar-pulse"
-                    strokeWidth={2}
-                    aria-hidden
-                  />
-                  <p className="text-xs font-medium">{copy.panel.hotspot24h}</p>
-                  <HintButton
-                    ariaLabel={copy.panel.hotspotHint}
-                    text={copy.panel.hotspotTooltip}
-                  />
-                </div>
+                <MetaLabel
+                  hint={
+                    <HintButton
+                      ariaLabel={copy.panel.hotspotHint}
+                      text={copy.panel.hotspotTooltip}
+                    />
+                  }
+                >
+                  {copy.panel.hotspot24h}
+                </MetaLabel>
                 {summary.countByCategory.sangat_tinggi > 0 ? (
                   <span className="text-risk-high-text bg-risk-high-tint rounded-full px-2 py-1 text-xs font-medium">
                     {summary.countByCategory.sangat_tinggi} sangat tinggi
@@ -276,15 +280,13 @@ export function SummaryPanel({
                   </span>
                 ) : null}
               </div>
-              <div className="mt-1 flex items-baseline justify-between gap-2">
-                <p className="text-ink font-mono text-3xl font-semibold tracking-[-0.02em]">
-                  {formatNumber(summary.todayTotal)}
-                </p>
-              </div>
-            </section>
+              <p className="text-ink mt-1 font-mono text-3xl font-semibold tracking-[-0.02em]">
+                {formatNumber(summary.todayTotal)}
+              </p>
+            </PanelCard>
 
             {/* Kartu 2: Aktivitas Seismik BMKG */}
-            <section className="rounded-card border-line bg-surface-muted border p-3">
+            <PanelCard>
               <div className="flex items-center justify-between gap-2">
                 <div className="text-ink-2 flex items-center gap-1">
                   <Activity className="text-risk-mid size-4 shrink-0" strokeWidth={2} aria-hidden />
@@ -318,11 +320,11 @@ export function SummaryPanel({
               ) : (
                 <p className="text-ink-2 mt-2 text-xs">{copy.panel.seismicEmpty}</p>
               )}
-            </section>
+            </PanelCard>
 
             {/* Kartu 3: Atmosfer & Parameter Cuaca */}
             {atmospheric && (
-              <section className="rounded-card border-line bg-surface-muted border p-3">
+              <PanelCard>
                 <div className="text-ink-2 flex items-center gap-1">
                   <Cloud className="size-4 shrink-0" strokeWidth={2} aria-hidden />
                   <p className="text-xs font-medium">{copy.panel.atmosphereTitle}</p>
@@ -361,7 +363,7 @@ export function SummaryPanel({
                     </p>
                   </div>
                 </div>
-              </section>
+              </PanelCard>
             )}
           </div>
         ))}

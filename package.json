@@ -11,6 +11,7 @@
     "test": "bun x vitest run",
     "test:watch": "bun x vitest",
     "audit:ui": "bun scripts/audit-ui.mjs",
+    "audit:parity": "bun scripts/audit-hotspots-parity.mjs",
     "layout:check": "bun scripts/layout-check.mjs",
     "a11y:check": "bun scripts/a11y-check.mjs",
     "preview": "vite preview",

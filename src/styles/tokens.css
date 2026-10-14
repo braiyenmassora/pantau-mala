@@ -71,9 +71,35 @@
   --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.12);
   --shadow-map: 0 1px 3px rgba(15, 23, 42, 0.2);
 
-  /* Motion Smooth: spring-like cubic bezier */
-  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
-  --animate-view-in: view-in 0.2s var(--ease-out-soft) both;
+  /* Motion */
+  --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Animasi halo — detak tegas, easing tetap soft */
+  /* Merah lebih cepat (2,6s), kuning lebih pelan (3,4s) — spek UI. */
+  --animate-halo-high: halo-pulse 2.6s var(--ease-out-soft) infinite;
+  --animate-halo-mid: halo-pulse 3.4s var(--ease-out-soft) infinite;
+  --animate-view-in: view-in 0.22s ease-out both;
+
+  @keyframes halo-pulse {
+    0% {
+      transform: translate(-50%, -50%) scale(0.85);
+      opacity: 0.58;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1.52);
+      opacity: 0;
+    }
+  }
+  @keyframes view-in {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 @layer base {
@@ -90,12 +116,6 @@
 }
 
 /* Animasi Peta & Indikator Hidup */
-.animate-halo-high {
-  animation: halo-pulse 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
-}
-.animate-halo-mid {
-  animation: halo-pulse 2.8s cubic-bezier(0.16, 1, 0.3, 1) infinite;
-}
 .animate-wind-drift {
   animation: wind-drift 2.5s ease-in-out infinite;
 }
@@ -110,17 +130,6 @@
 }
 .animate-indeterminate {
   animation: indeterminate 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-@keyframes halo-pulse {
-  0% {
-    transform: translate(-50%, -50%) scale(0.85);
-    opacity: 0.85;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1.65);
-    opacity: 0;
-  }
 }
 
 @keyframes wind-drift {
@@ -169,17 +178,6 @@
   50% {
     transform: scale(1.1);
     opacity: 1;
-  }
-}
-
-@keyframes view-in {
-  from {
-    opacity: 0;
-    transform: translateY(3px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
   }
 }
 

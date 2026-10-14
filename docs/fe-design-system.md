@@ -91,7 +91,7 @@ Sentence case. Hindari ALL CAPS kecuali singkatan (WIB, PM2.5, FWI).
 - Library: **Lucide**, stroke **2**.
 - Inline + ⓘ: **16px** (`size-4`).
 - Tombol ikon peta: **20px** (`size-5`) dalam hit area 40–44px.
-- Flame = titik panas / risiko (bukan “kebakaran aktif”).
+- Lingkaran berwarna = risiko / titik panas (jangan pakai flame — menyesatkan).
 - ⓘ = komponen `HintButton` saja.
 
 ---

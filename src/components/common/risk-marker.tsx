@@ -1,5 +1,3 @@
-import { Radar } from 'lucide-react'
-
 import type { RiskCategory } from '@/data/types'
 import { cn } from '@/lib/utils'
 
@@ -18,7 +16,17 @@ const ACTIVE: Record<RiskCategory, string> = {
   rendah: 'border-[1.5px] border-risk-low bg-risk-low-tint',
 }
 
-/** Marker sensor/radar surveilans 28×28 untuk pin peta dan daftar wilayah. */
+const DOT: Record<RiskCategory, string> = {
+  tidak_tersedia: 'bg-ink-3',
+  sangat_tinggi: 'bg-risk-high',
+  sedang: 'bg-risk-mid',
+  rendah: 'bg-risk-low',
+}
+
+/**
+ * Shared 28×28 risk glyph: filled circle (bukan flame — titik panas ≠ kebakaran).
+ * Dipakai pin peta (tinggi/sedang) dan baris daftar (semua).
+ */
 export function RiskMarker({
   kategori,
   shadow = false,
@@ -35,21 +43,7 @@ export function RiskMarker({
       )}
       aria-hidden
     >
-      {kategori === 'tidak_tersedia' ? (
-        <span className="bg-ink-3 size-2 rounded-full" />
-      ) : kategori === 'rendah' ? (
-        <span className="bg-risk-low size-2 rounded-full" />
-      ) : (
-        <Radar
-          className={cn(
-            'size-4 fill-none',
-            kategori === 'sangat_tinggi'
-              ? 'stroke-risk-high'
-              : 'stroke-risk-mid',
-          )}
-          strokeWidth={2}
-        />
-      )}
+      <span className={cn('size-2.5 shrink-0 rounded-full', DOT[kategori])} />
     </span>
   )
 }

@@ -6,14 +6,20 @@ import {
   CloudFog,
   CloudRain,
   Droplets,
-  Radar,
+  Circle,
   Gauge,
   MapPin,
   Wind,
 } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
-import { DataTile, HintButton, SectionLabel } from '@/components/common'
+import {
+  DataTile,
+  HintButton,
+  MetaLabel,
+  PanelCard,
+  SectionLabel,
+} from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
@@ -84,7 +90,7 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
 
       <section className="space-y-2">
         <SectionLabel>{copy.detail.actions}</SectionLabel>
-        <div className="rounded-card bg-surface-muted p-4">
+        <PanelCard>
           <ul className="space-y-2">
             {region.actions.map((item) => (
               <li key={item} className="flex items-start gap-2">
@@ -97,7 +103,7 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
               </li>
             ))}
           </ul>
-        </div>
+        </PanelCard>
       </section>
 
       {region.last_detection && (
@@ -215,19 +221,31 @@ function RiskCard({ region }: { region: Region }) {
       style={{ backgroundColor: style.tint, color: style.text }}
     >
       <div>
-        <div className="flex items-center gap-1">
-          <p className="text-xs leading-4 font-medium">{copy.detail.riskTitle}</p>
-          <HintButton
-            ariaLabel={copy.detail.riskHint}
-            text={copy.detail.riskTooltip}
-            className="opacity-70 hover:text-inherit hover:opacity-100"
-            style={{ color: style.text }}
-          />
-        </div>
-        <p className="mt-1 text-xl font-semibold">{region.risk_category === 'tidak_tersedia' && region.quality === 'stale' ? 'Indikator kedaluwarsa' : style.label}</p>
+        <MetaLabel
+          className="text-inherit"
+          hint={
+            <HintButton
+              ariaLabel={copy.detail.riskHint}
+              text={copy.detail.riskTooltip}
+              className="opacity-70 hover:text-inherit hover:opacity-100"
+              style={{ color: style.text }}
+            />
+          }
+        >
+          {copy.detail.riskTitle}
+        </MetaLabel>
+        <p className="mt-1 text-xl font-semibold">
+          {region.risk_category === 'tidak_tersedia' && region.quality === 'stale'
+            ? 'Indikator kedaluwarsa'
+            : style.label}
+        </p>
       </div>
       <p className="flex items-center gap-1 text-sm" style={{ color: style.text }}>
-        <Radar className="size-4 shrink-0 opacity-80 animate-radar-pulse" strokeWidth={2} aria-hidden />
+        <Circle
+          className="size-4 shrink-0 fill-current opacity-80"
+          strokeWidth={2}
+          aria-hidden
+        />
         <span>{copy.detail.hotspots24hReason(hotspots)}</span>
       </p>
     </section>
