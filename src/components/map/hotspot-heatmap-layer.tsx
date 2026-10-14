@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import type { GeoJSONSource } from 'maplibre-gl'
+import type { GeoJSONSource, HeatmapLayerSpecification } from 'maplibre-gl'
 
 import { useMap } from '@/components/ui/map'
 import { useHotspots } from '@/data/queries'
@@ -45,7 +45,8 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       })
     }
 
-    const paint = {
+    /* Satu keluarga merah legend (#C2410C) — tanpa oranye Sedang. */
+    const paint: HeatmapLayerSpecification['paint'] = {
       'heatmap-weight': ['interpolate', ['linear'], ['get', 'weight'], 0, 0, 1, 1],
       'heatmap-intensity': [
         'interpolate',
@@ -62,7 +63,6 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         14,
         1.5,
       ],
-      /* Satu keluarga merah legend (#C2410C) — tanpa oranye Sedang. */
       'heatmap-color': [
         'interpolate',
         ['linear'],
@@ -108,7 +108,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         12,
         0.8,
       ],
-    } as const
+    }
 
     if (!map.getLayer(LAYER_ID)) {
       map.addLayer({
@@ -119,8 +119,12 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         paint,
       })
     } else {
-      for (const [key, value] of Object.entries(paint)) {
-        map.setPaintProperty(LAYER_ID, key, value)
+      for (const [key, value] of Object.entries(paint ?? {})) {
+        map.setPaintProperty(
+          LAYER_ID,
+          key as keyof NonNullable<HeatmapLayerSpecification['paint']>,
+          value,
+        )
       }
     }
 

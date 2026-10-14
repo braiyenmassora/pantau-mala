@@ -9,8 +9,8 @@ Frontend React untuk [backend Go](https://github.com/braiyenmassora/api-pantau-m
 3. Jalankan FE:
 
 ```sh
-bun install --frozen-lockfile
-bun run --bun dev
+pnpm install --frozen-lockfile
+pnpm run dev
 ```
 
 Buka **http://127.0.0.1:5173/**. Port FE tetap 5173; bila terpakai, hentikan proses yang menggunakan port tersebut. `VITE_DATA_URL=/api/v1` tetap relatif; alamat backend diatur lewat `PANTAU_API_ORIGIN`. Gateway server menyisipkan key, browser tidak menerima token. Jangan menyimpan secret dalam `VITE_*`, Git, atau storage browser.
@@ -22,7 +22,7 @@ Buka **http://127.0.0.1:5173/**. Port FE tetap 5173; bila terpakai, hentikan pro
 curl --fail http://127.0.0.1:8080/health/live
 curl --fail http://127.0.0.1:8080/health/ready
 # FE sudah berjalan: cek identitas client, kontrak, dan kesesuaian hotspot
-bun run audit:parity
+pnpm run audit:parity
 ```
 
 `live` mengembalikan `status: ok`; `ready` mengembalikan `status: ready`. Readiness tidak membuktikan data provider lengkap atau terbaru. Audit keluar nonzero bila request/kontrak gagal atau hitungan berbeda; selisih bisa terjadi karena panel memakai waktu perhitungan worker sedangkan GeoJSON memakai rolling 24 jam saat request. Periksa timestamp/status sumber sebelum menyimpulkan bug. Untuk port backend berbeda, ubah URL health sesuai `PANTAU_API_ORIGIN`.
@@ -41,12 +41,12 @@ Kategori memakai hasil backend; tidak dihitung ulang dengan rule jumlah titik Py
 ## Verifikasi
 
 ```sh
-bun run test
-bun run --bun lint
-bun run --bun audit:ui
-bun run --bun build
+pnpm test
+pnpm run lint
+pnpm run audit:ui
+pnpm run build
 # Opt-in memakai file konfigurasi dev privat yang tidak masuk Git:
-PANTAU_DEV_TEST_CONFIG=/path/to/private/dev-access.json bun run test -- run src/data/go-live.integration.test.ts
+PANTAU_DEV_TEST_CONFIG=/path/to/private/dev-access.json pnpm test -- src/data/go-live.integration.test.ts
 ```
 
 113 unit/contract tests dan satu live Go API contract test sudah lulus saat integrasi ini dibuat. Build mencakup TypeScript dan gate ukuran initial JS. Browser validation akhir dilakukan owner secara manual sesuai instruksi; CI tidak meluncurkan browser. Browser emulation yang sempat dijalankan sebelum instruksi tersebut bukan bukti validasi seluruh panel tambahan. Lihat [handoff](docs/GO_API_HANDOFF.md), [design system](docs/fe-design-system.md), [audit data](docs/DATA_COMPARISON.md) dan bukti di docs/evidence.
@@ -58,27 +58,26 @@ PANTAU_DEV_TEST_CONFIG=/path/to/private/dev-access.json bun run test -- run src/
 Konfigurasi `wrangler.jsonc` mengirim assets `dist` bersama `worker.ts`. Route `/api`, `/api/*`, `/auth`, `/auth/*`, dan `/frontend/session` dijalankan melalui Worker sebelum fallback SPA. Gateway memakai mode client read-only. Deployment Worker memakai `PANTAU_API_ORIGIN=https://api.pantaumala.live`. Pengembangan lokal tetap memakai `http://127.0.0.1:8080` dari `.env.example`. Untuk deployment lain, atur origin HTTPS backend dan slug client yang sesuai. Worker cloud tidak dapat mengakses backend loopback komputer lokal.
 
 ```sh
-bun run --bun build
-bun x wrangler deploy --dry-run
-bun x wrangler deploy
+pnpm run build
+pnpm exec wrangler deploy --dry-run
+pnpm exec wrangler deploy
 # Provisioning/rotasi key server, isi lewat prompt privat:
-bun x wrangler secret put PANTAU_API_KEY
+pnpm exec wrangler secret put PANTAU_API_KEY
 ```
 
-Jika memakai **Cloudflare Workers Builds** (Git connected), jangan set build command ke `pnpm run build`. Default image memakai Bun **1.2.15**, yang **tidak** bisa membaca `bun.lock` lockfileVersion 2 — wajib override versi. Cloudflare **tidak** membaca `.bun-version` untuk Bun (hanya lewat env).
+Jika memakai **Cloudflare Workers Builds** (Git connected), pakai pnpm (bukan Bun):
 
 | Setting | Nilai |
 | --- | --- |
-| Build command | `bun run build` |
-| Deploy command | `bun x wrangler deploy` |
-| Build variable **`BUN_VERSION`** | **`1.4.3`** (wajib; Settings → Build → Build Variables) |
+| Build command | `pnpm run build` |
+| Deploy command | `pnpm exec wrangler deploy` |
 | Build variable `VITE_DATA_URL` | `/api/v1` |
 
 Atau biarkan GitHub Actions (`deploy-cloudflare.yml`) yang build + deploy setelah CI `main` lulus.
 
 CI menjalankan validasi pada `develop` dan `main`. Setelah CI `main` berhasil, `.github/workflows/deploy-cloudflare.yml` otomatis membangun dan mendeploy Worker ke Cloudflare. Repository GitHub harus memiliki secret `CLOUDFLARE_API_TOKEN` dan variable `CLOUDFLARE_ACCOUNT_ID`; token harus dibuat khusus untuk deployment dan tidak boleh memakai token OAuth laptop.
 
-Jika secret GitHub Actions belum diatur (misalnya untuk preview pribadi), langkah deploy otomatis di GitHub Actions akan dilewati tanpa menggagalkan CI, dan deployment dapat dijalankan secara manual dari CLI menggunakan `bun x wrangler deploy`.
+Jika secret GitHub Actions belum diatur (misalnya untuk preview pribadi), langkah deploy otomatis di GitHub Actions akan dilewati tanpa menggagalkan CI, dan deployment dapat dijalankan secara manual dari CLI menggunakan `pnpm exec wrangler deploy`.
 
 Key harus memiliki scope `data:read` dan client slug yang sama dengan `PANTAU_CLIENT_SLUG`. Secret yang sudah terpasang dipertahankan saat deploy; jangan masukkan key ke konfigurasi Wrangler, Git, atau `VITE_*`.
 
@@ -86,13 +85,13 @@ Alamat deployment ditentukan oleh akun dan konfigurasi pengguna. Hasil tes deplo
 
 Produksi membutuhkan **origin yang sama**: host FE melayani assets dan mem-proxy `/api/*` serta `/auth/*` ke Go dengan Host/Origin yang benar. Static Pages tanpa route/proxy tersebut belum bisa memakai pemulihan cookie ini. Tidak menyisipkan key privat ke VITE_* untuk mengakali deployment. Belum deploy ke VPS atau mengganti domain produksi pada perubahan ini.
 
-Bun1.4.3 mengelola dependency, dev dan build (`bun.lock`). Tes memakai Vitest melalui Node karena worker jsdom30 gagal di runtime Bun; jalankan tetap lewat `bun run test`.
+pnpm mengelola dependency, dev dan build (`pnpm-lock.yaml`, `packageManager: pnpm@10.11.1`).
 
 ## Peta melalui token client server
 
 Mode client tidak meminta username/password pengunjung. Salin `.env.example` ke `.env`, isi `PANTAU_CLIENT_SLUG` dan `PANTAU_API_KEY` hasil CMS Go `/api-keys` dengan scope `data:read`. Client berasal dari token; slug digunakan untuk menolak salah konfigurasi, bukan memilih tenant bebas. Key dev yang dipasang berlaku30hari; buat/rotasi/revoke melalui CMS. Jangan prefix secret dengan `VITE_`. Semua pengunjung memakai data client tersebut dan berbagi kuota client.
 
-`bun run --bun dev` menyediakan gateway dev. Untuk hasil build jalankan `bun run --bun build` lalu `bun run start`; server Bun menyajikan dist dan proxy read-only yang sama. HTTPS dapat diterminasi pada reverse proxy yang sudah ada, tanpa menambahkan provisioning. Static hosting/`vite preview` saja tidak dapat menyimpan secret atau menjalankan gateway. `FE_ACCESS_MODE=account` hanya untuk alur akun sebelumnya pada dev dengan proxy auth.
+`pnpm run dev` menyediakan gateway Vite. Untuk hasil build jalankan `pnpm run build` lalu `pnpm start`; server Node menyajikan dist dan proxy read-only yang sama. HTTPS dapat diterminasi pada reverse proxy yang sudah ada, tanpa menambahkan provisioning. Static hosting/`vite preview` saja tidak dapat menyimpan secret atau menjalankan gateway. `FE_ACCESS_MODE=account` hanya untuk alur akun sebelumnya pada dev dengan proxy auth.
 
 Gateway mengecek scope/key/client setiap request, menolak mutasi/management, credential pengunjung, query pemilih tenant dan cross-origin. Env kosong/mismatch/revoked menghasilkan error, bukan fallback ke akses tanpa key. `/frontend/session` hanya mengembalikan identitas reader tanpa token. CMS tetap di backend Go. Tidak ada credential FE di Git atau browser.
 
@@ -104,4 +103,4 @@ Semua developer dan AI agent **wajib membaca ketentuan branching ini sebelum mel
 
 - **Gunakan branch `develop`**: Setiap pekerjaan (fitur, bugfix, refactor, styling, konfigurasi) wajib dikerjakan di branch `develop`.
 - **Dilarang langsung commit / push ke `main`**.
-- **Alur Merge**: Perubahan baru masuk ke branch `main` melalui merge dari `develop` setelah uji lint, build, dan test (`bun run lint`, `bun run test`, `bun run build`) berhasil.
+- **Alur Merge**: Perubahan baru masuk ke branch `main` melalui merge dari `develop` setelah uji lint, build, dan test (`pnpm run lint`, `pnpm run test`, `pnpm run build`) berhasil.

@@ -3,19 +3,20 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "pnpm@10.11.1",
   "scripts": {
     "dev": "vite",
     "build": "node scripts/check-prod-data-url.mjs && node scripts/write-headers.mjs && tsc -b && vite build && node scripts/report-bundle.mjs",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "test": "bun x vitest run",
-    "test:watch": "bun x vitest",
-    "audit:ui": "bun scripts/audit-ui.mjs",
-    "audit:parity": "bun scripts/audit-hotspots-parity.mjs",
-    "layout:check": "bun scripts/layout-check.mjs",
-    "a11y:check": "bun scripts/a11y-check.mjs",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "audit:ui": "node scripts/audit-ui.mjs",
+    "audit:parity": "node scripts/audit-hotspots-parity.mjs",
+    "layout:check": "node scripts/layout-check.mjs",
+    "a11y:check": "node scripts/a11y-check.mjs",
     "preview": "vite preview",
-    "start": "bun server/start.mjs"
+    "start": "node server/start.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",
@@ -60,6 +61,10 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.69.0",
     "vite": "^8.3.0",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "wrangler": "^4.150.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "workerd"]
   }
 }

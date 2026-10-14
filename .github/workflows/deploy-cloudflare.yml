@@ -35,26 +35,27 @@ jobs:
         with:
           ref: ${{ steps.release.outputs.sha }}
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: pnpm/action-setup@v4
         with:
-          bun-version-file: .bun-version
+          version: 10.11.1
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: pnpm
 
-      - run: bun install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
       - name: Validate frontend
         run: |
-          bun run --bun tsc -b --pretty false
-          bun run test
-          bun run --bun audit:ui
+          pnpm exec tsc -b --pretty false
+          pnpm test
+          pnpm run audit:ui
 
       - name: Build production assets
         env:
           VITE_DATA_URL: /api/v1
-        run: bun run --bun build
+        run: pnpm run build
 
       - name: Check Cloudflare credentials
         id: check_creds
@@ -64,7 +65,7 @@ jobs:
         run: |
           if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
             echo "Cloudflare deployment secrets not configured in repository; skipping automated deployment."
-            echo "Deploy manually with 'bun x wrangler deploy' or add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID."
+            echo "Deploy manually with 'pnpm exec wrangler deploy' or add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           fi
 
@@ -73,4 +74,4 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-        run: bun x --bun wrangler@4.150.0 deploy
+        run: pnpm exec wrangler deploy

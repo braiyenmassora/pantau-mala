@@ -48,7 +48,7 @@ async function scan(page, label) {
   console.log(`axe ok: ${label}`)
 }
 
-const child = spawn('bun', ['run', '--bun', 'dev', '--port', String(PORT), '--host', '127.0.0.1'], {
+const child = spawn('pnpm', ['run', 'dev', '--', '--port', String(PORT), '--host', '127.0.0.1'], {
   cwd: ROOT,
   stdio: 'pipe',
   env: { ...process.env },
