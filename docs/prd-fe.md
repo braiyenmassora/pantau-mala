@@ -1,3 +1,5 @@
+> **Arsip implementasi Python sebelum integrasi Go.** Untuk konfigurasi, endpoint, autentikasi, dan kontrak aktif gunakan [README](../README.md) dan [Go handoff](GO_API_HANDOFF.md). Instruksi Python di bawah tidak berlaku untuk aplikasi sekarang.
+
 # pantau-mala — PRD + API handoff untuk FE
 
 |                             |                                                                       |

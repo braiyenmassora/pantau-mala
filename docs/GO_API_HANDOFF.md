@@ -1,6 +1,6 @@
 # Handoff FE ↔ Go
 
-Kontrak Go/OpenAPI adalah acuan branch ini. Kontrak Python v2 tetap sebagai referensi historis; perbedaan utama ada pada envelope `data`, nama field Indonesia, nullable serta autentikasi/client isolation.
+Kontrak Go/OpenAPI adalah acuan FE `main` dengan BE `api-pantau-mala` (`develop`). Mode default adalah client server; lihat [mulai lokal dan readiness](../README.md#mulai-lokal). Kontrak Python v2 tetap sebagai referensi historis; perbedaan utama ada pada envelope `data`, nama field Indonesia, nullable serta autentikasi/client isolation.
 
 | Konsumsi              | Endpoint Go                                                     | Interface                                                                                |
 | --------------------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
@@ -24,7 +24,7 @@ Timeout restore15detik dan data20detik; tidak infinite loading. Request dibatalk
 
 Feed tambahan tidak dimuat sebelum dibuka/diminta. BMKG weather/GloFAS adalah adapter on-demand, bukan histori yang telah diingest worker. Source diambil dan keterangan respons diperlihatkan. Management user/API key, aktivitas dan operational job console tetap pada backend CMS; bukan fitur publik peta FE.
 
-## Validasi manual owner
+## Validasi manual mode akun (opsional)
 
 1. Buka127.0.0.1:5173/login, masuk dengan akun consoleGo, reload: sesi tetap tersedia selama belumexpired.
 2. Pada320/360/390/1366px, buka/tutup panel dan uji Tab/Shift+Tab/Escape, input password/eye, overflow dan reduced motion.
@@ -35,6 +35,6 @@ Feed tambahan tidak dimuat sebelum dibuka/diminta. BMKG weather/GloFAS adalah ad
 
 UI final panel tambahan belum ditest browser otomatis setelah owner meminta berhenti. Build/lint/unit/live-API-contract tetap dilakukan. Script browser fixture hanyalah alat optional untuk permintaan eksplisit berikutnya; tidak ada browser job otomatis pada CI branch ini.
 
-## Override: mode client server dari env
+## Mode default: client server dari env
 
 Mode default contoh env sekarang client. GET `/frontend/session` mengembalikan modeclient+principalreader tanpa token; REST melewati gateway dan server menyisipkan API key scope data:read. Login/switch/logout dan management tidak tersedia pada peta modeclient; gunakan CMS Go8080. Semua pengunjung berbagi client tetap dan kuota server; isolasi antar integrasi menggunakan key/client berbeda. Bun `start` menjalankan gateway produksi dengan staticdist. Checklist login di atas berlaku hanya modeaccount; untuk modeclient uji langsung peta, error expired/revoked, dan tidak ada Authorization/API key di browser.

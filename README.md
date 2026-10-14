@@ -1,15 +1,33 @@
 # pantau-mala FE — integrasi Go
 
-Frontend React untuk API Go pantau-mala. Mode dev aktif memakai API key client dari env server, tanpa login pengunjung. Repo ini tetap terpisah dari [backend](https://github.com/braiyenmassora/api-forever-young/tree/feat/pantau-mala-go-backend); branch integrasi FE adalah `feat/pantau-mala-go-integration`. Branch `main` mempertahankan implementasi teman sebelum merge.
+Frontend React untuk [backend Go](https://github.com/braiyenmassora/api-pantau-mala). Branch FE aktif `main`; backend aktif `develop`. Mode default memakai API key client di server, sehingga pengunjung langsung membuka peta.
+
+## Mulai lokal
+
+1. Jalankan backend dengan konfigurasi privat dan layanan existing sesuai [README BE](https://github.com/braiyenmassora/api-pantau-mala/tree/develop). Default `http://127.0.0.1:8080`; jalankan `make run` di repo BE.
+2. Salin `.env.example` ke `.env` hanya jika belum ada. Isi `PANTAU_CLIENT_SLUG` dan `PANTAU_API_KEY` dari CMS Go `/api-keys`, scope `data:read`.
+3. Jalankan FE:
 
 ```sh
 bun install --frozen-lockfile
 bun run --bun dev
 ```
 
-Dev: **http://127.0.0.1:5173/**, login **/login**. Jalankan API Go existing pada127.0.0.1:8080. Vite mem-proxy `/api` dan `/auth` dengan Host/Origin frontend dipertahankan. Gunakan akun yang sama dengan console Go; tidak perlu memilih role atau memasukkan slug client untuk login default.
+Buka **http://127.0.0.1:5173/**. Port FE tetap 5173; bila terpakai, hentikan proses yang menggunakan port tersebut. `VITE_DATA_URL=/api/v1` tetap relatif; alamat backend diatur lewat `PANTAU_API_ORIGIN`. Gateway server menyisipkan key, browser tidak menerima token. Jangan menyimpan secret dalam `VITE_*`, Git, atau storage browser.
 
-`VITE_DATA_URL=/api/v1` pada `.env.example`/`.env.production`. Tidak ada DSN, password, API key atau token dalam env/bundle FE. Browser memegang bearer di memori; reload memulihkan sesi lewat cookie HttpOnly/SameSiteStrict pada `/auth/browser-session`. Logout merevoke sesi. Workspace hanya berasal dari server; pergantian client merotasi sesi, menghapus cache/filter/lokasi dan mengisolasi query key. Secret tidak dimasukkan ke localStorage/sessionStorage.
+## Cek siap dipakai
+
+```sh
+# Backend hidup dan dependensi siap (tanpa bearer)
+curl --fail http://127.0.0.1:8080/health/live
+curl --fail http://127.0.0.1:8080/health/ready
+# FE sudah berjalan: cek identitas client, kontrak, dan kesesuaian hotspot
+bun run audit:parity
+```
+
+`live` mengembalikan `status: ok`; `ready` mengembalikan `status: ready`. Readiness tidak membuktikan data provider lengkap atau terbaru. Audit keluar nonzero bila request/kontrak gagal atau hitungan berbeda; selisih bisa terjadi karena panel memakai waktu perhitungan worker sedangkan GeoJSON memakai rolling 24 jam saat request. Periksa timestamp/status sumber sebelum menyimpulkan bug. Untuk port backend berbeda, ubah URL health sesuai `PANTAU_API_ORIGIN`.
+
+Jika gateway gagal, cek backend, scope `data:read`, kecocokan slug, masa berlaku/revocation key, dan status client di CMS. Mode akun opsional dijelaskan di [handoff](docs/GO_API_HANDOFF.md). Kontrak aktif: [Go handoff](docs/GO_API_HANDOFF.md) dan OpenAPI BE; dokumen Python lama hanya arsip.
 
 Data yang tersedia:
 
