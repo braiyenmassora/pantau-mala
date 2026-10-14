@@ -2,7 +2,7 @@
   "date": "2026-10-12",
   "backend_repository": "braiyenmassora/api-forever-young",
   "backend_branch": "feat/pantau-mala-go-backend",
-  "frontend_repository": "braiyenmassora/forever-young",
+  "frontend_repository": "braiyenmassora/pantau-mala",
   "frontend_branch": "feat/pantau-mala-go-integration",
   "go_data": {
     "catalog": {

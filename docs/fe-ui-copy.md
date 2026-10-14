@@ -1,4 +1,4 @@
-# forever-young — panduan UI copy, ikon, tooltip (FE)
+# pantau-mala — panduan UI copy, ikon, tooltip (FE)
 
 |                    |                                           |
 | ------------------ | ----------------------------------------- |
@@ -130,7 +130,7 @@ Hindari di label utama: “hotspot”, “api”, “kebakaran”, “anomali te
 ## 7. Prompt siap tempel (AI FE)
 
 ```text
-Kerjakan UI forever-young mengikuti docs/prd-fe.md + docs/fe-ui-copy.md.
+Kerjakan UI pantau-mala mengikuti docs/prd-fe.md + docs/fe-ui-copy.md.
 Standarisasi copy ringkas, layout clean, ikon satu pattern, tooltip ⓘ konsisten.
 Bahasa manusia (bukan nada AI). Jangan menyesatkan: titik panas ≠ kebakaran;
 jangan panik; jangan klaim kebakaran/real-time/BMKG untuk warna pin.

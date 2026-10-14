@@ -1,5 +1,5 @@
 {
-  "title": "Sinkron lokal forever-young FE ↔ BE (contract v2)",
+  "title": "Sinkron lokal pantau-mala FE ↔ BE (contract v2)",
   "repos": {
     "be": "api-forever-young (FastAPI, repo terpisah)",
     "fe": "Vite + React (repo FE)"
