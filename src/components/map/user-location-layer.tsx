@@ -2,6 +2,7 @@ import circle from '@turf/circle'
 import { useMemo } from 'react'
 
 import { MapGeoJSON, MapMarker, MarkerContent, useMap } from '@/components/ui/map'
+import { mapPinTip } from '@/components/map/map-pin-tip'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { copy } from '@/copy/id'
 import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
@@ -79,16 +80,12 @@ export function UserLocationLayer() {
                 <span className="bg-location size-3 rounded-full shadow-sm" aria-hidden />
               </button>
             </TooltipTrigger>
-            <TooltipContent
-              side="top"
-              sideOffset={8}
-              className="rounded-card border-line/10 bg-ink text-surface z-50 flex w-56 flex-col items-start gap-1 p-2 text-xs shadow-md"
-            >
-              <span className="border-line/20 flex w-full items-center justify-between gap-2 border-b pb-1 font-medium">
-                <span>{copy.location.yourLocation}</span>
-                <span className="text-surface/70 font-mono text-xs">{copy.location.radiusBadge}</span>
+            <TooltipContent side="top" sideOffset={8} className={mapPinTip}>
+              <span className="border-line flex w-full items-center justify-between gap-2 border-b pb-1">
+                <span className="text-ink font-semibold">{copy.location.yourLocation}</span>
+                <span className="text-ink-2 font-mono text-xs">{copy.location.radiusBadge}</span>
               </span>
-              <span className="text-surface/80">{copy.location.riskSubtitle}</span>
+              <span className="text-ink-2">{copy.location.riskSubtitle}</span>
             </TooltipContent>
           </Tooltip>
         </MarkerContent>

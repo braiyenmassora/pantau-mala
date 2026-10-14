@@ -1,13 +1,13 @@
 # pantau-mala — design system (FE MVP)
 
-|                  |                                           |
-| ---------------- | ----------------------------------------- |
-| **Versi**        | 1.0 — 11 Oktober 2026                     |
-| **Sumber token** | `src/styles/tokens.css`                   |
-| **Copy / ikon**  | [`fe-ui-copy.md`](fe-ui-copy.md)          |
-| **Kontrak data** | [`prd-fe.md`](prd-fe.md) — jangan bentrok |
+|                  |                                                                      |
+| ---------------- | -------------------------------------------------------------------- |
+| **Sumber desain** | [`Spesifikasi UI (handoff developer).pdf`](./Spesifikasi%20UI%20(handoff%20developer).pdf) — **09 Okt 2026** |
+| **Token kode**   | `src/styles/tokens.css` (harus mirror PDF)                           |
+| **Copy / ikon**  | [`fe-ui-copy.md`](fe-ui-copy.md)                                     |
+| **Kontrak data** | [`prd-fe.md`](prd-fe.md) — jangan bentrok                            |
 
-Satu sistem visual untuk peta, panel, empty, error. Jangan menambah palet di luar file token.
+PDF handoff adalah **sumber kebenaran visual**. `tokens.css` dan komponen mengikuti PDF; dokumen ini merangkumnya untuk developer. Jangan menambah palet di luar PDF/token.
 
 ---
 
@@ -16,125 +16,120 @@ Satu sistem visual untuk peta, panel, empty, error. Jangan menambah palet di lua
 1. Peta = hero; panel = informasi. Satu pekerjaan per section.
 2. Warna risiko hanya untuk pin / chip / legend status — bukan dekorasi.
 3. Titik panas ≠ kebakaran (lihat fe-ui-copy).
-4. Hindari look generik AI: ungu glow, cream+terracotta default, pill cluster, multi-shadow, stat strip.
+4. Wordmark **pantaumala** (IBM Plex): `pantau` hijau `#1E6B45`, `mala` orange `#C2410C`. Aksen UI/lokasi/tombol = hijau. **Tidak ada biru.**
+5. Light mode saja. Grid **4 px**.
+
+### Pola layout (PDF §5 — Maps-like)
+
+| Zona | Spek PDF |
+| ---- | -------- |
+| Map | Layar penuh |
+| Panel kiri | Mengambang **400 px**, jarak **16** dari tepi; tab sembunyi **24×48** |
+| Chip filter | Di atas peta; sekaligus legend warna kategori |
+| Kontrol peta | Kanan bawah: lokasi, zoom +/− — tiap **40×40**, gap **8** |
+| Legend skor/halo | Kiri bawah (bukan warna kategori) |
+| Updated-at | Kanan bawah |
 
 ---
 
-## 2. Warna (CSS variables)
+## 2. Warna (PDF §1 → `tokens.css`)
 
-| Token                                                          | Peran                                       |
-| -------------------------------------------------------------- | ------------------------------------------- |
-| `--color-surface` / `--color-surface-muted` / `--color-map-bg` | Latar                                       |
-| `--color-ink` / `--color-ink-2` / `--color-ink-3`              | Teks / muted / disabled                     |
-| `--color-line`                                                 | Border                                      |
-| `--color-brand` / `--color-brand-soft`                         | Aksen UI (bukan risiko)                     |
-| `--color-risk-mid*`                                            | Risiko **sedang**                           |
-| `--color-risk-high*`                                           | Risiko **sangat tinggi**                    |
-| `--color-risk-low*`                                            | Cadangan (MVP pin rendah tidak dikirim API) |
+| Token | Hex | Peran |
+| ----- | --- | ----- |
+| `--color-ink` | `#14261B` | text-primary |
+| `--color-ink-2` | `#52645A` | text-secondary |
+| `--color-ink-3` | `#7A8A80` | text-disabled |
+| `--color-line` | `#E3E9E4` | border |
+| `--color-surface-muted` | `#F6F8F6` | kartu info |
+| `--color-map-bg` | `#DCE7EC` | fallback peta |
+| `--color-brand` / soft | `#1E6B45` / `#EDF4EF` | aksen UI + lokasi |
+| risk high / mid / low | lihat `risk-category.ts` | dot · tint · text |
 
-Focus: `--color-focus` (= brand); ring via `ring-brand` + offset (`focus-ring`).
-
-Hex MapLibre: `src/lib/risk-category.ts` harus mirror token.
-
----
-
-## 3. Spacing (skala 4px)
-
-Hanya: **4, 8, 12, 16, 24, 32** (Tailwind `1 / 2 / 3 / 4 / 6 / 8`).
-
-| Ritme               | Nilai   |
-| ------------------- | ------- |
-| Dalam komponen      | 8 / 12  |
-| Antar section       | 16 / 24 |
-| Margin peta overlay | 16      |
-
-Jangan magical number (13px, 22px, `pt-5` = 20, `gap-2.5` = 10).
-
-Touch target kontrol utama: **min 40px** (`size-10`); utamakan **44px** (`size-11` / `h-11`) untuk kontrol peta.
+Focus ring = brand. Hex MapLibre wajib mirror token.
 
 ---
 
-## 4. Radius & bayangan
+## 3. Spasi, radius, bayangan (PDF §3)
 
-| Token                 | Pakai               |
-| --------------------- | ------------------- |
-| `--radius-ctl` (8)    | Kontrol, chip, menu |
-| `--radius-card` (12)  | Kartu, list row     |
-| `--radius-panel` (16) | Panel, dialog       |
+Spasi: **4, 8, 12, 16, 20, 24**.
 
-Bayangan: **`shadow-sm`** default UI; `shadow-map` hanya pin peta. Hindari menumpuk `shadow-lg` kecuali dialog.
+| Ritme | Nilai |
+| ----- | ----- |
+| Padding panel / tepi layar | 16 |
+| Antar-section | 24 |
+| Judul bagian → isi / ikon–teks | 8 |
+| Dalam section | 8–12 |
+| Kartu info | padding 16; tile kecil 12 |
 
----
+| Radius | px | Pakai |
+| ------ | -- | ----- |
+| `--radius-ctl` | **8** | menu item, kontrol kotak |
+| `--radius-card` | **12** | kartu, dropdown |
+| `--radius-panel` | **16** | panel, dialog |
+| pill (`rounded-full`) | **999** | search, chip, tombol |
 
-## 5. Tipografi
+Bayangan: `shadow-sm` / `md` / `lg` / `shadow-map` (pin) — nilai di token.
 
-| Family        | Pakai            |
-| ------------- | ---------------- |
-| IBM Plex Sans | UI               |
-| IBM Plex Mono | Angka besar saja |
-
-| Peran           | Token                    | Catatan         |
-| --------------- | ------------------------ | --------------- |
-| Caption / badge | `text-xs` (12/16)        |                 |
-| Small / chip    | `text-sm` (12/16)        | selaras skala 4 |
-| Body            | `text-base` (14/20)      |                 |
-| Prose           | `text-paragraph` (14/22) | summary API     |
-| Title           | `text-lg` / `text-xl`    |                 |
-| Angka hero      | `text-3xl` + mono        |                 |
-
-Sentence case. Hindari ALL CAPS kecuali singkatan (WIB, PM2.5, FWI).
+Touch: kontrol peta & tombol besar **40**; chip **36**; search **48**; rail **24×48**.
 
 ---
 
-## 6. Ikon
+## 4. Tipografi (PDF §2)
 
-- Library: **Lucide**, stroke **2**.
-- Inline + ⓘ: **16px** (`size-4`).
-- Tombol ikon peta: **20px** (`size-5`) dalam hit area 40–44px.
-- Lingkaran berwarna = risiko / titik panas (jangan pakai flame — menyesatkan).
-- ⓘ = komponen `HintButton` saja.
+IBM Plex Sans (UI) · IBM Plex Mono (skor, jumlah, koordinat, FRP).
+
+Hanya ukuran **12, 13, 14, 16, 20, 28**:
+
+| Peran | Class | px / line / bobot |
+| ----- | ----- | ----------------- |
+| caption / label / badge | `text-xs` | 12 / 16 |
+| small / chip / section-label | `text-sm` | 13 / 18 |
+| body / button | `text-base` | 14 / 20 |
+| paragraph | `text-paragraph` | 14 / 22 |
+| title | `text-lg` | 16 / 24 / 600 |
+| title-lg | `text-xl` | 20 / 28 / 600 |
+| number-lg | `text-3xl` + mono | 28 / 32 / 600 |
+
+Sentence case. Sapaan “kamu”. Desimal koma kecuali koordinat.
 
 ---
 
-## 7. Motion
+## 5. Komponen kunci (PDF §4)
 
-- Easing: `--ease-out-soft`.
-- Halo pin: `--animate-halo-mid` / `--animate-halo-high`.
-- Hormati `prefers-reduced-motion` (sudah di tokens).
+| Komponen | Spek |
+| -------- | ---- |
+| Search | tinggi **48**, pill, border + `shadow-sm`, teks 14 |
+| Chip filter | tinggi **36**, pill, gap 8, teks 13/500; terpilih = latar `#14261B`, teks putih |
+| Badge kategori | tinggi **24**, tint + text kategori, teks 12/600 |
+| Tombol | semua pill; besar **40** (teks 14); kecil **36** (teks 13); primary brand / sekunder border / lembut brand-soft |
+| Pin | skor di pin; halo pulse Sangat tinggi **2,6 s** / Sedang **3,4 s** |
+
+Ikon Lucide stroke **2**: 14 (ⓘ / rail), 16 inline, 18 aksi, 20 kontrol peta.
 
 ---
 
-## 8. Checklist layar
+## 6. Motion (PDF §5)
 
-- [ ] Spacing hanya skala 4
-- [ ] Warna risiko tidak dipakai dekorasi
-- [ ] Copy dari kamus fe-ui-copy; summary/actions dari API apa adanya
-- [ ] Tidak ada tren 7 hari / sparkline
-- [ ] ⓘ = HintButton, 1–2 kalimat
+- Easing panel/view: `--ease-out-soft` = `cubic-bezier(0.2, 0.7, 0.2, 1)`
+- Hover 150 ms · panel 300 ms · view-in 220 ms · zoom peta 600 ms
+- Halo: `--animate-halo-high` / `--animate-halo-mid`
+- `prefers-reduced-motion` dihormati
+
+---
+
+## 7. Checklist layar
+
+- [ ] Token mirror PDF (warna, type, radius, shadow)
+- [ ] Spacing skala PDF (termasuk 20)
+- [ ] Chip/search/tombol pill; kontrol peta 40×40
+- [ ] Warna risiko tidak untuk dekorasi
+- [ ] Copy dari fe-ui-copy; summary/actions dari API
 - [ ] Mobile: teks terbaca; kontrol mudah di-tap
 
 ---
 
-_FE design system v1.0 — token terpusat di `tokens.css`._
+_Sumber: Spesifikasi UI handoff developer PDF · token di `tokens.css`._
 
-## Integrasi Go — override branch12Okt2026
+## Integrasi Go — catatan branch
 
-Typography/palette/components tetap memakai token existing IBM Plex. AccessGate adalah form center max-w-sm dengan labels, eye icon44px, focus ring dan input16px di mobile. Account/session controls memperlihatkan workspace dari server; tidak menyediakan selector role. Proyek Go/API tetap di repo backend terpisah.
-
-Panel mobile memakai lebar viewport minus32px (margin16px), rail toggle berada dalam viewport. Pada panelmobile terbuka, map inert dan kontrolmap/legend yang tertutup tidak focusable. Filter bar mengalir di panel mobile dan kembali overlay desktop. Padding map mobile tidak memakai432px desktop.
-
-State tidak_tersedia memakai warna netral existing, tidak pulse/warna risiko. Skor/calibration/timestamp dan data tambahan memakai DataTile, SectionLabel, details/summary dan tabel compact. Nilai null = —, bukan0; FWI absent dijelaskan belum tersedia. SourceDataPanel dan RegionHistoryPanel lazily request data; semua state mengikuti client/generation. Tidak menambah font/palet baru.
-
-Override copy/count-only Python: Go kategori/score tetap sumber kebenaran, provincepin memilih kategori server tertinggi dari wilayah dalam filter; tidak mengklasifikasi ulang jumlah. Freshness mencantumkan targetperjam, bukan klaim cron aktif. Validasi browser akhir pada320/360/390/1366, keyboard/reducedmotion/loading/error/overflow diberikan ke owner sesuai instruksi berhenti automation; belum diklaim selesai.
-
-## Identitas bersama CMS Go
-
-Brand menggunakan salinan identik `api/brand-symbol.svg` dan `api/brand-wordmark.svg` dari backend. Komponen Brand digunakan pada login dan footer panel: simbol dekoratif, lettering bernama pantau mala, proporsi asli dan gap8px. Favicon memakai simbol yang sama; apple-touch-icon180px dan Open Graph1200×630 dirasterisasi dari SVG sumber, tanpa font untuk lettering. Warna di SVG dan theme-color merupakan pengecualian statis brand CMS, bukan palet komponen baru. Verifikasi browser/mobile akhir tetap manual oleh owner.
-
-## Mode client melalui server env
-
-Peta modeclient langsung terbuka setelah identitas reader terverifikasi. Footer hanya menunjukkan workspace, tanpa logout/switch/username. Kegagalan key/service memakai cardbrand+teksstatus dan tombol Coba lagi, tanpa formpassword. Modeaccount lama hanya optional; server tetap menegakkan scope/client. Pemeriksaan viewport/browser tetap manual oleh owner.
-
-## Kepadatan satelit pada overview
-
-Heatmap terlihat sejak overview nasional dan tetap mengikuti region/province/category selection. Bobot relatif berasal dari confidence observasi, bukan kategori risiko yang mungkin null/stale. Sedang/tinggi confidence ditampilkan; low confidence tetap tidak dipromosikan. Gradient existing kuning→merah menunjukkan kepadatan relatif, bukan skor atau peringatan. Pin risiko tetap kategori server, unknown netral. Label unknown menjadi Belum dinilai; detail stale menyebut Indikator kedaluwarsa. FWI absent dijelaskan spesifik, tanpa substitusi nilai. Browser final tetap manual owner.
+Data/API Go tidak mengubah palet PDF. AccessGate mengikuti token brand hijau + touch 40–44. Panel mobile tetap margin 16 / lebar viewport−32. State `tidak_tersedia` netral (`ink-3` / surface-muted). Nilai null = —; FWI absent dijelaskan. Brand SVG/favicon harus memakai hex PDF (`ink` + `brand`), bukan palet ember lama.

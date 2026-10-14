@@ -1,5 +1,3 @@
-import { Radar } from 'lucide-react'
-
 import type { RiskCategory } from '@/data/types'
 import { cn } from '@/lib/utils'
 
@@ -11,14 +9,14 @@ type RiskMarkerProps = {
   active?: boolean
 }
 
-const ACTIVE: Record<RiskCategory, string> = {
-  tidak_tersedia: 'border-line bg-surface-muted',
-  sangat_tinggi: 'border-[1.5px] border-risk-high bg-risk-high-tint',
-  sedang: 'border-[1.5px] border-risk-mid bg-risk-mid-tint',
-  rendah: 'border-[1.5px] border-risk-low bg-risk-low-tint',
+const FILL: Record<RiskCategory, string> = {
+  tidak_tersedia: 'bg-ink-3',
+  sangat_tinggi: 'bg-risk-high',
+  sedang: 'bg-risk-mid',
+  rendah: 'bg-risk-low',
 }
 
-/** Marker sensor/radar surveilans 28×28 untuk pin peta dan daftar wilayah. */
+/** Satu lingkaran penuh warna risiko — tanpa ring dalam ring. */
 export function RiskMarker({
   kategori,
   shadow = false,
@@ -28,28 +26,13 @@ export function RiskMarker({
   return (
     <span
       className={cn(
-        'border-line bg-surface inline-flex size-7 shrink-0 items-center justify-center rounded-full border',
+        'border-surface inline-flex size-3 shrink-0 rounded-full border-2',
+        FILL[kategori],
         shadow && 'shadow-map',
-        active && ACTIVE[kategori],
+        active && 'scale-110',
         className,
       )}
       aria-hidden
-    >
-      {kategori === 'tidak_tersedia' ? (
-        <span className="bg-ink-3 size-2 rounded-full" />
-      ) : kategori === 'rendah' ? (
-        <span className="bg-risk-low size-2 rounded-full" />
-      ) : (
-        <Radar
-          className={cn(
-            'size-4 fill-none',
-            kategori === 'sangat_tinggi'
-              ? 'stroke-risk-high'
-              : 'stroke-risk-mid',
-          )}
-          strokeWidth={2}
-        />
-      )}
-    </span>
+    />
   )
 }

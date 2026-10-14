@@ -106,7 +106,7 @@ export function VillageWeatherPanel() {
                 tabIndex={tab === name ? 0 : -1}
                 onClick={() => setTab(name)}
                 className={cn(
-                  'rounded-ctl flex h-8 min-w-0 items-center justify-center gap-2 px-2 text-xs transition-colors duration-150',
+                  'rounded-ctl flex h-10 min-w-0 items-center justify-center gap-2 px-2 text-xs transition-colors duration-150',
                   tab === name
                     ? 'bg-surface text-ink font-medium shadow-sm'
                     : 'text-ink-2 hover:text-ink',

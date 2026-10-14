@@ -37,13 +37,13 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
   return (
     <div
       className={cn(
-        'group flex h-9 items-center gap-2 rounded-ctl border border-line bg-surface-muted px-2 shadow-none',
+        'group flex h-12 items-center gap-2 rounded-full border border-line bg-surface px-3 shadow-sm',
         'transition-all duration-200 ease-[var(--ease-out-soft)]',
-        'focus-within:border-brand focus-within:bg-surface focus-within:shadow-sm',
+        'focus-within:border-brand focus-within:shadow-md',
       )}
     >
       <Search
-        className="size-4 shrink-0 text-ink-3 transition-colors duration-150 group-focus-within:text-brand"
+        className="size-5 shrink-0 text-ink-3 transition-colors duration-150 group-focus-within:text-brand"
         strokeWidth={2}
         aria-hidden
       />
@@ -62,7 +62,7 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
           background: 'transparent',
         }}
         className={cn(
-          'min-w-0 flex-1 appearance-none border-0 bg-transparent text-xs text-ink shadow-none',
+          'min-w-0 flex-1 appearance-none border-0 bg-transparent text-base text-ink shadow-none',
           'outline-none ring-0 placeholder:text-ink-3 focus:border-0 focus:outline-none focus:ring-0',
           'focus-visible:outline-none focus-visible:ring-0',
           '[&::-webkit-search-cancel-button]:appearance-none',
@@ -73,9 +73,9 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
           type="button"
           aria-label={copy.panel.searchClear}
           onClick={clearAll}
-          className="flex size-5 items-center justify-center rounded-full text-ink-3 transition-colors hover:bg-surface-muted hover:text-ink"
+          className="flex size-10 shrink-0 items-center justify-center rounded-full text-ink-3 transition-colors hover:bg-surface-muted hover:text-ink"
         >
-          <X className="size-3.5" strokeWidth={2} aria-hidden />
+          <X className="size-5" strokeWidth={2} aria-hidden />
         </button>
       )}
     </div>

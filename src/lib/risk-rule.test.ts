@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { copy } from '@/copy/id'
-import { compareRegionsByRisk } from '@/lib/risk-rule'
+import { compareRegionsByRisk, effectiveRiskCategory } from '@/lib/risk-rule'
 
 describe('copy honesty', () => {
   const blob = JSON.stringify(copy)
@@ -20,6 +20,26 @@ describe('copy honesty', () => {
   it('risk tooltip is hotspot count, not FWI', () => {
     expect(copy.detail.riskTooltip).toMatch(/titik panas/i)
     expect(copy.detail.riskTooltip).not.toMatch(/FWI|BMKG/)
+  })
+})
+
+describe('effectiveRiskCategory', () => {
+  it('keeps API kategori when set', () => {
+    expect(
+      effectiveRiskCategory({ risk_category: 'sedang', hotspots_24h: 99 }),
+    ).toBe('sedang')
+  })
+
+  it('maps null/tidak_tersedia from hotspot count', () => {
+    expect(
+      effectiveRiskCategory({ risk_category: 'tidak_tersedia', hotspots_24h: 11 }),
+    ).toBe('sangat_tinggi')
+    expect(
+      effectiveRiskCategory({ risk_category: 'tidak_tersedia', hotspots_24h: 4 }),
+    ).toBe('sedang')
+    expect(
+      effectiveRiskCategory({ risk_category: 'tidak_tersedia', hotspots_24h: 0 }),
+    ).toBe('rendah')
   })
 })
 

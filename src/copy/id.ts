@@ -157,15 +157,15 @@ export const copy = {
   },
 
   panel: {
-    indonesiaToday: 'Surveilans Risiko Bencana Indonesia',
-    provinceToday: (province: string) => `Surveilans Risiko ${province}`,
+    indonesiaToday: 'Pantauan titik panas Indonesia',
+    provinceToday: (province: string) => `Pantauan titik panas · ${province}`,
     subtitle:
-      'Deteksi dini multirisiko bencana: anomali termal satelit, kegempaan BMKG, dan hidrometeorologi',
+      'Anomali termal satelit NASA FIRMS (24 jam). Titik panas belum tentu kebakaran; bukan peringatan resmi.',
     hotspot24h: 'Titik panas 24 jam',
     hotspotHint: 'Penjelasan titik panas',
     hotspotTooltip: 'Total titik panas dalam 24 jam',
-    topRisk: '5 provinsi dengan pantauan anomali terbanyak',
-    topKab: 'Wilayah dengan pantauan anomali terbanyak',
+    topRisk: 'Provinsi dengan titik panas',
+    topKab: 'Kabupaten/kota dengan titik panas',
     searchResults: 'Hasil pencarian',
     betaTooltip: 'Bukan peringatan kebakaran.',
     searchPlaceholder: 'Cari kabupaten/kota',
@@ -195,12 +195,12 @@ export const copy = {
     riskTitle: 'Risiko',
     riskHint: 'Penjelasan risiko',
     riskTooltip:
-      'Indikator komposit dari backend: titik panas, cuaca dan tren. Kalibrasi masih perlu validasi; bukan peringatan resmi.',
-    hotspots24hReason: (n: string) => `${n} titik panas`,
-    weatherDanger: 'Bahaya cuaca',
-    weatherDangerHint: 'Penjelasan bahaya cuaca',
+      'Makin banyak titik panas satelit NASA FIRMS (24 jam), makin tinggi kategori di peta. Titik panas belum tentu kebakaran.',
+    hotspots24hReason: (n: string) => `${n} titik panas (24 jam)`,
+    weatherDanger: 'Kelas FWI',
+    weatherDangerHint: 'Penjelasan kelas FWI',
     weatherDangerTooltip:
-      'Cuaca dan kualitas udara untuk gambaran saja. Tidak mengatur warna pin di peta.',
+      'Kelas Fire Weather Index dari model cuaca. Gambaran saja; tidak mengatur warna pin di peta.',
     fwiUnit: 'FWI',
     flagDate: 'Deteksi',
   },
@@ -258,6 +258,12 @@ export const copy = {
     provincePinDetails: (n: string, risiko: string) =>
       `${n} titik panas · Risiko ${risiko}`,
     provincePinPeriod: 'Data 24 jam terakhir',
+    regionPinPeriod: 'Data 24 jam terakhir',
+    regionPinDetails: (n: string, risiko: string) =>
+      `${n} titik panas · Risiko ${risiko}`,
+    quakeTitle: (m: string) => `Gempa M ${m}`,
+    quakeDepth: (km: number) => `${km} km`,
+    quakeSource: 'BMKG',
     regionMetaProvince: (provinsi: string) => `Provinsi ${provinsi}`,
     regionMetaHotspots: (n: string) => `${n} titik panas`,
   },
@@ -290,16 +296,15 @@ export const copy = {
   },
 
   legend: {
-    colorTitle: 'Risiko',
-    colorHint: 'Pin radar: kuning sedang, merah sangat tinggi',
-    haloTitle: 'Kepadatan titik satelit',
-    haloHint: 'Kuning jarang, merah padat; bukan kelas risiko.',
-    seismicTitle: 'Gempa bumi',
-    seismicHint: 'Episentrum gempa terkini dari feed resmi BMKG',
-    windTitle: 'Aliran angin',
-    windHint: 'Vektor kecepatan dan arah angin atmosfer',
+    /** PDF §5: kiri bawah; warna kategori juga di chip filter. */
+    haloTitle: 'Denyut',
+    haloHint: 'Merah lebih cepat · oranye lebih pelan.',
+    pinTitle: 'Warna pin',
+    pinHint: 'Oranye = sedang · Merah = sangat tinggi.',
+    scoreTitle: 'Skor risiko',
+    scoreHint: 'Skor indikator di panel detail; kalibrasi masih perlu validasi.',
     temperatureTitle: 'Suhu udara',
-    temperatureHint: 'Data Open-Meteo; terpisah dari titik panas satelit.',
+    temperatureHint: 'Lapisan suhu terpisah dari titik panas satelit.',
   },
   search: {
     searchProvince: 'Cari provinsi',

@@ -9,6 +9,7 @@ import { showHaloPulse } from '@/lib/halo'
 import { getMapPadding, PLACE_ZOOM } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
+import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -21,7 +22,7 @@ type SelectedHotspotsLayerProps = {
 const DOM_MARKER_MAX = 64
 
 /**
- * Titik klikable + beat bila sedikit.
+ * Titik klikable bila sedikit.
  * Banyak titik (Merauke dll): biarkan HotspotHeatmapLayer — tanpa bubble angka.
  */
 export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
@@ -46,20 +47,21 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
   )
 
   const selectKab = useCallback(
-    (code: string) => {
-      const region = regionByCode.get(code)
+    (code: string, lon: number, lat: number) => {
       select(code)
       if (!panelOpen) setPanelOpen(true)
-      if (region && map) {
-        map.flyTo({
-          center: region.center,
-          zoom: PLACE_ZOOM,
-          padding: getMapPadding(true),
-          duration: reducedMotion ? 0 : 600,
-        })
-      }
+      if (!map) return
+      // Zoom ke koordinat titik yang diklik, bukan centroid kab.
+      map.setMaxBounds(null)
+      map.stop()
+      map.flyTo({
+        center: [lon, lat],
+        zoom: PLACE_ZOOM,
+        padding: getMapPadding(true),
+        duration: 0,
+      })
     },
-    [map, panelOpen, reducedMotion, regionByCode, select, setPanelOpen],
+    [map, panelOpen, select, setPanelOpen],
   )
 
   // Padat: heatmap handle visual; pin kab + flag dari RegionLayers.
@@ -73,7 +75,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
         const [lon, lat] = f.geometry.coordinates
         const code = f.properties.region_code!
         const region = regionByCode.get(code)
-        const risk = region?.risk_category ?? 'sedang'
+        const risk = region ? effectiveRiskCategory(region) : 'sedang'
         const style = RISK_CATEGORIES[risk]
         const pulse = !reducedMotion && showHaloPulse(risk)
         const pulseClass =
@@ -114,7 +116,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                 aria-label={region ? `${region.name}, ${style.label}` : style.label}
                 onClick={(e) => {
                   e.stopPropagation()
-                  selectKab(code)
+                  selectKab(code, lon, lat)
                 }}
               />
             </MarkerContent>

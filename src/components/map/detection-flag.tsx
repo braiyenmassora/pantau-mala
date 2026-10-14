@@ -8,8 +8,8 @@ type DetectionFlagProps = {
 }
 
 /**
- * Callout pin terpilih — nama + provinsi, di atas halo.
- * Jarak bawah ~setengah halo maks (52px) supaya tidak numpuk lingkaran.
+ * Callout pin terpilih — nama + provinsi di atas pin.
+ * `mb-8` menjauh dari halo (~52px); panah diamond mengarah ke pin.
  */
 export function DetectionFlag({ region, className }: DetectionFlagProps) {
   const content = buildDetectionFlag(region)
@@ -22,21 +22,26 @@ export function DetectionFlag({ region, className }: DetectionFlagProps) {
         className,
       )}
     >
-      <div className="rounded-card border-line bg-surface relative w-max max-w-56 border px-3 py-2 shadow-sm">
-        <p className="text-ink truncate text-xs font-semibold" title={content.title}>
-          {content.title}
-        </p>
-        <p
-          className="text-ink-2 mt-1 truncate text-xs leading-4"
-          title={content.subtitle}
-        >
-          {content.subtitle}
-        </p>
-        {/* Panah ke pin */}
-        <span aria-hidden className="absolute top-full left-1/2 -mt-px -translate-x-1/2">
-          <span className="border-t-line block size-0 border-x-[6px] border-t-[7px] border-x-transparent" />
-          <span className="border-t-surface absolute top-0 left-1/2 size-0 -translate-x-1/2 border-x-[5px] border-t-[6px] border-x-transparent" />
-        </span>
+      <div className="border-line bg-surface relative rounded-card w-max max-w-52 border px-3 py-2 shadow-md">
+        <div className="flex min-w-0 flex-col gap-0.5 text-left">
+          <p
+            className="text-ink truncate text-xs leading-4 font-semibold"
+            title={content.title}
+          >
+            {content.title}
+          </p>
+          <p
+            className="text-ink-2 truncate text-xs leading-4"
+            title={content.subtitle}
+          >
+            {content.subtitle}
+          </p>
+        </div>
+        {/* Tip panah: setengah diamond di bawah card */}
+        <span
+          aria-hidden
+          className="border-line bg-surface absolute top-full left-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-r border-b"
+        />
       </div>
     </div>
   )
