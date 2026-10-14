@@ -3,8 +3,15 @@ import Fuse from 'fuse.js'
 import type { Region, RiskCategory } from '@/data/types'
 import { compareRegionsByRisk, effectiveRiskCategory } from '@/lib/risk-rule'
 
-/** Peta & daftar: hanya sedang + sangat tinggi (rendah tidak ditampilkan). */
+/** Pin peta: sedang + sangat tinggi (rendah tidak di peta). */
 export const MAP_RISK_CATEGORIES = new Set<RiskCategory>(['sangat_tinggi', 'sedang'])
+
+/** Daftar & chip filter: termasuk Rendah bila ada di data. */
+export const LIST_RISK_CATEGORIES = new Set<RiskCategory>([
+  'sangat_tinggi',
+  'sedang',
+  'rendah',
+])
 
 export type RegionFilterState = {
   province: string
@@ -14,7 +21,7 @@ export type RegionFilterState = {
 
 export function filterRegions(list: Region[], state: RegionFilterState): Region[] {
   let result = list.filter((r) =>
-    MAP_RISK_CATEGORIES.has(effectiveRiskCategory(r)),
+    LIST_RISK_CATEGORIES.has(effectiveRiskCategory(r)),
   )
 
   if (state.province !== 'Semua') {

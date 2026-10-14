@@ -71,7 +71,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
           >
             <div>
               <label htmlFor="username" className="mb-1 block text-sm">
-                Username
+                {copy.auth.username}
               </label>
               <input
                 id="username"
@@ -84,7 +84,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
             </div>
             <div>
               <label htmlFor="password" className="mb-1 block text-sm">
-                Password
+                {copy.auth.password}
               </label>
               <div className="relative">
                 <input
@@ -118,7 +118,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
             )}
             <button
               disabled={busy}
-              className={`bg-brand text-surface rounded-ctl h-11 w-full px-4 font-medium disabled:opacity-60 ${focusRing}`}
+              className={`bg-brand text-surface h-11 w-full rounded-full px-4 font-semibold disabled:opacity-60 ${focusRing}`}
             >
               {busy ? 'Memproses…' : 'Masuk'}
             </button>
@@ -162,7 +162,7 @@ export function SessionControl() {
       {clients.data && clients.data.length > 1 && (
         <div className="w-full">
           <label htmlFor="workspace" className="mb-1 block text-xs">
-            Workspace
+            {copy.auth.workspace}
           </label>
           <SearchableSelect
             id="workspace"
@@ -178,27 +178,27 @@ export function SessionControl() {
               void switchClient(val)
                 .catch((err) =>
                   setError(
-                    err instanceof Error ? err.message : 'Workspace belum dapat diganti.',
+                    err instanceof Error ? err.message : copy.auth.workspaceSwitchFail,
                   ),
                 )
                 .finally(() => setBusy(false))
             }}
-            searchPlaceholder="Cari workspace…"
-            emptyText="Workspace tidak ditemukan"
-            ariaLabel="Workspace"
+            searchPlaceholder={copy.auth.workspaceSearch}
+            emptyText={copy.auth.workspaceEmpty}
+            ariaLabel={copy.auth.workspace}
           />
         </div>
       )}
       {clients.isError && (
         <p role="alert" className="w-full text-xs">
-          Daftar workspace belum tersedia.
+          {copy.auth.workspaceListFail}
         </p>
       )}
       <button
         type="button"
         aria-label={copy.auth.logout}
         disabled={busy}
-        className={`rounded-ctl flex size-10 items-center justify-center ${focusRing}`}
+        className={`rounded-full flex size-10 items-center justify-center ${focusRing}`}
         onClick={() => {
           setBusy(true)
           setError('')

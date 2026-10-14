@@ -7,6 +7,7 @@ import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import type { CatalogProvince, RiskCategory } from '@/data/types'
 import { formatNumber } from '@/lib/format'
+import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { useMapStore } from '@/store/map'
 
 type ProvinceSearchRowProps = {
@@ -44,13 +45,10 @@ export function ProvinceSearchRow({
   const effectiveRisk: RiskCategory =
     riskCategory && riskCategory !== 'tidak_tersedia'
       ? riskCategory
-      : hotspotCount >= 20
-        ? 'sangat_tinggi'
-        : hotspotCount >= 5
-          ? 'sedang'
-          : hotspotCount > 0
-            ? 'rendah'
-            : 'tidak_tersedia'
+      : effectiveRiskCategory({
+          risk_category: 'tidak_tersedia',
+          hotspots_24h: hotspotCount,
+        })
 
   return (
     <ListRow

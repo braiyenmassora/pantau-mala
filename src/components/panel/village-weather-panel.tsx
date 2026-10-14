@@ -49,7 +49,7 @@ export function VillageWeatherPanel() {
         {village && (
           <Button
             variant="secondary"
-            size="xs"
+            size="sm"
             loading={loading}
             onClick={refresh}
             aria-label={copy.weather.refresh}

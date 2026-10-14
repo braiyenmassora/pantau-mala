@@ -74,7 +74,7 @@ export function UpdatedAtBadge() {
             <span
               className={cn(
                 'size-2 rounded-full',
-                hasProblem || stale ? 'bg-risk-mid' : 'bg-brand',
+                hasProblem || stale ? 'bg-ink-3' : 'bg-brand',
               )}
               aria-hidden
             />

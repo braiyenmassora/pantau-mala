@@ -37,9 +37,20 @@ export function IndonesiaMapFraming({ panelOpen, onReady }: IndonesiaMapFramingP
   useEffect(() => {
     if (!map || !isLoaded || readyRef.current) return
     fitZoomRef.current = fitIndonesia(map, panelOpenRef.current, 0)
-    readyRef.current = true
     prevPanelRef.current = panelOpenRef.current
-    onReadyRef.current?.()
+
+    // Tunggu idle agar tile tidak "segi empat" saat overlay dilepas.
+    const finish = () => {
+      if (readyRef.current) return
+      readyRef.current = true
+      onReadyRef.current?.()
+    }
+    map.on('idle', finish)
+    const safety = window.setTimeout(finish, 4000)
+    return () => {
+      map.off('idle', finish)
+      window.clearTimeout(safety)
+    }
   }, [map, isLoaded])
 
   useEffect(() => {

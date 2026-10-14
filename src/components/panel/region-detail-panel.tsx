@@ -1,23 +1,23 @@
-import { RegionHistoryPanel } from './region-history-panel'
 import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
   Check,
-  Clock,
-  Cloud,
-  CloudFog,
   CloudRain,
   Droplets,
   Gauge,
-  MapPin,
   Wind,
 } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
-import { DataTile, HintButton, SectionLabel } from '@/components/common'
+import { Badge, DataTile, HintButton, SectionLabel } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
-import type { Region } from '@/data/types'
+import { DetailAccordion } from '@/components/panel/detail-accordion'
+import { RegionRiverPanel } from '@/components/panel/region-river-panel'
+import type { ConfidenceLevel, Region } from '@/data/types'
 import { copy } from '@/copy/id'
-import { formatDetectionDate } from '@/lib/detection-flag'
-import { formatNumber, formatDateTime } from '@/lib/format'
+import { formatDateTime, formatNumber } from '@/lib/format'
+import { hotspotTrend, type TrendDirection } from '@/lib/hotspot-trend'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { cn } from '@/lib/utils'
 
@@ -25,8 +25,44 @@ type RegionDetailPanelProps = {
   region: Region
 }
 
+const TREND_UI: Record<
+  TrendDirection,
+  { label: string; Icon: typeof ArrowUp }
+> = {
+  naik: { label: copy.detail.trendUp, Icon: ArrowUp },
+  turun: { label: copy.detail.trendDown, Icon: ArrowDown },
+  stabil: { label: copy.detail.trendFlat, Icon: ArrowRight },
+}
+
+function updatedWhen(region: Region): string | null {
+  const iso =
+    region.computed_at ?? region.weather_updated_at ?? region.last_detection?.time ?? null
+  if (!iso) return null
+  return formatDateTime(iso, region.time_zone)
+}
+
+function confidenceLabel(level: ConfidenceLevel): string {
+  return copy.detail.confidence[level]
+}
+
+/**
+ * Panel detail wilayah — hierarki ala Maps:
+ * header → status → catatan → waktu → ringkasan → kondisi → aksi → accordion.
+ */
 export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
   const titleRef = useRef<HTMLHeadingElement>(null)
+  const style = RISK_CATEGORIES[region.risk_category]
+  const trend = hotspotTrend(region.trend_7d)
+  const { label: trendLabel, Icon: TrendIcon } = TREND_UI[trend]
+  const stamp = updatedWhen(region)
+  const actions = region.actions.slice(0, 2)
+  const quality = region.quality ?? null
+  const score =
+    region.score != null ? formatNumber(region.score) : null
+  const riskLabel =
+    region.risk_category === 'tidak_tersedia' && region.quality === 'stale'
+      ? 'Indikator kedaluwarsa'
+      : style.label
 
   useEffect(() => {
     titleRef.current?.focus()
@@ -34,215 +70,207 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
 
   return (
     <div key={region.code} className="space-y-6">
-      <div className="space-y-3">
-        <header className="space-y-1">
-          <h2
-            ref={titleRef}
-            tabIndex={-1}
-            className={cn(
-              'text-ink line-clamp-2 text-xl font-semibold outline-none',
-              focusRing,
-              'rounded-ctl',
-            )}
-            title={region.name}
-          >
-            {region.name}
-          </h2>
-          <p className="text-ink-2 flex items-center gap-1 text-sm">
-            <MapPin className="text-ink-2 size-4 shrink-0" strokeWidth={2} aria-hidden />
-            <span>{copy.map.regionMetaProvince(region.province)}</span>
-          </p>
-          {region.last_detection ? (
-            <p className="text-ink-2 flex items-center gap-1 text-sm">
-              <Clock className="text-ink-2 size-4 shrink-0" strokeWidth={2} aria-hidden />
-              <span>
-                {copy.detail.flagDate}{' '}
-                {formatDetectionDate(region.last_detection.time, region.time_zone)}
-              </span>
-            </p>
-          ) : null}
-        </header>
-        <RiskCard region={region} />
-        {region.score != null && (
-          <DataTile
-            label={copy.extra.score}
-            value={formatNumber(region.score)}
-            unit={copy.extra.provisional}
-          />
-        )}
-        {region.quality && region.quality !== 'ok' && (
-          <p role="status" className="text-ink-2 text-sm">
-            Indikator {region.quality === 'stale' ? 'kedaluwarsa' : 'belum lengkap'}.
-            Bukan peringatan resmi.
-          </p>
-        )}
-      </div>
+      {/* 1. Header */}
+      <header className="space-y-1">
+        <h2
+          ref={titleRef}
+          tabIndex={-1}
+          className={cn(
+            'text-ink line-clamp-2 text-xl font-semibold outline-none',
+            focusRing,
+            'rounded-ctl',
+          )}
+          title={region.name}
+        >
+          {region.name}
+        </h2>
+        <p className="text-ink-2 text-sm">
+          {copy.map.regionMetaProvince(region.province)}
+        </p>
+      </header>
 
+      {/* 2. Status utama */}
+      <section className="space-y-3" aria-label={copy.detail.riskTitle}>
+        <div className="flex flex-wrap items-center gap-2">
+          {region.risk_category === 'tidak_tersedia' ? (
+            <Badge variant="meta">{riskLabel}</Badge>
+          ) : (
+            <Badge variant="category" category={region.risk_category} />
+          )}
+          <HintButton
+            ariaLabel={copy.detail.riskHint}
+            text={copy.detail.riskTooltip}
+          />
+        </div>
+        <div>
+          <p className="text-ink font-mono text-3xl font-semibold tabular-nums">
+            {formatNumber(region.hotspots_24h)}
+          </p>
+          <p className="text-ink-2 mt-1 text-xs">{copy.detail.hotspot24hLabel}</p>
+        </div>
+        <p
+          className="text-ink-2 flex items-center gap-1.5 text-sm"
+          aria-label={copy.detail.trendAria(trendLabel)}
+        >
+          <TrendIcon className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+          <span>{trendLabel}</span>
+        </p>
+      </section>
+
+      {/* 3. Catatan keterbatasan */}
+      <p role="status" className="text-ink-2 text-xs leading-4">
+        {copy.detail.calibrationNote(score, quality)}
+      </p>
+
+      {/* 4. Waktu pembaruan */}
+      {stamp ? (
+        <p className="text-ink-3 text-xs">{copy.detail.updatedAt(stamp)}</p>
+      ) : null}
+
+      {/* 5. Ringkasan */}
       {region.summary ? (
         <section className="space-y-2">
           <SectionLabel>{copy.detail.summary}</SectionLabel>
-          <p className="text-paragraph text-ink">{region.summary}</p>
+          <p className="text-paragraph text-ink line-clamp-3">{region.summary}</p>
         </section>
       ) : null}
 
-      {region.actions.length > 0 ? (
-        <section className="space-y-2">
-          <SectionLabel>{copy.detail.actions}</SectionLabel>
-          <div className="rounded-card bg-surface-muted p-4">
-            <ul className="space-y-2">
-              {region.actions.map((item) => (
-                <li key={item} className="flex items-start gap-2">
-                  <Check
-                    className="text-brand mt-1 size-4 shrink-0"
-                    strokeWidth={2}
-                    aria-hidden
-                  />
-                  <span className="text-ink text-base">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      ) : null}
-
-      {region.last_detection && (
-        <section className="space-y-2">
-          <SectionLabel>{copy.extra.detection}</SectionLabel>
-          <div className="grid grid-cols-2 gap-2">
-            <DataTile
-              label={copy.extra.satellite}
-              value={region.last_detection.satellite}
-            />
-            <DataTile
-              label={copy.extra.confidence}
-              value={region.last_detection.confidence}
-            />
-            <DataTile
-              label={copy.extra.frp}
-              value={formatNumber(region.last_detection.frp_mw)}
-              unit="MW"
-            />
-          </div>
-        </section>
-      )}
-      <section className="space-y-2">
-        <SectionLabel>{copy.extra.freshness}</SectionLabel>
-        {[
-          [copy.extra.computedAt, region.computed_at],
-          [copy.extra.weatherAt, region.weather_updated_at],
-          [copy.extra.airAt, region.air_updated_at],
-        ].map(([label, time]) => (
-          <p key={label} className="text-ink-2 text-xs">
-            {label}:{' '}
-            {time ? formatDateTime(time, region.time_zone) : copy.extra.noTimestamp}
-          </p>
-        ))}
-      </section>
-      <RegionHistoryPanel key={region.code} code={region.code} />
+      {/* 6. Kondisi saat ini — 4 kotak sama */}
       <section className="space-y-2">
         <SectionLabel>{copy.detail.conditions}</SectionLabel>
         <div className="grid grid-cols-2 gap-2">
-          {/* Risiko pin = FIRMS saja; FWI/udara terpisah di sini. */}
           <DataTile
-            icon={<Cloud className="text-ink-2 size-4" strokeWidth={2} />}
-            label={copy.source.cuaca}
-            value={`${formatNumber(region.weather.temp_c)}°C`}
-            unit={region.weather.condition}
+            icon={
+              <Droplets
+                className="text-ink-2 size-3.5 animate-water-ripple"
+                strokeWidth={2}
+              />
+            }
+            label={copy.detail.humidity}
+            value={
+              region.weather.humidity == null
+                ? copy.detail.unavailable
+                : `${formatNumber(region.weather.humidity)}%`
+            }
           />
           <DataTile
-            icon={<CloudFog className="text-ink-2 size-4" strokeWidth={2} />}
-            label={copy.detail.airQuality}
-            value={copy.air[region.air_quality.category]}
-            unit={
-              region.air_quality.ispu != null
-                ? `ISPU ${region.air_quality.ispu} · PM2.5 ${formatNumber(region.air_quality.pm25)}`
-                : `PM2.5 ${formatNumber(region.air_quality.pm25)}`
+            icon={
+              <Wind
+                className="text-ink-2 size-3.5 animate-wind-drift"
+                strokeWidth={2}
+              />
             }
-            valueClassName={
-              region.air_quality.category === 'tidak_sehat' ||
-              region.air_quality.category === 'sangat_tidak_sehat' ||
-              region.air_quality.category === 'berbahaya'
-                ? 'text-risk-high-text'
-                : region.air_quality.category === 'sedang'
-                  ? 'text-risk-mid-text'
-                  : undefined
+            label={copy.detail.wind}
+            value={
+              region.weather.wind_kmh == null
+                ? copy.detail.unavailable
+                : `${formatNumber(region.weather.wind_kmh)} ${copy.detail.windUnit}`
             }
-            hintAria={copy.detail.airHint}
-            hintText={copy.detail.airTooltip}
           />
           <DataTile
-            icon={<Gauge className="text-ink-2 size-4" strokeWidth={2} />}
+            icon={
+              <CloudRain
+                className="text-ink-2 size-3.5 animate-water-ripple"
+                strokeWidth={2}
+              />
+            }
+            label={copy.detail.dryDays}
+            value={
+              region.weather.dry_days == null
+                ? copy.detail.unavailable
+                : `${formatNumber(region.weather.dry_days)} ${copy.detail.dayUnit}`
+            }
+          />
+          <DataTile
+            icon={<Gauge className="text-ink-2 size-3.5" strokeWidth={2} />}
             label={copy.detail.weatherDanger}
             value={
               region.weather_danger
                 ? copy.bahaya[region.weather_danger.class]
-                : 'FWI belum tersedia'
+                : copy.detail.unavailable
             }
             unit={
               region.weather_danger
                 ? `${copy.detail.fwiUnit} ${formatNumber(region.weather_danger.fwi)}`
-                : 'Belum ada FWI terverifikasi'
+                : undefined
             }
             hintAria={copy.detail.weatherDangerHint}
             hintText={copy.detail.weatherDangerTooltip}
           />
-          <DataTile
-            icon={<Droplets className="text-ink-2 size-4 animate-water-ripple" strokeWidth={2} />}
-            label={copy.detail.humidity}
-            value={formatNumber(region.weather.humidity)}
-            unit="%"
-          />
-          <DataTile
-            icon={<Wind className="text-ink-2 size-4 animate-wind-drift" strokeWidth={2} />}
-            label={copy.detail.wind}
-            value={formatNumber(region.weather.wind_kmh)}
-            unit={copy.detail.windUnit}
-          />
-          <DataTile
-            icon={<CloudRain className="text-ink-2 size-4 animate-water-ripple" strokeWidth={2} />}
-            label={copy.detail.dryDays}
-            value={formatNumber(region.weather.dry_days)}
-            unit={copy.detail.dayUnit}
-          />
         </div>
       </section>
-    </div>
-  )
-}
 
-function RiskCard({ region }: { region: Region }) {
-  const style = RISK_CATEGORIES[region.risk_category]
-  const hotspots = formatNumber(region.hotspots_24h)
+      {/* 7. Yang bisa kamu lakukan */}
+      {actions.length > 0 ? (
+        <section className="space-y-2">
+          <SectionLabel>{copy.detail.actions}</SectionLabel>
+          <ul className="rounded-card bg-surface-muted space-y-2 p-4">
+            {actions.map((item) => (
+              <li key={item} className="flex items-start gap-2">
+                <Check
+                  className="text-brand mt-0.5 size-4 shrink-0"
+                  strokeWidth={2}
+                  aria-hidden
+                />
+                <span className="text-ink text-base">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
-  return (
-    <section
-      className="rounded-card space-y-2 p-4"
-      style={{ backgroundColor: style.tint, color: style.text }}
-    >
-      <div>
-        <div className="flex items-center gap-1">
-          <p className="text-xs leading-4 font-medium">{copy.detail.riskTitle}</p>
-          <HintButton
-            ariaLabel={copy.detail.riskHint}
-            text={copy.detail.riskTooltip}
-            className="opacity-70 hover:text-inherit hover:opacity-100"
-            style={{ color: style.text }}
-          />
-        </div>
-        <p className="mt-1 flex items-center gap-2 text-xl font-semibold">
-          <span
-            className="size-2.5 shrink-0 rounded-full"
-            style={{ backgroundColor: style.dot }}
-            aria-hidden
-          />
-          {region.risk_category === 'tidak_tersedia' && region.quality === 'stale'
-            ? 'Indikator kedaluwarsa'
-            : style.label}
-        </p>
+      {/* 8–10. Accordion */}
+      <div className="space-y-2">
+        {region.last_detection ? (
+          <DetailAccordion title={copy.extra.detection}>
+            <dl className="grid grid-cols-1 gap-2 text-xs sm:grid-cols-3">
+              <div>
+                <dt className="text-ink-2 font-medium">{copy.extra.satellite}</dt>
+                <dd className="text-ink mt-0.5 font-semibold">
+                  {region.last_detection.satellite}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-ink-2 font-medium">{copy.extra.confidence}</dt>
+                <dd className="text-ink mt-0.5 font-semibold">
+                  {confidenceLabel(region.last_detection.confidence)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-ink-2 font-medium">{copy.extra.frp}</dt>
+                <dd className="text-ink mt-0.5 font-mono font-semibold tabular-nums">
+                  {formatNumber(region.last_detection.frp_mw)} MW
+                </dd>
+              </div>
+            </dl>
+          </DetailAccordion>
+        ) : null}
+
+        <RegionRiverPanel key={region.code} code={region.code} />
+
+        <DetailAccordion title={copy.extra.sourcesUpdates}>
+          <ul className="text-ink-2 space-y-1.5 text-xs">
+            <li>
+              {copy.extra.computedAt}:{' '}
+              {region.computed_at
+                ? formatDateTime(region.computed_at, region.time_zone)
+                : copy.extra.noTimestamp}
+            </li>
+            <li>
+              {copy.extra.weatherAt}:{' '}
+              {region.weather_updated_at
+                ? formatDateTime(region.weather_updated_at, region.time_zone)
+                : copy.extra.noTimestamp}
+            </li>
+            <li>
+              {copy.extra.airAt}:{' '}
+              {region.air_updated_at
+                ? formatDateTime(region.air_updated_at, region.time_zone)
+                : copy.extra.noTimestamp}
+            </li>
+          </ul>
+        </DetailAccordion>
       </div>
-      <p className="text-sm" style={{ color: style.text }}>
-        {copy.detail.hotspots24hReason(hotspots)}
-      </p>
-    </section>
+    </div>
   )
 }

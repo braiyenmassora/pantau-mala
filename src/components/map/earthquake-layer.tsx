@@ -31,7 +31,7 @@ export function EarthquakeLayer() {
                   <button
                     type="button"
                     className={cn(
-                      'border-surface shadow-map relative size-2.5 rounded-full border-2 bg-brand-mala',
+                      'border-surface bg-ink shadow-map relative size-2.5 rounded-full border-2',
                       focusRing,
                     )}
                     aria-label={`Gempa M${m}, ${lokasi}`}

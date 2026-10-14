@@ -38,9 +38,11 @@ const pulangPisau: Region = {
     village: 'Buntoi',
     district: 'Kahayan Hilir',
   },
-  summary: 'Ringkasan uji',
-  actions: ['Saran uji'],
+  summary: 'Ringkasan uji. Kalimat kedua.',
+  actions: ['Pantau perkembangan satelit.', 'Hubungi Damkar di 113 bila melihat asap.'],
   score: 82,
+  quality: 'ok',
+  computed_at: '2026-10-09T14:05:00+07:00',
 }
 
 function renderDetail(region: Region) {
@@ -74,24 +76,29 @@ describe('RegionDetailPanel', () => {
     expect(screen.queryByText(/114\.|-2\./)).toBeNull()
   })
 
-  it('shows detection time in header; air quality only in conditions', () => {
+  it('shows status hierarchy: badge, count, trend; no air/cuaca tiles', () => {
     renderDetail(pulangPisau)
-    expect(screen.getByText(/Deteksi 9 Oktober 2026/)).toBeTruthy()
-    expect(screen.queryByText('Info teknis satelit')).toBeNull()
-    expect(screen.getByText(copy.detail.airQuality)).toBeTruthy()
-    expect(screen.getByText(copy.air.tidak_sehat)).toBeTruthy()
+    expect(screen.getByText('Sangat tinggi')).toBeTruthy()
+    expect(screen.getByText('23')).toBeTruthy()
+    expect(screen.getByText(copy.detail.hotspot24hLabel)).toBeTruthy()
+    expect(screen.getByText(copy.detail.trendUp)).toBeTruthy()
+    expect(screen.queryByText(copy.detail.airQuality)).toBeNull()
+    expect(screen.queryByText(copy.source.cuaca)).toBeNull()
+    expect(screen.queryByText(/Deteksi 9 Oktober/)).toBeNull()
   })
 
-  it('shows backend indicator score provisionally and separates weather metrics', () => {
+  it('shows calibration note, update stamp, conditions and accordions', () => {
     renderDetail(pulangPisau)
-    expect(screen.getByText(copy.detail.riskTitle)).toBeTruthy()
-    expect(screen.getByText('Sangat tinggi')).toBeTruthy()
-    expect(screen.getByText(copy.detail.hotspots24hReason('23'))).toBeTruthy()
+    expect(
+      screen.getByText(copy.detail.calibrationNote('82', 'ok')),
+    ).toBeTruthy()
+    expect(screen.getByText(/Diperbarui /)).toBeTruthy()
+    expect(screen.getByText(copy.detail.humidity)).toBeTruthy()
     expect(screen.getByText(copy.detail.weatherDanger)).toBeTruthy()
     expect(screen.getByText(copy.bahaya.ekstrem)).toBeTruthy()
-    expect(screen.queryByText('/100')).toBeNull()
-    expect(screen.getByText(copy.extra.score)).toBeTruthy()
-    expect(screen.getByText(copy.extra.provisional)).toBeTruthy()
-    expect(screen.queryByText(copy.panel.hotspot24h)).toBeNull()
+    expect(screen.getByText(copy.extra.detection)).toBeTruthy()
+    expect(screen.getByText(copy.extra.river)).toBeTruthy()
+    expect(screen.getByText(copy.extra.sourcesUpdates)).toBeTruthy()
+    expect(screen.queryByText(copy.extra.loadRiver)).toBeNull()
   })
 })

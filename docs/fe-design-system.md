@@ -14,7 +14,7 @@ PDF handoff adalah **sumber kebenaran visual**. `tokens.css` dan komponen mengik
 ## 1. Prinsip
 
 1. Peta = hero; panel = informasi. Satu pekerjaan per section.
-2. Warna risiko hanya untuk pin / chip / legend status — bukan dekorasi.
+2. Warna risiko hanya untuk pin / chip / legend status — bukan dekorasi. Status non-risiko (gempa, stale, suhu, error) pakai ink / brand / ink-3.
 3. Titik panas ≠ kebakaran (lihat fe-ui-copy).
 4. Wordmark **pantaumala** (IBM Plex): `pantau` hijau `#1E6B45`, `mala` orange `#C2410C`. Aksen UI/lokasi/tombol = hijau. **Tidak ada biru.**
 5. Light mode saja. Grid **4 px**.
@@ -27,7 +27,7 @@ PDF handoff adalah **sumber kebenaran visual**. `tokens.css` dan komponen mengik
 | Panel kiri | Mengambang **400 px**, jarak **16** dari tepi; tab sembunyi **24×48** |
 | Chip filter | Di atas peta; sekaligus legend warna kategori |
 | Kontrol peta | Kanan bawah: lokasi, zoom +/− — tiap **40×40**, gap **8** |
-| Legend skor/halo | Kiri bawah (bukan warna kategori) |
+| Legend warna pin | Kiri bawah (chip filter juga legend kategori) |
 | Updated-at | Kanan bawah |
 
 ---
@@ -102,7 +102,7 @@ Sentence case. Sapaan “kamu”. Desimal koma kecuali koordinat.
 | Chip filter | tinggi **36**, pill, gap 8, teks 13/500; terpilih = latar `#14261B`, teks putih |
 | Badge kategori | tinggi **24**, tint + text kategori, teks 12/600 |
 | Tombol | semua pill; besar **40** (teks 14); kecil **36** (teks 13); primary brand / sekunder border / lembut brand-soft |
-| Pin | skor di pin; halo pulse Sangat tinggi **2,6 s** / Sedang **3,4 s** |
+| Pin | lingkaran penuh warna risiko (tanpa skor); halo pulse Sangat tinggi **2,6 s** / Sedang **3,4 s** |
 
 Ikon Lucide stroke **2**: 14 (ⓘ / rail), 16 inline, 18 aksi, 20 kontrol peta.
 

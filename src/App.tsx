@@ -148,10 +148,10 @@ export default function App() {
           aria-hidden={!panelOpen}
           {...mapOverlayGestureProps}
         >
-          <header className="shrink-0 border-b border-line px-4 py-3">
-            <div className="flex items-center justify-between">
-              <Brand compact />
-              {selectedCode && (
+          <header className="border-line shrink-0 border-b px-4 py-3">
+            {selectedCode ? (
+              <div className="flex items-center justify-between">
+                <Brand compact />
                 <button
                   type="button"
                   onClick={() => {
@@ -162,24 +162,23 @@ export default function App() {
                   }}
                   aria-label={copy.panel.closeDetail}
                   className={cn(
-                    'flex size-7 items-center justify-center rounded-ctl text-ink-2',
+                    'text-ink-2 flex size-9 items-center justify-center rounded-full',
                     'hover:bg-surface-muted hover:text-ink transition-colors duration-150',
                     focusRing,
                   )}
                 >
                   <X className="size-4" strokeWidth={2} aria-hidden />
                 </button>
-              )}
-            </div>
-            {!selectedCode && (
-              <div className="mt-2">
-                <SearchBox mapRef={mapRef} />
               </div>
+            ) : (
+              <SearchBox mapRef={mapRef} />
             )}
           </header>
 
-          {/* When panel open: chips sit between search and list in the tab order. */}
-          {panelOpen && data && <FilterBar panelOpen={panelOpen} regions={data} />}
+          {/* Filter di kanvas hanya saat panel tutup atau sedang lihat detail. */}
+          {data && (!panelOpen || selectedCode) && (
+            <FilterBar panelOpen={panelOpen} regions={data} />
+          )}
 
           <div
             ref={panelContentRef}
@@ -251,12 +250,6 @@ export default function App() {
             </Suspense>
           )}
         </main>
-
-        {isPending && (
-          <div className="bg-map-bg absolute inset-0 z-[60]">
-            <MapSoftLoading />
-          </div>
-        )}
       </div>
     </TooltipProvider>
   )

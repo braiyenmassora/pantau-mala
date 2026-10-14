@@ -48,6 +48,10 @@ function wrap(ui: ReactNode) {
     updated_at: '2026-10-12T00:00:00Z',
     status: { firms: 'ok', weather: 'ok', air: 'ok' },
   })
+  client.setQueryData(['region-catalog', '00000000-0000-4000-8000-000000000001', 0], {
+    provinces: [],
+    regencies: [],
+  })
   return render(
     <QueryClientProvider client={client}>
       <TooltipProvider>{ui}</TooltipProvider>
@@ -98,7 +102,7 @@ describe('SummaryPanel states', () => {
         isError={false}
       />,
     )
-    expect(screen.getByLabelText(copy.common.loading)).toBeTruthy()
+    expect(document.querySelector('[aria-busy]')).toBeTruthy()
     expect(screen.queryByText('0')).toBeNull()
   })
 

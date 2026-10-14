@@ -67,12 +67,13 @@ export const copy = {
     unavailable: 'Data belum tersedia atau sumber gagal. Coba muat kembali.',
     empty: 'Belum ada data pada respons sumber.',
     noTimestamp: 'Belum ada waktu sumber',
-    historyAndRiver: 'Riwayat dan debit sungai',
-    history: 'Riwayat 7 hari',
+    historyAndRiver: 'Debit sungai model',
     date: 'Tanggal',
+    dateUtc: 'Tanggal (UTC)',
+    discharge: 'Debit',
     detections: 'Titik panas',
     score: 'Skor',
-    provisional: '/100 · kalibrasi belum final',
+    provisional: 'kalibrasi belum final',
     computedAt: 'Indikator dihitung',
     weatherAt: 'Cuaca diperbarui',
     airAt: 'Udara diperbarui',
@@ -80,11 +81,13 @@ export const copy = {
     satellite: 'Satelit',
     confidence: 'Keyakinan',
     frp: 'FRP',
+    sourcesUpdates: 'Sumber & pembaruan data',
 
     river: 'Debit sungai model',
     riverNote:
-      'Model Open-Meteo/GloFAS pada grid wilayah, bukan kejadian atau peringatan banjir. Tanggal UTC.',
-    loadRiver: 'Ambil debit sungai',
+      'Model debit di grid wilayah — gambaran hidrologi, bukan peringatan banjir.',
+    riverAttribution: 'Open-Meteo / GloFAS / Copernicus',
+    loadRiver: 'Muat ulang debit sungai',
 
     windy: 'Prakiraan atmosfer & angin (Windy)',
     windyNote: (model: string) =>
@@ -94,11 +97,15 @@ export const copy = {
 
   auth: {
     logout: 'Keluar',
-    username: 'Username',
-    password: 'Password',
-    workspace: 'Workspace',
-    showPassword: 'Tampilkan password',
-    hidePassword: 'Sembunyikan password',
+    username: 'Nama pengguna',
+    password: 'Kata sandi',
+    workspace: 'Ruang kerja',
+    showPassword: 'Tampilkan kata sandi',
+    hidePassword: 'Sembunyikan kata sandi',
+    workspaceSearch: 'Cari ruang kerja…',
+    workspaceEmpty: 'Ruang kerja tidak ditemukan',
+    workspaceSwitchFail: 'Ruang kerja belum dapat diganti.',
+    workspaceListFail: 'Daftar ruang kerja belum tersedia.',
   },
   empty: {
     noHotspots: {
@@ -159,12 +166,15 @@ export const copy = {
   panel: {
     indonesiaToday: 'Pantauan titik panas Indonesia',
     provinceToday: (province: string) => `Pantauan titik panas · ${province}`,
-    subtitle:
-      'Anomali termal satelit NASA FIRMS (24 jam). Titik panas belum tentu kebakaran; bukan peringatan resmi.',
+    subtitle: 'Data satelit NASA FIRMS, 24 jam terakhir.',
+    limitationNote:
+      'Titik panas belum tentu kebakaran. Bukan peringatan resmi.',
     hotspot24h: 'Titik panas 24 jam',
     hotspotHint: 'Penjelasan titik panas',
     hotspotTooltip: 'Total titik panas dalam 24 jam',
-    topRisk: 'Provinsi dengan titik panas',
+    topRisk: 'Provinsi dengan titik panas terbanyak',
+    topRiskHint: '5 teratas, 24 jam terakhir',
+    topRiskColumn: 'Titik panas',
     topKab: 'Kabupaten/kota dengan titik panas',
     searchResults: 'Hasil pencarian',
     betaTooltip: 'Bukan peringatan kebakaran.',
@@ -188,6 +198,7 @@ export const copy = {
     windUnit: 'km/jam',
     dryDays: 'Hari tanpa hujan',
     dayUnit: 'hari',
+    unavailable: 'Belum tersedia',
     airQuality: 'Kualitas udara',
     airHint: 'Penjelasan kualitas udara',
     airTooltip:
@@ -196,6 +207,7 @@ export const copy = {
     riskHint: 'Penjelasan risiko',
     riskTooltip:
       'Makin banyak titik panas satelit NASA FIRMS (24 jam), makin tinggi kategori di peta. Titik panas belum tentu kebakaran.',
+    hotspot24hLabel: 'Titik panas 24 jam',
     hotspots24hReason: (n: string) => `${n} titik panas (24 jam)`,
     weatherDanger: 'Kelas FWI',
     weatherDangerHint: 'Penjelasan kelas FWI',
@@ -203,6 +215,29 @@ export const copy = {
       'Kelas Fire Weather Index dari model cuaca. Gambaran saja; tidak mengatur warna pin di peta.',
     fwiUnit: 'FWI',
     flagDate: 'Deteksi',
+    updatedAt: (when: string) => `Diperbarui ${when}`,
+    trendUp: 'Naik',
+    trendDown: 'Turun',
+    trendFlat: 'Stabil',
+    trendAria: (label: string) => `Tren 7 hari: ${label}`,
+    confidence: {
+      rendah: 'Rendah',
+      sedang: 'Sedang',
+      tinggi: 'Tinggi',
+    },
+    calibrationNote: (score: string | null, quality: string | null) => {
+      const head =
+        score != null
+          ? `Skor ${score}/100 (kalibrasi belum final).`
+          : 'Kalibrasi belum final.'
+      if (quality === 'stale') {
+        return `${head} Indikator kedaluwarsa, bukan peringatan resmi.`
+      }
+      if (quality && quality !== 'ok') {
+        return `${head} Indikator belum lengkap, bukan peringatan resmi.`
+      }
+      return `${head} Bukan peringatan resmi.`
+    },
   },
   /** Label tampilan untuk weather_danger.source. */
   bahayaSumberLabel: {
@@ -221,29 +256,35 @@ export const copy = {
     stale: 'Data kedaluwarsa',
     missing: 'Tidak tersedia',
     baik: 'Baik',
-    sedang: 'Sedang',
+    sedang: 'Sedang (udara)',
     tidak_sehat: 'Tidak sehat',
     sangat_tidak_sehat: 'Sangat tidak sehat',
     berbahaya: 'Berbahaya',
   },
   location: {
-    nearbyLabel: 'Titik panas dalam 25 km',
+    nearbyLabel: 'Dekat kamu',
+    nearbyHint: 'Radius 25 km dari lokasimu',
     yourLocation: 'Lokasi kamu',
     radius25: 'Dalam radius 25 km',
     radiusBadge: 'Radius 25 km',
     hotspotUnit: 'titik panas',
+    hotspotCount: (n: string) => `${n} titik panas`,
     nearbyNoHotspots: 'Tidak ada titik panas dalam radius 25 km.',
+    nearestLine: (km: string, place: string) =>
+      `Terdekat: ${km} km, di ${place}`,
+    nearestLineNoPlace: (km: string) => `Terdekat: ${km} km`,
     nearest: 'Paling dekat',
     km: 'km',
-    riskTitle: 'Titik panas di sekitar kamu',
-    riskSubtitle: 'Titik panas satelit dalam radius 25 km',
+    riskLabel: 'Risiko',
+    riskTitle: 'Dekat kamu',
+    riskSubtitle: 'Izinkan akses lokasi untuk melihat titik panas di sekitarmu.',
     useLocation: 'Izinkan lokasi',
+    loading: 'Memuat titik panas di sekitarmu…',
     promptTitle: 'Izinkan lokasi untuk melihat titik panas dekat kamu?',
     promptBody: 'Browser meminta izin lokasi. Lokasi kamu tidak disimpan.',
     promptLater: 'Nanti saja',
     promptContinue: 'Lanjutkan',
-    /** Label tombol utama — selaras kamus fe-ui-copy. */
-    allowLocationFull: 'Izinkan lokasi untuk melihat titik panas dekat kamu',
+    allowLocationFull: 'Izinkan lokasi untuk melihat titik panas di sekitarmu',
   },
   map: {
     recenter: 'Pusatkan ke lokasi kamu',
@@ -271,7 +312,9 @@ export const copy = {
     allProvinces: 'Semua provinsi',
     pickProvince: 'Pilih provinsi',
     allStatuses: 'Semua',
-    allStatusesTitle: (count: string) => `Tampilkan semua kategori (${count} wilayah)`,
+    wilayahUnit: 'wilayah',
+    allStatusesTitle: (count: string) =>
+      `Tampilkan semua kategori (${count} wilayah)`,
     categoryTitle: (count: string, label: string) =>
       `Tampilkan hanya ${count} wilayah risiko ${label}`,
   },
@@ -279,7 +322,7 @@ export const copy = {
   updatedAt: {
     /** Relatif dari meta.updated_at. */
     stamp: (relatif: string) => `Diperbarui ${relatif}`,
-    cadence: 'Target pembaruan per jam; lihat waktu dan status sumber',
+    cadence: 'Data diganti setiap sekitar 3 jam dari satelit dan cuaca',
     stale: 'Data mungkin sudah usang',
     problems: (list: string) => `Ada sumber bermasalah: ${list}`,
     sourceStatus: (name: string, status: string) => `${name} (${status})`,
@@ -298,12 +341,8 @@ export const copy = {
 
   legend: {
     /** PDF §5: kiri bawah; warna kategori juga di chip filter. */
-    haloTitle: 'Denyut',
-    haloHint: 'Merah lebih cepat · oranye lebih pelan.',
     pinTitle: 'Warna pin',
-    pinHint: 'Oranye = sedang · Merah = sangat tinggi.',
-    scoreTitle: 'Skor risiko',
-    scoreHint: 'Skor indikator di panel detail; kalibrasi masih perlu validasi.',
+    pinHint: 'Oranye = Sedang · Merah = Sangat tinggi.',
     temperatureTitle: 'Suhu udara',
     temperatureHint: 'Lapisan suhu terpisah dari titik panas satelit.',
   },
@@ -317,14 +356,15 @@ export const copy = {
     noHotspots: 'Tidak ada titik panas aktif',
   },
   footer: {
+    sourcesLabel: 'Sumber data:',
     sources: [
       {
         name: 'NASA FIRMS',
-        href: 'https://firms.modaps.eosdis.nasa.gov',
+        href: 'https://firms.modaps.eosdis.nasa.gov/',
       },
       {
         name: 'Open-Meteo',
-        href: 'https://open-meteo.com',
+        href: 'https://open-meteo.com/',
       },
     ] as const,
     openInNewTab: (name: string) => `${name}, buka di tab baru`,

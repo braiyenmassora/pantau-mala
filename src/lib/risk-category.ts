@@ -13,8 +13,8 @@ export const BRAND_HEX = '#1E6B45'
 /** Lokasi pengguna = brand (PDF: tidak ada biru). */
 export const LOCATION_HEX = '#1E6B45'
 
-/** Atmospheric extreme heat — brand/risk-high family. */
-export const TEMP_HOT_HEX = '#C2410C'
+/** Lapisan suhu — brand hijau, bukan warna risiko pin. */
+export const TEMP_HOT_HEX = BRAND_HEX
 export const TEMP_TEXT_HEX = '#14261B'
 export const TEMP_HALO_HEX = '#FFFFFF'
 
@@ -51,9 +51,6 @@ export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
 
 /** Active map pin lift — PDF shadow-map family. */
 export const PIN_ACTIVE_BOX_SHADOW = '0 2px 8px rgba(20, 38, 27, 0.2)'
-
-/** Mid-high transition for heatmap gradients. */
-export const HEATMAP_ORANGE = '#D99A0B'
 
 /** Append alpha (0–1) to a #RRGGBB hex. */
 export function withAlpha(hex: string, alpha: number): string {

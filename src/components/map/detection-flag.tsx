@@ -1,4 +1,6 @@
-import { buildDetectionFlag } from '@/lib/detection-flag'
+import { Cloud, CloudFog, CloudRain, CloudSun } from 'lucide-react'
+
+import { buildDetectionFlag, type WeatherIconKind } from '@/lib/detection-flag'
 import type { Region } from '@/data/types'
 import { cn } from '@/lib/utils'
 
@@ -7,12 +9,28 @@ type DetectionFlagProps = {
   className?: string
 }
 
+const WEATHER_ICON: Record<WeatherIconKind, typeof CloudSun> = {
+  sun: CloudSun,
+  cloud: Cloud,
+  rain: CloudRain,
+  fog: CloudFog,
+}
+
+/** Sama keluarga motion panel detail (water-ripple / wind-drift). */
+const WEATHER_ANIM: Record<WeatherIconKind, string> = {
+  sun: 'animate-wind-drift',
+  cloud: 'animate-wind-drift',
+  rain: 'animate-water-ripple',
+  fog: 'animate-wind-drift',
+}
+
 /**
- * Callout pin terpilih — nama + provinsi di atas pin.
- * `mb-8` menjauh dari halo (~52px); panah diamond mengarah ke pin.
+ * Callout pin terpilih — nama, provinsi, suhu + ikon cuaca/udara.
+ * `mb-8` menjauh dari halo; panah diamond mengarah ke pin.
  */
 export function DetectionFlag({ region, className }: DetectionFlagProps) {
   const content = buildDetectionFlag(region)
+  const WeatherIcon = WEATHER_ICON[content.weatherKind]
 
   return (
     <div
@@ -22,7 +40,7 @@ export function DetectionFlag({ region, className }: DetectionFlagProps) {
         className,
       )}
     >
-      <div className="border-line bg-surface relative rounded-card w-max max-w-52 border px-3 py-2 shadow-md">
+      <div className="border-line bg-surface relative w-max max-w-56 rounded-card border px-3 py-2 shadow-md">
         <div className="flex min-w-0 flex-col gap-1 text-left">
           <p
             className="text-ink truncate text-xs leading-4 font-semibold"
@@ -36,8 +54,33 @@ export function DetectionFlag({ region, className }: DetectionFlagProps) {
           >
             {content.subtitle}
           </p>
+          <div className="border-line mt-0.5 flex items-center gap-3 border-t pt-1.5">
+            <span
+              className="text-ink-2 flex min-w-0 items-center gap-1 text-xs leading-4"
+              title={region.weather.condition}
+            >
+              <WeatherIcon
+                className={cn('size-3.5 shrink-0', WEATHER_ANIM[content.weatherKind])}
+                strokeWidth={2}
+                aria-hidden
+              />
+              <span className="truncate tabular-nums">
+                {content.tempLabel ?? '—'}
+              </span>
+            </span>
+            <span
+              className="text-ink-2 flex min-w-0 items-center gap-1 text-xs leading-4"
+              title={content.airLabel}
+            >
+              <CloudFog
+                className="size-3.5 shrink-0 animate-wind-drift"
+                strokeWidth={2}
+                aria-hidden
+              />
+              <span className="truncate">{content.airLabel}</span>
+            </span>
+          </div>
         </div>
-        {/* Tip panah: setengah diamond di bawah card */}
         <span
           aria-hidden
           className="border-line bg-surface absolute top-full left-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rotate-45 border-r border-b"

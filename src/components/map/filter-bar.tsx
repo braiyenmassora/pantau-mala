@@ -17,8 +17,8 @@ import { useMapStore } from '@/store/map'
 
 const ALL_PROVINCES = 'Semua'
 
-/** Chip filter — hanya sangat tinggi & sedang (rendah tidak di peta). */
-const CATEGORY_ORDER: RiskCategory[] = ['sangat_tinggi', 'sedang']
+/** Chip filter — Rendah muncul jika ada di data. */
+const CATEGORY_BASE: RiskCategory[] = ['sangat_tinggi', 'sedang', 'rendah']
 
 type FilterBarProps = {
   panelOpen: boolean
@@ -84,13 +84,13 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
 
   const allPressed = selectedCategories.size === 0
   const allCount = preCategory.length
+  const categoryOrder = CATEGORY_BASE.filter(
+    (c) => c !== 'rendah' || counts.rendah > 0,
+  )
 
-  // Chip rendah / belum dinilai dihapus — bersihkan seleksi lama.
+  // Bersihkan seleksi "belum dinilai" lama.
   useEffect(() => {
-    if (
-      selectedCategories.has('tidak_tersedia') ||
-      selectedCategories.has('rendah')
-    ) {
+    if (selectedCategories.has('tidak_tersedia')) {
       clearCategories()
     }
   }, [selectedCategories, clearCategories])
@@ -222,11 +222,11 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
             allPressed ? 'text-surface/80' : 'text-ink-2',
           )}
         >
-          {formatNumber(allCount)}
+          {formatNumber(allCount)} {copy.filter.wilayahUnit}
         </span>
       </Chip>
 
-      {CATEGORY_ORDER.map((category) => {
+      {categoryOrder.map((category) => {
         const meta = RISK_CATEGORIES[category]
         const count = counts[category]
         const pressed = selectedCategories.has(category)
@@ -251,7 +251,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
                 pressed ? 'text-surface/80' : 'text-ink-2',
               )}
             >
-              {formatNumber(count)}
+              {formatNumber(count)} {copy.filter.wilayahUnit}
             </span>
           </Chip>
         )

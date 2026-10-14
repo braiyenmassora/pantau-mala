@@ -12,6 +12,7 @@ import {
 import { Button, EmptyState } from '@/components/common'
 import { IndonesiaMapFraming } from '@/components/map/indonesia-map-framing'
 import { HotspotHeatmapLayer } from '@/components/map/hotspot-heatmap-layer'
+import { MapSoftLoading } from '@/components/map/map-soft-loading'
 import { ProvinceFocus } from '@/components/map/province-focus'
 import { RegionLayers } from '@/components/map/region-layers'
 import { SelectedHotspotsLayer } from '@/components/map/selected-hotspots-layer'
@@ -23,6 +24,7 @@ import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import { getMapPadding, INDONESIA_CENTER } from '@/lib/indonesia-view'
 import { isBasemapStyleError, webGlSupported } from '@/lib/map-support'
+import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui'
 
 type MapShellProps = {
@@ -177,18 +179,26 @@ export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
     >
       {basemapFailed && <BasemapBanner onRetry={remount} />}
       {!basemapFailed && layerFailed && <PartialBanner />}
+      {!framed && (
+        <div className="absolute inset-0 z-20">
+          <MapSoftLoading />
+        </div>
+      )}
       <Map
         key={mountKey}
         ref={mapRef}
         theme="light"
         blank={basemapFailed}
-        className="size-full"
+        className={cn(
+          'size-full transition-opacity duration-300 ease-[var(--ease-out-soft)]',
+          framed ? 'opacity-100' : 'opacity-0',
+        )}
         center={INDONESIA_CENTER}
         zoom={4.5}
         attributionControl={false}
         dragRotate={false}
         pitchWithRotate={false}
-        loading={!framed}
+        loading={false}
       >
         <MapBasemapListener onBasemapError={markBasemapFailed} />
         <IndonesiaMapFraming panelOpen={panelOpen} onReady={markFramed} />

@@ -43,7 +43,7 @@ export function formatRelativeAge(iso: string, nowMs: number = Date.now()): stri
 }
 
 /** Cadence ingest ~3 jam → stale setelah 3,5 jam. */
-export const META_STALE_MS = 2 * 60 * 60 * 1000
+export const META_STALE_MS = 3.5 * 60 * 60 * 1000
 
 export function isMetaStale(iso: string, nowMs: number = Date.now()): boolean {
   const t = new Date(iso).getTime()

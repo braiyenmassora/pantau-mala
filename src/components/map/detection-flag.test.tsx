@@ -38,7 +38,7 @@ const merauke: Region = {
 describe('DetectionFlag', () => {
   afterEach(cleanup)
 
-  it('shows name and province only, above the pin', () => {
+  it('shows name, province, temp and air above the pin', () => {
     const { container } = render(<DetectionFlag region={merauke} />)
     const card = container.querySelector('.rounded-card')
     expect(card?.className).toContain('border-line')
@@ -47,6 +47,8 @@ describe('DetectionFlag', () => {
 
     expect(screen.getByText('Kab. Merauke')).toBeTruthy()
     expect(screen.getByText('Provinsi Papua Selatan')).toBeTruthy()
+    expect(screen.getByText('30°C')).toBeTruthy()
+    expect(screen.getByText('Baik')).toBeTruthy()
     expect(screen.queryByText(/Oktober 2026/)).toBeNull()
     expect(screen.queryByText('Sota')).toBeNull()
   })
