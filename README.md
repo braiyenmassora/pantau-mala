@@ -65,13 +65,13 @@ bun x wrangler deploy
 bun x wrangler secret put PANTAU_API_KEY
 ```
 
-Jika memakai **Cloudflare Workers Builds** (Git connected), jangan set build command ke `pnpm run build`. Corepack tidak mendukung `bun` sebagai `packageManager`. Pakai:
+Jika memakai **Cloudflare Workers Builds** (Git connected), jangan set build command ke `pnpm run build`. Default image memakai Bun **1.2.15**, yang **tidak** bisa membaca `bun.lock` lockfileVersion 2 — wajib override versi. Cloudflare **tidak** membaca `.bun-version` untuk Bun (hanya lewat env).
 
 | Setting | Nilai |
 | --- | --- |
 | Build command | `bun run build` |
 | Deploy command | `bun x wrangler deploy` |
-| Build variable `BUN_VERSION` | `1.4.3` (lihat `.bun-version`) |
+| Build variable **`BUN_VERSION`** | **`1.4.3`** (wajib; Settings → Build → Build Variables) |
 | Build variable `VITE_DATA_URL` | `/api/v1` |
 
 Atau biarkan GitHub Actions (`deploy-cloudflare.yml`) yang build + deploy setelah CI `main` lulus.
