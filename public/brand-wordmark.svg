@@ -1,1 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 190 34" fill="none"><title>pantau mala</title><g stroke="#0f172a" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 30V10m0 7c0-11 13-11 13 0S3 28 3 17M34 24V10m0 7c0-11-13-11-13 0s13 11 13 0M42 24V10m0 7c0-11 13-11 13 0v7M64 4v15q0 7 6 4M59 10h12M89 24V10m0 7c0-11-13-11-13 0s13 11 13 0M97 10v8c0 10 13 10 13 0v-8"/></g><g stroke="#c2410c" stroke-width="3.1" stroke-linecap="round" stroke-linejoin="round"><path d="M123 24V10m0 7c0-10 10-10 10 0v7m0-7c0-10 10-10 10 0v7M162 24V10m0 7c0-11-13-11-13 0s13 11 13 0M170 4v16q0 5 5 3M187 24V10m0 7c0-11-12-11-12 0s12 11 12 0"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 28" fill="none">
+  <title>pantaumala</title>
+  <text
+    x="0"
+    y="21"
+    font-family="IBM Plex Sans, system-ui, sans-serif"
+    font-size="22"
+    font-weight="600"
+  >
+    <tspan fill="#1e6b45">pantau</tspan><tspan fill="#c2410c">mala</tspan>
+  </text>
+</svg>

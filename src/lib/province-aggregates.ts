@@ -1,5 +1,5 @@
 import type { CatalogProvince, Region, RiskCategory } from '@/data/types'
-import { RISK_SORT_RANK } from '@/lib/risk-rule'
+import { RISK_SORT_RANK, effectiveRiskCategory } from '@/lib/risk-rule'
 
 export type ProvinceAggregate = {
   name: string
@@ -26,9 +26,10 @@ export function aggregateByProvince(
   const byName = new Map<string, number>()
   const riskByName = new Map<string, RiskCategory>()
   for (const r of regions) {
+    const risk = effectiveRiskCategory(r)
     const prev = riskByName.get(r.province)
-    if (!prev || RISK_SORT_RANK[r.risk_category] < RISK_SORT_RANK[prev])
-      riskByName.set(r.province, r.risk_category)
+    if (!prev || RISK_SORT_RANK[risk] < RISK_SORT_RANK[prev])
+      riskByName.set(r.province, risk)
     byName.set(r.province, (byName.get(r.province) ?? 0) + r.hotspots_24h)
   }
 

@@ -1,7 +1,10 @@
 import Fuse from 'fuse.js'
 
 import type { Region, RiskCategory } from '@/data/types'
-import { compareRegionsByRisk } from '@/lib/risk-rule'
+import { compareRegionsByRisk, effectiveRiskCategory } from '@/lib/risk-rule'
+
+/** Peta & daftar: hanya sedang + sangat tinggi (rendah tidak ditampilkan). */
+export const MAP_RISK_CATEGORIES = new Set<RiskCategory>(['sangat_tinggi', 'sedang'])
 
 export type RegionFilterState = {
   province: string
@@ -10,14 +13,18 @@ export type RegionFilterState = {
 }
 
 export function filterRegions(list: Region[], state: RegionFilterState): Region[] {
-  let result = list
+  let result = list.filter((r) =>
+    MAP_RISK_CATEGORIES.has(effectiveRiskCategory(r)),
+  )
 
   if (state.province !== 'Semua') {
     result = result.filter((r) => r.province === state.province)
   }
 
   if (state.selectedCategories.size > 0) {
-    result = result.filter((r) => state.selectedCategories.has(r.risk_category))
+    result = result.filter((r) =>
+      state.selectedCategories.has(effectiveRiskCategory(r)),
+    )
   }
 
   const q = state.query.trim()

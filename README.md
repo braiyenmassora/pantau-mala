@@ -65,6 +65,10 @@ bun x wrangler deploy
 bun x wrangler secret put PANTAU_API_KEY
 ```
 
+CI menjalankan validasi pada `develop` dan `main`. Setelah CI `main` berhasil, `.github/workflows/deploy-cloudflare.yml` otomatis membangun dan mendeploy Worker ke Cloudflare. Repository GitHub harus memiliki secret `CLOUDFLARE_API_TOKEN` dan variable `CLOUDFLARE_ACCOUNT_ID`; token harus dibuat khusus untuk deployment dan tidak boleh memakai token OAuth laptop.
+
+Jika secret GitHub Actions belum diatur (misalnya untuk preview pribadi), langkah deploy otomatis di GitHub Actions akan dilewati tanpa menggagalkan CI, dan deployment dapat dijalankan secara manual dari CLI menggunakan `bun x wrangler deploy`.
+
 Key harus memiliki scope `data:read` dan client slug yang sama dengan `PANTAU_CLIENT_SLUG`. Secret yang sudah terpasang dipertahankan saat deploy; jangan masukkan key ke konfigurasi Wrangler, Git, atau `VITE_*`.
 
 Alamat deployment ditentukan oleh akun dan konfigurasi pengguna. Hasil tes deployment sebelumnya adalah catatan lingkungan pengujian, bukan jaminan readiness instalasi baru; jalankan cek health, gateway, dan data pada lingkungan tujuan.
@@ -80,3 +84,13 @@ Mode client tidak meminta username/password pengunjung. Salin `.env.example` ke 
 `bun run --bun dev` menyediakan gateway dev. Untuk hasil build jalankan `bun run --bun build` lalu `bun run start`; server Bun menyajikan dist dan proxy read-only yang sama. HTTPS dapat diterminasi pada reverse proxy yang sudah ada, tanpa menambahkan provisioning. Static hosting/`vite preview` saja tidak dapat menyimpan secret atau menjalankan gateway. `FE_ACCESS_MODE=account` hanya untuk alur akun sebelumnya pada dev dengan proxy auth.
 
 Gateway mengecek scope/key/client setiap request, menolak mutasi/management, credential pengunjung, query pemilih tenant dan cross-origin. Env kosong/mismatch/revoked menghasilkan error, bukan fallback ke akses tanpa key. `/frontend/session` hanya mengembalikan identitas reader tanpa token. CMS tetap di backend Go. Tidak ada credential FE di Git atau browser.
+
+## Alur Branch dan Kontribusi (Wajib Dibaca)
+
+Semua developer dan AI agent **wajib membaca ketentuan branching ini sebelum melakukan perubahan kode atau konfigurasi**:
+
+- Panduan lengkap ada di [docs/DEVELOPMENT_WORKFLOW.md](docs/DEVELOPMENT_WORKFLOW.md).
+
+- **Gunakan branch `develop`**: Setiap pekerjaan (fitur, bugfix, refactor, styling, konfigurasi) wajib dikerjakan di branch `develop`.
+- **Dilarang langsung commit / push ke `main`**.
+- **Alur Merge**: Perubahan baru masuk ke branch `main` melalui merge dari `develop` setelah uji lint, build, dan test (`bun run lint`, `bun run test`, `bun run build`) berhasil.

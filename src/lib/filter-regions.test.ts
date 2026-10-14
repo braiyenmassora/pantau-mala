@@ -60,13 +60,13 @@ const sample: Region[] = [
 ]
 
 describe('filterRegions', () => {
-  it('sorts by kategori then titik panas, all when filters empty', () => {
+  it('sorts by kategori then titik panas; excludes rendah', () => {
     const result = filterRegions(sample, {
       province: 'Semua',
       selectedCategories: new Set(),
       query: '',
     })
-    expect(result.map((r) => r.code)).toEqual(['62.11', '64.02', '61.12'])
+    expect(result.map((r) => r.code)).toEqual(['62.11', '64.02'])
   })
 
   it('filters by province', () => {
@@ -79,13 +79,22 @@ describe('filterRegions', () => {
     expect(result[0]?.code).toBe('64.02')
   })
 
-  it('filters by selected categories', () => {
+  it('filters by selected categories within map risks only', () => {
+    const result = filterRegions(sample, {
+      province: 'Semua',
+      selectedCategories: new Set(['sedang']),
+      query: '',
+    })
+    expect(result.map((r) => r.code)).toEqual(['64.02'])
+  })
+
+  it('drops rendah even when that chip is selected', () => {
     const result = filterRegions(sample, {
       province: 'Semua',
       selectedCategories: new Set(['rendah']),
       query: '',
     })
-    expect(result.map((r) => r.code)).toEqual(['61.12'])
+    expect(result).toEqual([])
   })
 
   it('searches names with Fuse.js', () => {
@@ -95,5 +104,34 @@ describe('filterRegions', () => {
       query: 'pulang',
     })
     expect(result.map((r) => r.code)).toEqual(['62.11'])
+  })
+
+  it('derives map risk from hotspots when API kategori is null/tidak_tersedia', () => {
+    const live = [
+      stub({
+        code: '35.17',
+        name: 'Jombang',
+        risk_category: 'tidak_tersedia',
+        hotspots_24h: 11,
+      }),
+      stub({
+        code: '35.01',
+        name: 'Pacitan',
+        risk_category: 'tidak_tersedia',
+        hotspots_24h: 4,
+      }),
+      stub({
+        code: '35.99',
+        name: 'Kosong',
+        risk_category: 'tidak_tersedia',
+        hotspots_24h: 0,
+      }),
+    ]
+    const result = filterRegions(live, {
+      province: 'Semua',
+      selectedCategories: new Set(),
+      query: '',
+    })
+    expect(result.map((r) => r.code)).toEqual(['35.17', '35.01'])
   })
 })

@@ -27,7 +27,7 @@ export function DataTile({
   hintText,
 }: DataTileProps) {
   return (
-    <div className={cn('rounded-card bg-surface-muted p-3', className)}>
+    <div className={cn('rounded-card bg-surface-muted p-3 sm:p-4', className)}>
       {(icon || label) && (
         <div className="text-ink-2 flex items-center gap-1">
           {icon}

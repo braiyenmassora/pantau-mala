@@ -1,4 +1,4 @@
-import { Crosshair, MapPin, Radar, MapPinOff } from 'lucide-react'
+import { Crosshair, MapPin, MapPinOff } from 'lucide-react'
 import { useMemo, type KeyboardEvent, type MouseEvent } from 'react'
 
 import { Badge, Button, EmptyState, ProgressBar } from '@/components/common'
@@ -84,7 +84,7 @@ export function LocationCard({ regions }: LocationCardProps) {
     return (
       <section
         className={cn(
-          'animate-view-in rounded-card bg-surface-muted flex flex-col gap-2 p-3',
+          'rounded-card bg-surface-muted flex flex-col gap-3 p-4',
           detailCode && 'hover:bg-line/40 cursor-pointer transition-colors duration-150',
         )}
         role={detailCode ? 'button' : undefined}
@@ -135,7 +135,7 @@ export function LocationCard({ regions }: LocationCardProps) {
           <div className={nearby.nearest ? 'grid grid-cols-2' : undefined}>
             <div className={nearby.nearest ? 'pr-3' : undefined}>
               <div className="text-ink-2 flex items-center gap-1 text-xs font-medium">
-                <Radar className="size-4 shrink-0 text-brand animate-radar-pulse" strokeWidth={2} aria-hidden />
+                <span className="bg-brand size-2.5 shrink-0 rounded-full" aria-hidden />
                 <span>{copy.location.radius25}</span>
               </div>
               <p className="text-ink mt-1 text-base font-semibold tabular-nums">

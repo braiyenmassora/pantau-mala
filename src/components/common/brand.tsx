@@ -1,7 +1,10 @@
-/** Original SVG lettering and symbol shared with the Go console. */
+import { copy } from '@/copy/id'
+import { cn } from '@/lib/utils'
+
+/** Wordmark IBM Plex: pantau (hijau) + mala (orange). */
 export function Brand({ compact = false }: { compact?: boolean } = {}) {
   return (
-    <span className="inline-flex items-center gap-2">
+    <span className="inline-flex items-center gap-2 font-sans">
       <img
         src="/brand-symbol.svg"
         alt=""
@@ -9,13 +12,16 @@ export function Brand({ compact = false }: { compact?: boolean } = {}) {
         height={compact ? 28 : 36}
         className={compact ? 'size-7 shrink-0' : 'size-9 shrink-0'}
       />
-      <img
-        src="/brand-wordmark.svg"
-        alt="pantau mala"
-        width={compact ? 134 : 170}
-        height={compact ? 24 : 30}
-        className={compact ? 'h-6 w-auto' : 'h-7 w-auto'}
-      />
+      <span
+        className={cn(
+          'font-semibold tracking-tight lowercase',
+          compact ? 'text-base leading-5' : 'text-lg leading-6',
+        )}
+        aria-label={copy.a11y.brand}
+      >
+        <span className="text-brand">pantau</span>
+        <span className="text-brand-mala">mala</span>
+      </span>
     </span>
   )
 }

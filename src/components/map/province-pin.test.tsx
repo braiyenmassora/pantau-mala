@@ -9,6 +9,7 @@ import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
 
 vi.mock('@/components/ui/map', () => ({
+  useMap: () => ({ map: { setMaxBounds: vi.fn(), stop: vi.fn(), fitBounds: vi.fn() } }),
   MapMarker: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="map-marker">{children}</div>
   ),
@@ -35,7 +36,7 @@ describe('ProvincePin', () => {
     useUiStore.setState({ panelOpen: false })
   })
 
-  it('shows RiskMarker + badge; tooltip is province name only', async () => {
+  it('shows RiskMarker without count badge; tooltip is province name only', async () => {
     const user = userEvent.setup()
     render(
       <TooltipProvider>
@@ -53,17 +54,17 @@ describe('ProvincePin', () => {
     const pin = screen.getByRole('button', {
       name: /Kalimantan Selatan.*212 titik panas/,
     })
-    expect(pin.querySelector('svg')?.classList.contains('stroke-risk-high')).toBe(true)
-    expect(pin.querySelector('svg')?.classList.contains('fill-none')).toBe(true)
-    expect(pin.querySelector('span[aria-hidden]')?.classList.contains('size-6')).toBe(true)
-    const count = pin.querySelector('span[aria-hidden].tabular-nums')
-    expect(count?.textContent).toBe('212')
-    expect(pin.textContent).toContain('212')
+    expect(pin.querySelector('svg')).toBeNull()
+    expect(pin.querySelector('.bg-risk-high')?.classList.contains('rounded-full')).toBe(
+      true,
+    )
+    expect(pin.querySelector('span[aria-hidden].tabular-nums')).toBeNull()
+    expect(pin.textContent).not.toContain('212')
+    expect(screen.queryByText('Kalimantan Selatan')).toBeNull()
     await user.hover(pin)
     const tip = await screen.findByRole('tooltip')
-    expect(tip.textContent).toContain('Provinsi Kalimantan Selatan')
-    expect(tip.textContent).toContain('212 titik panas')
-    expect(tip.textContent).toContain('Data 24 jam terakhir')
+    expect(tip.textContent).toBe('Provinsi Kalimantan Selatan')
+    expect(tip.textContent).not.toContain('titik panas')
     await user.click(pin)
     expect(useMapStore.getState().province).toBe('Kalimantan Selatan')
   })

@@ -6,7 +6,6 @@ import {
   CloudFog,
   CloudRain,
   Droplets,
-  Radar,
   Gauge,
   MapPin,
   Wind,
@@ -34,9 +33,9 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
   }, [region.code])
 
   return (
-    <div key={region.code} className="animate-view-in space-y-4">
-      <div className="space-y-4">
-        <header>
+    <div key={region.code} className="space-y-6">
+      <div className="space-y-3">
+        <header className="space-y-1">
           <h2
             ref={titleRef}
             tabIndex={-1}
@@ -49,12 +48,12 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
           >
             {region.name}
           </h2>
-          <p className="text-ink-2 mt-1 flex items-center gap-1 text-sm">
+          <p className="text-ink-2 flex items-center gap-1 text-sm">
             <MapPin className="text-ink-2 size-4 shrink-0" strokeWidth={2} aria-hidden />
             <span>{copy.map.regionMetaProvince(region.province)}</span>
           </p>
           {region.last_detection ? (
-            <p className="text-ink-2 mt-1 flex items-center gap-1 text-sm">
+            <p className="text-ink-2 flex items-center gap-1 text-sm">
               <Clock className="text-ink-2 size-4 shrink-0" strokeWidth={2} aria-hidden />
               <span>
                 {copy.detail.flagDate}{' '}
@@ -64,41 +63,47 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
           ) : null}
         </header>
         <RiskCard region={region} />
-        <DataTile
-          label={copy.extra.score}
-          value={formatNumber(region.score ?? null)}
-          unit={copy.extra.provisional}
-        />
+        {region.score != null && (
+          <DataTile
+            label={copy.extra.score}
+            value={formatNumber(region.score)}
+            unit={copy.extra.provisional}
+          />
+        )}
         {region.quality && region.quality !== 'ok' && (
           <p role="status" className="text-ink-2 text-sm">
-            Indikator {region.quality === 'stale' ? 'kedaluwarsa' : 'belum lengkap'};
-            bukan peringatan resmi.
+            Indikator {region.quality === 'stale' ? 'kedaluwarsa' : 'belum lengkap'}.
+            Bukan peringatan resmi.
           </p>
         )}
       </div>
 
-      <section className="space-y-2">
-        <SectionLabel>{copy.detail.summary}</SectionLabel>
-        <p className="text-paragraph text-ink">{region.summary}</p>
-      </section>
+      {region.summary ? (
+        <section className="space-y-2">
+          <SectionLabel>{copy.detail.summary}</SectionLabel>
+          <p className="text-paragraph text-ink">{region.summary}</p>
+        </section>
+      ) : null}
 
-      <section className="space-y-2">
-        <SectionLabel>{copy.detail.actions}</SectionLabel>
-        <div className="rounded-card bg-surface-muted p-4">
-          <ul className="space-y-2">
-            {region.actions.map((item) => (
-              <li key={item} className="flex items-start gap-2">
-                <Check
-                  className="text-brand mt-1 size-4 shrink-0"
-                  strokeWidth={2}
-                  aria-hidden
-                />
-                <span className="text-ink text-base">{item}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      {region.actions.length > 0 ? (
+        <section className="space-y-2">
+          <SectionLabel>{copy.detail.actions}</SectionLabel>
+          <div className="rounded-card bg-surface-muted p-4">
+            <ul className="space-y-2">
+              {region.actions.map((item) => (
+                <li key={item} className="flex items-start gap-2">
+                  <Check
+                    className="text-brand mt-1 size-4 shrink-0"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                  <span className="text-ink text-base">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
 
       {region.last_detection && (
         <section className="space-y-2">
@@ -211,7 +216,7 @@ function RiskCard({ region }: { region: Region }) {
 
   return (
     <section
-      className="rounded-card space-y-2 p-3"
+      className="rounded-card space-y-2 p-4"
       style={{ backgroundColor: style.tint, color: style.text }}
     >
       <div>
@@ -224,11 +229,19 @@ function RiskCard({ region }: { region: Region }) {
             style={{ color: style.text }}
           />
         </div>
-        <p className="mt-1 text-xl font-semibold">{region.risk_category === 'tidak_tersedia' && region.quality === 'stale' ? 'Indikator kedaluwarsa' : style.label}</p>
+        <p className="mt-1 flex items-center gap-2 text-xl font-semibold">
+          <span
+            className="size-2.5 shrink-0 rounded-full"
+            style={{ backgroundColor: style.dot }}
+            aria-hidden
+          />
+          {region.risk_category === 'tidak_tersedia' && region.quality === 'stale'
+            ? 'Indikator kedaluwarsa'
+            : style.label}
+        </p>
       </div>
-      <p className="flex items-center gap-1 text-sm" style={{ color: style.text }}>
-        <Radar className="size-4 shrink-0 opacity-80 animate-radar-pulse" strokeWidth={2} aria-hidden />
-        <span>{copy.detail.hotspots24hReason(hotspots)}</span>
+      <p className="text-sm" style={{ color: style.text }}>
+        {copy.detail.hotspots24hReason(hotspots)}
       </p>
     </section>
   )

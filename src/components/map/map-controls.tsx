@@ -1,4 +1,4 @@
-import { Crosshair, Minus, Plus, Thermometer, Wind } from 'lucide-react'
+import { Crosshair, Minus, Plus } from 'lucide-react'
 import type { RefObject } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
@@ -21,10 +21,6 @@ type MapControlsProps = {
 export function MapControls({ mapRef }: MapControlsProps) {
   const location = useMapStore((s) => s.location)
   const setLocation = useMapStore((s) => s.setLocation)
-  const showWind = useMapStore((s) => s.showWind)
-  const toggleWind = useMapStore((s) => s.toggleWind)
-  const showTemperature = useMapStore((s) => s.showTemperature)
-  const toggleTemperature = useMapStore((s) => s.toggleTemperature)
   const select = useMapStore((s) => s.select)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
@@ -45,37 +41,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
       <button
         type="button"
         className={cn(
-          'rounded-ctl border-line bg-surface text-ink-2 flex size-9 shrink-0 items-center justify-center border shadow-sm',
-          'transition-[background-color,color,border-color] duration-150 ease-in-out',
-          'hover:bg-surface-muted hover:text-ink',
-          showWind && 'border-brand text-brand bg-brand-soft shadow-sm',
-          focusRing,
-        )}
-        aria-label={copy.map.toggleWind}
-        aria-pressed={showWind}
-        onClick={toggleWind}
-      >
-        <Wind className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-      </button>
-
-      <button
-        type="button"
-        className={cn(
-          'rounded-ctl border-line bg-surface text-ink-2 flex size-9 shrink-0 items-center justify-center border shadow-sm',
-          'transition-[background-color,color,border-color] duration-150 ease-in-out hover:bg-surface-muted hover:text-ink',
-          showTemperature && 'border-brand text-brand bg-brand-soft shadow-sm', focusRing,
-        )}
-        aria-label={copy.map.toggleTemperature}
-        aria-pressed={showTemperature}
-        onClick={toggleTemperature}
-      >
-        <Thermometer className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-      </button>
-
-      <button
-        type="button"
-        className={cn(
-          'rounded-ctl border-line bg-surface text-ink-2 flex size-9 shrink-0 items-center justify-center border shadow-sm',
+          'rounded-full border-line bg-surface text-ink-2 flex size-10 shrink-0 items-center justify-center border shadow-sm',
           'transition-[background-color,color,border-color] duration-150 ease-in-out',
           'hover:bg-surface-muted hover:text-ink',
           active && 'border-brand text-brand bg-brand-soft shadow-sm',
@@ -108,33 +74,33 @@ export function MapControls({ mapRef }: MapControlsProps) {
           setLocation({ status: 'requesting' })
         }}
       >
-        <Crosshair className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+        <Crosshair className="size-5 shrink-0" strokeWidth={2} aria-hidden />
       </button>
 
       <div className="rounded-ctl border-line bg-surface flex flex-col overflow-hidden border shadow-sm">
         <button
           type="button"
           className={cn(
-            'border-line text-ink-2 hover:bg-surface-muted hover:text-ink flex size-9 shrink-0 items-center justify-center border-b',
+            'border-line text-ink-2 hover:bg-surface-muted hover:text-ink flex size-10 shrink-0 items-center justify-center border-b',
             'transition-[background-color,color] duration-150 ease-in-out',
             focusRing,
           )}
           aria-label={copy.map.zoomIn}
           onClick={() => mapRef.current?.zoomIn({ duration: 300 })}
         >
-          <Plus className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+          <Plus className="size-5 shrink-0" strokeWidth={2} aria-hidden />
         </button>
         <button
           type="button"
           className={cn(
-            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-9 shrink-0 items-center justify-center',
+            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-10 shrink-0 items-center justify-center',
             'transition-[background-color,color] duration-150 ease-in-out',
             focusRing,
           )}
           aria-label={copy.map.zoomOut}
           onClick={() => mapRef.current?.zoomOut({ duration: 300 })}
         >
-          <Minus className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+          <Minus className="size-5 shrink-0" strokeWidth={2} aria-hidden />
         </button>
       </div>
     </div>

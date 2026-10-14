@@ -17,7 +17,7 @@ type Particle = {
   maxAge: number
 }
 
-const PARTICLE_COUNT = 900
+const PARTICLE_COUNT = 850
 const MIN_LON = 95.0
 const MAX_LON = 141.0
 const MIN_LAT = -11.0
@@ -31,14 +31,14 @@ function initParticle(): Particle {
   return {
     lon: randomRange(MIN_LON, MAX_LON),
     lat: randomRange(MIN_LAT, MAX_LAT),
-    age: Math.floor(Math.random() * 40),
-    maxAge: 40 + Math.floor(Math.random() * 30),
+    age: Math.floor(Math.random() * 50),
+    maxAge: 60 + Math.floor(Math.random() * 50),
   }
 }
 
 /**
- * Layer simulasi partikel angin dinamis (Windy stream simulation).
- * Menggambar aliran vektor angin atmosfer di atas kanvas MapLibre.
+ * Stream angin ala Windy: canvas 2D + fade buffer.
+ * Sengaja bukan Three.js — overlay MapLibre 2D; Three.js = berat & sync kamera berlebih.
  */
 export function WindParticleLayer({ regions }: WindParticleLayerProps) {
   const { map } = useMap()
@@ -48,7 +48,6 @@ export function WindParticleLayer({ regions }: WindParticleLayerProps) {
   const particlesRef = useRef<Particle[]>([])
   const animFrameRef = useRef<number | null>(null)
 
-  // Hitung kecepatan angin rata-rata dari data observasi cuaca daerah aktif
   const avgWindSpeedKmh =
     regions.reduce((acc, r) => acc + (r.weather.wind_kmh ?? 12), 0) /
     Math.max(1, regions.length)
@@ -68,42 +67,45 @@ export function WindParticleLayer({ regions }: WindParticleLayerProps) {
     container.appendChild(canvas)
     canvasRef.current = canvas
 
-    const ctx = canvas.getContext('2d')
+    const ctx = canvas.getContext('2d', { alpha: true })
     if (!ctx) return
 
     const resize = () => {
       const rect = container.getBoundingClientRect()
       const dpr = window.devicePixelRatio || 1
-      canvas.width = rect.width * dpr
-      canvas.height = rect.height * dpr
-      ctx.scale(dpr, dpr)
+      canvas.width = Math.max(1, Math.floor(rect.width * dpr))
+      canvas.height = Math.max(1, Math.floor(rect.height * dpr))
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    }
+
+    const onResize = () => {
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      resize()
     }
 
     resize()
-    map.on('resize', resize)
+    map.on('resize', onResize)
 
-    // Inisialisasi sekumpulan partikel
     particlesRef.current = Array.from({ length: PARTICLE_COUNT }, () => initParticle())
 
-    // Skala kecepatan gerak partikel dari data Open-Meteo
-    const speedFactor = 0.003 * Math.max(0.5, avgWindSpeedKmh / 15)
+    // Segmen cukup panjang supaya ekor kebaca di zoom nasional.
+    const speedFactor = 0.007 * Math.max(0.7, avgWindSpeedKmh / 14)
 
     const render = () => {
       const rect = container.getBoundingClientRect()
       const width = rect.width
       const height = rect.height
 
-      // Fade jejak sebelumnya secara transparan
+      // Jejak = sisa stroke frame lalu yang di-fade pelan (bukan redraw polyline).
       ctx.globalCompositeOperation = 'destination-out'
       ctx.fillStyle = WIND_FADE_CLEAR
       ctx.fillRect(0, 0, width, height)
 
-      // Gambar garis partikel baru
       ctx.globalCompositeOperation = 'source-over'
       ctx.strokeStyle = WIND_PARTICLE_COLOR
-      ctx.lineWidth = 1.2
+      ctx.lineWidth = 1.25
       ctx.lineCap = 'round'
-
       ctx.beginPath()
 
       const particles = particlesRef.current
@@ -112,17 +114,14 @@ export function WindParticleLayer({ regions }: WindParticleLayerProps) {
         const oldLon = p.lon
         const oldLat = p.lat
 
-        // Pola aliran angin khatulistiwa Indonesia (monsun timur-tenggara ke barat-barat laut)
-        // Diberi deviasi gelombang mikro berdasarkan lintang untuk efek streamline fluida
-        const wave = Math.sin(p.lon * 0.15) * 0.4
-        const u = -1.0 * (1.2 + wave) // Komponen barat
-        const v = 0.35 + Math.cos(p.lat * 0.2) * 0.3 // Komponen utara
+        const wave = Math.sin(p.lon * 0.15) * 0.45
+        const u = -1.15 * (1.15 + wave)
+        const v = 0.4 + Math.cos(p.lat * 0.22) * 0.35
 
         p.lon += u * speedFactor
         p.lat += v * speedFactor
         p.age++
 
-        // Reset partikel jika kedaluwarsa atau keluar batas NKRI
         if (
           p.age > p.maxAge ||
           p.lon < MIN_LON ||
@@ -134,19 +133,19 @@ export function WindParticleLayer({ regions }: WindParticleLayerProps) {
           continue
         }
 
-        const p1 = map.project([oldLon, oldLat])
-        const p2 = map.project([p.lon, p.lat])
-
-        // Hanya gambar jika berada dalam viewport layar
+        const a = map.project([oldLon, oldLat])
+        const b = map.project([p.lon, p.lat])
         if (
-          p1.x >= 0 &&
-          p1.x <= width &&
-          p1.y >= 0 &&
-          p1.y <= height
+          (a.x < -20 && b.x < -20) ||
+          (a.x > width + 20 && b.x > width + 20) ||
+          (a.y < -20 && b.y < -20) ||
+          (a.y > height + 20 && b.y > height + 20)
         ) {
-          ctx.moveTo(p1.x, p1.y)
-          ctx.lineTo(p2.x, p2.y)
+          continue
         }
+
+        ctx.moveTo(a.x, a.y)
+        ctx.lineTo(b.x, b.y)
       }
 
       ctx.stroke()
@@ -160,10 +159,8 @@ export function WindParticleLayer({ regions }: WindParticleLayerProps) {
         cancelAnimationFrame(animFrameRef.current)
         animFrameRef.current = null
       }
-      map.off('resize', resize)
-      if (canvas.parentNode) {
-        canvas.parentNode.removeChild(canvas)
-      }
+      map.off('resize', onResize)
+      if (canvas.parentNode) canvas.parentNode.removeChild(canvas)
       canvasRef.current = null
     }
   }, [map, showWind, reducedMotion, avgWindSpeedKmh])
