@@ -1,3 +1,4 @@
+import { HEATMAP_TRANSPARENT, HEATMAP_ORANGE } from '@/lib/risk-category'
 import { useEffect, useMemo } from 'react'
 import type { GeoJSONSource } from 'maplibre-gl'
 
@@ -11,19 +12,16 @@ import { useMapStore } from '@/store/map'
 const SOURCE_ID = 'fy-hotspot-heatmap'
 const LAYER_ID = 'fy-hotspot-heatmap-layer'
 
-/** Zoom minimum agar heatmap tampil (di bawah ini hemat GPU). */
-export const HEATMAP_MIN_ZOOM = 6.5
-
-/** Samakan dengan DOM_MARKER_MAX — di bawah ini titik jelas, tanpa blur heatmap. */
-const HEATMAP_MIN_POINTS = 65
+/** Show observed density at every zoom, including the initial national view. */
+export const HEATMAP_MIN_ZOOM = 0
 
 type HotspotHeatmapLayerProps = {
   regions: Region[]
 }
 
 /**
- * Gradient kuning→merah dari `/v1/hotspots` saat banyak titik.
- * Titik sedikit: layer kosong (marker DOM saja, biar warna tajam).
+ * Satellite point density, independent of unavailable regional risk categories.
+ * Render sparse and dense observations with precision heat gradient.
  */
 export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   const { map, isLoaded } = useMap()
@@ -31,13 +29,10 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   const selectedCode = useMapStore((s) => s.selectedCode)
   const { data } = useHotspots()
 
-  const collection = useMemo(() => {
-    const raw = filterHotspotsForMap(data, regions, province, selectedCode)
-    if (raw.features.length < HEATMAP_MIN_POINTS) {
-      return { type: 'FeatureCollection' as const, features: [] }
-    }
-    return raw
-  }, [data, regions, province, selectedCode])
+  const collection = useMemo(
+    () => filterHotspotsForMap(data, regions, province, selectedCode),
+    [data, regions, province, selectedCode],
+  )
 
   const mid = RISK_CATEGORIES.sedang.dot
   const high = RISK_CATEGORIES.sangat_tinggi.dot
@@ -64,27 +59,32 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
             'interpolate',
             ['linear'],
             ['zoom'],
-            HEATMAP_MIN_ZOOM,
-            0.7,
-            11,
-            1.35,
+            0,
+            0.12,
+            4,
+            0.25,
+            7,
+            0.65,
+            10,
+            1.1,
             14,
-            1.7,
+            1.5,
           ],
-          // Stop tajam: jarang = kuning solid, padat = merah solid (hindari oranye kabur).
           'heatmap-color': [
             'interpolate',
             ['linear'],
             ['heatmap-density'],
             0,
-            'rgba(0,0,0,0)',
-            0.12,
-            `${mid}40`,
-            0.28,
+            HEATMAP_TRANSPARENT,
+            0.15,
+            `${mid}30`,
+            0.35,
+            `${mid}85`,
+            0.55,
             mid,
-            0.5,
-            mid,
-            0.62,
+            0.75,
+            HEATMAP_ORANGE,
+            0.9,
             high,
             1,
             high,
@@ -93,21 +93,29 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
             'interpolate',
             ['linear'],
             ['zoom'],
-            HEATMAP_MIN_ZOOM,
+            0,
+            2,
+            4,
+            5,
+            7,
+            10,
+            10,
             18,
-            11,
+            13,
             26,
-            14,
-            32,
           ],
           'heatmap-opacity': [
             'interpolate',
             ['linear'],
             ['zoom'],
-            HEATMAP_MIN_ZOOM,
-            0.65,
+            0,
+            0.35,
+            4,
+            0.5,
+            8,
+            0.7,
             12,
-            0.78,
+            0.8,
           ],
         },
       })

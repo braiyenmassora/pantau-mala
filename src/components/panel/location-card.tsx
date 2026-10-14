@@ -8,13 +8,15 @@ import {
   EmptyState,
   MetaLabel,
   PanelCard,
+  ProgressBar,
 } from '@/components/common'
-import { useHotspots } from '@/data/queries'
+import { useHotspots, useNearbyHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import { rememberFocusTrigger } from '@/lib/focus-return'
+import { resolveUserCoords } from '@/lib/geolocation'
 import { formatNumber } from '@/lib/format'
-import { computeNearby } from '@/lib/nearby'
+import { computeNearby, computeNearbyFromApi } from '@/lib/nearby'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -28,12 +30,23 @@ export function LocationCard({ regions }: LocationCardProps) {
   const setLocation = useMapStore((s) => s.setLocation)
   const select = useMapStore((s) => s.select)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
+  const isLocationActive = location.status === 'active' && !!location.coords
+  const nearbyQuery = useNearbyHotspots(
+    isLocationActive ? location.coords!.lat : null,
+    isLocationActive ? location.coords!.lon : null,
+  )
   const { data: hotspots } = useHotspots()
 
   const nearby = useMemo(() => {
-    if (location.status !== 'active' || !location.coords || !hotspots) return null
-    return computeNearby(location.coords, hotspots.features, regions)
-  }, [location, hotspots, regions])
+    if (!isLocationActive || !location.coords) return null
+    if (nearbyQuery.data) {
+      return computeNearbyFromApi(location.coords, nearbyQuery.data, regions)
+    }
+    if (hotspots) {
+      return computeNearby(location.coords, hotspots.features, regions)
+    }
+    return null
+  }, [isLocationActive, location.coords, nearbyQuery.data, hotspots, regions])
 
   if (location.status === 'denied') {
     return (
@@ -107,6 +120,7 @@ export function LocationCard({ regions }: LocationCardProps) {
             : copy.location.nearbyLabel
         }
       >
+        {nearbyQuery.isFetching && <ProgressBar className="my-1" />}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <MetaLabel>{copy.location.nearbyLabel}</MetaLabel>
@@ -177,7 +191,29 @@ export function LocationCard({ regions }: LocationCardProps) {
           aria-label={copy.location.allowLocationFull}
           onClick={(e) => {
             rememberFocusTrigger(e.currentTarget)
-            setLocation({ status: 'requesting' })
+            if (navigator?.permissions?.query) {
+              navigator.permissions
+                .query({ name: 'geolocation' })
+                .then((perm) => {
+                  if (perm.state === 'granted') {
+                    void resolveUserCoords().then((res) => {
+                      if (res.ok) {
+                        setLocation({
+                          status: 'active',
+                          coords: { lon: res.lon, lat: res.lat },
+                        })
+                      } else {
+                        setLocation({ status: 'requesting' })
+                      }
+                    })
+                    return
+                  }
+                  setLocation({ status: 'requesting' })
+                })
+                .catch(() => setLocation({ status: 'requesting' }))
+            } else {
+              setLocation({ status: 'requesting' })
+            }
           }}
         >
           {copy.location.useLocation}

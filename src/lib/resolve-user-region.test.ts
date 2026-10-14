@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
+import type { NearbyHotspot } from '@/data/extended-contract'
 import type { HotspotFeature, Region } from '@/data/types'
-import { resolveUserRegionCode } from '@/lib/resolve-user-region'
+import {
+  resolveUserRegionCode,
+  resolveUserRegionCodeFromApi,
+} from '@/lib/resolve-user-region'
 
 function stubRegion(code: string, lon: number, lat: number): Region {
   return {
@@ -56,9 +60,27 @@ describe('resolveUserRegionCode', () => {
   it('falls back to nearest hotspot region', () => {
     const regions = [stubRegion('host', 110, 0)]
     const hotspots = [stubHotspot(106.84, -6.18, 'host')]
-    // User far from any pusat but near a hotspot of host
     expect(resolveUserRegionCode({ lon: 106.84, lat: -6.18 }, regions, hotspots)).toBe(
       'host',
     )
+  })
+
+  it('resolves user region code from API nearby hotspots', () => {
+    const regions = [stubRegion('host', 110, 0)]
+    const apiHotspots: NearbyHotspot[] = [
+      {
+        id: 1,
+        longitude: 106.84,
+        latitude: -6.18,
+        waktu: '2026-10-09T00:00:00Z',
+        satelit: 'VIIRS',
+        keyakinan: 'tinggi',
+        frp_mw: 2,
+        kode_wilayah: 'host',
+      },
+    ]
+    expect(
+      resolveUserRegionCodeFromApi({ lon: 106.84, lat: -6.18 }, regions, apiHotspots),
+    ).toBe('host')
   })
 })

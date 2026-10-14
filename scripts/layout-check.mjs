@@ -4,6 +4,7 @@
  */
 import { spawn } from 'node:child_process'
 import { chromium } from 'playwright'
+import { installGoFixtures } from './browser-fixtures.mjs'
 
 const PORT = 5174
 const BASE = `http://127.0.0.1:${PORT}`
@@ -35,7 +36,7 @@ function overlaps(a, b) {
   )
 }
 
-const child = spawn('pnpm', ['dev', '--port', String(PORT), '--host', '127.0.0.1'], {
+const child = spawn('bun', ['run', '--bun', 'dev', '--port', String(PORT), '--host', '127.0.0.1'], {
   cwd: ROOT,
   stdio: 'pipe',
   env: { ...process.env },
@@ -58,8 +59,13 @@ const viewports = [
 
 try {
   await waitForServer(BASE)
-  const browser = await chromium.launch()
-  const page = await browser.newPage()
+  const browser = await chromium.launch({
+    executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH,
+    args: ['--enable-unsafe-swiftshader'],
+  })
+  const context = await browser.newContext()
+  await installGoFixtures(context)
+  const page = await context.newPage()
 
   for (const { w, h } of viewports) {
     await page.setViewportSize({ width: w, height: h })

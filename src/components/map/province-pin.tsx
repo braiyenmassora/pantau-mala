@@ -10,6 +10,7 @@ import { haloDiameter, shouldShowHalo, showHaloPulse } from '@/lib/halo'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import type { ProvinceAggregate } from '@/lib/province-aggregates'
 import { PIN_ACTIVE_BOX_SHADOW, RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
+import type { RiskCategory } from '@/data/types'
 import { mapTipClass } from '@/lib/ui-chrome'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -19,7 +20,10 @@ type ProvincePinProps = {
   aggregate: ProvinceAggregate
 }
 
-/** Pin provinsi: RiskMarker + badge total + lingkaran ukuran. */
+/**
+ * Pin provinsi: Bullet melingkar (compact circular pin).
+ * Mempertahankan footprint bulat kompak agar tidak saling menutupi pulau di peta.
+ */
 export function ProvincePin({ aggregate }: ProvincePinProps) {
   const setProvince = useMapStore((s) => s.setProvince)
   const panelOpen = useUiStore((s) => s.panelOpen)
@@ -27,14 +31,22 @@ export function ProvincePin({ aggregate }: ProvincePinProps) {
   const reducedMotion = usePrefersReducedMotion()
   const [tipOpen, setTipOpen] = useState(false)
 
-  const style = RISK_CATEGORIES[aggregate.risk_category]
+  const hotspotRisk: RiskCategory =
+    aggregate.risk_category !== 'tidak_tersedia'
+      ? aggregate.risk_category
+      : aggregate.hotspots_24h >= 20
+        ? 'sangat_tinggi'
+        : aggregate.hotspots_24h >= 5
+          ? 'sedang'
+          : 'rendah'
+
+  const style = RISK_CATEGORIES[hotspotRisk]
   const circle = shouldShowHalo(aggregate.hotspots_24h)
   const haloSize = haloDiameter(aggregate.hotspots_24h)
-  // Denyut dari total agregat (bukan per kab) — sedang/sangat_tinggi.
-  const pulse = !reducedMotion && showHaloPulse(aggregate.risk_category)
+  const pulse = !reducedMotion && showHaloPulse(hotspotRisk, aggregate.hotspots_24h)
   const pulseSize = circle ? haloSize : 36
   const pulseClass =
-    aggregate.risk_category === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
+    hotspotRisk === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
   const countLabel = formatNumber(aggregate.hotspots_24h)
   const label = copy.map.pinAria(aggregate.name, style.label, countLabel)
 
@@ -48,12 +60,11 @@ export function ProvincePin({ aggregate }: ProvincePinProps) {
         {circle && (
           <span
             aria-hidden
-            className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border"
+            className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border opacity-40"
             style={{
               width: haloSize,
               height: haloSize,
-              backgroundColor: withAlpha(style.dot, 0.1),
-              borderColor: withAlpha(style.dot, 0.24),
+              borderColor: withAlpha(style.dot, 0.4),
             }}
           />
         )}
@@ -61,13 +72,13 @@ export function ProvincePin({ aggregate }: ProvincePinProps) {
           <span
             aria-hidden
             className={cn(
-              'pointer-events-none absolute top-1/2 left-1/2 rounded-full border-2',
+              'pointer-events-none absolute top-1/2 left-1/2 rounded-full border',
               pulseClass,
             )}
             style={{
               width: pulseSize,
               height: pulseSize,
-              borderColor: withAlpha(style.dot, 0.55),
+              borderColor: withAlpha(style.dot, 0.6),
             }}
           />
         )}
@@ -79,22 +90,21 @@ export function ProvincePin({ aggregate }: ProvincePinProps) {
               className={cn(
                 'relative origin-center rounded-full',
                 'transition-[transform,box-shadow] duration-150 ease-in-out',
-                'hover:scale-110',
+                'hover:scale-110 active:scale-95',
                 focusRing,
               )}
               style={{ boxShadow: PIN_ACTIVE_BOX_SHADOW }}
               aria-label={label}
               onClick={(e) => {
                 e.stopPropagation()
-                // Zoom via ProvinceFocus; angka sudah di badge ikon.
                 setProvince(aggregate.name)
                 if (!panelOpen) setPanelOpen(true)
               }}
             >
-              <RiskMarker kategori={aggregate.risk_category} shadow active />
+              <RiskMarker kategori={hotspotRisk} shadow active className="size-6" />
               <span
                 aria-hidden
-                className="bg-ink text-surface absolute -top-1 -right-2 min-w-5 rounded-full px-1 text-center text-xs leading-4 font-semibold tabular-nums shadow-sm"
+                className="border-surface bg-ink text-surface shadow-sm pointer-events-none absolute -top-1 -right-1 min-w-4 rounded-full border px-1 text-center font-mono text-xs leading-4 font-semibold tabular-nums"
               >
                 {countLabel}
               </span>
@@ -105,7 +115,17 @@ export function ProvincePin({ aggregate }: ProvincePinProps) {
             sideOffset={8}
             className={mapTipClass}
           >
-            {aggregate.name}
+            <span className="border-line/20 flex w-full items-center justify-between gap-2 border-b pb-1">
+              <span className="text-surface font-medium">
+                {copy.map.provincePinTitle(aggregate.name)}
+              </span>
+              <span className="text-surface/70 shrink-0 font-mono text-xs tabular-nums">
+                {copy.map.provincePinPeriod}
+              </span>
+            </span>
+            <span className="text-surface/90">
+              {copy.map.provincePinDetails(countLabel, style.label)}
+            </span>
           </TooltipContent>
         </Tooltip>
       </MarkerContent>

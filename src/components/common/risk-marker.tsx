@@ -10,12 +10,14 @@ type RiskMarkerProps = {
 }
 
 const ACTIVE: Record<RiskCategory, string> = {
+  tidak_tersedia: 'border-line bg-surface-muted',
   sangat_tinggi: 'border-[1.5px] border-risk-high bg-risk-high-tint',
   sedang: 'border-[1.5px] border-risk-mid bg-risk-mid-tint',
   rendah: 'border-[1.5px] border-risk-low bg-risk-low-tint',
 }
 
 const DOT: Record<RiskCategory, string> = {
+  tidak_tersedia: 'bg-ink-3',
   sangat_tinggi: 'bg-risk-high',
   sedang: 'bg-risk-mid',
   rendah: 'bg-risk-low',

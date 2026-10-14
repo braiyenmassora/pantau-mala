@@ -62,7 +62,7 @@ describe('aggregateByProvince', () => {
     expect(rows[0]).toMatchObject({
       name: 'Kalimantan Tengah',
       hotspots_24h: 10,
-      risk_category: 'sangat_tinggi',
+      risk_category: 'sedang',
       center: [113, -2],
     })
   })

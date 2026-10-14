@@ -1,4 +1,4 @@
-/* Token desain forever-young (MVP).
+/* Token desain pantau-mala (Malapetaka).
    Diimpor dari src/index.css setelah @import "tailwindcss".
    Font diimpor di main.tsx (IBM Plex Sans 400/500/600, Mono 500/600). */
 
@@ -7,33 +7,36 @@
   --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
-  /* Netral */
-  --color-ink: #14261b; /* text-primary, chip terpilih */
-  --color-ink-2: #52645a; /* text-secondary */
-  --color-ink-3: #7a8a80; /* text-disabled / placeholder */
-  --color-line: #e3e9e4; /* border */
+  /* Netral Pantau Mala (Deep Obsidian / Slate Radar) */
+  --color-ink: #0f172a; /* text-primary, deep obsidian */
+  --color-ink-2: #475569; /* text-secondary, slate */
+  --color-ink-3: #94a3b8; /* text-muted / placeholder */
+  --color-line: #e2e8f0; /* crisp border */
   --color-surface: #ffffff;
-  --color-surface-muted: #f6f8f6;
-  --color-map-bg: #dce7ec;
-  --color-scrollbar: #d3dbd6;
+  --color-surface-muted: #f8fafc;
+  --color-map-bg: #cbd5e1;
+  --color-scrollbar: #cbd5e1;
 
-  /* Brand (satu aksen, tidak ada biru) */
-  --color-brand: #1e6b45;
-  --color-brand-soft: #edf4ef;
-  --color-focus: #1e6b45; /* ring fokus = brand */
+  /* Brand Pantau Mala (Ember Alert) */
+  --color-brand: #c2410c;
+  --color-brand-soft: #fff7ed;
+  --color-focus: #c2410c; /* ring fokus = brand */
 
-  /* Kategori risiko: dot / tint / text (saturasi naik sedikit vs #C2410C / #D99A0B) */
-  --color-risk-high: #dc3208;
-  --color-risk-high-tint: #f8d7d0;
-  --color-risk-high-text: #9a1f0c;
-  --color-risk-mid: #eba80a;
-  --color-risk-mid-tint: #fbf0cf;
-  --color-risk-mid-text: #7a5600;
-  --color-risk-low: #2e8b57;
-  --color-risk-low-tint: #e4f0e8;
-  --color-risk-low-text: #1e5a3a;
+  --color-location: #0369a1;
+  --color-location-tint: #e0f2fe;
 
-  /* Spacing — pakai HANYA skala 4px: 4 / 8 / 12 / 16 / 24 / 32 */
+  /* Kategori risiko Pantau Mala: dot / tint / text */
+  --color-risk-high: #dc2626;
+  --color-risk-high-tint: #fee2e2;
+  --color-risk-high-text: #991b1b;
+  --color-risk-mid: #d97706;
+  --color-risk-mid-tint: #fef3c7;
+  --color-risk-mid-text: #92400e;
+  --color-risk-low: #15803d;
+  --color-risk-low-tint: #f0fdf4;
+  --color-risk-low-text: #166534;
+
+  /* Spacing — skala 4px: 4 / 8 / 12 / 16 / 24 / 32 */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -41,32 +44,32 @@
   --space-6: 24px;
   --space-8: 32px;
 
-  /* Tipografi — ukuran selaras skala 4 */
-  --text-xs: 12px;
-  --text-xs--line-height: 16px; /* caption, label, badge */
+  /* Tipografi Compact Clean — skala seimbang, tanpa font raksasa */
+  --text-xs: 11px;
+  --text-xs--line-height: 14px; /* caption, label, badge */
   --text-sm: 12px;
   --text-sm--line-height: 16px; /* small, chip, section-label */
-  --text-base: 14px; /* body — 14 diizinkan untuk keterbacaan */
-  --text-base--line-height: 20px;
-  --text-paragraph: 14px;
-  --text-paragraph--line-height: 20px; /* ringkasan / prose */
-  --text-lg: 16px;
-  --text-lg--line-height: 24px; /* title */
-  --text-xl: 20px;
-  --text-xl--line-height: 28px; /* title-lg */
-  --text-3xl: 28px;
-  --text-3xl--line-height: 32px; /* number-lg (Mono) */
+  --text-base: 13px; /* body — 13px compact clean */
+  --text-base--line-height: 18px;
+  --text-paragraph: 13px;
+  --text-paragraph--line-height: 18px; /* ringkasan / prose */
+  --text-lg: 14px;
+  --text-lg--line-height: 20px; /* title */
+  --text-xl: 16px;
+  --text-xl--line-height: 22px; /* title-lg */
+  --text-3xl: 20px;
+  --text-3xl--line-height: 24px; /* number-lg (Mono compact) */
 
-  /* Radius: ctl (kontrol) + card; panel untuk shell besar */
-  --radius-ctl: 8px;
-  --radius-card: 12px;
-  --radius-panel: 16px;
+  /* Radius: compact ctl + card; panel shell */
+  --radius-ctl: 6px;
+  --radius-card: 10px;
+  --radius-panel: 14px;
 
-  /* Bayangan: sm = UI default; map = pin; md/lg hemat (dialog saja) */
-  --shadow-sm: 0 1px 3px rgba(20, 38, 27, 0.16);
-  --shadow-md: 0 4px 16px rgba(20, 38, 27, 0.12);
-  --shadow-lg: 0 8px 28px rgba(20, 38, 27, 0.18);
-  --shadow-map: 0 1px 3px rgba(20, 38, 27, 0.24);
+  /* Bayangan: halus & presisi */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 8px 24px rgba(15, 23, 42, 0.12);
+  --shadow-map: 0 1px 3px rgba(15, 23, 42, 0.2);
 
   /* Motion */
   --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -107,8 +110,74 @@
     font-family: var(--font-sans);
     color: var(--color-ink);
     background: var(--color-map-bg);
-    font-size: 14px;
-    line-height: 20px;
+    font-size: 13px;
+    line-height: 18px;
+  }
+}
+
+/* Animasi Peta & Indikator Hidup */
+.animate-wind-drift {
+  animation: wind-drift 2.5s ease-in-out infinite;
+}
+.animate-water-ripple {
+  animation: water-ripple 2.2s ease-in-out infinite;
+}
+.animate-flame-flicker {
+  animation: flame-flicker 2s ease-in-out infinite;
+}
+.animate-radar-pulse {
+  animation: radar-pulse 2.2s ease-in-out infinite;
+}
+.animate-indeterminate {
+  animation: indeterminate 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes wind-drift {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  50% {
+    transform: translateX(2px) rotate(6deg);
+  }
+}
+
+@keyframes water-ripple {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.06);
+  }
+}
+
+@keyframes indeterminate {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes radar-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes flame-flicker {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
   }
 }
 
@@ -123,7 +192,6 @@
   scrollbar-color: var(--color-scrollbar) transparent;
 }
 .soft-fade {
-  /* Top fade only — bottom fade hid the last section. */
   mask-image: linear-gradient(to bottom, transparent 0, #000 12px, #000 100%);
 }
 

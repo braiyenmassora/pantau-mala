@@ -1,7 +1,7 @@
-import { Flame, Search, X } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import type { RefObject } from 'react'
 
-import { IconButton } from '@/components/common/icon-button'
+
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import { fitIndonesia } from '@/lib/indonesia-view'
@@ -32,26 +32,21 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
     fitIndonesia(map, panelOpen, reducedMotion ? 0 : 600)
   }
 
-  if (detailOpen) {
-    return (
-      <div className="flex h-12 items-center justify-end">
-        <IconButton shape="pill" aria-label={copy.panel.closeDetail} onClick={clearAll}>
-          <X className="size-4.5" strokeWidth={2} aria-hidden />
-        </IconButton>
-      </div>
-    )
-  }
+  if (detailOpen) return null
 
   return (
     <div
       className={cn(
-        'border-line bg-surface flex h-12 items-center gap-2 rounded-full border pr-1 pl-2 shadow-sm',
-        'focus-within:ring-brand focus-within:ring-2 focus-within:ring-offset-2',
+        'group flex h-9 items-center gap-2 rounded-ctl border border-line bg-surface-muted px-2 shadow-none',
+        'transition-all duration-200 ease-[var(--ease-out-soft)]',
+        'focus-within:border-brand focus-within:bg-surface focus-within:shadow-sm',
       )}
     >
-      <span className="bg-brand text-surface flex size-8 shrink-0 items-center justify-center rounded-full">
-        <Flame className="size-4.5" strokeWidth={2} aria-hidden />
-      </span>
+      <Search
+        className="size-4 shrink-0 text-ink-3 transition-colors duration-150 group-focus-within:text-brand"
+        strokeWidth={2}
+        aria-hidden
+      />
       <input
         type="text"
         inputMode="search"
@@ -67,24 +62,21 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
           background: 'transparent',
         }}
         className={cn(
-          'text-ink min-w-0 flex-1 appearance-none border-0 bg-transparent text-base shadow-none',
-          'ring-0 outline-none focus:border-0 focus:ring-0 focus:outline-none',
-          'focus-visible:ring-0 focus-visible:outline-none',
-          'placeholder:text-ink-2',
+          'min-w-0 flex-1 appearance-none border-0 bg-transparent text-xs text-ink shadow-none',
+          'outline-none ring-0 placeholder:text-ink-3 focus:border-0 focus:outline-none focus:ring-0',
+          'focus-visible:outline-none focus-visible:ring-0',
           '[&::-webkit-search-cancel-button]:appearance-none',
         )}
       />
-      {showClear ? (
-        <IconButton shape="pill" aria-label={copy.panel.searchClear} onClick={clearAll}>
-          <X className="size-4.5" strokeWidth={2} aria-hidden />
-        </IconButton>
-      ) : (
-        <span
-          className="text-ink-2 flex size-10 shrink-0 items-center justify-center"
-          aria-hidden
+      {showClear && (
+        <button
+          type="button"
+          aria-label={copy.panel.searchClear}
+          onClick={clearAll}
+          className="flex size-5 items-center justify-center rounded-full text-ink-3 transition-colors hover:bg-surface-muted hover:text-ink"
         >
-          <Search className="size-4.5" strokeWidth={2} />
-        </span>
+          <X className="size-3.5" strokeWidth={2} aria-hidden />
+        </button>
       )}
     </div>
   )

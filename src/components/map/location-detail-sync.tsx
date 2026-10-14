@@ -1,43 +1,37 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type RefObject } from 'react'
 
-import { useHotspots } from '@/data/queries'
-import type { Region } from '@/data/types'
-import { resolveUserRegionCode } from '@/lib/resolve-user-region'
+import type { MapRef } from '@/components/ui/map'
+import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
 
 type LocationDetailSyncProps = {
-  regions: Region[] | undefined
+  mapRef: RefObject<MapRef | null>
 }
 
-/**
- * When lokasi pengguna baru aktif, buka detail wilayah terdekat
- * (pusat ≤50 km, atau wilayah hotspot terdekat ≤25 km).
- */
-export function LocationDetailSync({ regions }: LocationDetailSyncProps) {
+/** Keep the national overview visible while framing the user's nearby area. */
+export function LocationDetailSync({ mapRef }: LocationDetailSyncProps) {
   const location = useMapStore((s) => s.location)
-  const select = useMapStore((s) => s.select)
-  const setPanelOpen = useUiStore((s) => s.setPanelOpen)
-  const { data: hotspots } = useHotspots()
+  const panelOpen = useUiStore((s) => s.panelOpen)
   const syncedKey = useRef<string | null>(null)
+  const isLocationActive = location.status === 'active' && !!location.coords
 
   useEffect(() => {
-    if (location.status !== 'active' || !location.coords) {
+    if (!isLocationActive || !location.coords) {
       syncedKey.current = null
       return
     }
-    if (!regions?.length || !hotspots) return
 
     const key = `${location.coords.lon.toFixed(5)},${location.coords.lat.toFixed(5)}`
     if (syncedKey.current === key) return
-
-    const code = resolveUserRegionCode(location.coords, regions, hotspots.features)
     syncedKey.current = key
-    if (!code) return
-
-    select(code)
-    setPanelOpen(true)
-  }, [location, regions, hotspots, select, setPanelOpen])
+    mapRef.current?.flyTo({
+      center: [location.coords.lon, location.coords.lat],
+      zoom: LOCATION_ZOOM,
+      padding: getMapPadding(panelOpen),
+      duration: 600,
+    })
+  }, [isLocationActive, location.coords, mapRef, panelOpen])
 
   return null
 }

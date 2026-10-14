@@ -15,6 +15,9 @@ import { HotspotHeatmapLayer } from '@/components/map/hotspot-heatmap-layer'
 import { ProvinceFocus } from '@/components/map/province-focus'
 import { RegionLayers } from '@/components/map/region-layers'
 import { SelectedHotspotsLayer } from '@/components/map/selected-hotspots-layer'
+import { EarthquakeLayer } from '@/components/map/earthquake-layer'
+import { WindParticleLayer } from '@/components/map/wind-particle-layer'
+import { TemperatureLayer } from '@/components/map/temperature-layer'
 import { UserLocationLayer } from '@/components/map/user-location-layer'
 import { Map, useMap, type MapRef } from '@/components/ui/map'
 import { useRegionCatalog } from '@/data/queries'
@@ -203,8 +206,17 @@ export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
         <LayerErrorBoundary name="HotspotHeatmapLayer" onError={markLayerFailed}>
           <HotspotHeatmapLayer regions={regions} />
         </LayerErrorBoundary>
+        <LayerErrorBoundary name="TemperatureLayer" onError={markLayerFailed}>
+          <TemperatureLayer regions={regions} />
+        </LayerErrorBoundary>
         <LayerErrorBoundary name="SelectedHotspotsLayer" onError={markLayerFailed}>
           <SelectedHotspotsLayer regions={regions} />
+        </LayerErrorBoundary>
+        <LayerErrorBoundary name="EarthquakeLayer" onError={markLayerFailed}>
+          <EarthquakeLayer />
+        </LayerErrorBoundary>
+        <LayerErrorBoundary name="WindParticleLayer" onError={markLayerFailed}>
+          <WindParticleLayer regions={regions} />
         </LayerErrorBoundary>
         <LayerErrorBoundary name="UserLocationLayer" onError={markLayerFailed}>
           <UserLocationLayer />

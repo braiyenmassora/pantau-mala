@@ -22,7 +22,7 @@ function readKey(file, key) {
 }
 
 export function ensureViteDataUrl() {
-  if (process.env.VITE_DATA_URL?.trim()) return process.env.VITE_DATA_URL.trim()
+  if (Object.hasOwn(process.env, 'VITE_DATA_URL')) return process.env.VITE_DATA_URL.trim()
   for (const name of ['.env.production', '.env']) {
     const v = readKey(join(root, name), 'VITE_DATA_URL')
     if (v) {

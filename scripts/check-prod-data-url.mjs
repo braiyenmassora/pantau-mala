@@ -3,9 +3,9 @@
 import { ensureViteDataUrl } from './load-vite-data-url.mjs'
 
 const url = ensureViteDataUrl()
-if (!url) {
+if (url !== '/api/v1') {
   console.error(
-    'check-prod-data-url: VITE_DATA_URL wajib di-set (base URL API, tanpa slash akhir).',
+    'check-prod-data-url: VITE_DATA_URL harus /api/v1 dengan proxy API/auth pada origin FE.',
   )
   process.exit(1)
 }

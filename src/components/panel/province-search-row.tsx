@@ -41,11 +41,22 @@ export function ProvinceSearchRow({
   const title =
     countKind === 'titik' ? province.name : copy.search.provinceTitle(province.name)
 
+  const effectiveRisk: RiskCategory =
+    riskCategory && riskCategory !== 'tidak_tersedia'
+      ? riskCategory
+      : hotspotCount >= 20
+        ? 'sangat_tinggi'
+        : hotspotCount >= 5
+          ? 'sedang'
+          : hotspotCount > 0
+            ? 'rendah'
+            : 'tidak_tersedia'
+
   return (
     <ListRow
       leading={
-        riskCategory ? (
-          <RiskMarker kategori={riskCategory} />
+        effectiveRisk !== 'tidak_tersedia' ? (
+          <RiskMarker kategori={effectiveRisk} />
         ) : (
           <span
             className="bg-brand-soft text-brand flex size-10 items-center justify-center rounded-full"

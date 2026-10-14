@@ -47,6 +47,17 @@ const data: HotspotFeatureCollection = {
     },
     {
       type: 'Feature',
+      geometry: { type: 'Point', coordinates: [140.2, -8.2] },
+      properties: {
+        time: '2026-10-11T00:00:00Z',
+        satellite: 'MODIS',
+        confidence: 'rendah',
+        frp_mw: 0.4,
+        region_code: 'IDN.1.1_1',
+      },
+    },
+    {
+      type: 'Feature',
       geometry: { type: 'Point', coordinates: [141, -9] },
       properties: {
         time: '2026-10-11T00:00:00Z',
@@ -60,13 +71,25 @@ const data: HotspotFeatureCollection = {
 }
 
 describe('filterHotspotsForMap', () => {
-  it('empty on national overview', () => {
-    expect(filterHotspotsForMap(data, [region], 'Semua', null).features).toHaveLength(0)
+  it('renders observed points on national overview', () => {
+    expect(filterHotspotsForMap(data, [region], 'Semua', null).features).toHaveLength(2)
   })
 
-  it('filters to selected kab with risk weight', () => {
+  it('filters to selected kab with confidence weight', () => {
     const out = filterHotspotsForMap(data, [region], 'Semua', 'IDN.1.1_1')
-    expect(out.features).toHaveLength(1)
+    expect(out.features).toHaveLength(2)
     expect(out.features[0]?.properties.weight).toBe(1)
+    expect(out.features[1]?.properties.weight).toBe(0.2)
   })
+})
+
+it('stale unclassified regions retain satellite density', () => {
+  const stale = { ...region, risk_category: 'tidak_tersedia' as const, quality: 'stale' as const }
+  const out = filterHotspotsForMap(data, [stale], 'Semua', null)
+  expect(out.features).toHaveLength(2)
+  expect(out.features[0].properties.weight).toBe(1)
+})
+it('category/province filter passed through regions excludes other observations', () => {
+  expect(filterHotspotsForMap(data, [], 'Semua', null).features).toHaveLength(0)
+  expect(filterHotspotsForMap(data, [region], 'Papua', 'OTHER').features).toHaveLength(0)
 })

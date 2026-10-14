@@ -3,10 +3,20 @@ import { z } from 'zod'
 import type { HotspotFeatureCollection, Meta, Region, RegionCatalog } from '@/data/types'
 
 const timeZoneId = z.enum(['WIB', 'WITA', 'WIT'])
-const riskCategory = z.enum(['rendah', 'sedang', 'sangat_tinggi'])
+const riskCategory = z.enum(['rendah', 'sedang', 'sangat_tinggi', 'tidak_tersedia'])
 const weatherDangerClass = z.enum(['aman', 'waspada', 'bahaya', 'ekstrem'])
 const weatherDangerSource = z.enum(['BMKG', 'FWI dihitung'])
-const airQualityCategory = z.enum(['baik', 'sedang', 'tidak_sehat'])
+const airQualityCategory = z.enum([
+  'baik',
+  'sedang',
+  'tidak_sehat',
+  'sangat_tidak_sehat',
+  'berbahaya',
+  'pending_validation',
+  'insufficient_data',
+  'stale',
+  'missing',
+])
 const confidenceLevel = z.enum(['rendah', 'sedang', 'tinggi'])
 const sourceStatus = z.enum(['ok', 'terlambat', 'gagal'])
 const lonLat = z.tuple([z.number(), z.number()])
@@ -18,16 +28,23 @@ const weatherDangerSchema = z.object({
 })
 
 const weatherSchema = z.object({
-  temp_c: z.number(),
+  temp_c: z.number().nullable(),
   condition: z.string(),
-  humidity: z.number(),
-  wind_kmh: z.number(),
-  dry_days: z.number(),
+  humidity: z.number().nullable(),
+  wind_kmh: z.number().nullable(),
+  dry_days: z.number().nullable(),
 })
 
 const airQualitySchema = z.object({
-  pm25: z.number(),
+  pm25: z.number().nullable(),
+  ispu: z.number().nullable().optional(),
+  pm25_24h: z.number().nullable().optional(),
+  valid_hours: z.number().optional(),
   category: airQualityCategory,
+  method: z.string().optional(),
+  source: z.string().optional(),
+  status: z.string().optional(),
+  window_end: z.string().nullable().optional(),
 })
 
 /** BE may send JSON null for missing optional strings. */
@@ -52,7 +69,7 @@ export const regionSchema = z.object({
   time_zone: timeZoneId,
   center: lonLat,
   risk_category: riskCategory,
-  weather_danger: weatherDangerSchema,
+  weather_danger: weatherDangerSchema.nullable(),
   hotspots_24h: z.number(),
   trend_7d: z.tuple([
     z.number(),
@@ -65,15 +82,20 @@ export const regionSchema = z.object({
   ]),
   weather: weatherSchema,
   air_quality: airQualitySchema,
-  last_detection: lastDetectionSchema,
+  last_detection: lastDetectionSchema.nullable(),
   summary: z.string(),
   actions: z.array(z.string()),
+  quality: z.string().optional(),
+  score: z.number().nullable().optional(),
+  computed_at: z.string().nullable().optional(),
+  weather_updated_at: z.string().nullable().optional(),
+  air_updated_at: z.string().nullable().optional(),
 })
 
 export const regionsSchema = z.array(regionSchema)
 
 export const metaSchema = z.object({
-  updated_at: z.string(),
+  updated_at: z.string().nullable(),
   status: z.object({
     firms: sourceStatus,
     weather: sourceStatus,

@@ -1,4 +1,4 @@
-# forever-young — design system (FE MVP)
+# pantau-mala — design system (FE MVP)
 
 |                  |                                           |
 | ---------------- | ----------------------------------------- |
@@ -116,3 +116,25 @@ Sentence case. Hindari ALL CAPS kecuali singkatan (WIB, PM2.5, FWI).
 ---
 
 _FE design system v1.0 — token terpusat di `tokens.css`._
+
+## Integrasi Go — override branch12Okt2026
+
+Typography/palette/components tetap memakai token existing IBM Plex. AccessGate adalah form center max-w-sm dengan labels, eye icon44px, focus ring dan input16px di mobile. Account/session controls memperlihatkan workspace dari server; tidak menyediakan selector role. Proyek Go/API tetap di repo backend terpisah.
+
+Panel mobile memakai lebar viewport minus32px (margin16px), rail toggle berada dalam viewport. Pada panelmobile terbuka, map inert dan kontrolmap/legend yang tertutup tidak focusable. Filter bar mengalir di panel mobile dan kembali overlay desktop. Padding map mobile tidak memakai432px desktop.
+
+State tidak_tersedia memakai warna netral existing, tidak pulse/warna risiko. Skor/calibration/timestamp dan data tambahan memakai DataTile, SectionLabel, details/summary dan tabel compact. Nilai null = —, bukan0; FWI absent dijelaskan belum tersedia. SourceDataPanel dan RegionHistoryPanel lazily request data; semua state mengikuti client/generation. Tidak menambah font/palet baru.
+
+Override copy/count-only Python: Go kategori/score tetap sumber kebenaran, provincepin memilih kategori server tertinggi dari wilayah dalam filter; tidak mengklasifikasi ulang jumlah. Freshness mencantumkan targetperjam, bukan klaim cron aktif. Validasi browser akhir pada320/360/390/1366, keyboard/reducedmotion/loading/error/overflow diberikan ke owner sesuai instruksi berhenti automation; belum diklaim selesai.
+
+## Identitas bersama CMS Go
+
+Brand menggunakan salinan identik `api/brand-symbol.svg` dan `api/brand-wordmark.svg` dari backend. Komponen Brand digunakan pada login dan footer panel: simbol dekoratif, lettering bernama pantau mala, proporsi asli dan gap8px. Favicon memakai simbol yang sama; apple-touch-icon180px dan Open Graph1200×630 dirasterisasi dari SVG sumber, tanpa font untuk lettering. Warna di SVG dan theme-color merupakan pengecualian statis brand CMS, bukan palet komponen baru. Verifikasi browser/mobile akhir tetap manual oleh owner.
+
+## Mode client melalui server env
+
+Peta modeclient langsung terbuka setelah identitas reader terverifikasi. Footer hanya menunjukkan workspace, tanpa logout/switch/username. Kegagalan key/service memakai cardbrand+teksstatus dan tombol Coba lagi, tanpa formpassword. Modeaccount lama hanya optional; server tetap menegakkan scope/client. Pemeriksaan viewport/browser tetap manual oleh owner.
+
+## Kepadatan satelit pada overview
+
+Heatmap terlihat sejak overview nasional dan tetap mengikuti region/province/category selection. Bobot relatif berasal dari confidence observasi, bukan kategori risiko yang mungkin null/stale. Sedang/tinggi confidence ditampilkan; low confidence tetap tidak dipromosikan. Gradient existing kuning→merah menunjukkan kepadatan relatif, bukan skor atau peringatan. Pin risiko tetap kategori server, unknown netral. Label unknown menjadi Belum dinilai; detail stale menyebut Indikator kedaluwarsa. FWI absent dijelaskan spesifik, tanpa substitusi nilai. Browser final tetap manual owner.

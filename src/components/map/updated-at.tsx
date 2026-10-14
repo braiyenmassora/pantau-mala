@@ -1,3 +1,4 @@
+import { useUiStore } from '@/store/ui'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { copy } from '@/copy/id'
 import { useMeta } from '@/data/queries'
@@ -26,9 +27,16 @@ function problemSources(status: MetaStatus): (keyof MetaStatus)[] {
 
 export function UpdatedAtBadge() {
   const { data, isPending, isError } = useMeta()
+  const panelOpen = useUiStore((s) => s.panelOpen)
   const showStamp = !isPending && !isError && !!data
 
   if (!showStamp || !data) return null
+  if (!data.updated_at)
+    return (
+      <p role="status" className="text-ink-2 absolute right-4 bottom-4 text-xs">
+        Data sumber belum tersedia.
+      </p>
+    )
 
   const problems = problemSources(data.status)
   const hasProblem = problems.length > 0
@@ -49,7 +57,10 @@ export function UpdatedAtBadge() {
 
   return (
     <div
-      className="absolute right-4 bottom-4 z-30 flex h-6 items-center gap-2"
+      className={cn(
+        'absolute right-4 bottom-4 z-30 flex h-6 items-center gap-2',
+        panelOpen && 'hidden sm:flex',
+      )}
       {...mapOverlayGestureProps}
     >
       <Tooltip>

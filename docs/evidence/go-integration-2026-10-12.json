@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-12",
+  "backend_repository": "braiyenmassora/api-forever-young",
+  "backend_branch": "feat/pantau-mala-go-backend",
+  "frontend_repository": "braiyenmassora/forever-young",
+  "frontend_branch": "feat/pantau-mala-go-integration",
+  "go_data": {
+    "catalog": {
+      "provinces": 38,
+      "regencies": 514,
+      "code_system": "official BIG PUM codes"
+    },
+    "active_regions": {
+      "count": 262,
+      "with_weather": 262,
+      "with_pm25": 262,
+      "quality_states": [
+        "stale"
+      ]
+    },
+    "geojson_24h": {
+      "features": 14997,
+      "unmapped": 0
+    },
+    "provider_states": {
+      "MODIS_NRT": "terlambat",
+      "VIIRS_NOAA20_NRT": "terlambat",
+      "VIIRS_NOAA21_NRT": "terlambat",
+      "VIIRS_SNPP_NRT": "terlambat",
+      "cuaca": "terlambat",
+      "firms": "terlambat",
+      "udara": "terlambat"
+    },
+    "summary": {
+      "hotspots_24h_medium_high": 13047,
+      "trend_days": 7
+    },
+    "operations": {
+      "hotspots_retained": 15483,
+      "regions": 514,
+      "samples": 50
+    }
+  },
+  "python_api_comparison": {
+    "python_public_host": "api-forever-young.onrender.com",
+    "results": {
+      "/v1/region-catalog": {
+        "result": "BLOCKED_EXTERNAL",
+        "error_type": "TimeoutError"
+      },
+      "/v1/regions": {
+        "result": "BLOCKED_EXTERNAL",
+        "error_type": "TimeoutError"
+      },
+      "/v1/hotspots": {
+        "result": "BLOCKED_EXTERNAL",
+        "error_type": "TimeoutError"
+      },
+      "/v1/meta": {
+        "result": "BLOCKED_EXTERNAL",
+        "error_type": "TimeoutError"
+      }
+    }
+  },
+  "validation": {
+    "unit_contract_tests": {
+      "passed": 120
+    },
+    "live_go_api_contract": {
+      "passed": 1
+    },
+    "typescript": "PASS",
+    "lint": "PASS",
+    "ui_static_audit": "PASS",
+    "production_build": "PASS",
+    "initial_js_gzip_kb": 160.8,
+    "final_browser_validation": "OWNER_MANUAL_PENDING; automation stopped on owner instruction",
+    "prior_browser_smoke": "Login/reload/logout/width emulation passed before new source panels; not full final-UI verification",
+    "prior_a11y_script": "Login scan passed; subsequent fixture navigation timeout, not claimed as complete",
+    "bun": {
+      "version": "1.4.3",
+      "frozen_install": "PASS",
+      "dev_build_lint_runtime": "Bun",
+      "vitest_runtime": "Node: Bun/jsdom EventTarget incompatibility verified",
+      "brand_svg_matches_go": "PASS byte-identical symbol and wordmark",
+      "brand_raster_dimensions": "Open Graph1200x630; apple touch180x180"
+    },
+    "client_gateway": {
+      "dev_http": "PASS",
+      "built_server_http": "PASS",
+      "browser_credentials": "none",
+      "bundle_contains_key": false,
+      "management_denied": 403,
+      "visitor_client_selection_denied": 400,
+      "revoked_key_test": "unit mocked upstream401, live revocation not performed",
+      "browser_review": "OWNER_MANUAL_PENDING"
+    }
+  },
+  "limitations": [
+    "Python public API timeout; live completeness comparison unknown",
+    "No VPS/production deployment",
+    "FE production requires same-origin API/auth proxy",
+    "Dev source data stale; scheduler inactive",
+    "FWI/calibration/officialPM25 thresholds not validated",
+    "New optional source interfaces unit/contract-checked; final browser review delegated to owner"
+  ]
+}

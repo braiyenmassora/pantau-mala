@@ -93,7 +93,7 @@ describe('searchWilayah', () => {
   it('pulang → Pulang Pisau with risk data', () => {
     const result = searchWilayah(daftar, [pulang], 'pulang')
     expect(result.kabkota[0]?.region?.risk_category).toBe('sangat_tinggi')
-    expect(result.kabkota[0]?.region?.weather_danger.class).toBe('ekstrem')
+    expect(result.kabkota[0]?.region?.weather_danger?.class).toBe('ekstrem')
     expect(result.kabkota[0]?.kab.name).toBe('Kab. Pulang Pisau')
   })
 
