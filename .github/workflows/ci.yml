@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.4.3
+          bun-version-file: .bun-version
       # Vitest/jsdom currently require Node for DOM workers. Bun owns install/dev/build.
       - uses: actions/setup-node@v4
         with:

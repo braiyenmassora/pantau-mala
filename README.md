@@ -65,6 +65,17 @@ bun x wrangler deploy
 bun x wrangler secret put PANTAU_API_KEY
 ```
 
+Jika memakai **Cloudflare Workers Builds** (Git connected), jangan set build command ke `pnpm run build`. Corepack tidak mendukung `bun` sebagai `packageManager`. Pakai:
+
+| Setting | Nilai |
+| --- | --- |
+| Build command | `bun run build` |
+| Deploy command | `bun x wrangler deploy` |
+| Build variable `BUN_VERSION` | `1.4.3` (lihat `.bun-version`) |
+| Build variable `VITE_DATA_URL` | `/api/v1` |
+
+Atau biarkan GitHub Actions (`deploy-cloudflare.yml`) yang build + deploy setelah CI `main` lulus.
+
 CI menjalankan validasi pada `develop` dan `main`. Setelah CI `main` berhasil, `.github/workflows/deploy-cloudflare.yml` otomatis membangun dan mendeploy Worker ke Cloudflare. Repository GitHub harus memiliki secret `CLOUDFLARE_API_TOKEN` dan variable `CLOUDFLARE_ACCOUNT_ID`; token harus dibuat khusus untuk deployment dan tidak boleh memakai token OAuth laptop.
 
 Jika secret GitHub Actions belum diatur (misalnya untuk preview pribadi), langkah deploy otomatis di GitHub Actions akan dilewati tanpa menggagalkan CI, dan deployment dapat dijalankan secara manual dari CLI menggunakan `bun x wrangler deploy`.
