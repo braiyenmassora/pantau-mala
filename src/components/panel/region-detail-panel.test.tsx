@@ -1,6 +1,7 @@
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/prefers-reduced-motion', () => ({
@@ -76,7 +77,7 @@ describe('RegionDetailPanel', () => {
     expect(screen.queryByText(/114\.|-2\./)).toBeNull()
   })
 
-  it('shows status hierarchy: badge, count, trend; no air/cuaca tiles', () => {
+  it('shows status hierarchy: badge, count, trend; no air/cuaca in Ringkasan', () => {
     renderDetail(pulangPisau)
     expect(screen.getByText('Sangat tinggi')).toBeTruthy()
     expect(screen.getByText('23')).toBeTruthy()
@@ -84,10 +85,10 @@ describe('RegionDetailPanel', () => {
     expect(screen.getByText(copy.detail.trendUp)).toBeTruthy()
     expect(screen.queryByText(copy.detail.airQuality)).toBeNull()
     expect(screen.queryByText(copy.source.cuaca)).toBeNull()
-    expect(screen.queryByText(/Deteksi 9 Oktober/)).toBeNull()
   })
 
-  it('shows calibration note, update stamp, conditions and accordions', () => {
+  it('shows Ringkasan note, stamp, conditions; Detail/Sumber via tabs', async () => {
+    const user = userEvent.setup()
     renderDetail(pulangPisau)
     expect(
       screen.getByText(copy.detail.calibrationNote('82', 'ok')),
@@ -95,10 +96,15 @@ describe('RegionDetailPanel', () => {
     expect(screen.getByText(/Diperbarui /)).toBeTruthy()
     expect(screen.getByText(copy.detail.humidity)).toBeTruthy()
     expect(screen.getByText(copy.detail.weatherDanger)).toBeTruthy()
-    expect(screen.getByText(copy.bahaya.ekstrem)).toBeTruthy()
+    expect(screen.getByText(/Ekstrem/)).toBeTruthy()
+
+    await user.click(screen.getByRole('tab', { name: copy.panel.tabDetail }))
     expect(screen.getByText(copy.extra.detection)).toBeTruthy()
     expect(screen.getByText(copy.extra.river)).toBeTruthy()
-    expect(screen.getByText(copy.extra.sourcesUpdates)).toBeTruthy()
     expect(screen.queryByText(copy.extra.loadRiver)).toBeNull()
+
+    await user.click(screen.getByRole('tab', { name: copy.panel.tabSources }))
+    expect(screen.getByText(copy.extra.computedAt)).toBeTruthy()
+    expect(screen.getByText(copy.extra.weatherAt)).toBeTruthy()
   })
 })

@@ -180,7 +180,7 @@ export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
       {basemapFailed && <BasemapBanner onRetry={remount} />}
       {!basemapFailed && layerFailed && <PartialBanner />}
       {!framed && (
-        <div className="absolute inset-0 z-20">
+        <div className="pointer-events-none absolute inset-0 z-20">
           <MapSoftLoading />
         </div>
       )}
@@ -190,7 +190,7 @@ export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
         theme="light"
         blank={basemapFailed}
         className={cn(
-          'size-full transition-opacity duration-300 ease-[var(--ease-out-soft)]',
+          'size-full transition-opacity duration-300 ease-out-soft',
           framed ? 'opacity-100' : 'opacity-0',
         )}
         center={INDONESIA_CENTER}

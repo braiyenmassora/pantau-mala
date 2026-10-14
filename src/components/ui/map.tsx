@@ -408,7 +408,8 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
   return (
     <MapContext.Provider value={contextValue}>
       <div ref={containerRef} className={cn('relative h-full w-full', className)}>
-        {(!isLoaded || loading) && <DefaultLoader />}
+        {/* Parent (MapShell) may own the soft loader — only show when loading is requested. */}
+        {loading && <DefaultLoader />}
         {/* SSR-safe: children render only when map is loaded on client */}
         {mapInstance && children}
       </div>

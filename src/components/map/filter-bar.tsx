@@ -1,10 +1,7 @@
-import { useRegionCatalog } from '@/data/queries'
-import { Check, ChevronDown, Map as MapIcon, Search, X } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import { Chip } from '@/components/common'
-import { focusRing } from '@/components/common/focus-ring'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { ProvincePicker } from '@/components/panel/province-picker'
 import { copy } from '@/copy/id'
 import type { Region, RiskCategory } from '@/data/types'
 import { filterRegions } from '@/lib/filter-regions'
@@ -15,8 +12,6 @@ import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 
-const ALL_PROVINCES = 'Semua'
-
 /** Chip filter — Rendah muncul jika ada di data. */
 const CATEGORY_BASE: RiskCategory[] = ['sangat_tinggi', 'sedang', 'rendah']
 
@@ -25,35 +20,21 @@ type FilterBarProps = {
   regions: Region[]
 }
 
-/** Filter overlay di kanvas peta (pola Maps-like); chip pakai radius-ctl + gap token. */
+/** Provinsi + chip risiko di atas peta (provinsi paling kiri). */
 export function FilterBar({ panelOpen, regions }: FilterBarProps) {
-  const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState('')
-  const { data: catalog } = useRegionCatalog()
   const province = useMapStore((s) => s.province)
   const selectedCategories = useMapStore((s) => s.selectedCategories)
-  const query = useMapStore((s) => s.query)
-  const setProvince = useMapStore((s) => s.setProvince)
   const toggleCategory = useMapStore((s) => s.toggleCategory)
   const clearCategories = useMapStore((s) => s.clearCategories)
 
-  const provinces = useMemo(() => {
-    const set = new Set([
-      ...(catalog?.provinces.map((p) => p.name) ?? []),
-      ...regions.map((r) => r.province),
-    ])
-    return [...set].sort((a, b) => a.localeCompare(b, 'id'))
-  }, [regions, catalog])
-
-  /** Counts after province + search, before category filter. */
   const preCategory = useMemo(
     () =>
       filterRegions(regions, {
         province,
-        query,
+        query: '',
         selectedCategories: new Set(),
       }),
-    [regions, province, query],
+    [regions, province],
   )
 
   const counts = useMemo(() => {
@@ -67,28 +48,12 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
     return next
   }, [preCategory])
 
-  const provinceLabel = province === ALL_PROVINCES ? copy.filter.allProvinces : province
-  const options = useMemo(
-    () => [
-      { value: ALL_PROVINCES, label: copy.filter.allProvinces },
-      ...provinces.map((name) => ({ value: name, label: name })),
-    ],
-    [provinces],
-  )
-
-  const filteredOptions = useMemo(() => {
-    if (!search.trim()) return options
-    const q = search.toLowerCase()
-    return options.filter((o) => o.label.toLowerCase().includes(q))
-  }, [options, search])
-
   const allPressed = selectedCategories.size === 0
   const allCount = preCategory.length
   const categoryOrder = CATEGORY_BASE.filter(
     (c) => c !== 'rendah' || counts.rendah > 0,
   )
 
-  // Bersihkan seleksi "belum dinilai" lama.
   useEffect(() => {
     if (selectedCategories.has('tidak_tersedia')) {
       clearCategories()
@@ -99,115 +64,14 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
     <div
       className={cn(
         'z-30 flex flex-wrap items-center gap-2',
-        'transition-[left] duration-300 ease-[var(--ease-out-soft)]',
+        'transition-[left] duration-300 ease-out-soft',
         panelOpen
-          ? 'relative mx-4 mt-4 sm:fixed sm:top-4 sm:right-4 sm:left-[432px]'
+          ? 'fixed top-4 right-4 left-4 sm:left-[432px]'
           : 'fixed top-4 right-4 left-4',
       )}
       {...mapOverlayGestureProps}
     >
-      <Popover
-        open={open}
-        onOpenChange={(next) => {
-          setOpen(next)
-          if (!next) setSearch('')
-        }}
-      >
-        <PopoverTrigger asChild>
-          <Chip
-            aria-expanded={open}
-            aria-haspopup="listbox"
-            aria-label={copy.filter.pickProvince}
-          >
-            <MapIcon
-              className="text-ink-2 size-4 shrink-0"
-              strokeWidth={2}
-              aria-hidden
-            />
-            <span className="max-w-36 truncate">{provinceLabel}</span>
-            <ChevronDown
-              className={cn(
-                'text-ink-2 size-4 shrink-0 transition-transform duration-200 ease-[var(--ease-out-soft)]',
-                open && 'rotate-180',
-              )}
-              strokeWidth={2}
-              aria-hidden
-            />
-          </Chip>
-        </PopoverTrigger>
-        <PopoverContent
-          align="start"
-          side="bottom"
-          sideOffset={6}
-          className="rounded-card bg-surface text-ink z-[60] w-64 border border-line p-1 shadow-md"
-        >
-          <div className="border-b border-line p-1">
-            <div className="flex items-center gap-2 rounded-ctl bg-surface-muted px-2 py-1">
-              <Search className="text-ink-3 size-4 shrink-0" strokeWidth={2} aria-hidden />
-              <input
-                type="text"
-                placeholder={copy.search.searchProvince}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="text-ink placeholder:text-ink-3 w-full bg-transparent text-xs outline-none"
-                autoFocus
-              />
-              {search && (
-                <button
-                  type="button"
-                  onClick={() => setSearch('')}
-                  className="text-ink-3 hover:text-ink"
-                >
-                  <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-                </button>
-              )}
-            </div>
-          </div>
-          <div
-            role="listbox"
-            aria-label={copy.search.provinces}
-            className="soft-scroll max-h-60 overflow-y-auto p-1"
-          >
-            {filteredOptions.length === 0 ? (
-              <p className="text-ink-3 px-3 py-2 text-center text-xs">
-                {copy.search.noProvinceFound}
-              </p>
-            ) : (
-              filteredOptions.map((option) => {
-                const selected = province === option.value
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    role="option"
-                    aria-selected={selected}
-                    className={cn(
-                      'rounded-ctl flex h-9 w-full cursor-pointer items-center gap-2 px-2 text-left text-sm',
-                      'hover:bg-surface-muted transition-colors duration-150 ease-in-out',
-                      focusRing,
-                      selected && 'bg-surface-muted font-semibold',
-                    )}
-                    onClick={() => {
-                      setProvince(option.value)
-                      setOpen(false)
-                      setSearch('')
-                    }}
-                  >
-                    <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                    {selected && (
-                      <Check
-                        className="text-brand size-4 shrink-0"
-                        strokeWidth={2}
-                        aria-hidden
-                      />
-                    )}
-                  </button>
-                )
-              })
-            )}
-          </div>
-        </PopoverContent>
-      </Popover>
+      <ProvincePicker regions={regions} />
 
       <Chip
         pressed={allPressed}
