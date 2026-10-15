@@ -80,7 +80,7 @@ export function SearchableSelect({
           aria-expanded={open}
           aria-haspopup="listbox"
           className={cn(
-            'border-line bg-surface text-ink flex h-9 w-full items-center justify-between gap-2 rounded-full border px-3 text-sm font-medium shadow-sm',
+            'border-line bg-surface text-ink rounded-ctl flex h-8 w-full items-center justify-between gap-2 border px-3 text-sm font-medium shadow-sm max-sm:h-9',
             'hover:bg-surface-muted transition-colors duration-200 ease-[var(--ease-out-soft)]',
             disabled && 'cursor-not-allowed opacity-50',
             focusRing,

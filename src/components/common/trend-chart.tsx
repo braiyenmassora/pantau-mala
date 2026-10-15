@@ -21,7 +21,9 @@ const PLOT_TOP = 12
 const PLOT_BOTTOM = 104
 
 function linePath(points: readonly { x: number; y: number }[]) {
-  return points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ')
+  return points
+    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
+    .join(' ')
 }
 
 export function TrendChart({
@@ -49,18 +51,23 @@ export function TrendChart({
   const maximum = Math.max(...safeValues)
   const scaleMaximum = maximum > 0 ? Math.ceil(maximum * 1.1) : 1
   const range = PLOT_BOTTOM - PLOT_TOP
-  const step = (VIEWBOX_WIDTH - PLOT_LEFT - PLOT_RIGHT) / Math.max(1, safeValues.length - 1)
+  const step =
+    (VIEWBOX_WIDTH - PLOT_LEFT - PLOT_RIGHT) / Math.max(1, safeValues.length - 1)
   const points = safeValues.map((value, index) => ({
     x: PLOT_LEFT + step * index,
     y: PLOT_BOTTOM - (value / scaleMaximum) * range,
   }))
   const path = linePath(points)
   const areaPath = `${path} L ${points.at(-1)?.x ?? PLOT_RIGHT} ${PLOT_BOTTOM} L ${PLOT_LEFT} ${PLOT_BOTTOM} Z`
-  const average = Math.round(safeValues.reduce((sum, value) => sum + value, 0) / safeValues.length)
+  const average = Math.round(
+    safeValues.reduce((sum, value) => sum + value, 0) / safeValues.length,
+  )
   const latest = safeValues.at(-1) ?? 0
   const peak = Math.max(...safeValues)
   const tickValues = [scaleMaximum, Math.round(scaleMaximum / 2), 0]
-  const ariaValues = safeValues.map((value, index) => `${dates[index]} ${value}`).join(', ')
+  const ariaValues = safeValues
+    .map((value, index) => `${dates[index]} ${value}`)
+    .join(', ')
 
   return (
     <section
@@ -74,7 +81,7 @@ export function TrendChart({
           </h3>
           <p className="text-ink-2 mt-1 text-xs">{description}</p>
         </div>
-        <span className="bg-brand-soft text-brand shrink-0 rounded-full px-2 py-1 text-xs font-medium">
+        <span className="bg-brand-soft text-brand rounded-ctl shrink-0 px-2 py-1 text-xs font-medium">
           7 hari
         </span>
       </div>
@@ -144,7 +151,7 @@ export function TrendChart({
           ))}
         </svg>
 
-        <div className="text-ink-3 mt-[-4px] flex justify-between pl-9 pr-1 text-xs">
+        <div className="text-ink-3 mt-[-4px] flex justify-between pr-1 pl-9 text-xs">
           {dates.map((date) => (
             <span key={date}>{date}</span>
           ))}

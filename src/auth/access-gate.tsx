@@ -128,7 +128,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
             )}
             <button
               disabled={busy}
-              className={`bg-brand text-surface h-11 w-full rounded-full px-4 font-semibold disabled:opacity-60 ${focusRing}`}
+              className={`bg-brand text-surface rounded-ctl h-10 w-full px-4 font-medium disabled:opacity-60 ${focusRing}`}
             >
               {busy ? 'Memproses…' : 'Masuk'}
             </button>
@@ -208,7 +208,7 @@ export function SessionControl() {
         type="button"
         aria-label={copy.auth.logout}
         disabled={busy}
-        className={`flex size-10 items-center justify-center rounded-full ${focusRing}`}
+        className={`rounded-ctl flex size-9 items-center justify-center ${focusRing}`}
         onClick={() => {
           setBusy(true)
           setError('')

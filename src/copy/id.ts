@@ -170,7 +170,7 @@ export const copy = {
   },
 
   panel: {
-    indonesiaToday: 'Pantauan Anomali Termal & Bencana Alam',
+    indonesiaToday: 'Pantau bencana alam',
     provinceToday: (province: string) => `Pantauan Anomali Termal · ${province}`,
     tagline: 'Platform Integrasi Pantauan Anomali Termal & Bencana Alam',
     subtitle: 'Data satelit NASA FIRMS, 24 jam terakhir.',
@@ -360,7 +360,9 @@ export const copy = {
   legend: {
     /** Strip kartu kiri bawah peta — teks pendek agar mudah dibaca. */
     riskTitle: 'Risiko wilayah',
-    riskHint: 'Warna area dan titik hotspot',
+    riskHint: 'Warna poligon, bukan lokasi deteksi',
+    detectionTitle: 'Deteksi satelit',
+    detectionHint: 'Titik koordinat NASA FIRMS',
     quakeTitle: 'Gempa bumi',
     quakeHint: 'Episentrum dari feed BMKG',
     densityTitle: 'Kepadatan satelit',

@@ -154,11 +154,27 @@ describe('HotspotHeatmapLayer', () => {
         ]),
       }),
     )
-    expect(HEATMAP_MIN_ZOOM).toBe(3.5)
+    expect(HEATMAP_MIN_ZOOM).toBe(0)
     expect(addLayer).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'heatmap',
         minzoom: HEATMAP_MIN_ZOOM,
+      }),
+    )
+    expect(addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'fy-hotspot-points-layer',
+        type: 'circle',
+        minzoom: 0,
+      }),
+    )
+    expect(setData).toHaveBeenCalledWith(
+      expect.objectContaining({
+        features: [
+          expect.objectContaining({
+            geometry: { type: 'Point', coordinates: [140.1, -8.1] },
+          }),
+        ],
       }),
     )
   })

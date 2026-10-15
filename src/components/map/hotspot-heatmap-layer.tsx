@@ -15,6 +15,7 @@ import { MAP_COLORS } from '@/lib/map-colors'
 import {
   HEATMAP_LOW_HEX,
   HEATMAP_TRANSPARENT,
+  HOTSPOT_HEX,
   RISK_CATEGORIES,
 } from '@/lib/risk-category'
 import { useMapStore } from '@/store/map'
@@ -24,7 +25,7 @@ const SOURCE_ID = 'fy-hotspot-heatmap'
 const LAYER_ID = 'fy-hotspot-heatmap-layer'
 const POINTS_LAYER_ID = 'fy-hotspot-points-layer'
 
-export const HEATMAP_MIN_ZOOM = 3.5
+export const HEATMAP_MIN_ZOOM = 0
 
 type HotspotHeatmapLayerProps = {
   regions: Region[]
@@ -58,7 +59,7 @@ function formatDetectedTime(rawTime?: string, tz = 'WIB'): string | undefined {
 
 const HEATMAP_PAINT: HeatmapLayerSpecification['paint'] = {
   'heatmap-weight': 1,
-  'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 7, 8, 11, 24],
+  'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 4, 5, 7, 8, 11, 24],
   'heatmap-color': [
     'interpolate',
     ['linear'],
@@ -72,7 +73,19 @@ const HEATMAP_PAINT: HeatmapLayerSpecification['paint'] = {
     1,
     RISK_CATEGORIES.sangat_tinggi.dot,
   ],
-  'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 7, 0.75, 10, 0.75, 12, 0],
+  'heatmap-opacity': [
+    'interpolate',
+    ['linear'],
+    ['zoom'],
+    0,
+    0.5,
+    7,
+    0.65,
+    10,
+    0.5,
+    12,
+    0,
+  ],
 }
 
 // ponytail: heatmap + titik; setup sekali, data di-setData — jangan removeLayer tiap render.
@@ -128,13 +141,13 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         id: POINTS_LAYER_ID,
         type: 'circle',
         source: SOURCE_ID,
-        minzoom: 10,
+        minzoom: 0,
         paint: {
-          'circle-radius': 3.5,
-          'circle-color': RISK_CATEGORIES.sangat_tinggi.dot,
-          'circle-stroke-width': 1,
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 1.5, 7, 2.5, 12, 3.5],
+          'circle-color': HOTSPOT_HEX,
+          'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 0, 0.3, 10, 1],
           'circle-stroke-color': MAP_COLORS.surface,
-          'circle-opacity': ['interpolate', ['linear'], ['zoom'], 10, 0.5, 12, 1],
+          'circle-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.7, 12, 1],
         },
       })
     }

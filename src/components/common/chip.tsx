@@ -8,14 +8,13 @@ type ChipProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode
 }
 
-/** Chip filter: tinggi 36px, pill, aktif = brand-soft + brand. */
 export function Chip({ pressed, className, children, ...props }: ChipProps) {
   return (
     <button
       type="button"
       aria-pressed={pressed}
       className={cn(
-        'border-line bg-surface text-ink inline-flex h-8 items-center gap-2 rounded-ctl border px-2 text-xs font-medium shadow-sm',
+        'border-line bg-surface text-ink rounded-ctl inline-flex h-8 items-center gap-2 border px-2 text-xs font-medium shadow-sm',
         'ease-out-soft transition-[background-color,color,border-color] duration-150',
         'hover:bg-surface-muted [&_svg]:shrink-0',
         focusRing,

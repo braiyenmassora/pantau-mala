@@ -104,7 +104,7 @@ describe('RegionLayers', () => {
     })
   })
 
-  it('renders pulsing DOM markers without text labels', () => {
+  it('renders neutral count badges, not pulsing detection dots', () => {
     render(<RegionLayers regions={mockRegions} />)
 
     const markers = screen.getAllByTestId('dom-marker')
@@ -116,18 +116,18 @@ describe('RegionLayers', () => {
 
     // Sangat tinggi: denyut soft lebih cepat
     const btnHigh = screen.getByRole('button', { name: 'Kab. Sangat Rawan' })
-    const pulseHigh = btnHigh.querySelector('.marker--pulse') as HTMLElement
-    expect(pulseHigh).toBeTruthy()
-    expect(pulseHigh.style.getPropertyValue('--beat')).toBe('0.75s')
+    expect(btnHigh.textContent).toBe('15')
+    expect(btnHigh.querySelector('.marker--pulse')).toBeNull()
+    expect(btnHigh.getAttribute('title')).toContain('Ringkasan wilayah')
 
     // Sedang: denyut soft lebih pelan
     const btnMid = screen.getByRole('button', { name: 'Kab. Sedang' })
-    const pulseMid = btnMid.querySelector('.marker--pulse') as HTMLElement
-    expect(pulseMid).toBeTruthy()
-    expect(pulseMid.style.getPropertyValue('--beat')).toBe('1.8s')
+    expect(btnMid.textContent).toBe('3')
+    expect(btnMid.querySelector('.marker--pulse')).toBeNull()
 
     // Rendah is static without pulse
     const btnLow = screen.getByRole('button', { name: 'Kab. Aman' })
+    expect(btnLow.textContent).toBe('0')
     expect(btnLow.querySelector('.marker--pulse')).toBeNull()
   })
 

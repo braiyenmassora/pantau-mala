@@ -93,7 +93,7 @@ export function LocationCard({ regions }: LocationCardProps) {
             type="button"
             variant="secondary"
             size="sm"
-            className="bg-brand-soft text-brand hover:bg-brand-soft/80 h-8 shrink-0 rounded-full border-transparent px-3 text-xs font-medium"
+            className="bg-brand-soft text-brand hover:bg-brand-soft/80 rounded-ctl h-8 shrink-0 border-transparent px-3 text-xs font-medium"
             onClick={(e) => requestLocation(e.currentTarget)}
           >
             Izinkan
@@ -114,7 +114,7 @@ export function LocationCard({ regions }: LocationCardProps) {
             type="button"
             variant="secondary"
             size="sm"
-            className="bg-brand-soft text-brand hover:bg-brand-soft/80 h-8 shrink-0 rounded-full border-transparent px-3 text-xs font-medium"
+            className="bg-brand-soft text-brand hover:bg-brand-soft/80 rounded-ctl h-8 shrink-0 border-transparent px-3 text-xs font-medium"
             onClick={() => setLocation({ status: 'requesting' })}
           >
             {copy.empty.locationError.action}
@@ -140,7 +140,7 @@ export function LocationCard({ regions }: LocationCardProps) {
               type="button"
               variant="secondary"
               size="sm"
-              className="bg-brand-soft text-brand hover:bg-brand-soft/80 h-8 shrink-0 rounded-full border-transparent px-3 text-xs font-medium"
+              className="bg-brand-soft text-brand hover:bg-brand-soft/80 rounded-ctl h-8 shrink-0 border-transparent px-3 text-xs font-medium"
               aria-label={copy.location.allowLocationFull}
               onClick={(e) => requestLocation(e.currentTarget)}
             >

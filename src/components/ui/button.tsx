@@ -28,7 +28,6 @@ type ButtonProps = React.ComponentProps<'button'> & {
   asChild?: boolean
 }
 
-/** shadcn Button — pill override via className di pemanggil. */
 function Button({
   className,
   variant = 'default',
@@ -44,7 +43,7 @@ function Button({
       data-variant={variant}
       data-size={size}
       className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded-ctl text-xs font-medium whitespace-nowrap transition-colors outline-none select-none',
+        'rounded-ctl inline-flex shrink-0 items-center justify-center text-xs font-medium whitespace-nowrap transition-colors outline-none select-none',
         'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-3',
         'disabled:pointer-events-none disabled:opacity-50',
         "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",

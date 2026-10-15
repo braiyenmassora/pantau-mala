@@ -1,8 +1,8 @@
-import type { CSSProperties } from 'react'
 import { useEffect, useMemo } from 'react'
 
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
+import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
 import { formatNumber } from '@/lib/format'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
@@ -66,18 +66,7 @@ export function RegionLayers({ regions }: RegionLayersProps) {
         }
 
         const risk = effectiveRiskCategory(r)
-        const isHigh = risk === 'sangat_tinggi'
-        const isMid = risk === 'sedang'
         const isHovered = hoveredCode === r.code
-        const dot = RISK_CATEGORIES[risk].dot
-
-        const pulseStyle: CSSProperties | undefined =
-          isHigh || isMid
-            ? ({
-                '--risk-color': dot,
-                '--beat': isHigh ? '0.75s' : '1.8s',
-              } as CSSProperties)
-            : undefined
 
         return (
           <MapMarker
@@ -90,9 +79,10 @@ export function RegionLayers({ regions }: RegionLayersProps) {
               <button
                 type="button"
                 aria-label={r.name}
+                title={`${r.name}: ${copy.map.summaryMarkerNote}`}
                 className={cn(
-                  'relative flex size-10 items-center justify-center rounded-full transition-transform duration-150',
-                  isHovered && 'z-20 scale-[1.3]',
+                  'border-line bg-surface text-ink rounded-ctl relative flex min-h-8 min-w-8 items-center justify-center border px-2 text-xs font-semibold tabular-nums shadow-sm transition-colors duration-150',
+                  isHovered && 'border-brand text-brand z-20',
                 )}
                 onMouseEnter={() => hover(r.code)}
                 onMouseLeave={() => hover(null)}
@@ -102,16 +92,7 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                   if (!panelOpen) setPanelOpen(true)
                 }}
               >
-                <span
-                  className={cn(
-                    'border-surface rounded-full',
-                    isHigh || isMid
-                      ? 'marker--pulse size-4 border-2'
-                      : 'size-2.5 border-[1.5px]',
-                  )}
-                  style={{ backgroundColor: dot, ...pulseStyle }}
-                  aria-hidden
-                />
+                {formatNumber(r.hotspots_24h)}
               </button>
 
               {isHovered ? (
@@ -120,6 +101,7 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                     title={r.name}
                     subtitle={RISK_CATEGORIES[risk].label}
                     meta={`${formatNumber(r.hotspots_24h)} titik panas · 24 jam`}
+                    lines={[copy.map.summaryMarkerNote]}
                   />
                 </div>
               ) : null}

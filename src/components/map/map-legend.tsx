@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { copy } from '@/copy/id'
-import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { HOTSPOT_HEX, RISK_CATEGORIES } from '@/lib/risk-category'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui'
@@ -11,13 +11,8 @@ import { useUiStore } from '@/store/ui'
 function RiskPinSwatch({ color }: { color: string }) {
   return (
     <span
-      className="marker--pulse-static border-surface relative size-2.5 shrink-0 rounded-full border-2"
-      style={
-        {
-          backgroundColor: color,
-          '--risk-color': color,
-        } as React.CSSProperties
-      }
+      className="rounded-ctl size-3 shrink-0"
+      style={{ backgroundColor: color }}
       aria-hidden
     />
   )
@@ -34,7 +29,7 @@ function LegendItem({
 }) {
   return (
     <Card className="bg-surface/95 pointer-events-auto shadow-sm backdrop-blur-sm">
-      <CardContent className="flex items-center gap-2 px-3 py-3">
+      <CardContent className="flex items-center gap-2 px-3 py-2">
         <span className="shrink-0" aria-hidden>
           {symbol}
         </span>
@@ -74,6 +69,16 @@ export function MapLegend() {
         }
         title={copy.legend.riskTitle}
         hint={copy.legend.riskHint}
+      />
+      <LegendItem
+        symbol={
+          <span
+            className="block size-2 rounded-full"
+            style={{ backgroundColor: HOTSPOT_HEX }}
+          />
+        }
+        title={copy.legend.detectionTitle}
+        hint={copy.legend.detectionHint}
       />
       <LegendItem
         symbol={

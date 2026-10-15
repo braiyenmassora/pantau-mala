@@ -13,12 +13,7 @@ import { useEffect, useRef, type ReactNode, type RefObject } from 'react'
 
 import { Badge, InfoTooltip, Sparkline, TrendChart } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
@@ -161,7 +156,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
           onClick={handleBack}
           aria-label={copy.panel.closeDetail}
           className={cn(
-            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-10 shrink-0 items-center justify-center rounded-full transition-colors',
+            'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex size-8 shrink-0 items-center justify-center transition-colors',
             focusRing,
           )}
         >
@@ -169,7 +164,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
         </button>
       </div>
 
-      <div className="flex flex-col gap-5 px-4 pt-0 pb-6">
+      <div className="flex flex-col gap-4 px-4 pt-0 pb-4">
         <Card>
           <CardHeader>
             <div className="flex items-center gap-1">

@@ -38,13 +38,13 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
   return (
     <div
       className={cn(
-        'border-line bg-surface group flex h-10 items-center gap-2 rounded-ctl border px-3 shadow-sm',
+        'border-line bg-surface group rounded-ctl flex h-9 items-center gap-2 border px-3 shadow-sm',
         'ease-out-soft transition-[border-color,box-shadow] duration-150',
         'focus-within:border-brand',
       )}
     >
       <Search
-        className="text-ink-3 group-focus-within:text-brand size-5 shrink-0 transition-colors duration-150"
+        className="text-ink-3 group-focus-within:text-brand size-4 shrink-0 transition-colors duration-150"
         strokeWidth={2}
         aria-hidden
       />
@@ -70,9 +70,9 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
           size="icon"
           aria-label={copy.panel.searchClear}
           onClick={clearAll}
-          className="text-ink-3 hover:bg-surface-muted hover:text-ink size-10 shrink-0 rounded-full"
+          className="text-ink-3 hover:bg-surface-muted hover:text-ink rounded-ctl size-8 shrink-0"
         >
-          <X className="size-5" strokeWidth={2} aria-hidden />
+          <X className="size-4" strokeWidth={2} aria-hidden />
         </Button>
       ) : null}
     </div>

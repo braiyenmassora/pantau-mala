@@ -12,13 +12,15 @@ describe('MapLegend', () => {
 
     expect(screen.getByTestId('map-legend')).toBeTruthy()
     expect(screen.getByText('Risiko wilayah')).toBeTruthy()
-    expect(screen.getByText('Warna area dan titik hotspot')).toBeTruthy()
+    expect(screen.getByText('Warna poligon, bukan lokasi deteksi')).toBeTruthy()
+    expect(screen.getByText('Deteksi satelit')).toBeTruthy()
+    expect(screen.getByText('Titik koordinat NASA FIRMS')).toBeTruthy()
     expect(screen.getByText('Gempa bumi')).toBeTruthy()
     expect(screen.getByText('Episentrum dari feed BMKG')).toBeTruthy()
     expect(screen.getByText('Kepadatan satelit')).toBeTruthy()
     expect(screen.getByText('Kuning jarang · Merah padat')).toBeTruthy()
 
     expect(document.querySelector('.marker--pulse')).toBeNull()
-    expect(document.querySelectorAll('.marker--pulse-static').length).toBe(2)
+    expect(document.querySelector('.marker--pulse-static')).toBeNull()
   })
 })

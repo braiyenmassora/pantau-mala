@@ -122,8 +122,7 @@ export function SummaryPanel({
   const nationalView = province === 'Semua'
   const searching = query.trim().length > 0
 
-  const pinRisk =
-    selectedCategories.size === 1 ? [...selectedCategories][0] : undefined
+  const pinRisk = selectedCategories.size === 1 ? [...selectedCategories][0] : undefined
 
   const topProvinces = useMemo(() => {
     if (!nationalView || !daftar) return []
@@ -231,7 +230,7 @@ export function SummaryPanel({
   // 1. Hasil pencarian — kartu sama dengan daftar provinsi/kabupaten
   if (searching) {
     return (
-      <div className="flex flex-col gap-5 px-4 py-5">
+      <div className="flex flex-col gap-4 p-4">
         <SearchBox mapRef={mapRef} />
         <section className="space-y-3">
           <h2 className="text-ink text-sm font-semibold">Hasil pencarian</h2>
@@ -242,7 +241,7 @@ export function SummaryPanel({
               </CardContent>
             </Card>
           ) : (
-            <ul className="flex flex-col gap-3">
+            <ul className="border-line bg-surface divide-line rounded-card divide-y overflow-hidden border">
               {filtered.map((region) => (
                 <li key={region.code}>
                   <RegionRow region={region} mapRef={mapRef} />
@@ -258,13 +257,10 @@ export function SummaryPanel({
   // 2. Beranda nasional — header + tumpukan kartu hasil sederhana
   if (nationalView) {
     return (
-      <div className="flex flex-col gap-5 px-4 py-5">
-        <div className="space-y-3">
-          <Brand compact />
-          <SearchBox mapRef={mapRef} />
-        </div>
-
+      <div className="flex flex-col gap-4 p-4">
         <NationalPanelHeader updatedDate={updatedDate} />
+
+        <SearchBox mapRef={mapRef} />
 
         <div className="flex flex-col gap-4">
           <LocationCard regions={regions} />
@@ -327,7 +323,7 @@ export function SummaryPanel({
           }}
           aria-label={copy.panel.closeDetail}
           className={cn(
-            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-10 shrink-0 items-center justify-center rounded-full transition-colors',
+            'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex size-8 shrink-0 items-center justify-center transition-colors',
             focusRing,
           )}
         >
@@ -335,7 +331,7 @@ export function SummaryPanel({
         </button>
       </div>
 
-      <div className="flex flex-col gap-5 px-4 pt-0 pb-6">
+      <div className="flex flex-col gap-4 px-4 pt-0 pb-4">
         <Card>
           <CardHeader>
             <div className="flex items-center gap-1">
@@ -397,7 +393,7 @@ export function SummaryPanel({
               </CardContent>
             </Card>
           ) : (
-            <ul className="flex flex-col gap-3">
+            <ul className="border-line bg-surface divide-line rounded-card divide-y overflow-hidden border">
               {provinceTopRegencies.map((region) => (
                 <li key={region.code}>
                   <RegionRow region={region} mapRef={mapRef} />
@@ -417,7 +413,7 @@ function SummarySkeleton({ nationalView }: { nationalView: boolean }) {
     <div className="flex flex-col gap-6 px-4 py-4" aria-busy>
       <div className="space-y-2">
         <Skeleton className="rounded-ctl h-7 w-28" />
-        <Skeleton className="h-10 w-full rounded-ctl" />
+        <Skeleton className="rounded-ctl h-10 w-full" />
       </div>
       <div className="space-y-2">
         <Skeleton className="rounded-ctl h-7 w-3/4" />

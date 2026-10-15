@@ -12,8 +12,7 @@ import type { Region } from '@/data/types'
 import { formatDateTime, formatNumber } from '@/lib/format'
 import { getMapPadding } from '@/lib/indonesia-view'
 import { MAP_COLORS } from '@/lib/map-colors'
-import { RISK_CATEGORIES } from '@/lib/risk-category'
-import { effectiveRiskCategory } from '@/lib/risk-rule'
+import { HOTSPOT_HEX } from '@/lib/risk-category'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -184,9 +183,6 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
   if (!selectedRegion || regionHotspots.length === 0 || regionHotspots.length > 64)
     return null
 
-  const risk = effectiveRiskCategory(selectedRegion)
-  const style = RISK_CATEGORIES[risk]
-
   return (
     <>
       {regionHotspots.map((f, i) => {
@@ -222,7 +218,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                   'border-surface relative size-2.5 cursor-pointer rounded-full border-2 shadow-sm',
                   'transition-transform duration-150 hover:scale-125',
                 )}
-                style={{ backgroundColor: style.dot }}
+                style={{ backgroundColor: HOTSPOT_HEX }}
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}
                 onFocus={() => setHovered(i)}

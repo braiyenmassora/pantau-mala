@@ -13,6 +13,8 @@ export const BRAND_HEX = '#14634c'
 /** Lokasi pengguna = brand. */
 export const LOCATION_HEX = '#14634c'
 
+export const HOTSPOT_HEX = '#C2410C'
+
 /** Lapisan suhu. */
 export const TEMP_HOT_HEX = BRAND_HEX
 export const TEMP_TEXT_HEX = '#0F172A'

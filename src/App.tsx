@@ -68,7 +68,7 @@ export default function App() {
       )
     })
     return () => {
-      cancelled = true  
+      cancelled = true
     }
   }, [setLocation])
 
@@ -110,10 +110,7 @@ export default function App() {
 
   // Peta ikut filter kategori/provinsi; query hanya mempersempit daftar panel.
   const mapRegions = useMemo(
-    () =>
-      data
-        ? filterRegions(data, { province, selectedCategories, query: '' })
-        : [],
+    () => (data ? filterRegions(data, { province, selectedCategories, query: '' }) : []),
     [data, province, selectedCategories],
   )
 
@@ -128,7 +125,7 @@ export default function App() {
           className={cn(
             'absolute z-40 flex w-[calc(100vw-32px)] flex-col overflow-hidden sm:w-(--map-panel-width)',
             'top-(--floating-control-offset) bottom-(--floating-control-offset) left-(--floating-control-offset)',
-            'rounded-panel border-line bg-surface border shadow-sm',
+            'rounded-panel border-line bg-surface-muted shadow-map border',
             easePanel,
             'transition-[transform,opacity]',
             panelOpen
@@ -168,9 +165,7 @@ export default function App() {
             easePanel,
             'transition-[left,background-color] duration-150',
             focusRing,
-            panelOpen
-              ? 'left-[calc(100vw-24px)] sm:left-(--map-panel-edge)'
-              : 'left-0',
+            panelOpen ? 'left-[calc(100vw-24px)] sm:left-(--map-panel-edge)' : 'left-0',
           )}
           {...mapOverlayGestureProps}
         >

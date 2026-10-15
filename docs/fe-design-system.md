@@ -1,20 +1,20 @@
-# pantau-mala — design system (FE MVP)
+# pantau-mala — design system FE
 
-|                   |                                                                                                                |
-| ----------------- | -------------------------------------------------------------------------------------------------------------- |
-| **Sumber desain** | [`Spesifikasi UI (handoff developer).pdf`](<./Spesifikasi%20UI%20(handoff%20developer).pdf>) — **09 Okt 2026** |
-| **Token kode**    | `src/styles/tokens.css` (harus mirror PDF) + chrome GIS di `src/lib/layout.ts`                                 |
-| **Copy / ikon**   | [`fe-ui-copy.md`](fe-ui-copy.md)                                                                               |
-| **Kontrak data**  | [`prd-fe.md`](prd-fe.md) — jangan bentrok                                                                      |
+|                   |                                                                                                                                 |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Sumber desain** | CMS BE: `api/cms/assets/design-tokens.css`, `api/cms/assets/cms.css`, dan `docs/DESIGN_SYSTEM.md` pada repository `pantau-mala` |
+| **Token kode**    | `src/styles/tokens.css`, font lokal di `src/styles/fonts.css`, dan chrome GIS di `src/lib/layout.ts`                            |
+| **Copy / ikon**   | [`fe-ui-copy.md`](fe-ui-copy.md)                                                                                                |
+| **Kontrak data**  | [`prd-fe.md`](prd-fe.md) — jangan bentrok                                                                                       |
 
-PDF handoff adalah **sumber kebenaran visual**. `tokens.css` dan komponen mengikuti PDF; dokumen ini merangkumnya untuk developer. Jangan menambah palet di luar PDF/token.
+CMS BE adalah **sumber kebenaran visual**, sesuai arahan owner pada 15 Oktober 2026. Font, warna, radius, shadow, dan density kontrol FE mengikuti CMS tanpa menyalin layout dashboard atau mengubah fitur peta. PDF handoff lama tetap menjadi referensi layout GIS dan perilaku, bukan alasan mengembalikan style lama. Jangan menambah palet di luar token.
 
 ---
 
 ## 1. Prinsip
 
 1. Peta = hero; panel = informasi. Satu pekerjaan per section.
-2. Warna risiko hanya untuk pin / chip / legend status — bukan dekorasi. Status non-risiko (gempa, stale, suhu, error) pakai ink / brand / ink-3.
+2. Warna risiko hanya untuk poligon / chip / legend status, bukan dekorasi. Titik deteksi satelit memakai ember; angka agregat wilayah memakai badge netral. Status non-risiko (gempa, stale, suhu, error) pakai ink / brand / ink-3.
 3. Titik panas ≠ kebakaran (lihat fe-ui-copy).
 4. Logo **pantaumala** memakai simbol dan lettering SVG asli CMS backend: `pantau` hijau `#14634C`, `mala` orange `#C2410C`. Jangan mengganti lettering dengan font UI. Aksen UI/lokasi/tombol mengikuti token CMS BE: forest `#14634C`, ember `#C2410C`, slate `#0F172A`. **Tidak ada biru dekoratif.**
 5. Light mode saja. Grid **4 px**.
@@ -34,77 +34,79 @@ Token chrome: `--floating-control-offset`, `--map-panel-width`, `--map-panel-edg
 
 ---
 
-## 2. Warna (PDF §1 → `tokens.css`)
+## 2. Warna (CMS BE → `tokens.css`)
 
 | Token                   | Hex                      | Peran             |
 | ----------------------- | ------------------------ | ----------------- |
-| `--color-ink`           | `#14261B`                | text-primary      |
-| `--color-ink-2`         | `#52645A`                | text-secondary    |
-| `--color-ink-3`         | `#7A8A80`                | text-disabled     |
-| `--color-line`          | `#E3E9E4`                | border            |
-| `--color-surface-muted` | `#F6F8F6`                | kartu info        |
-| `--color-map-bg`        | `#DCE7EC`                | fallback peta     |
-| `--color-brand` / soft  | `#1E6B45` / `#EDF4EF`    | aksen UI + lokasi |
+| `--color-ink`           | `#0F172A`                | text-primary      |
+| `--color-ink-2`         | `#475569`                | text-secondary    |
+| `--color-ink-3`         | `#94A3B8`                | text-disabled     |
+| `--color-line`          | `#E2E8F0`                | border            |
+| `--color-surface-muted` | `#F8FAFC`                | kartu info        |
+| `--color-map-bg`        | `#F1F5F9`                | fallback peta     |
+| `--color-brand` / soft  | `#14634C` / `#EAF3EE`    | aksen UI + lokasi |
 | risk high / mid / low   | lihat `risk-category.ts` | dot · tint · text |
 
 Focus ring = brand. Hex MapLibre wajib mirror token.
 
 ---
 
-## 3. Spasi, radius, bayangan (PDF §3)
+## 3. Spasi, radius, bayangan
 
 Spasi: **4, 8, 12, 16, 20, 24**.
 
-| Ritme                          | Nilai                     |
-| ------------------------------ | ------------------------- |
-| Padding panel / tepi layar     | 16                        |
-| Antar-section                  | 24                        |
-| Judul bagian → isi / ikon–teks | 8                         |
-| Dalam section                  | 8–12                      |
-| Kartu info                     | padding 16; tile kecil 12 |
+| Ritme                          | Nilai                                                    |
+| ------------------------------ | -------------------------------------------------------- |
+| Padding panel / tepi layar     | 16                                                       |
+| Antar-section                  | 16                                                       |
+| Judul bagian → isi / ikon–teks | 8                                                        |
+| Dalam section                  | 8–12                                                     |
+| Kartu info                     | padding 12; tanpa border bersarang                       |
+| Daftar provinsi / kabupaten    | satu container, divider 1px, baris 40 desktop / 44 phone |
 
-| Radius                | px      | Pakai                    |
-| --------------------- | ------- | ------------------------ |
-| `--radius-ctl`        | **6**   | menu item, kontrol kotak |
-| `--radius-card`       | **8**   | kartu, dropdown          |
-| `--radius-panel`      | **12**  | panel, dialog            |
-| pill (`rounded-full`) | **999** | search, chip, tombol     |
+| Radius                | px      | Pakai                                  |
+| --------------------- | ------- | -------------------------------------- |
+| `--radius-ctl`        | **6**   | search, menu item, tombol, chip, badge |
+| `--radius-card`       | **8**   | kartu, dropdown                        |
+| `--radius-panel`      | **12**  | panel, dialog                          |
+| pill (`rounded-full`) | **999** | titik peta, simbol bulat, progress     |
 
-Bayangan: `shadow-sm` / `md` / `lg` / `shadow-map` (pin) — nilai di token.
+Bayangan: `shadow-sm` untuk kontrol, `shadow-md` untuk dropdown, `shadow-map` untuk panel mengambang. Kartu dan baris daftar tidak memakai bayangan bertumpuk.
 
-Touch: kontrol peta **40**; tombol utama **40**; chip **32**; search **40**; rail **24×48**.
+Kontrol: tombol kecil **32** desktop / **36** phone; tombol utama **36**; search **36**; chip **32**; badge **24**; kontrol peta **40**; rail **24×48**.
 
 ---
 
-## 4. Tipografi (PDF §2)
+## 4. Tipografi
 
 DM Sans (UI) · Plus Jakarta Sans (heading) · system mono (skor, jumlah, koordinat, FRP).
 
-Hanya ukuran **12, 13, 14, 16, 20, 28**:
+Hanya ukuran **11, 13, 15, 18, 26**:
 
 | Peran                        | Class             | px / line / bobot |
 | ---------------------------- | ----------------- | ----------------- |
-| caption / label / badge      | `text-xs`         | 12 / 16           |
+| caption / label / badge      | `text-xs`         | 11 / 16           |
 | small / chip / section-label | `text-sm`         | 13 / 18           |
-| body / button                | `text-base`       | 14 / 20           |
-| paragraph                    | `text-paragraph`  | 14 / 22           |
-| title                        | `text-lg`         | 16 / 24 / 600     |
-| title-lg                     | `text-xl`         | 20 / 28 / 600     |
-| number-lg                    | `text-3xl` + mono | 28 / 32 / 600     |
+| body                         | `text-base`       | 13 / 18           |
+| paragraph                    | `text-paragraph`  | 13 / 18           |
+| title                        | `text-lg`         | 15 / 22 / 600     |
+| title-lg                     | `text-xl`         | 18 / 24 / 600     |
+| number-lg                    | `text-3xl` + mono | 26 / 30 / 600     |
 
 Sentence case. Sapaan “kamu”. Desimal koma kecuali koordinat.
 
 ---
 
-## 5. Komponen kunci (PDF §4)
+## 5. Komponen kunci
 
-| Komponen       | Spek                                                                                                            |
-| -------------- | --------------------------------------------------------------------------------------------------------------- |
-| Search         | tinggi **40**, compact radius, border + `shadow-sm`, teks 13                                                |
-| Chip filter    | tinggi **32**, compact radius, gap 8, teks 11/500; terpilih = latar forest-soft, teks forest                  |
-| Badge kategori | tinggi **24**, tint + text kategori, teks 12/600                                                                |
-| Tombol         | semua pill; besar **40** (teks 14); kecil **36** (teks 13); primary brand / sekunder border / lembut brand-soft |
-| Pin            | lingkaran penuh warna risiko (tanpa skor); halo pulse Sangat tinggi **2,6 s** / Sedang **3,4 s**                |
+| Komponen        | Spek                                                                                                                   |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Search          | tinggi **36**, radius kontrol, border + `shadow-sm`, teks 13                                                           |
+| Chip filter     | tinggi **32**, compact radius, gap 8, teks 11/500; terpilih = latar forest-soft, teks forest                           |
+| Badge kategori  | tinggi **24**, radius kontrol, tint + text kategori, teks 11/600                                                       |
+| Tombol          | radius kontrol; utama **36**; kecil **32** desktop / **36** phone; primary brand / sekunder border / lembut brand-soft |
+| Deteksi satelit | titik / heatmap dari koordinat NASA FIRMS asli, bukan pusat provinsi atau hasil sebaran sintetis                       |
+| Agregat wilayah | badge angka netral saat provinsi dipilih; tidak menyerupai lokasi kebakaran                                            |
 
 Ikon Lucide stroke **2**: 14 (ⓘ / rail), 16 inline, 18 aksi, 20 kontrol peta.
 
