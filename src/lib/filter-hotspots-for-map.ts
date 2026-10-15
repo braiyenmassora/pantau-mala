@@ -12,6 +12,7 @@ export type MapHotspotProps = {
   /** Relative satellite confidence weight, independent of stale/null risk scores. */
   weight: number
   color: string
+  risk_rank: number
 }
 
 /** Satellite observations follow the active region filter, including national overview. */
@@ -27,12 +28,13 @@ export function filterHotspotsForMap(
   }
   if (!data) return empty
 
-  const codes = new Set(regions.map((r) => r.code))
+  const regionsByCode = new Map(regions.map((region) => [region.code, region]))
   const features: Feature<Point, MapHotspotProps>[] = []
 
   for (const f of data.features) {
     const code = f.properties.region_code
-    if (!code || !codes.has(code)) continue
+    const region = code ? regionsByCode.get(code) : undefined
+    if (!region) continue
     if (selectedCode) {
       if (code !== selectedCode) continue
     }
@@ -54,6 +56,14 @@ export function filterHotspotsForMap(
         region_code: code,
         weight: visual.weight,
         color: RISK_CATEGORIES[visual.category].dot,
+        risk_rank:
+          region.risk_category === 'sangat_tinggi'
+            ? 3
+            : region.risk_category === 'sedang'
+              ? 2
+              : region.risk_category === 'rendah'
+                ? 1
+                : 0,
       },
     })
   }

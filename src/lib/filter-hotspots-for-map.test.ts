@@ -81,6 +81,27 @@ describe('filterHotspotsForMap', () => {
     expect(out.features[0]?.properties.weight).toBe(1)
     expect(out.features[1]?.properties.weight).toBe(0.2)
   })
+
+  it.each([
+    ['sangat_tinggi', 3],
+    ['sedang', 2],
+    ['rendah', 1],
+    ['tidak_tersedia', 0],
+  ] as const)(
+    'uses backend risk %s for radar independently of confidence and count',
+    (risk, rank) => {
+      const out = filterHotspotsForMap(
+        data,
+        [{ ...region, risk_category: risk, hotspots_24h: 9999 }],
+        'Semua',
+        null,
+      )
+      expect(out.features.map((feature) => feature.properties.risk_rank)).toEqual([
+        rank,
+        rank,
+      ])
+    },
+  )
 })
 
 it('stale unclassified regions retain satellite density', () => {

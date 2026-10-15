@@ -10,7 +10,7 @@ import { useUiStore } from '@/store/ui'
 
 const mapOn = vi.fn()
 const mapOff = vi.fn()
-let regionLayersShouldThrow = false
+let hotspotLayerShouldThrow = false
 
 vi.mock('@/components/ui/map', () => ({
   Map: ({ children, blank }: { children: React.ReactNode; blank?: boolean }) => (
@@ -35,19 +35,15 @@ vi.mock('@/data/queries', () => ({
   useRegionCatalog: () => ({ data: { provinces: [], regencies: [] } }),
 }))
 
-vi.mock('@/components/map/region-layers', () => ({
-  RegionLayers: () => {
-    if (regionLayersShouldThrow) throw new Error('pin crash')
-    return <div data-testid="layer-regions" />
-  },
-}))
-
 vi.mock('@/components/map/selected-hotspots-layer', () => ({
   SelectedHotspotsLayer: () => null,
 }))
 
 vi.mock('@/components/map/hotspot-heatmap-layer', () => ({
-  HotspotHeatmapLayer: () => null,
+  HotspotHeatmapLayer: () => {
+    if (hotspotLayerShouldThrow) throw new Error('hotspot crash')
+    return <div data-testid="layer-hotspots" />
+  },
 }))
 
 vi.mock('@/components/map/province-focus', () => ({
@@ -147,7 +143,7 @@ describe('MapShell failure modes', () => {
   const mapRef = { current: null }
 
   beforeEach(() => {
-    regionLayersShouldThrow = false
+    hotspotLayerShouldThrow = false
     mapOn.mockReset()
     mapOff.mockReset()
     useUiStore.setState({ panelOpen: true })
@@ -195,7 +191,7 @@ describe('MapShell failure modes', () => {
 
   it('shows partial banner when a layer throws; map stays up', async () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    regionLayersShouldThrow = true
+    hotspotLayerShouldThrow = true
 
     render(<MapShell mapRef={mapRef} panelOpen regions={[]} />)
 
@@ -203,7 +199,7 @@ describe('MapShell failure modes', () => {
     expect(screen.getByText(copy.empty.mapPartial.title)).toBeTruthy()
     expect(screen.getByTestId('map-root')).toBeTruthy()
     expect(screen.queryByTestId('map-webgl-fail')).toBeNull()
-    expect(screen.queryByTestId('layer-regions')).toBeNull()
+    expect(screen.queryByTestId('layer-hotspots')).toBeNull()
     expect(screen.getByTestId('layer-user')).toBeTruthy()
 
     spy.mockRestore()

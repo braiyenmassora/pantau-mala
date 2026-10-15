@@ -12,6 +12,7 @@ import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { filterHotspotsForMap } from '@/lib/filter-hotspots-for-map'
 import { MAP_COLORS } from '@/lib/map-colors'
+import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import {
   HEATMAP_LOW_HEX,
   HEATMAP_TRANSPARENT,
@@ -22,12 +23,15 @@ import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
 
 const SOURCE_ID = 'fy-hotspot-heatmap'
+const CLUSTERS_SOURCE_ID = 'fy-hotspot-clusters'
 const LAYER_ID = 'fy-hotspot-heatmap-layer'
+const PULSE_LAYER_HIGH = 'fy-hotspot-pulse-high'
+const PULSE_LAYER_MID = 'fy-hotspot-pulse-mid'
 const CLUSTERS_LAYER_ID = 'fy-hotspot-clusters-layer'
 const CLUSTER_COUNT_LAYER_ID = 'fy-hotspot-cluster-count-layer'
 const POINTS_LAYER_ID = 'fy-hotspot-points-layer'
 
-const CLUSTER_RADIUS = 36
+const CLUSTER_RADIUS = 50
 const CLUSTER_MAX_ZOOM = 10
 
 export const HEATMAP_MIN_ZOOM = 0
@@ -63,8 +67,8 @@ function formatDetectedTime(rawTime?: string, tz = 'WIB'): string | undefined {
 }
 
 const HEATMAP_PAINT: HeatmapLayerSpecification['paint'] = {
-  'heatmap-weight': ['coalesce', ['get', 'point_count'], ['get', 'weight'], 1],
-  'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 4, 5, 7, 8, 11, 24],
+  'heatmap-weight': 1,
+  'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 4, 4, 8, 7, 14, 11, 24],
   'heatmap-color': [
     'interpolate',
     ['linear'],
@@ -128,9 +132,19 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       map.addSource(SOURCE_ID, {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
+      })
+    }
+
+    if (!map.getSource(CLUSTERS_SOURCE_ID)) {
+      map.addSource(CLUSTERS_SOURCE_ID, {
+        type: 'geojson',
+        data: { type: 'FeatureCollection', features: [] },
         cluster: true,
         clusterRadius: CLUSTER_RADIUS,
         clusterMaxZoom: CLUSTER_MAX_ZOOM,
+        clusterProperties: {
+          max_risk: ['max', ['coalesce', ['get', 'risk_rank'], 0]],
+        },
       })
     }
 
@@ -144,18 +158,69 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       })
     }
 
+    if (!map.getLayer(PULSE_LAYER_HIGH)) {
+      map.addLayer({
+        id: PULSE_LAYER_HIGH,
+        type: 'circle',
+        source: CLUSTERS_SOURCE_ID,
+        filter: [
+          'all',
+          ['has', 'point_count'],
+          ['>=', ['coalesce', ['get', 'max_risk'], 0], 3],
+        ],
+        paint: {
+          'circle-color': HEATMAP_TRANSPARENT,
+          'circle-stroke-color': RISK_CATEGORIES.sangat_tinggi.dot,
+          'circle-stroke-width': 1,
+          'circle-radius': 11,
+          'circle-stroke-opacity': 0.3,
+          'circle-radius-transition': { duration: 0 },
+          'circle-stroke-opacity-transition': { duration: 0 },
+        },
+      })
+    }
+
+    if (!map.getLayer(PULSE_LAYER_MID)) {
+      map.addLayer({
+        id: PULSE_LAYER_MID,
+        type: 'circle',
+        source: CLUSTERS_SOURCE_ID,
+        filter: [
+          'all',
+          ['has', 'point_count'],
+          ['==', ['coalesce', ['get', 'max_risk'], 0], 2],
+        ],
+        paint: {
+          'circle-color': HEATMAP_TRANSPARENT,
+          'circle-stroke-color': RISK_CATEGORIES.sedang.dot,
+          'circle-stroke-width': 1,
+          'circle-radius': 11,
+          'circle-stroke-opacity': 0.3,
+          'circle-radius-transition': { duration: 0 },
+          'circle-stroke-opacity-transition': { duration: 0 },
+        },
+      })
+    }
+
     if (!map.getLayer(CLUSTERS_LAYER_ID)) {
       map.addLayer({
         id: CLUSTERS_LAYER_ID,
         type: 'circle',
-        source: SOURCE_ID,
+        source: CLUSTERS_SOURCE_ID,
         filter: ['has', 'point_count'],
         paint: {
           'circle-color': MAP_COLORS.surface,
-          'circle-radius': ['step', ['get', 'point_count'], 12, 20, 16, 100, 20],
-          'circle-stroke-color': HOTSPOT_HEX,
-          'circle-stroke-width': 2,
-          'circle-opacity': 0.96,
+          'circle-radius': ['step', ['get', 'point_count'], 8.5, 20, 10, 100, 11.5],
+          'circle-stroke-color': [
+            'case',
+            ['>=', ['coalesce', ['get', 'max_risk'], 0], 3],
+            RISK_CATEGORIES.sangat_tinggi.dot,
+            ['==', ['coalesce', ['get', 'max_risk'], 0], 2],
+            RISK_CATEGORIES.sedang.dot,
+            HOTSPOT_HEX,
+          ],
+          'circle-stroke-width': 1,
+          'circle-opacity': 0.98,
         },
       })
     }
@@ -164,13 +229,14 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       map.addLayer({
         id: CLUSTER_COUNT_LAYER_ID,
         type: 'symbol',
-        source: SOURCE_ID,
+        source: CLUSTERS_SOURCE_ID,
         filter: ['has', 'point_count'],
         layout: {
           'text-field': ['get', 'point_count_abbreviated'],
           'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
           'text-size': 11,
-          'text-allow-overlap': true,
+          'text-allow-overlap': false,
+          'text-ignore-placement': false,
         },
         paint: {
           'text-color': MAP_COLORS.ink,
@@ -182,11 +248,11 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       map.addLayer({
         id: POINTS_LAYER_ID,
         type: 'circle',
-        source: SOURCE_ID,
+        source: CLUSTERS_SOURCE_ID,
         minzoom: 0,
         filter: ['!', ['has', 'point_count']],
         paint: {
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 7, 2.5, 12, 3.5],
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 1.5, 7, 2.5, 12, 3.5],
           'circle-color': HOTSPOT_HEX,
           'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 0, 0.5, 10, 1],
           'circle-stroke-color': MAP_COLORS.surface,
@@ -245,16 +311,18 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       setActiveHotspot({ ...hit, pinned: true })
     }
 
+    let disposed = false
     const onClusterClick = async (e: MapLayerMouseEvent) => {
       const feature = e.features?.[0]
       if (!feature || feature.geometry.type !== 'Point') return
 
       const clusterId = feature.properties?.cluster_id
-      const source = map.getSource(SOURCE_ID) as GeoJSONSource | undefined
+      const source = map.getSource(CLUSTERS_SOURCE_ID) as GeoJSONSource | undefined
       if (typeof clusterId !== 'number' || !source?.getClusterExpansionZoom) return
 
       try {
         const zoom = await source.getClusterExpansionZoom(clusterId)
+        if (disposed || map.getSource(CLUSTERS_SOURCE_ID) !== source) return
         const coordinates = feature.geometry.coordinates as [number, number]
         map.easeTo({
           center: coordinates,
@@ -263,12 +331,6 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         })
       } catch {
         // The source can be replaced while the map style is reloading.
-      }
-    }
-
-    const onHeatmapClick = (e: MapLayerMouseEvent) => {
-      if (openRegionFromEvent(e)) {
-        setActiveHotspot(null)
       }
     }
 
@@ -304,29 +366,22 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
 
     if (typeof map.on === 'function') {
       map.on('click', CLUSTERS_LAYER_ID, onClusterClick)
-      map.on('click', CLUSTER_COUNT_LAYER_ID, onClusterClick)
       map.on('click', POINTS_LAYER_ID, onPointClick)
-      map.on('click', LAYER_ID, onHeatmapClick)
       map.on('mouseenter', CLUSTERS_LAYER_ID, onClusterEnter)
       map.on('mouseleave', CLUSTERS_LAYER_ID, onClusterLeave)
-      map.on('mouseenter', CLUSTER_COUNT_LAYER_ID, onClusterEnter)
-      map.on('mouseleave', CLUSTER_COUNT_LAYER_ID, onClusterLeave)
       map.on('mouseenter', POINTS_LAYER_ID, onPointEnter)
       map.on('mouseleave', POINTS_LAYER_ID, onPointLeave)
       map.on('click', onMapClick)
     }
 
     return () => {
+      disposed = true
       try {
         if (typeof map.off === 'function') {
           map.off('click', CLUSTERS_LAYER_ID, onClusterClick)
-          map.off('click', CLUSTER_COUNT_LAYER_ID, onClusterClick)
           map.off('click', POINTS_LAYER_ID, onPointClick)
-          map.off('click', LAYER_ID, onHeatmapClick)
           map.off('mouseenter', CLUSTERS_LAYER_ID, onClusterEnter)
           map.off('mouseleave', CLUSTERS_LAYER_ID, onClusterLeave)
-          map.off('mouseenter', CLUSTER_COUNT_LAYER_ID, onClusterEnter)
-          map.off('mouseleave', CLUSTER_COUNT_LAYER_ID, onClusterLeave)
           map.off('mouseenter', POINTS_LAYER_ID, onPointEnter)
           map.off('mouseleave', POINTS_LAYER_ID, onPointLeave)
           map.off('click', onMapClick)
@@ -334,8 +389,11 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         if (map.getLayer(POINTS_LAYER_ID)) map.removeLayer(POINTS_LAYER_ID)
         if (map.getLayer(CLUSTER_COUNT_LAYER_ID)) map.removeLayer(CLUSTER_COUNT_LAYER_ID)
         if (map.getLayer(CLUSTERS_LAYER_ID)) map.removeLayer(CLUSTERS_LAYER_ID)
+        if (map.getLayer(PULSE_LAYER_HIGH)) map.removeLayer(PULSE_LAYER_HIGH)
+        if (map.getLayer(PULSE_LAYER_MID)) map.removeLayer(PULSE_LAYER_MID)
         if (map.getLayer(LAYER_ID)) map.removeLayer(LAYER_ID)
         if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID)
+        if (map.getSource(CLUSTERS_SOURCE_ID)) map.removeSource(CLUSTERS_SOURCE_ID)
       } catch {
         // style reload
       }
@@ -347,7 +405,58 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
     if (!map || !isLoaded) return
     const source = map.getSource(SOURCE_ID) as GeoJSONSource | undefined
     source?.setData(collection)
+    const clusterSource = map.getSource(CLUSTERS_SOURCE_ID) as GeoJSONSource | undefined
+    clusterSource?.setData(collection)
   }, [map, isLoaded, collection])
+
+  const reducedMotion = usePrefersReducedMotion()
+  const hasRadar = collection.features.some(
+    (feature) => feature.properties.risk_rank >= 2,
+  )
+
+  useEffect(() => {
+    if (!map || !isLoaded) return
+    for (const layerId of [PULSE_LAYER_HIGH, PULSE_LAYER_MID]) {
+      if (!map.getLayer(layerId)) continue
+      map.setPaintProperty(layerId, 'circle-radius', 11)
+      map.setPaintProperty(layerId, 'circle-stroke-opacity', 0.3)
+    }
+    if (!hasRadar || reducedMotion || typeof requestAnimationFrame !== 'function') return
+
+    let frame = 0
+    let lastFrame = 0
+    const animateRadar = (time: number) => {
+      if (!document.hidden && time - lastFrame > 50) {
+        lastFrame = time
+        const highPhase = (time % 1000) / 1000
+        const midPhase = (time % 2000) / 2000
+        try {
+          if (map.getLayer(PULSE_LAYER_HIGH)) {
+            map.setPaintProperty(PULSE_LAYER_HIGH, 'circle-radius', 12 + highPhase * 5)
+            map.setPaintProperty(
+              PULSE_LAYER_HIGH,
+              'circle-stroke-opacity',
+              0.35 * (1 - highPhase),
+            )
+          }
+          if (map.getLayer(PULSE_LAYER_MID)) {
+            map.setPaintProperty(PULSE_LAYER_MID, 'circle-radius', 12 + midPhase * 5)
+            map.setPaintProperty(
+              PULSE_LAYER_MID,
+              'circle-stroke-opacity',
+              0.35 * (1 - midPhase),
+            )
+          }
+        } catch {
+          return
+        }
+      }
+      frame = requestAnimationFrame(animateRadar)
+    }
+    frame = requestAnimationFrame(animateRadar)
+
+    return () => cancelAnimationFrame(frame)
+  }, [map, isLoaded, reducedMotion, hasRadar])
 
   return (
     <>

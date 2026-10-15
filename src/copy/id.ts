@@ -361,9 +361,9 @@ export const copy = {
   legend: {
     /** Strip kartu kiri bawah peta — teks pendek agar mudah dibaca. */
     riskTitle: 'Risiko wilayah',
-    riskHint: 'Warna poligon, bukan lokasi deteksi',
+    riskHint: 'Radar cepat: sangat tinggi; pelan: sedang',
     detectionTitle: 'Deteksi satelit',
-    detectionHint: 'Titik koordinat NASA FIRMS',
+    detectionHint: 'Angka = deteksi, bukan jumlah kebakaran',
     quakeTitle: 'Gempa bumi',
     quakeHint: 'Episentrum dari feed BMKG',
     densityTitle: 'Kepadatan satelit',

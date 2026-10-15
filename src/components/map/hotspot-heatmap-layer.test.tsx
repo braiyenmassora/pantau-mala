@@ -36,6 +36,7 @@ const addLayer = vi.fn()
 const removeLayer = vi.fn()
 const removeSource = vi.fn()
 const setData = vi.fn()
+const setPaintProperty = vi.fn()
 const getSource = vi.fn()
 const getLayer = vi.fn()
 const on = vi.fn()
@@ -53,6 +54,7 @@ vi.mock('@/components/ui/map', () => ({
       removeSource,
       getSource,
       getLayer,
+      setPaintProperty,
       on,
       off,
       getCanvas,
@@ -62,6 +64,10 @@ vi.mock('@/components/ui/map', () => ({
   MapPopup: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="map-popup">{children}</div>
   ),
+}))
+
+vi.mock('@/lib/prefers-reduced-motion', () => ({
+  usePrefersReducedMotion: () => true,
 }))
 
 const region: Region = {
@@ -105,13 +111,10 @@ describe('HotspotHeatmapLayer', () => {
   })
 
   it('adds heatmap source/layer from existing hotspots', () => {
-    let hasSource = false
-    getSource.mockImplementation(() => {
-      if (!hasSource) return undefined
-      return { setData }
-    })
-    addSource.mockImplementation(() => {
-      hasSource = true
+    const sources = new Map<string, { setData: typeof setData }>()
+    getSource.mockImplementation((id: string) => sources.get(id))
+    addSource.mockImplementation((id: string) => {
+      sources.set(id, { setData })
     })
     getLayer.mockReturnValue(undefined)
 
@@ -145,10 +148,14 @@ describe('HotspotHeatmapLayer', () => {
 
     expect(addSource).toHaveBeenCalledWith(
       'fy-hotspot-heatmap',
+      expect.objectContaining({ type: 'geojson' }),
+    )
+    expect(addSource).toHaveBeenCalledWith(
+      'fy-hotspot-clusters',
       expect.objectContaining({
         type: 'geojson',
         cluster: true,
-        clusterRadius: 36,
+        clusterRadius: 50,
         clusterMaxZoom: 10,
       }),
     )
@@ -165,14 +172,30 @@ describe('HotspotHeatmapLayer', () => {
     expect(addLayer).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'heatmap',
+        source: 'fy-hotspot-heatmap',
         minzoom: HEATMAP_MIN_ZOOM,
+        paint: expect.objectContaining({ 'heatmap-weight': 1 }),
+      }),
+    )
+    expect(addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'fy-hotspot-pulse-high',
+        type: 'circle',
+      }),
+    )
+    expect(addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'fy-hotspot-pulse-mid',
+        type: 'circle',
       }),
     )
     expect(addLayer).toHaveBeenCalledWith(
       expect.objectContaining({
         id: 'fy-hotspot-clusters-layer',
         type: 'circle',
+        source: 'fy-hotspot-clusters',
         filter: ['has', 'point_count'],
+        paint: expect.objectContaining({ 'circle-stroke-width': 1 }),
       }),
     )
     expect(addLayer).toHaveBeenCalledWith(
@@ -180,6 +203,7 @@ describe('HotspotHeatmapLayer', () => {
         id: 'fy-hotspot-cluster-count-layer',
         type: 'symbol',
         filter: ['has', 'point_count'],
+        layout: expect.objectContaining({ 'text-allow-overlap': false }),
       }),
     )
     expect(addLayer).toHaveBeenCalledWith(
@@ -199,5 +223,12 @@ describe('HotspotHeatmapLayer', () => {
         ],
       }),
     )
+    expect(setData).toHaveBeenCalledTimes(2)
+    expect(
+      on.mock.calls.filter(
+        ([event, layer]) =>
+          event === 'click' && layer === 'fy-hotspot-cluster-count-layer',
+      ),
+    ).toHaveLength(0)
   })
 })
