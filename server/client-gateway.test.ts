@@ -24,6 +24,93 @@ it('only server forwards key; session returns fixed reader identity without toke
   expect(fetcher.mock.calls[0][1].headers.Authorization).toBe(
     'Bearer ' + env.PANTAU_API_KEY,
   )
+  expect(fetcher.mock.calls[0][1].headers['User-Agent']).toBe('pantau-mala-gateway/1.0')
+})
+it('forwards browser and trusted edge metadata without forwarding visitor credentials', async () => {
+  const fetcher = vi.fn().mockResolvedValue(Response.json({ data: principal }))
+  const gateway = createClientGateway(env, fetcher)
+  const request = new Request('http://localhost/frontend/session', {
+    headers: {
+      'User-Agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Chrome/140.0.0.0 Safari/537.36',
+      Origin: 'http://localhost',
+      Referer: 'http://localhost/dashboard?token=private-referrer#private-fragment',
+      'CF-Connecting-IP': '203.0.113.7',
+      'X-Forwarded-For': '198.51.100.99',
+      Cookie: 'session=visitor-secret',
+    },
+  })
+  await gateway(request, { runtime: 'cloudflare', clientIP: '203.0.113.7' })
+  const headers = fetcher.mock.calls[0][1].headers
+  expect(headers['User-Agent']).toContain('Mozilla/5.0')
+  expect(headers.Origin).toBe('http://localhost')
+  expect(headers.Referer).toBe('http://localhost/')
+  expect(headers['X-Forwarded-For']).toBe('203.0.113.7')
+  expect(headers.Authorization).toBe('Bearer ' + env.PANTAU_API_KEY)
+  expect(JSON.stringify(headers)).not.toMatch(
+    /visitor-secret|private-referrer|private-fragment|198\.51\.100\.99/,
+  )
+})
+it('never trusts visitor IP headers without adapter-supplied metadata', async () => {
+  const fetcher = vi.fn().mockResolvedValue(Response.json({ data: principal }))
+  const gateway = createClientGateway(env, fetcher)
+  await gateway(
+    new Request('http://localhost/frontend/session', {
+      headers: {
+        'CF-Connecting-IP': '198.51.100.99',
+        'X-Forwarded-For': '198.51.100.98',
+        'X-Real-IP': '198.51.100.97',
+      },
+    }),
+  )
+  const headers = fetcher.mock.calls[0][1].headers
+  expect(headers['X-Forwarded-For']).toBeUndefined()
+  expect(headers['X-Real-IP']).toBeUndefined()
+  expect(headers['CF-Connecting-IP']).toBeUndefined()
+})
+it.each(['203.0.113.7', '2001:db8::7'])(
+  'forwards a validated adapter IP %s',
+  async (clientIP) => {
+    const fetcher = vi.fn().mockResolvedValue(Response.json({ data: principal }))
+    await createClientGateway(env, fetcher)(
+      new Request('http://localhost/frontend/session'),
+      { runtime: 'cloudflare', clientIP },
+    )
+    expect(fetcher.mock.calls[0][1].headers['X-Forwarded-For']).toBe(clientIP)
+    expect(fetcher.mock.calls[0][1].headers['User-Agent']).toBe('pantau-mala-worker/1.0')
+  },
+)
+it.each([
+  '999.1.1.1',
+  '127.1',
+  '127.0.0.01',
+  '203.0.113.7, 198.51.100.99',
+  'example.test',
+  '[2001:db8::7]',
+  '2001:db8::7%eth0',
+  '2001:::7',
+  '',
+])('ignores invalid adapter IP %s', async (clientIP) => {
+  const fetcher = vi.fn().mockResolvedValue(Response.json({ data: principal }))
+  await createClientGateway(env, fetcher)(
+    new Request('http://localhost/frontend/session'),
+    { clientIP },
+  )
+  expect(fetcher.mock.calls[0][1].headers['X-Forwarded-For']).toBeUndefined()
+})
+it('keeps metadata request-scoped and bounds the forwarded user agent', async () => {
+  const fetcher = vi.fn().mockResolvedValue(Response.json({ data: principal }))
+  const gateway = createClientGateway(env, fetcher)
+  await gateway(
+    new Request('http://localhost/frontend/session', {
+      headers: { 'User-Agent': 'custom-client/'.repeat(100) },
+    }),
+    { runtime: 'cloudflare', clientIP: '203.0.113.7' },
+  )
+  await gateway(new Request('http://localhost/frontend/session'))
+  expect(fetcher.mock.calls[0][1].headers['User-Agent']).toHaveLength(512)
+  expect(fetcher.mock.calls[1][1].headers['X-Forwarded-For']).toBeUndefined()
+  expect(fetcher.mock.calls[1][1].headers['User-Agent']).toBe('pantau-mala-gateway/1.0')
 })
 it('refuses management, writes, supplied identity, unknown routes and cross-origin', async () => {
   const fetcher = vi.fn()

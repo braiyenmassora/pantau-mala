@@ -33,7 +33,10 @@ export async function handleRequest(
       },
       fetcher,
     )
-    const response = await gateway(request)
+    const response = await gateway(request, {
+      runtime: 'cloudflare',
+      clientIP: request.headers.get('CF-Connecting-IP'),
+    })
     return response || Response.json({ error: 'Unknown data route' }, { status: 404 })
   } catch {
     // Tetap kirim mode client agar FE tidak jatuh ke form login akun.

@@ -45,7 +45,14 @@ describe('Cloudflare Worker routing', () => {
       .mockResolvedValueOnce(Response.json({ data: principal }))
       .mockResolvedValueOnce(Response.json({ data: [] }))
     const response = await handleRequest(
-      request('/api/v1/regions?limit=10'),
+      request('/api/v1/regions?limit=10', {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/140.0.0.0',
+          'CF-Connecting-IP': '203.0.113.8',
+          'X-Forwarded-For': '198.51.100.99',
+          Referer: 'https://fixture.workers.dev/map?token=private-referrer',
+        },
+      }),
       env,
       fetcher,
     )
@@ -56,7 +63,26 @@ describe('Cloudflare Worker routing', () => {
     expect(fetcher.mock.calls[1][1].headers.Authorization).toBe(
       `Bearer ${env.PANTAU_API_KEY}`,
     )
+    expect(fetcher.mock.calls[1][1].headers['User-Agent']).toContain('Mozilla/5.0')
+    expect(fetcher.mock.calls[1][1].headers['X-Forwarded-For']).toBe('203.0.113.8')
+    expect(fetcher.mock.calls[1][1].headers.Origin).toBeUndefined()
+    expect(fetcher.mock.calls[1][1].headers.Referer).toBe('https://fixture.workers.dev/')
+    expect(fetcher.mock.calls[0][1].headers).toEqual(fetcher.mock.calls[1][1].headers)
     expect(env.ASSETS.fetch).not.toHaveBeenCalled()
+  })
+
+  it('identifies the gateway when the visitor sends no user agent without inventing an IP', async () => {
+    const fetcher = vi.fn().mockResolvedValue(Response.json({ data: principal }))
+    const response = await handleRequest(
+      request('/frontend/session', {
+        headers: { 'X-Forwarded-For': '198.51.100.99' },
+      }),
+      environment(),
+      fetcher,
+    )
+    expect(response.status).toBe(200)
+    expect(fetcher.mock.calls[0][1].headers['User-Agent']).toBe('pantau-mala-worker/1.0')
+    expect(fetcher.mock.calls[0][1].headers['X-Forwarded-For']).toBeUndefined()
   })
 
   it.each(['/api', '/api/private', '/auth'])(

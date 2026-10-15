@@ -32,14 +32,32 @@ export function createClientGateway(env, fetcher = fetch) {
     })
   const allowed =
     /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages)$/
-  async function upstream(path) {
+  function upstreamHeaders(request, metadata) {
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+      'User-Agent':
+        request.headers.get('user-agent')?.trim().slice(0, 512) ||
+        (metadata.runtime === 'cloudflare'
+          ? 'pantau-mala-worker/1.0'
+          : 'pantau-mala-gateway/1.0'),
+    }
+    const originHeader = sanitizeOriginHeader(request.headers.get('origin'))
+    if (originHeader) headers.Origin = originHeader
+    const refererHeader = sanitizeOriginHeader(request.headers.get('referer'))
+    if (refererHeader) headers.Referer = `${refererHeader}/`
+    const clientIP = safeClientIP(metadata.clientIP)
+    if (clientIP) headers['X-Forwarded-For'] = clientIP
+    return headers
+  }
+  async function upstream(path, headers) {
     return fetcher(new URL(path, origin), {
-      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      headers,
       redirect: 'manual',
       signal: AbortSignal.timeout(20000),
     })
   }
-  return async (request) => {
+  return async (request, metadata = {}) => {
     const url = new URL(request.url)
     if (
       !url.pathname.startsWith('/api/') &&
@@ -79,9 +97,10 @@ export function createClientGateway(env, fetcher = fetch) {
     for (const key of url.searchParams.keys())
       if (!queryNames.has(key))
         return reply(400, { error: 'Unsupported query parameter' })
+    const headers = upstreamHeaders(request, metadata)
     try {
       // Validate fixed identity for every request, including revocation and client disablement.
-      const identity = await upstream('/auth/me')
+      const identity = await upstream('/auth/me', headers)
       if (!identity.ok)
         return reply(identity.status === 429 ? 429 : 503, {
           error: 'Client access unavailable',
@@ -106,7 +125,7 @@ export function createClientGateway(env, fetcher = fetch) {
             scope: 'data:read',
           },
         })
-      const data = await upstream(url.pathname + url.search)
+      const data = await upstream(url.pathname + url.search, headers)
       if (!data.ok)
         return reply(data.status === 429 ? 429 : data.status >= 500 ? 502 : data.status, {
           error: 'Data unavailable',
@@ -122,5 +141,34 @@ export function createClientGateway(env, fetcher = fetch) {
     } catch {
       return reply(503, { error: 'Data service unavailable' })
     }
+  }
+}
+
+function sanitizeOriginHeader(value) {
+  if (typeof value !== 'string' || value.length > 2048) return null
+  try {
+    const parsed = new URL(value)
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return null
+    if (parsed.username || parsed.password) return null
+    return parsed.origin
+  } catch {
+    return null
+  }
+}
+
+function safeClientIP(value) {
+  if (typeof value !== 'string' || value.length > 45) return null
+  if (/^(\d{1,3}\.){3}\d{1,3}$/.test(value)) {
+    return value
+      .split('.')
+      .every((part) => Number(part) <= 255 && String(Number(part)) === part)
+      ? value
+      : null
+  }
+  if (!/^[\da-fA-F:.]+$/.test(value) || !value.includes(':')) return null
+  try {
+    return new URL(`http://[${value}]`).hostname.slice(1, -1)
+  } catch {
+    return null
   }
 }
