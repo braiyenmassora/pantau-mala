@@ -116,6 +116,16 @@ Tampilkan garis, area tipis, label sumbu tanggal, serta statistik **Terbaru**,
 **Puncak**, dan **Rata-rata**. State kosong harus menjelaskan bahwa riwayat belum
 tersedia, bukan menampilkan nol.
 
+Grafik lengkap tampil langsung di detail wilayah, setelah indikator arah tren,
+tanpa tab atau accordion. Sparkline kecil hanya pelengkap, bukan pengganti grafik.
+Pengujian detail harus memeriksa keberadaan judul grafik agar integrasinya tidak
+hilang ketika layout di-refactor.
+
+Warna netral untuk layer MapLibre memakai `src/lib/map-colors.ts`, yang mirror
+token `ink` dan `surface`; komponen layer tidak menyimpan literal warna sendiri.
+Audit UI tetap memeriksa kode produksi; fixture `.test`/`.spec` tidak dihitung
+sebagai copy atau markup yang tampil kepada pengguna.
+
 ---
 
 ## 6. Motion (PDF §5)

@@ -5,6 +5,7 @@ import type { GeoJSONSource, SymbolLayerSpecification } from 'maplibre-gl'
 import { useMap } from '@/components/ui/map'
 import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
+import { MAP_COLORS } from '@/lib/map-colors'
 import { useMapStore } from '@/store/map'
 
 const SOURCE_ID = 'province-labels-source'
@@ -79,8 +80,8 @@ export function ProvinceLabelsLayer({ regions }: ProvinceLabelsLayerProps) {
         source: SOURCE_ID,
         layout,
         paint: {
-          'text-color': '#1f2328',
-          'text-halo-color': '#FFFFFF',
+          'text-color': MAP_COLORS.ink,
+          'text-halo-color': MAP_COLORS.surface,
           'text-halo-width': 1.5,
           'text-opacity': 0.9,
         },

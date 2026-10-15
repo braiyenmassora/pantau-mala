@@ -364,6 +364,7 @@ export const copy = {
   },
   search: {
     searchProvince: 'Cari provinsi',
+    clearProvinceSearch: 'Hapus pencarian provinsi',
     noProvinceFound: 'Provinsi tidak ditemukan',
     provinces: 'Provinsi',
     kabkota: 'Kabupaten/kota',

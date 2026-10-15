@@ -83,7 +83,7 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
         align="start"
         side="bottom"
         sideOffset={6}
-        className="rounded-card border-line bg-surface text-ink z-50 max-h-[320px] w-[280px] overflow-hidden border p-2 shadow-sm"
+        className="rounded-card border-line bg-surface text-ink z-50 max-h-80 w-70 overflow-hidden border p-2 shadow-sm"
       >
         <div className="mb-2">
           <div className="bg-surface-muted flex h-10 items-center gap-2 rounded-full px-3">
@@ -94,7 +94,7 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
             />
             <input
               type="text"
-              placeholder="Cari provinsi"
+              placeholder={copy.search.searchProvince}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="text-ink placeholder:text-ink-3 w-full bg-transparent text-sm outline-none"
@@ -105,7 +105,7 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
                 type="button"
                 onClick={() => setSearch('')}
                 className="text-ink-3 hover:text-ink"
-                aria-label="Hapus pencarian"
+                aria-label={copy.search.clearProvinceSearch}
               >
                 <X className="size-4 shrink-0" strokeWidth={1.75} />
               </button>
@@ -115,7 +115,7 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
         <div
           role="listbox"
           aria-label={copy.search.provinces}
-          className="soft-scroll max-h-[250px] overflow-y-auto"
+          className="soft-scroll max-h-60 overflow-y-auto"
         >
           {filteredOptions.length === 0 ? (
             <p className="text-ink-3 px-3 py-4 text-center text-sm">

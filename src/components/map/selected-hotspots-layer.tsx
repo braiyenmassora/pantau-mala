@@ -9,6 +9,7 @@ import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { formatDateTime, formatNumber } from '@/lib/format'
 import { getMapPadding } from '@/lib/indonesia-view'
+import { MAP_COLORS } from '@/lib/map-colors'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
@@ -157,7 +158,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
         type: 'fill',
         source: MASK_SOURCE_ID,
         paint: {
-          'fill-color': '#FFFFFF',
+          'fill-color': MAP_COLORS.surface,
           'fill-opacity': 0.4,
         },
       })

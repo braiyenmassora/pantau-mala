@@ -27,7 +27,7 @@ export function InfoTooltip({ content, className }: InfoTooltipProps) {
       <TooltipContent
         side="top"
         align="center"
-        className="rounded-card border-line bg-surface text-ink max-w-[240px] border p-2.5 text-xs leading-4 shadow-sm"
+        className="rounded-card border-line bg-surface text-ink max-w-[240px] border p-3 text-xs leading-4 shadow-sm"
       >
         {content}
       </TooltipContent>

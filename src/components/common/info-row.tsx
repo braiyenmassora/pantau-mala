@@ -25,7 +25,7 @@ export function InfoRow({
   const body = (
     <>
       <span
-        className="text-brand mt-0.5 flex size-5 shrink-0 items-center justify-center [&>svg]:size-5"
+        className="text-brand mt-1 flex size-5 shrink-0 items-center justify-center [&>svg]:size-5"
         aria-hidden
       >
         {icon}
@@ -34,7 +34,7 @@ export function InfoRow({
         {label ? (
           <p className="text-ink-2 text-xs leading-4 font-medium">{label}</p>
         ) : null}
-        <div className={cn('text-ink text-sm leading-5', label && 'mt-0.5')}>{value}</div>
+        <div className={cn('text-ink text-sm leading-5', label && 'mt-1')}>{value}</div>
       </div>
       {trailing ? <div className="shrink-0 self-center">{trailing}</div> : null}
     </>

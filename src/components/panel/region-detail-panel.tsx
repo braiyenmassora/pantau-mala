@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useRef, type ReactNode, type RefObject } from 'react'
 
-import { Badge, InfoTooltip, Sparkline } from '@/components/common'
+import { Badge, InfoTooltip, Sparkline, TrendChart } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
@@ -95,8 +95,8 @@ function ConditionCell({
   tooltip?: string
 }) {
   return (
-    <div className="flex items-start gap-2.5">
-      <span className="text-ink-2 mt-0.5 shrink-0 [&>svg]:size-5" aria-hidden>
+    <div className="flex items-start gap-2">
+      <span className="text-ink-2 mt-1 shrink-0 [&>svg]:size-5" aria-hidden>
         {icon}
       </span>
       <div className="min-w-0 flex-1">
@@ -106,7 +106,7 @@ function ConditionCell({
         </div>
         <p
           className={cn(
-            'mt-0.5 text-base leading-5',
+            'mt-1 text-base leading-5',
             isMissing ? 'text-ink-3 font-normal' : 'text-ink font-semibold tabular-nums',
           )}
         >
@@ -175,13 +175,13 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
             >
               {region.name}
             </h2>
-            <p className="text-ink-2 mt-0.5 text-xs leading-4">
+            <p className="text-ink-2 mt-1 text-xs leading-4">
               Provinsi {region.province}
             </p>
           </div>
 
           <div className="flex items-center justify-between gap-3">
-            <div className="flex items-baseline gap-1.5">
+            <div className="flex items-baseline gap-2">
               <span className="text-ink font-mono text-3xl font-semibold tabular-nums">
                 {formatNumber(region.hotspots_24h)}
               </span>
@@ -209,6 +209,8 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
             />
             <InfoTooltip content="Perbandingan jumlah titik panas selama 7 hari terakhir." />
           </div>
+
+          <TrendChart values={region.trend_7d} timeZone={region.time_zone} />
 
           {stamp ? <p className="text-ink-3 text-xs">Diperbarui {stamp}</p> : null}
         </section>
@@ -266,9 +268,9 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
           <h3 className="text-ink text-sm font-semibold">Yang bisa kamu lakukan</h3>
           <ul className="space-y-2">
             {actions.map((act, i) => (
-              <li key={i} className="flex items-start gap-2.5">
+              <li key={i} className="flex items-start gap-2">
                 <Check
-                  className="text-risk-low mt-0.5 size-4 shrink-0"
+                  className="text-risk-low mt-1 size-4 shrink-0"
                   strokeWidth={2}
                   aria-hidden
                 />

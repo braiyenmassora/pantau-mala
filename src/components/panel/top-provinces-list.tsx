@@ -45,7 +45,7 @@ export function TopProvincesList({ items }: TopProvincesListProps) {
                 setQuery('')
               }}
             >
-              <CardContent className="flex w-full items-center gap-3 py-2.5">
+              <CardContent className="flex w-full items-center gap-3 py-2">
                 <span
                   className="size-2 shrink-0 rounded-full"
                   style={{ backgroundColor: provinceRiskDot(item.hotspots_24h) }}

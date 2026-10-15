@@ -332,7 +332,7 @@ export function SummaryPanel({
           <h1 className="text-ink truncate text-xl font-semibold">{province}</h1>
 
           <div className="flex items-center justify-between gap-3">
-            <div className="flex items-baseline gap-1.5">
+            <div className="flex items-baseline gap-2">
               <span className="text-ink font-mono text-3xl font-semibold tabular-nums">
                 {formatNumber(provinceStats?.count_24h ?? 0)}
               </span>

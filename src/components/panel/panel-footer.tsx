@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils'
 /** Footer sidebar: sumber data tanpa umur tarik, tanpa divider tebal. */
 export function PanelFooter() {
   return (
-    <footer className="bg-surface shrink-0 px-4 py-2.5">
-      <p className="text-ink-2 flex flex-wrap items-center gap-x-1 gap-y-0.5 text-xs leading-4">
+    <footer className="bg-surface shrink-0 px-4 py-2">
+      <p className="text-ink-2 flex flex-wrap items-center gap-x-1 gap-y-1 text-xs leading-4">
         <span className="text-ink-3">{copy.footer.sourcesLabel}</span>
         {copy.footer.sources.map((source, i) => (
           <span key={source.href} className="inline-flex items-center gap-1">

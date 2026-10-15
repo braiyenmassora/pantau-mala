@@ -11,6 +11,7 @@ import { MapPopup, useMap } from '@/components/ui/map'
 import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { filterHotspotsForMap } from '@/lib/filter-hotspots-for-map'
+import { MAP_COLORS } from '@/lib/map-colors'
 import {
   HEATMAP_LOW_HEX,
   HEATMAP_TRANSPARENT,
@@ -132,7 +133,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
           'circle-radius': 3.5,
           'circle-color': RISK_CATEGORIES.sangat_tinggi.dot,
           'circle-stroke-width': 1,
-          'circle-stroke-color': '#FFFFFF',
+          'circle-stroke-color': MAP_COLORS.surface,
           'circle-opacity': ['interpolate', ['linear'], ['zoom'], 10, 0.5, 12, 1],
         },
       })

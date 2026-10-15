@@ -11,6 +11,7 @@ import { useMap } from '@/components/ui/map'
 import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { getMapPadding } from '@/lib/indonesia-view'
+import { MAP_COLORS } from '@/lib/map-colors'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -51,7 +52,7 @@ function buildFillPaint(
             'case',
             ['==', ['get', 'matched'], matchedProvince],
             ['get', 'riskColor'],
-            '#FFFFFF',
+            MAP_COLORS.surface,
           ],
           'fill-opacity': ['case', ['==', ['get', 'matched'], matchedProvince], 0.3, 0.4],
         }
@@ -66,7 +67,7 @@ function buildLinePaint(
   return (
     isNational
       ? {
-          'line-color': '#FFFFFF',
+          'line-color': MAP_COLORS.surface,
           'line-width': ['case', ['==', ['get', 'matched'], hoveredMatched ?? ''], 2, 1],
           'line-opacity': [
             'case',
@@ -80,7 +81,7 @@ function buildLinePaint(
             'case',
             ['==', ['get', 'matched'], matchedProvince],
             ['get', 'riskColor'],
-            '#FFFFFF',
+            MAP_COLORS.surface,
           ],
           'line-width': [
             'case',

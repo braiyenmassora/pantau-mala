@@ -56,7 +56,7 @@ const failures = []
 
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
-    if (IGNORE_DIRS.has(name)) continue
+    if (IGNORE_DIRS.has(name) || /\.(?:test|spec)\.[cm]?[jt]sx?$/.test(name)) continue
     const full = join(dir, name)
     const st = statSync(full)
     if (st.isDirectory()) walk(full, out)

@@ -51,7 +51,7 @@ export function MapInfoCard({
       {title ? (
         <p className="text-ink truncate text-sm leading-5 font-semibold">{title}</p>
       ) : (
-        <div className="space-y-0.5 text-left">
+        <div className="space-y-1 text-left">
           {formattedDistrict && (
             <p className="text-ink truncate text-sm leading-5 font-semibold">
               {formattedDistrict}
@@ -68,7 +68,7 @@ export function MapInfoCard({
 
       {!hideArrow && (
         <div
-          className="border-t-surface pointer-events-none absolute -bottom-1.5 left-1/2 -translate-x-1/2 border-x-[6px] border-t-[6px] border-b-0 border-x-transparent"
+          className="border-t-surface pointer-events-none absolute -bottom-1 left-1/2 -translate-x-1/2 border-x-[6px] border-t-[6px] border-b-0 border-x-transparent"
           aria-hidden
         />
       )}

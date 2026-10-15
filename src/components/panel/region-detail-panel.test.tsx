@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/prefers-reduced-motion', () => ({
@@ -79,9 +79,18 @@ describe('RegionDetailPanel', () => {
   it('shows status hierarchy: badge, count, trend; no air/cuaca in Ringkasan', () => {
     renderDetail(pulangPisau)
     expect(screen.getByText('Sangat tinggi')).toBeTruthy()
-    expect(screen.getByText('23')).toBeTruthy()
+    expect(screen.getByText('23', { selector: 'span' })).toBeTruthy()
     expect(screen.getByText(/titik panas · 24 jam/)).toBeTruthy()
     expect(screen.getByText(copy.detail.trendUp)).toBeTruthy()
+  })
+
+  it('shows the full seven-day chart immediately without opening a tab or accordion', () => {
+    renderDetail(pulangPisau)
+    const chart = screen.getByRole('region', { name: copy.extra.trendChart })
+    expect(within(chart).getByRole('img', { name: /Tren titik panas/ })).toBeTruthy()
+    expect(within(chart).getByText(copy.extra.trendLatest)).toBeTruthy()
+    expect(within(chart).getByText(copy.extra.trendPeak)).toBeTruthy()
+    expect(within(chart).getByText(copy.extra.trendAverage)).toBeTruthy()
   })
 
   it('renders all sections in a single scroll without tabs', () => {

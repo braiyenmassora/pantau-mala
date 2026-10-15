@@ -21,7 +21,7 @@ export function LatestEarthquakeCard() {
         <CardHeader>
           <Skeleton className="h-4 w-36" />
         </CardHeader>
-        <CardContent className="space-y-1.5">
+        <CardContent className="space-y-2">
           <Skeleton className="h-5 w-28" />
           <Skeleton className="h-4 w-full" />
         </CardContent>
