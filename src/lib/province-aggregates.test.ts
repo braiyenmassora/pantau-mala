@@ -152,4 +152,37 @@ describe('provinceLabelAnchors', () => {
 
     expect(provinceLabelAnchors(catalog)[0].center).toEqual([113.1, -2.1])
   })
+
+  it('keeps DKI Jakarta anchors on the mainland even when Kepulauan Seribu is active', () => {
+    const catalog = {
+      provinces: [
+        {
+          code: 'IDN.31',
+          name: 'DKI Jakarta',
+          bbox: [106.3, -6.5, 106.9, -5.1] as [number, number, number, number],
+          center: [106.6, -5.8] as [number, number],
+        },
+      ],
+      regencies: [
+        {
+          code: '31.01',
+          name: 'Adm. Kep. Seribu',
+          province: 'DKI Jakarta',
+          center: [106.58, -5.7] as [number, number],
+          time_zone: 'WIB' as const,
+        },
+      ],
+    }
+
+    const anchors = provinceLabelAnchors(catalog, [
+      region({
+        code: '31.01',
+        province: 'DKI Jakarta',
+        hotspots_24h: 12,
+        center: [106.58, -5.7],
+      }),
+    ])
+
+    expect(anchors[0].center).toEqual([106.8348, -6.1813])
+  })
 })

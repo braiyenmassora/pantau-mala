@@ -14,6 +14,14 @@ export type ProvinceAggregate = {
   trend_7d: [number, number, number, number, number, number, number]
 }
 
+const PROVINCE_LAND_ANCHORS: Readonly<Record<string, [number, number]>> = {
+  'BANGKA BELITUNG': [106.1118, -2.129],
+  'DKI JAKARTA': [106.8348, -6.1813],
+  'KEPULAUAN BANGKA BELITUNG': [106.1118, -2.129],
+  'KEPULAUAN RIAU': [104.4447, 1.0744],
+  MALUKU: [128.1814, -3.6958],
+}
+
 export function provinceLabelAnchors(
   catalog: RegionCatalog,
   regions: Region[] = [],
@@ -34,8 +42,10 @@ export function provinceLabelAnchors(
   }
 
   return catalog.provinces.flatMap((province) => {
-    if (!validCoordinates(...province.center)) return []
     const name = normalizeProvinceName(province.name)
+    const landAnchor = PROVINCE_LAND_ANCHORS[name]
+    if (landAnchor) return [{ ...province, center: landAnchor }]
+    if (!validCoordinates(...province.center)) return []
     const activeRegion = active.get(name)
     if (activeRegion) return [{ ...province, center: activeRegion.center }]
     const [minLongitude, minLatitude, maxLongitude, maxLatitude] = province.bbox

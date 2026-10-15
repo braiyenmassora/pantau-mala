@@ -58,6 +58,28 @@ const TREND_UI: Record<
   stabil: { label: copy.detail.trendFlat, Icon: Minus, colorClass: 'text-ink-3' },
 }
 
+function NationalPanelHeader({ updatedDate }: { updatedDate?: string }) {
+  return (
+    <header className="space-y-2">
+      <Brand compact />
+      <div className="space-y-1">
+        <div className="flex items-start gap-1">
+          <h1 className="text-ink text-lg leading-6 font-semibold tracking-[-0.01em]">
+            {copy.panel.indonesiaToday}
+          </h1>
+          <InfoTooltip content={copy.panel.limitationNote} />
+        </div>
+        <p className="text-ink-2 text-xs leading-4">{copy.panel.tagline}</p>
+        {updatedDate ? (
+          <p className="text-ink-2 text-xs leading-4">
+            24 jam terakhir · Diperbarui {updatedDate}
+          </p>
+        ) : null}
+      </div>
+    </header>
+  )
+}
+
 // ponytail: panel kiri 400px tanpa divider, beranda 5 baris, provinsi 10 baris.
 export function SummaryPanel({
   regions,
@@ -176,15 +198,7 @@ export function SummaryPanel({
   if (filtering && filtered.length === 0) {
     return (
       <div className="space-y-6 p-4">
-        <header className="space-y-1">
-          <Brand compact />
-          <div className="flex items-center gap-1">
-            <h1 className="text-ink truncate text-xl leading-7 font-semibold">
-              Pantauan titik panas Indonesia
-            </h1>
-            <InfoTooltip content={copy.panel.limitationNote} />
-          </div>
-        </header>
+        <NationalPanelHeader />
         <EmptyState
           icon={Filter}
           title={copy.empty.noRegionsFilter.title}
@@ -204,18 +218,7 @@ export function SummaryPanel({
   if (noHotspots && !filtering && !searching) {
     return (
       <div className="space-y-6 p-4">
-        <header className="space-y-1">
-          <Brand compact />
-          <div className="flex items-center gap-1">
-            <h1 className="text-ink truncate text-xl leading-7 font-semibold">
-              Pantauan titik panas Indonesia
-            </h1>
-            <InfoTooltip content={copy.panel.limitationNote} />
-          </div>
-          <p className="text-ink-2 text-xs leading-4">
-            24 jam terakhir{updatedDate ? ` · Diperbarui ${updatedDate}` : ''}
-          </p>
-        </header>
+        <NationalPanelHeader updatedDate={updatedDate} />
         <EmptyState
           icon={ShieldCheck}
           title={copy.empty.noHotspots.title}
@@ -261,17 +264,7 @@ export function SummaryPanel({
           <SearchBox mapRef={mapRef} />
         </div>
 
-        <header className="space-y-2">
-          <div className="flex items-center gap-1">
-            <h1 className="text-ink text-xl leading-7 font-semibold">
-              Pantauan titik panas Indonesia
-            </h1>
-            <InfoTooltip content={copy.panel.limitationNote} />
-          </div>
-          <p className="text-ink-2 text-xs leading-5">
-            24 jam terakhir{updatedDate ? ` · Diperbarui ${updatedDate}` : ''}
-          </p>
-        </header>
+        <NationalPanelHeader updatedDate={updatedDate} />
 
         <div className="flex flex-col gap-4">
           <LocationCard regions={regions} />
