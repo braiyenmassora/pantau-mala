@@ -36,7 +36,7 @@ export function LatestEarthquakeCard() {
     return (
       <Card aria-label={copy.panel.seismicTitle}>
         <CardHeader>
-          <CardTitle className="flex items-center gap-1.5">
+          <CardTitle className="flex items-center gap-2">
             <Activity
               className="text-risk-mid size-3.5 shrink-0"
               strokeWidth={2}
@@ -63,7 +63,7 @@ export function LatestEarthquakeCard() {
   return (
     <Card aria-label={copy.panel.seismicTitle}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-1.5">
+        <CardTitle className="flex items-center gap-2">
           <Activity
             className="text-risk-mid size-3.5 shrink-0"
             strokeWidth={2}

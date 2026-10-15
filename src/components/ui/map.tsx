@@ -907,7 +907,7 @@ function MapControls({
   return (
     <div
       className={cn(
-        'absolute z-10 flex flex-col gap-1.5',
+        'absolute z-10 flex flex-col gap-2',
         positionClasses[position],
         className,
       )}

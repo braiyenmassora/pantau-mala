@@ -45,7 +45,7 @@ export function TopProvincesList({ items }: TopProvincesListProps) {
           <button
             type="button"
             className={cn(
-              'rounded-ctl flex w-full items-center gap-3 px-2 py-2.5 text-left',
+              'rounded-ctl flex w-full items-center gap-3 px-2 py-3 text-left',
               'hover:bg-surface-muted transition-colors duration-150',
               focusRing,
             )}

@@ -12,10 +12,10 @@ const variantClass = {
 } as const
 
 const sizeClass = {
-  default: 'h-8 gap-1.5 px-2.5',
+  default: 'h-8 gap-2 px-2.5',
   xs: 'h-6 gap-1 px-2 text-xs',
   sm: 'h-7 gap-1 px-2.5 text-xs',
-  lg: 'h-9 gap-1.5 px-3',
+  lg: 'h-9 gap-2 px-3',
   icon: 'size-8',
   'icon-xs': 'size-6',
   'icon-sm': 'size-7',

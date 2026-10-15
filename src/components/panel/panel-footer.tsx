@@ -22,7 +22,7 @@ export function PanelFooter() {
             rel="noopener noreferrer"
             aria-label={copy.footer.openInNewTab(source.name)}
             className={cn(
-              'text-ink-2 hover:text-brand inline-flex items-center gap-1.5 font-medium no-underline transition-colors duration-150',
+              'text-ink-2 hover:text-brand inline-flex items-center gap-2 font-medium no-underline transition-colors duration-150',
               focusRing,
               'rounded-ctl',
             )}

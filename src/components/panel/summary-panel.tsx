@@ -342,7 +342,7 @@ export function SummaryPanel({
               {formatNumber(provinceStats?.count_24h ?? 0)}
             </p>
             <p className="text-ink text-sm leading-5">{copy.detail.hotspotUnitLine}</p>
-            <p className="text-ink-2 flex items-center gap-1.5 text-xs leading-4">
+            <p className="text-ink-2 flex items-center gap-2 text-xs leading-4">
               <TrendIcon className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
               <span>
                 {trendLabel} {copy.detail.trendVsPrevious}

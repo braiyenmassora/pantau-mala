@@ -103,7 +103,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
 
       {updatedLabel ? (
         <p
-          className="text-ink-2 bg-surface/95 border-line rounded-ctl shadow-chrome pointer-events-none border px-4 py-2.5 text-xs leading-4 backdrop-blur-sm select-none"
+          className="text-ink-2 bg-surface/95 border-line rounded-ctl shadow-chrome pointer-events-none border px-4 py-3 text-xs leading-4 backdrop-blur-sm select-none"
           data-testid="map-updated-stamp"
         >
           {updatedLabel}
