@@ -11,8 +11,8 @@ describe('MapLegend', () => {
     render(<MapLegend />)
 
     expect(screen.getByTestId('map-legend')).toBeTruthy()
-    expect(screen.getByText('Risiko')).toBeTruthy()
-    expect(screen.getByText('Kuning sedang · Merah sangat tinggi')).toBeTruthy()
+    expect(screen.getByText('Risiko wilayah')).toBeTruthy()
+    expect(screen.getByText('Penanda ringkasan, bukan lokasi deteksi')).toBeTruthy()
     expect(screen.getByText('Gempa bumi')).toBeTruthy()
     expect(screen.getByText('Episentrum dari feed BMKG')).toBeTruthy()
     expect(screen.getByText('Kepadatan satelit')).toBeTruthy()

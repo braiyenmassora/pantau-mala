@@ -1,4 +1,8 @@
-import type { CatalogProvince, Region, RiskCategory } from '@/data/types'
+import distance from '@turf/distance'
+
+import type { CatalogProvince, Region, RegionCatalog, RiskCategory } from '@/data/types'
+import { validCoordinates } from '@/lib/environment-data'
+import { normalizeProvinceName } from '@/lib/province-boundaries'
 import { RISK_SORT_RANK, effectiveRiskCategory } from '@/lib/risk-rule'
 
 export type ProvinceAggregate = {
@@ -8,6 +12,56 @@ export type ProvinceAggregate = {
   hotspots_24h: number
   risk_category: RiskCategory
   trend_7d: [number, number, number, number, number, number, number]
+}
+
+export function provinceLabelAnchors(
+  catalog: RegionCatalog,
+  regions: Region[] = [],
+): CatalogProvince[] {
+  const active = new Map<string, Region>()
+  for (const region of regions) {
+    if (region.hotspots_24h <= 0) continue
+    if (!validCoordinates(...region.center)) continue
+    const key = normalizeProvinceName(region.province)
+    const current = active.get(key)
+    if (
+      !current ||
+      region.hotspots_24h > current.hotspots_24h ||
+      (region.hotspots_24h === current.hotspots_24h && region.code < current.code)
+    ) {
+      active.set(key, region)
+    }
+  }
+
+  return catalog.provinces.flatMap((province) => {
+    if (!validCoordinates(...province.center)) return []
+    const name = normalizeProvinceName(province.name)
+    const activeRegion = active.get(name)
+    if (activeRegion) return [{ ...province, center: activeRegion.center }]
+    const [minLongitude, minLatitude, maxLongitude, maxLatitude] = province.bbox
+    let nearest: RegionCatalog['regencies'][number] | undefined
+    let nearestDistance = Infinity
+
+    for (const regency of catalog.regencies) {
+      if (normalizeProvinceName(regency.province) !== name) continue
+      const [longitude, latitude] = regency.center
+      if (
+        !validCoordinates(longitude, latitude) ||
+        longitude < minLongitude || longitude > maxLongitude ||
+        latitude < minLatitude || latitude > maxLatitude
+      ) continue
+      const candidateDistance = distance(province.center, regency.center)
+      if (
+        candidateDistance < nearestDistance ||
+        (candidateDistance === nearestDistance && nearest && regency.code < nearest.code)
+      ) {
+        nearest = regency
+        nearestDistance = candidateDistance
+      }
+    }
+
+    return [nearest ? { ...province, center: nearest.center } : province]
+  })
 }
 
 type AggregateOpts = {
@@ -31,14 +85,15 @@ export function aggregateByProvince(
     [number, number, number, number, number, number, number]
   >()
   for (const r of regions) {
+    const provinceName = normalizeProvinceName(r.province)
     const risk = effectiveRiskCategory(r)
-    const prev = riskByName.get(r.province)
+    const prev = riskByName.get(provinceName)
     if (!prev || RISK_SORT_RANK[risk] < RISK_SORT_RANK[prev])
-      riskByName.set(r.province, risk)
-    byName.set(r.province, (byName.get(r.province) ?? 0) + r.hotspots_24h)
+      riskByName.set(provinceName, risk)
+    byName.set(provinceName, (byName.get(provinceName) ?? 0) + r.hotspots_24h)
 
-    const prevTrend = trendByName.get(r.province) ?? [0, 0, 0, 0, 0, 0, 0]
-    trendByName.set(r.province, [
+    const prevTrend = trendByName.get(provinceName) ?? [0, 0, 0, 0, 0, 0, 0]
+    trendByName.set(provinceName, [
       prevTrend[0] + (r.trend_7d?.[0] ?? 0),
       prevTrend[1] + (r.trend_7d?.[1] ?? 0),
       prevTrend[2] + (r.trend_7d?.[2] ?? 0),
@@ -51,15 +106,16 @@ export function aggregateByProvince(
 
   const out: ProvinceAggregate[] = []
   for (const p of provinces) {
-    const hotspots_24h = byName.get(p.name) ?? 0
+    const provinceName = normalizeProvinceName(p.name)
+    const hotspots_24h = byName.get(provinceName) ?? 0
     if (hotspots_24h <= 0) continue
     out.push({
       name: p.name,
       center: p.center,
       bbox: p.bbox,
       hotspots_24h,
-      risk_category: opts?.pinRisk ?? riskByName.get(p.name) ?? 'tidak_tersedia',
-      trend_7d: trendByName.get(p.name) ?? [0, 0, 0, 0, 0, 0, 0],
+      risk_category: opts?.pinRisk ?? riskByName.get(provinceName) ?? 'tidak_tersedia',
+      trend_7d: trendByName.get(provinceName) ?? [0, 0, 0, 0, 0, 0, 0],
     })
   }
   return out.sort((a, b) => b.hotspots_24h - a.hotspots_24h)

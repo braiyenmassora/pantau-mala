@@ -29,7 +29,6 @@ describe('normalizeProvinceName', () => {
     expect(normalizeProvinceName('Papua Tengah')).not.toBe(normalizeProvinceName('Papua'))
   })
 })
-
 describe('provinceBoundaryManifestSchema', () => {
   it('validates the checked-in 38-province metadata manifest from public/data', () => {
     const raw = readFileSync(

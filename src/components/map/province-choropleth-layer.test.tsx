@@ -166,6 +166,15 @@ describe('ProvinceChoroplethLayer', () => {
       }),
       'boundary_state',
     )
+    expect(addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'province-choropleth-line',
+        type: 'line',
+        source: 'province-choropleth-source',
+        layout: { 'line-join': 'round', 'line-cap': 'round' },
+      }),
+      'boundary_state',
+    )
   })
 
   it('tears down listeners, layers, and source on unmount', () => {

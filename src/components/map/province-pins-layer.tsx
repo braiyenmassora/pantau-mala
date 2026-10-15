@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react'
 import { ProvincePin } from '@/components/map/province-pin'
 import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
-import { aggregateByProvince } from '@/lib/province-aggregates'
+import { aggregateByProvince, provinceLabelAnchors } from '@/lib/province-aggregates'
 import { useMapStore } from '@/store/map'
 
 type ProvincePinsLayerProps = {
@@ -26,7 +26,7 @@ export function ProvincePinsLayer({ regions }: ProvincePinsLayerProps) {
     if (!isNational || !catalog) return []
     return aggregateByProvince(
       regions,
-      catalog.provinces,
+      provinceLabelAnchors(catalog, regions),
       pinRisk ? { pinRisk } : undefined,
     )
   }, [isNational, catalog, regions, pinRisk])

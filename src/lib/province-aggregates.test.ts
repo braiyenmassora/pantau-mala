@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { aggregateByProvince } from '@/lib/province-aggregates'
+import { aggregateByProvince, provinceLabelAnchors } from '@/lib/province-aggregates'
 import type { CatalogProvince, Region } from '@/data/types'
 
 const provinces: CatalogProvince[] = [
@@ -107,5 +107,49 @@ describe('aggregateByProvince', () => {
       provinces,
     )
     expect(rows[0].trend_7d).toEqual([3, 3, 3, 5, 7, 9, 11])
+  })
+})
+
+describe('provinceLabelAnchors', () => {
+  it('uses the active BE region center instead of a synthetic province midpoint', () => {
+    const catalog = {
+      provinces: [provinces[0]],
+      regencies: [
+        {
+          code: '62.01',
+          name: 'Kab. A',
+          province: 'Kalimantan Tengah',
+          center: [114, -2.5] as [number, number],
+          time_zone: 'WIB' as const,
+        },
+      ],
+    }
+    const anchors = provinceLabelAnchors(catalog, [
+      region({
+        code: '62.01',
+        province: 'Kalimantan Tengah',
+        hotspots_24h: 12,
+        center: [114, -2.5],
+      }),
+    ])
+
+    expect(anchors[0].center).toEqual([114, -2.5])
+  })
+
+  it('falls back to the nearest catalog regency for an inactive province', () => {
+    const catalog = {
+      provinces: [provinces[0]],
+      regencies: [
+        {
+          code: '62.01',
+          name: 'Kab. A',
+          province: 'Kalimantan Tengah',
+          center: [113.1, -2.1] as [number, number],
+          time_zone: 'WIB' as const,
+        },
+      ],
+    }
+
+    expect(provinceLabelAnchors(catalog)[0].center).toEqual([113.1, -2.1])
   })
 })

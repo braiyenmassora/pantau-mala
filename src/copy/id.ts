@@ -297,6 +297,7 @@ export const copy = {
     allowLocationFull: 'Izinkan lokasi untuk melihat titik panas di sekitarmu',
   },
   map: {
+    summaryMarkerNote: 'Ringkasan wilayah, bukan lokasi deteksi satelit.',
     recenter: 'Pusatkan ke lokasi kamu',
     useMyLocation: 'Gunakan lokasi kamu',
     toggleWind: 'Aliran angin atmosfer',
@@ -357,8 +358,8 @@ export const copy = {
 
   legend: {
     /** Strip kartu kiri bawah peta — teks pendek agar mudah dibaca. */
-    riskTitle: 'Risiko',
-    riskHint: 'Kuning sedang · Merah sangat tinggi',
+    riskTitle: 'Risiko wilayah',
+    riskHint: 'Penanda ringkasan, bukan lokasi deteksi',
     quakeTitle: 'Gempa bumi',
     quakeHint: 'Episentrum dari feed BMKG',
     densityTitle: 'Kepadatan satelit',

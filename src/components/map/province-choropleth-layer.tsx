@@ -17,7 +17,7 @@ import { useMapStore } from '@/store/map'
 
 const SOURCE_ID = 'province-choropleth-source'
 const FILL_LAYER = 'province-choropleth-fill'
-const FALLBACK_LINE_LAYER = 'province-choropleth-line'
+const BOUNDARY_LINE_LAYER = 'province-choropleth-line'
 const BASEMAP_BOUNDARY_LAYER = 'boundary_state'
 
 function buildFillPaint(
@@ -59,11 +59,31 @@ function buildFillPaint(
   }
 }
 
-function buildFallbackLinePaint(): NonNullable<LineLayerSpecification['paint']> {
+function buildBoundaryLinePaint(
+  selectedId: string | null,
+): NonNullable<LineLayerSpecification['paint']> {
   return {
     'line-color': MAP_COLORS.surface,
-    'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 1.4, 0.8],
-    'line-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.9, 0.55],
+    'line-width': selectedId
+      ? [
+          'case',
+          ['==', ['get', 'province_id'], selectedId],
+          2,
+          ['boolean', ['feature-state', 'hover'], false],
+          1.5,
+          1.2,
+        ]
+      : ['case', ['boolean', ['feature-state', 'hover'], false], 1.5, 1.2],
+    'line-opacity': selectedId
+      ? [
+          'case',
+          ['==', ['get', 'province_id'], selectedId],
+          1,
+          ['boolean', ['feature-state', 'hover'], false],
+          0.95,
+          0.85,
+        ]
+      : ['case', ['boolean', ['feature-state', 'hover'], false], 0.95, 0.85],
   }
 }
 
@@ -118,7 +138,6 @@ export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProp
 
   useEffect(() => {
     if (!map || !isLoaded || !boundaries) return
-    const hasBasemapBoundary = Boolean(map.getLayer(BASEMAP_BOUNDARY_LAYER))
     const anchor = map.getLayer(BASEMAP_BOUNDARY_LAYER)
       ? BASEMAP_BOUNDARY_LAYER
       : map.getLayer('tunnel_service_case')
@@ -140,16 +159,16 @@ export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProp
         anchor,
       )
     }
-    if (!hasBasemapBoundary && !map.getLayer(FALLBACK_LINE_LAYER)) {
+    if (!map.getLayer(BOUNDARY_LINE_LAYER)) {
       map.addLayer(
         {
-          id: FALLBACK_LINE_LAYER,
+          id: BOUNDARY_LINE_LAYER,
           type: 'line',
           source: SOURCE_ID,
           layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: buildFallbackLinePaint(),
+          paint: buildBoundaryLinePaint(null),
         },
-        anchor,
+        map.getLayer('water') ? 'water' : anchor,
       )
     }
 
@@ -195,7 +214,7 @@ export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProp
       map.off('mousemove', FILL_LAYER, onMove)
       map.off('mouseleave', FILL_LAYER, onLeave)
       map.getCanvas().style.cursor = ''
-      if (map.getLayer(FALLBACK_LINE_LAYER)) map.removeLayer(FALLBACK_LINE_LAYER)
+      if (map.getLayer(BOUNDARY_LINE_LAYER)) map.removeLayer(BOUNDARY_LINE_LAYER)
       if (map.getLayer(FILL_LAYER)) map.removeLayer(FILL_LAYER)
       if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID)
     }
@@ -228,11 +247,11 @@ export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProp
       fillPaint['fill-outline-color'],
     )
 
-    if (map.getLayer(FALLBACK_LINE_LAYER)) {
-      const linePaint = buildFallbackLinePaint()
-      map.setPaintProperty(FALLBACK_LINE_LAYER, 'line-color', linePaint['line-color'])
-      map.setPaintProperty(FALLBACK_LINE_LAYER, 'line-width', linePaint['line-width'])
-      map.setPaintProperty(FALLBACK_LINE_LAYER, 'line-opacity', linePaint['line-opacity'])
+    if (map.getLayer(BOUNDARY_LINE_LAYER)) {
+      const linePaint = buildBoundaryLinePaint(selectedId)
+      map.setPaintProperty(BOUNDARY_LINE_LAYER, 'line-color', linePaint['line-color'])
+      map.setPaintProperty(BOUNDARY_LINE_LAYER, 'line-width', linePaint['line-width'])
+      map.setPaintProperty(BOUNDARY_LINE_LAYER, 'line-opacity', linePaint['line-opacity'])
     }
   }, [map, isLoaded, boundaries, selectedId, reducedMotion])
 

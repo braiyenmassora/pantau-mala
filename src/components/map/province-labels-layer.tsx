@@ -6,6 +6,7 @@ import { useMap } from '@/components/ui/map'
 import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { MAP_COLORS } from '@/lib/map-colors'
+import { provinceLabelAnchors } from '@/lib/province-aggregates'
 import { useMapStore } from '@/store/map'
 
 const SOURCE_ID = 'province-labels-source'
@@ -35,7 +36,7 @@ export function ProvinceLabelsLayer({ regions }: ProvinceLabelsLayerProps) {
     )
 
     const features: Feature<Point>[] = []
-    for (const p of catalog.provinces) {
+    for (const p of provinceLabelAnchors(catalog, regions)) {
       const [lon, lat] = p.center
       if (!Number.isFinite(lon) || !Number.isFinite(lat)) continue
       features.push({

@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
+import { copy } from '@/copy/id'
 import { formatNumber } from '@/lib/format'
 import { fitProvinceBounds } from '@/lib/indonesia-view'
 import type { ProvinceAggregate } from '@/lib/province-aggregates'
@@ -47,6 +48,7 @@ export function ProvincePin({ aggregate, hovered = false, onHover }: ProvincePin
         <button
           type="button"
           aria-label={aggregate.name}
+          title={`${aggregate.name}: ${copy.map.summaryMarkerNote}`}
           className={cn(
             'border-surface relative rounded-full transition-transform duration-150',
             isHigh || isMid ? 'marker--pulse size-4 border-2' : 'size-2.5 border-[1.5px]',

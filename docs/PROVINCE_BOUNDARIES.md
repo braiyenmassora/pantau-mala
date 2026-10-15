@@ -14,11 +14,11 @@ normalisasi tanpa menggabungkan provinsi-provinsi Papua.
 - Nominatim memakai `polygon_threshold=0.0001` derajat. MapLibre memakai
   `tolerance=0` agar tidak menambah simplifikasi geometri snapshot.
 - CARTO dan snapshot tidak dijamin identik pada setiap zoom atau revisi data.
-  Garis provinsi basemap dipertahankan, tanpa outline choropleth ganda. Fill
-  ditempatkan di bawah garis batas dan lapisan air CARTO sehingga batas maritim
-  dalam data OSM tidak mewarnai laut pada basemap normal.
-- Saat basemap tidak tersedia, garis fallback memakai snapshot yang sama; bentuk
-  batas maritim dapat terlihat karena tidak ada lapisan air untuk menutupinya.
+  Fill dan outline snapshot ditempatkan di bawah garis batas serta lapisan air
+  CARTO. Outline netral ini menjaga batas antarprovinsi tetap terbaca tanpa
+  mengambil alih label, pin, atau layer cuaca.
+- Saat basemap tidak tersedia, outline memakai snapshot yang sama; bentuk batas
+  maritim dapat terlihat karena tidak ada lapisan air untuk menutupinya.
 - Atribusi OSM dan CARTO tampil di footer panel yang aktif.
 
 ## File dan pemuatan
@@ -30,7 +30,7 @@ normalisasi tanpa menggabungkan provinsi-provinsi Papua.
 | `scripts/sync-province-boundaries.mjs`             | Pembaruan snapshot manual                          |
 | `src/data/province-boundaries.ts`                  | Fetch dan verifikasi SHA-256 sebelum render        |
 | `src/lib/province-boundaries.ts`                   | Validasi manifest/geometri dan normalisasi nama    |
-| `src/components/map/province-choropleth-layer.tsx` | Fill, hover, seleksi dan outline fallback          |
+| `src/components/map/province-choropleth-layer.tsx` | Fill, outline, hover, dan seleksi provinsi         |
 
 Browser hanya membaca asset lokal aplikasi; tidak memanggil Nominatim saat pengguna
 membuka peta. SHA-256 file, 38 ID/nama unik, jenis geometri, koordinat, dan ring
