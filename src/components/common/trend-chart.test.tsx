@@ -3,9 +3,10 @@ import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import { TrendChart } from '@/components/common/trend-chart'
+import { copy } from '@/copy/id'
 
 describe('TrendChart', () => {
-  it('renders 7 days trendline with summary stats', () => {
+  it('renders smooth area chart with summary stats', () => {
     render(
       <TrendChart
         values={[8, 10, 12, 11, 15, 18, 23]}
@@ -15,9 +16,10 @@ describe('TrendChart', () => {
     )
 
     expect(screen.getByRole('heading', { name: 'Tren titik panas' })).toBeTruthy()
-    expect(screen.getByText('7 hari')).toBeTruthy()
+    expect(screen.getByText(copy.extra.trendLatest)).toBeTruthy()
     expect(screen.getAllByText('23').length).toBeGreaterThan(0)
     expect(screen.getByRole('img', { name: /Tren titik panas/ })).toBeTruthy()
+    expect(document.querySelector('linearGradient')).toBeTruthy()
   })
 
   it('renders graceful empty state when values are empty', () => {

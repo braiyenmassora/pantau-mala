@@ -13,9 +13,10 @@ import type { Region } from '@/data/types'
 import { filterHotspotsForMap } from '@/lib/filter-hotspots-for-map'
 import { MAP_COLORS } from '@/lib/map-colors'
 import {
+  HEATMAP_HIGH_HEX,
   HEATMAP_LOW_HEX,
+  HEATMAP_MID_HEX,
   HEATMAP_TRANSPARENT,
-  RISK_CATEGORIES,
 } from '@/lib/risk-category'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -56,7 +57,7 @@ function formatDetectedTime(rawTime?: string, tz = 'WIB'): string | undefined {
   }
 }
 
-const HEATMAP_PAINT: HeatmapLayerSpecification['paint'] = {
+const HEATMAP_PAINT = {
   'heatmap-weight': 1,
   'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 7, 8, 11, 24],
   'heatmap-color': [
@@ -68,12 +69,12 @@ const HEATMAP_PAINT: HeatmapLayerSpecification['paint'] = {
     0.2,
     HEATMAP_LOW_HEX,
     0.5,
-    RISK_CATEGORIES.sedang.dot,
+    HEATMAP_MID_HEX,
     1,
-    RISK_CATEGORIES.sangat_tinggi.dot,
+    HEATMAP_HIGH_HEX,
   ],
   'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 7, 0.75, 10, 0.75, 12, 0],
-}
+} satisfies NonNullable<HeatmapLayerSpecification['paint']>
 
 // ponytail: heatmap + titik; setup sekali, data di-setData — jangan removeLayer tiap render.
 export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
@@ -89,13 +90,29 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   const selectRef = useRef(select)
   const panelOpenRef = useRef(panelOpen)
   const setPanelOpenRef = useRef(setPanelOpen)
+  const selectedCodeRef = useRef(selectedCode)
 
   useEffect(() => {
     regionsRef.current = regions
     selectRef.current = select
     panelOpenRef.current = panelOpen
     setPanelOpenRef.current = setPanelOpen
-  }, [regions, select, panelOpen, setPanelOpen])
+    selectedCodeRef.current = selectedCode
+  }, [regions, select, panelOpen, setPanelOpen, selectedCode])
+
+  // Detail kab: tip DOM di SelectedHotspotsLayer — jangan dobel dengan popup heatmap.
+  useEffect(() => {
+    if (selectedCode) setActiveHotspot(null)
+  }, [selectedCode])
+
+  useEffect(() => {
+    if (!map || !isLoaded || !map.getLayer?.(POINTS_LAYER_ID)) return
+    map.setLayoutProperty(
+      POINTS_LAYER_ID,
+      'visibility',
+      selectedCode ? 'none' : 'visible',
+    )
+  }, [map, isLoaded, selectedCode])
 
   const collection = useMemo(
     () => filterHotspotsForMap(data, regions, province, selectedCode),
@@ -121,6 +138,11 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         minzoom: HEATMAP_MIN_ZOOM,
         paint: HEATMAP_PAINT,
       })
+    } else {
+      map.setPaintProperty(LAYER_ID, 'heatmap-color', HEATMAP_PAINT['heatmap-color'])
+      map.setPaintProperty(LAYER_ID, 'heatmap-opacity', HEATMAP_PAINT['heatmap-opacity'])
+      map.setPaintProperty(LAYER_ID, 'heatmap-radius', HEATMAP_PAINT['heatmap-radius'])
+      map.setPaintProperty(LAYER_ID, 'heatmap-weight', HEATMAP_PAINT['heatmap-weight'])
     }
 
     if (!map.getLayer(POINTS_LAYER_ID)) {
@@ -131,12 +153,14 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         minzoom: 10,
         paint: {
           'circle-radius': 3.5,
-          'circle-color': RISK_CATEGORIES.sangat_tinggi.dot,
+          'circle-color': HEATMAP_HIGH_HEX,
           'circle-stroke-width': 1,
           'circle-stroke-color': MAP_COLORS.surface,
           'circle-opacity': ['interpolate', ['linear'], ['zoom'], 10, 0.5, 12, 1],
         },
       })
+    } else {
+      map.setPaintProperty(POINTS_LAYER_ID, 'circle-color', HEATMAP_HIGH_HEX)
     }
 
     const readHotspot = (e: MapLayerMouseEvent) => {
@@ -179,6 +203,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
     }
 
     const onPointClick = (e: MapLayerMouseEvent) => {
+      if (selectedCodeRef.current) return
       // Klik titik/heatmap merah → buka detail kabupaten bila ada region_code
       if (openRegionFromEvent(e)) {
         setActiveHotspot(null)
@@ -190,6 +215,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
     }
 
     const onHeatmapClick = (e: MapLayerMouseEvent) => {
+      if (selectedCodeRef.current) return
       if (openRegionFromEvent(e)) {
         setActiveHotspot(null)
       }
@@ -197,6 +223,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
 
     const onPointEnter = (e: MapLayerMouseEvent) => {
       map.getCanvas().style.cursor = 'pointer'
+      if (selectedCodeRef.current) return
       const hit = readHotspot(e)
       if (!hit) return
       setActiveHotspot((prev) => (prev?.pinned ? prev : { ...hit, pinned: false }))

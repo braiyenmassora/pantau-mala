@@ -41,6 +41,7 @@ function buildFillPaint(
   isNational: boolean,
   matchedProvince: string,
 ): FillLayerSpecification['paint'] {
+  // Isi berwarna per risiko (seperti sebelumnya) — jangan diganti netral.
   return (
     isNational
       ? {

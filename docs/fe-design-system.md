@@ -17,7 +17,7 @@ PDF handoff adalah **sumber kebenaran visual**. `tokens.css` dan komponen mengik
 2. Warna risiko hanya untuk pin / chip / legend status — bukan dekorasi. Status non-risiko (gempa, stale, suhu, error) pakai ink / brand / ink-3.
 3. Titik panas ≠ kebakaran (lihat fe-ui-copy).
 4. Logo **pantaumala** memakai simbol dan lettering SVG asli CMS backend: `pantau` hijau `#14634C`, `mala` orange `#C2410C`. Jangan mengganti lettering dengan font UI. Aksen UI/lokasi/tombol tetap mengikuti token FE. **Tidak ada biru.**
-5. Light mode saja. Grid **4 px**.
+5. Light mode default; pasangan token `.dark` ada di `tokens.css` (toggle belum di-ship). Grid **4 px**.
 
 ### Pola layout (PDF §5 — Maps-like)
 
@@ -26,9 +26,10 @@ PDF handoff adalah **sumber kebenaran visual**. `tokens.css` dan komponen mengik
 | Map              | Layar penuh                                                           |
 | Panel kiri       | Mengambang **400 px**, jarak **16** dari tepi; tab sembunyi **24×48** |
 | Chip filter      | Di atas peta; sekaligus legend warna kategori                         |
-| Kontrol peta     | Kanan bawah: lokasi, zoom +/− — tiap **40×40**, gap **8**             |
+| Kontrol peta     | Kanan bawah: lokasi, zoom +/− — tiap **44×44**, gap **8**             |
 | Legend warna pin | Kiri bawah; inset `--map-overlay-inset` / clearance kanan             |
-| Updated-at       | Kanan bawah                                                           |
+| Disclaimer       | Dekat legend — satu kalimat (bukan hanya tooltip)                     |
+| Updated-at       | Kanan bawah (absolut + WIB)                                           |
 
 Token chrome: `--floating-control-offset`, `--map-panel-width`, `--map-panel-edge`, `--map-overlay-inset`, `--map-controls-clearance` (nilai di `LAYOUT`).
 
@@ -38,13 +39,13 @@ Token chrome: `--floating-control-offset`, `--map-panel-width`, `--map-panel-edg
 
 | Token                   | Hex                      | Peran             |
 | ----------------------- | ------------------------ | ----------------- |
-| `--color-ink`           | `#14261B`                | text-primary      |
-| `--color-ink-2`         | `#52645A`                | text-secondary    |
-| `--color-ink-3`         | `#7A8A80`                | text-disabled     |
-| `--color-line`          | `#E3E9E4`                | border            |
-| `--color-surface-muted` | `#F6F8F6`                | kartu info        |
-| `--color-map-bg`        | `#DCE7EC`                | fallback peta     |
-| `--color-brand` / soft  | `#1E6B45` / `#EDF4EF`    | aksen UI + lokasi |
+| `--color-ink`           | `#1F2328`                | text-primary      |
+| `--color-ink-2`         | `#5F6368`                | text-secondary    |
+| `--color-ink-3`         | `#80868B`                | text-disabled     |
+| `--color-line`          | `#E8EAED`                | border            |
+| `--color-surface-muted` | `#F8F9FA`                | hover / tile soft |
+| `--color-map-bg`        | `#E8EAED`                | fallback peta     |
+| `--color-brand` / soft  | `#137333` / `#E6F4EA`    | aksen UI + lokasi |
 | risk high / mid / low   | lihat `risk-category.ts` | dot · tint · text |
 
 Focus ring = brand. Hex MapLibre wajib mirror token.
@@ -53,7 +54,7 @@ Focus ring = brand. Hex MapLibre wajib mirror token.
 
 ## 3. Spasi, radius, bayangan (PDF §3)
 
-Spasi: **4, 8, 12, 16, 20, 24**.
+Spasi: **4, 8, 12, 16, 24, 32, 48** (hindari 20 untuk UI baru).
 
 | Ritme                          | Nilai                     |
 | ------------------------------ | ------------------------- |
@@ -63,16 +64,16 @@ Spasi: **4, 8, 12, 16, 20, 24**.
 | Dalam section                  | 8–12                      |
 | Kartu info                     | padding 16; tile kecil 12 |
 
-| Radius                | px      | Pakai                    |
-| --------------------- | ------- | ------------------------ |
-| `--radius-ctl`        | **8**   | menu item, kontrol kotak |
-| `--radius-card`       | **12**  | kartu, dropdown          |
-| `--radius-panel`      | **16**  | panel, dialog            |
-| pill (`rounded-full`) | **999** | search, chip, tombol     |
+| Radius               | px                      | Pakai                                    |
+| -------------------- | ----------------------- | ---------------------------------------- |
+| `--radius-ctl`       | **8**                   | menu item, kontrol kotak                 |
+| `--radius-card`      | **12**                  | kartu, dropdown                          |
+| `--radius-panel`     | **16**                  | panel, dialog                            |
+| pill / chip / tombol | **12** (`rounded-card`) | search, chip, tombol — bukan capsule 999 |
 
-Bayangan: `shadow-sm` / `md` / `lg` / `shadow-map` (pin) — nilai di token.
+Bayangan: **chrome soft** `shadow-chrome` (= `shadow-sm`: `0 1px 2px / 0.06`) untuk panel pinggir + chip filter; `shadow-md` untuk overlay lebih tinggi; kartu isi panel = border saja (tanpa shadow).
 
-Touch: kontrol peta & tombol besar **40**; chip **36**; search **48**; rail **24×48**.
+Touch: kontrol interaktif **≥44**; search **48**; rail **24×48**.
 
 ---
 
@@ -80,17 +81,15 @@ Touch: kontrol peta & tombol besar **40**; chip **36**; search **48**; rail **24
 
 IBM Plex Sans (UI) · IBM Plex Mono (skor, jumlah, koordinat, FRP).
 
-Hanya ukuran **12, 13, 14, 16, 20, 28**:
+Hanya ukuran **12, 14, 16, 20, 24, 32** (bobot 400 / 500 / 600):
 
-| Peran                        | Class             | px / line / bobot |
-| ---------------------------- | ----------------- | ----------------- |
-| caption / label / badge      | `text-xs`         | 12 / 16           |
-| small / chip / section-label | `text-sm`         | 13 / 18           |
-| body / button                | `text-base`       | 14 / 20           |
-| paragraph                    | `text-paragraph`  | 14 / 22           |
-| title                        | `text-lg`         | 16 / 24 / 600     |
-| title-lg                     | `text-xl`         | 20 / 28 / 600     |
-| number-lg                    | `text-3xl` + mono | 28 / 32 / 600     |
+| Peran                   | Class             | px / line / bobot |
+| ----------------------- | ----------------- | ----------------- |
+| caption / label / badge | `text-xs`         | 12 / 16           |
+| body / chip / button    | `text-sm`/`base`  | 14 / 20           |
+| title                   | `text-lg`         | 16 / 24 / 600     |
+| title-lg                | `text-xl`         | 24 / 32 / 600     |
+| number-lg               | `text-3xl` + mono | 32 / 40 / 600     |
 
 Sentence case. Sapaan “kamu”. Desimal koma kecuali koordinat.
 
@@ -98,13 +97,13 @@ Sentence case. Sapaan “kamu”. Desimal koma kecuali koordinat.
 
 ## 5. Komponen kunci (PDF §4)
 
-| Komponen       | Spek                                                                                                            |
-| -------------- | --------------------------------------------------------------------------------------------------------------- |
-| Search         | tinggi **48**, pill, border + `shadow-sm`, teks 14                                                              |
-| Chip filter    | tinggi **36**, pill, gap 8, teks 13/500; terpilih = latar `#14261B`, teks putih                                 |
-| Badge kategori | tinggi **24**, tint + text kategori, teks 12/600                                                                |
-| Tombol         | semua pill; besar **40** (teks 14); kecil **36** (teks 13); primary brand / sekunder border / lembut brand-soft |
-| Pin            | lingkaran penuh warna risiko (tanpa skor); halo pulse Sangat tinggi **2,6 s** / Sedang **3,4 s**                |
+| Komponen       | Spek                                                                                             |
+| -------------- | ------------------------------------------------------------------------------------------------ |
+| Search         | tinggi **48**, `rounded-card` (12), border + `shadow-sm`, teks 14                                |
+| Chip filter    | tinggi **36**, `rounded-card` (12), gap 8; terpilih = brand-soft                                 |
+| Badge kategori | tinggi **24**, tint + text, `rounded-ctl` (8)                                                    |
+| Tombol         | `rounded-card` (12); besar **40** / kecil **36**; primary brand / sekunder / soft                |
+| Pin            | lingkaran penuh warna risiko (tanpa skor); halo pulse Sangat tinggi **2,6 s** / Sedang **3,4 s** |
 
 Ikon Lucide stroke **2**: 14 (ⓘ / rail), 16 inline, 18 aksi, 20 kontrol peta.
 
@@ -143,7 +142,7 @@ sebagai copy atau markup yang tampil kepada pengguna.
 
 - [ ] Token mirror PDF (warna, type, radius, shadow)
 - [ ] Spacing skala PDF (termasuk 20)
-- [ ] Chip/search/tombol pill; kontrol peta 40×40
+- [ ] Chip/search/tombol `rounded-card` (bukan capsule); kontrol peta 40×40
 - [ ] Warna risiko tidak untuk dekorasi
 - [ ] Copy dari fe-ui-copy; summary/actions dari API
 - [ ] Mobile: teks terbaca; kontrol mudah di-tap

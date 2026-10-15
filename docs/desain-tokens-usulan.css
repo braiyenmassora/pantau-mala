@@ -1,0 +1,142 @@
+/**
+ * USULAN — belum diimpor ke app.
+ * Sumber kebenaran token setelah PR tahap A (tokens).
+ * Mode: :root (terang) + .dark (gelap). Komponen hanya pakai var(--*).
+ */
+
+:root {
+  /* —— Tipografi —— */
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --text-xs: 12px; /* caption */
+  --text-sm: 14px; /* body */
+  --text-md: 16px; /* row name */
+  --text-lg: 20px; /* section */
+  --text-xl: 24px; /* panel title */
+  --text-2xl: 32px; /* hero number */
+  --leading-tight: 1.25;
+  --leading-normal: 1.4;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* —— Spacing (kelipatan 4; tanpa 20) —— */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  /* —— Radius (3 tingkat) —— */
+  --radius-ctl: 8px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
+
+  /* —— Elevasi (3 tingkat, nilai berbeda) —— */
+  --shadow-none: none;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.16);
+
+  /* —— Border —— */
+  --border-subtle: 1px solid var(--color-line);
+  --border-strong: 1px solid var(--color-ink-3);
+
+  /* —— Z-index (3) —— */
+  --z-map: 0;
+  --z-chrome: 20;
+  --z-dialog: 40;
+
+  /* —— Motion (3) —— */
+  --duration-fast: 150ms;
+  --duration-base: 220ms;
+  --duration-slow: 300ms;
+  --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* —— Netral 9 tingkat —— */
+  --color-ink-0: #ffffff; /* inverse text on dark fills */
+  --color-ink-1: #f8f9fa;
+  --color-ink-2: #f1f3f4; /* surface-muted */
+  --color-ink-3: #e8eaed; /* line / map-bg */
+  --color-ink-4: #dadce0; /* scrollbar */
+  --color-ink-5: #80868b; /* disabled / caption */
+  --color-ink-6: #5f6368; /* secondary */
+  --color-ink-7: #3c4043;
+  --color-ink-8: #1f2328; /* primary text */
+
+  --color-surface: var(--color-ink-0);
+  --color-surface-muted: var(--color-ink-2);
+  --color-line: var(--color-ink-3);
+  --color-map-bg: var(--color-ink-3);
+  --color-ink: var(--color-ink-8);
+  --color-ink-2-text: var(--color-ink-6);
+  --color-ink-3-text: var(--color-ink-5);
+
+  /* —— Brand —— */
+  --color-brand: #137333;
+  --color-brand-soft: #e6f4ea;
+  --color-brand-mala: #d93025; /* wordmark only */
+  --color-focus: var(--color-brand);
+
+  /* —— Risiko: 3 tingkat data + meta (bukan "Aman") ——
+     Label wajib: Rendah · Sedang · Sangat tinggi · Belum dinilai
+     Ikon/pola: square / diamond / triangle / dashed — selain warna */
+  --color-risk-low: #188038;
+  --color-risk-low-tint: #e6f4ea;
+  --color-risk-low-text: #137333;
+  --color-risk-mid: #f29900;
+  --color-risk-mid-tint: #fef7e0;
+  --color-risk-mid-text: #854800;
+  --color-risk-high: #d93025;
+  --color-risk-high-tint: #fce8e6;
+  --color-risk-high-text: #c5221f;
+  --color-risk-meta: #5f6368;
+  --color-risk-meta-tint: #f1f3f4;
+  --color-risk-meta-text: #3c4043;
+
+  /* Heatmap kepadatan — mirror risiko + low kuning terpisah konsep */
+  --color-heat-low: #ffe08a;
+  --color-heat-mid: var(--color-risk-mid);
+  --color-heat-high: var(--color-risk-high);
+
+  /* Kontrol */
+  --control-height-sm: 44px; /* min touch */
+  --control-height-md: 44px;
+  --control-height-lg: 48px;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --color-ink-0: #0f1113;
+  --color-ink-1: #161a1d;
+  --color-ink-2: #1e2328;
+  --color-ink-3: #2d3339;
+  --color-ink-4: #3c444c;
+  --color-ink-5: #9aa0a6;
+  --color-ink-6: #bdc1c6;
+  --color-ink-7: #e8eaed;
+  --color-ink-8: #f1f3f4;
+
+  --color-surface: var(--color-ink-1);
+  --color-surface-muted: var(--color-ink-2);
+  --color-line: var(--color-ink-3);
+  --color-map-bg: var(--color-ink-0);
+  --color-ink: var(--color-ink-8);
+  --color-ink-2-text: var(--color-ink-6);
+  --color-ink-3-text: var(--color-ink-5);
+
+  --color-brand: #34a853;
+  --color-brand-soft: #0d2818;
+  --color-focus: var(--color-brand);
+
+  --color-risk-low-tint: #0d2818;
+  --color-risk-mid-tint: #2a1f06;
+  --color-risk-high-tint: #2a0f0d;
+  --color-risk-meta-tint: var(--color-ink-2);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.5);
+}

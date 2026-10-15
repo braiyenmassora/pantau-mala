@@ -16,6 +16,7 @@ import { useMapStore } from '@/store/map'
 
 const ALL_PROVINCES = 'Semua'
 
+/** Chip filter mencakup Semua kategori yang masuk total. */
 const CATEGORY_BASE: RiskCategory[] = ['sangat_tinggi', 'sedang', 'rendah']
 
 type PanelFiltersProps = {
@@ -64,7 +65,7 @@ export function PanelFilters({ regions, className }: PanelFiltersProps) {
     return next
   }, [preCategory])
 
-  const categoryOrder = CATEGORY_BASE.filter((c) => c !== 'rendah' || counts.rendah > 0)
+  const categoryOrder = CATEGORY_BASE
 
   const provinceLabel = province === ALL_PROVINCES ? copy.filter.allProvinces : province
   const options = useMemo(
@@ -122,7 +123,7 @@ export function PanelFilters({ regions, className }: PanelFiltersProps) {
           align="start"
           side="bottom"
           sideOffset={6}
-          className="rounded-card bg-surface text-ink border-line z-[60] w-64 border p-1 shadow-md"
+          className="rounded-ctl bg-surface text-ink border-line shadow-chrome z-[60] w-64 border p-1"
         >
           <div className="border-line border-b p-1">
             <div className="rounded-ctl bg-surface-muted flex items-center gap-2 px-2 py-1">
@@ -227,8 +228,7 @@ export function PanelFilters({ regions, className }: PanelFiltersProps) {
               onClick={() => toggleCategory(category)}
             >
               <span
-                className="size-2 shrink-0 rounded-full"
-                style={{ backgroundColor: meta.dot }}
+                className={cn('size-2 shrink-0 rounded-full', meta.dotClass)}
                 aria-hidden
               />
               <span>{meta.label}</span>

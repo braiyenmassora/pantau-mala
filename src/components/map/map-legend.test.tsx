@@ -3,22 +3,23 @@ import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { MapLegend } from '@/components/map/map-legend'
+import { copy } from '@/copy/id'
 
 describe('MapLegend', () => {
   afterEach(cleanup)
 
-  it('renders one horizontal legend strip with static symbols', () => {
+  it('renders two elongated cards: risk row + density', () => {
     render(<MapLegend />)
 
     expect(screen.getByTestId('map-legend')).toBeTruthy()
-    expect(screen.getByText('Risiko')).toBeTruthy()
-    expect(screen.getByText('Kuning sedang · Merah sangat tinggi')).toBeTruthy()
-    expect(screen.getByText('Gempa bumi')).toBeTruthy()
-    expect(screen.getByText('Episentrum dari feed BMKG')).toBeTruthy()
-    expect(screen.getByText('Kepadatan satelit')).toBeTruthy()
-    expect(screen.getByText('Kuning jarang · Merah padat')).toBeTruthy()
-
-    expect(document.querySelector('.marker--pulse')).toBeNull()
-    expect(document.querySelectorAll('.marker--pulse-static').length).toBe(2)
+    const risk = screen.getByLabelText(copy.legend.riskTitle)
+    const density = screen.getByLabelText(copy.legend.densityTitle)
+    expect(risk).toBeTruthy()
+    expect(density).toBeTruthy()
+    expect(screen.getByText('Sangat tinggi')).toBeTruthy()
+    expect(risk.getAttribute('title')).toBe(copy.legend.riskNote)
+    expect(density.textContent).toContain(copy.legend.densityLow)
+    expect(density.textContent).toContain(copy.legend.densityMid)
+    expect(density.textContent).toContain(copy.legend.densityHigh)
   })
 })

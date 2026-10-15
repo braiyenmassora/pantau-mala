@@ -1,6 +1,5 @@
 import { focusRing } from '@/components/common/focus-ring'
 import { Sparkline } from '@/components/common/sparkline'
-import { Card, CardContent } from '@/components/ui/card'
 import type { CatalogProvince } from '@/data/types'
 import { formatNumber } from '@/lib/format'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
@@ -17,57 +16,67 @@ type TopProvincesListProps = {
   items: TopProvinceItem[]
 }
 
-function provinceRiskDot(hotspots: number): string {
-  if (hotspots >= 10) return RISK_CATEGORIES.sangat_tinggi.dot
-  if (hotspots >= 1) return RISK_CATEGORIES.sedang.dot
-  return RISK_CATEGORIES.rendah.dot
+function provinceRisk(hotspots: number) {
+  if (hotspots >= 10) return 'sangat_tinggi' as const
+  if (hotspots >= 1) return 'sedang' as const
+  return 'rendah' as const
 }
 
-// ponytail: tiap provinsi = kartu hasil tipis yang bisa diklik.
+function provinceRiskDotClass(hotspots: number): string {
+  return RISK_CATEGORIES[provinceRisk(hotspots)].dotClass
+}
+
+function provinceSparkClass(hotspots: number): string {
+  const risk = provinceRisk(hotspots)
+  if (risk === 'sangat_tinggi') return 'text-risk-high'
+  if (risk === 'sedang') return 'text-risk-mid'
+  return 'text-risk-low'
+}
+
+/** Baris: titik 8px · nama · sparkline brand · angka mono. */
 export function TopProvincesList({ items }: TopProvincesListProps) {
   const setProvince = useMapStore((s) => s.setProvince)
   const setQuery = useMapStore((s) => s.setQuery)
 
   return (
-    <ol className="flex flex-col gap-3">
+    <ol className="flex flex-col">
       {items.map((item) => (
         <li key={item.province.code}>
-          <Card className="hover:bg-surface-muted transition-colors duration-150">
-            <button
-              type="button"
+          <button
+            type="button"
+            className={cn(
+              'rounded-ctl flex w-full items-center gap-3 px-2 py-2.5 text-left',
+              'hover:bg-surface-muted transition-colors duration-150',
+              focusRing,
+            )}
+            onClick={() => {
+              setProvince(item.province.name)
+              setQuery('')
+            }}
+          >
+            <span
               className={cn(
-                'flex w-full items-center gap-3 text-left',
-                focusRing,
-                'rounded-card',
+                'size-2 shrink-0 rounded-full',
+                provinceRiskDotClass(item.hotspots_24h),
               )}
-              onClick={() => {
-                setProvince(item.province.name)
-                setQuery('')
-              }}
-            >
-              <CardContent className="flex w-full items-center gap-3 py-3">
-                <span
-                  className="size-2 shrink-0 rounded-full"
-                  style={{ backgroundColor: provinceRiskDot(item.hotspots_24h) }}
-                  aria-hidden
-                />
-                <span className="text-ink min-w-0 flex-1 truncate text-sm leading-5 font-medium">
-                  {item.province.name}
-                </span>
-                {item.trend_7d ? (
-                  <Sparkline
-                    data={item.trend_7d}
-                    height={16}
-                    width={36}
-                    className="shrink-0 opacity-35"
-                  />
-                ) : null}
-                <span className="text-ink shrink-0 text-sm leading-5 font-semibold tabular-nums">
-                  {formatNumber(item.hotspots_24h)}
-                </span>
-              </CardContent>
-            </button>
-          </Card>
+              aria-hidden
+            />
+            <span className="text-ink min-w-0 flex-1 truncate text-sm leading-5 font-medium">
+              {item.province.name}
+            </span>
+            {item.trend_7d && item.trend_7d.length >= 2 ? (
+              <Sparkline
+                data={item.trend_7d}
+                width={48}
+                height={18}
+                className={provinceSparkClass(item.hotspots_24h)}
+                ariaLabel={`Tren 7 hari ${item.province.name}`}
+              />
+            ) : null}
+            <span className="text-ink shrink-0 font-mono text-sm leading-5 font-semibold tabular-nums">
+              {formatNumber(item.hotspots_24h)}
+            </span>
+          </button>
         </li>
       ))}
     </ol>

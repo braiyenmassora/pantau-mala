@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { Chip } from '@/components/common'
 import { ProvincePicker } from '@/components/panel/province-picker'
@@ -12,8 +12,8 @@ import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 
-/** Chip filter — hanya risiko yang tampil di peta (sangat tinggi & sedang). */
-const CATEGORY_BASE: RiskCategory[] = ['sangat_tinggi', 'sedang']
+/** Semua kategori risiko yang dihitung ke total "Semua". */
+const CATEGORY_BASE: RiskCategory[] = ['sangat_tinggi', 'sedang', 'rendah']
 
 type FilterBarProps = {
   panelOpen: boolean
@@ -50,24 +50,21 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
 
   const allPressed = selectedCategories.size === 0
   const allCount = preCategory.length
-  const categoryOrder = CATEGORY_BASE
-
-  useEffect(() => {
-    if (selectedCategories.has('tidak_tersedia') || selectedCategories.has('rendah')) {
-      clearCategories()
-    }
-  }, [selectedCategories, clearCategories])
+  const categorySum =
+    counts.sangat_tinggi + counts.sedang + counts.rendah + counts.tidak_tersedia
 
   return (
     <div
       className={cn(
-        'z-30 flex-wrap items-center gap-2',
+        'z-30 flex-wrap items-center gap-4',
         'ease-out-soft transition-[left] duration-300',
         panelOpen
           ? 'fixed top-(--floating-control-offset) right-(--floating-control-offset) hidden sm:left-(--map-overlay-inset) sm:flex'
           : 'fixed top-(--floating-control-offset) right-(--floating-control-offset) left-(--floating-control-offset) flex',
       )}
       {...mapOverlayGestureProps}
+      data-category-sum={categorySum}
+      data-all-count={allCount}
     >
       <ProvincePicker regions={regions} />
 
@@ -81,12 +78,18 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           allCount === 0 && 'pointer-events-none cursor-not-allowed opacity-40',
         )}
       >
-        <span>
-          Semua · <span className="tabular-nums">{formatNumber(allCount)}</span>
+        <span className="inline-flex items-center gap-1.5">
+          <span>Semua</span>
+          <span className="text-ink-3" aria-hidden>
+            ·
+          </span>
+          <span className="font-mono text-sm font-semibold tabular-nums">
+            {formatNumber(allCount)}
+          </span>
         </span>
       </Chip>
 
-      {categoryOrder.map((category) => {
+      {CATEGORY_BASE.map((category) => {
         const meta = RISK_CATEGORIES[category]
         const count = counts[category]
         const pressed = selectedCategories.has(category)
@@ -103,12 +106,17 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
             className={cn(isZero && 'pointer-events-none cursor-not-allowed opacity-40')}
           >
             <span
-              className="size-2 shrink-0 rounded-full"
-              style={{ backgroundColor: meta.dot }}
+              className={cn('size-2 shrink-0 rounded-full', meta.dotClass)}
               aria-hidden
             />
-            <span>
-              {meta.label} · <span className="tabular-nums">{formatNumber(count)}</span>
+            <span className="inline-flex items-center gap-1.5">
+              <span>{meta.label}</span>
+              <span className="text-ink-3" aria-hidden>
+                ·
+              </span>
+              <span className="font-mono text-sm font-semibold tabular-nums">
+                {formatNumber(count)}
+              </span>
             </span>
           </Chip>
         )

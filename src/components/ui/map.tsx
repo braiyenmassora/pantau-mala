@@ -671,11 +671,11 @@ function MarkerPopup({
 
   const handleClose = () => popup.remove()
 
+  // Chrome diisi children — jangan bungkus kartu kedua di dalam popup.
   return createPortal(
     <div
       className={cn(
-        'bg-popover text-popover-foreground relative max-w-62 rounded-md border p-3 shadow-md',
-        'animate-in fade-in-0 zoom-in-95 duration-200 ease-out',
+        'animate-in fade-in-0 zoom-in-95 relative max-w-62 duration-200 ease-out',
         className,
       )}
     >
@@ -1073,11 +1073,11 @@ function MapPopup({
     popup.remove()
   }
 
+  // Chrome diisi children (MapInfoCard) — wrapper transparan supaya tidak dobel kartu.
   return createPortal(
     <div
       className={cn(
-        'bg-popover text-popover-foreground relative max-w-62 rounded-md border p-3 shadow-md',
-        'animate-in fade-in-0 zoom-in-95 duration-200 ease-out',
+        'animate-in fade-in-0 zoom-in-95 relative max-w-62 duration-200 ease-out',
         className,
       )}
     >

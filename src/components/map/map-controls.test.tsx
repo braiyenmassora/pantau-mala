@@ -17,7 +17,7 @@ vi.mock('@/data/queries', () => ({
   useHotspots: () => ({ data: null }),
   useMeta: () => ({
     data: {
-      updated_at: new Date(Date.now() - 52 * 60_000).toISOString(),
+      updated_at: '2026-10-15T22:01:00+07:00',
       status: { firms: 'ok', weather: 'ok', air: 'ok' },
       pulled_at: { firms: null, weather: null },
     },
@@ -34,14 +34,13 @@ function wrap(ui: ReactNode) {
 describe('MapControls', () => {
   afterEach(cleanup)
 
-  it('shows relative update stamp instead of source names', () => {
+  it('shows absolute WIB stamp on the map, bottom-right', () => {
     wrap(<MapControls mapRef={createRef<MapRef | null>()} />)
 
     expect(screen.getByTestId('map-updated-stamp').textContent).toMatch(
-      /Diperbarui 52 menit lalu/,
+      /Terakhir diperbarui: .+ WIB/,
     )
-    expect(screen.queryByText(/NASA FIRMS/)).toBeNull()
-    expect(screen.queryByText(/Open-Meteo/)).toBeNull()
     expect(screen.getByRole('button', { name: copy.map.zoomIn })).toBeTruthy()
+    expect(screen.getByRole('button', { name: copy.map.zoomOut })).toBeTruthy()
   })
 })

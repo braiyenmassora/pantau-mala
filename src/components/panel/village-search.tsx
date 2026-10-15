@@ -48,9 +48,9 @@ export function VillageSearch({ value, onChange }: VillageSearchProps) {
         <div
           ref={anchorRef}
           className={cn(
-            'group border-line bg-surface flex h-12 items-center gap-2 rounded-full border px-3 shadow-sm',
+            'group border-line bg-surface rounded-ctl shadow-chrome flex h-12 items-center gap-2 border px-3',
             'transition-all duration-200 ease-[var(--ease-out-soft)]',
-            'focus-within:border-brand focus-within:bg-surface focus-within:shadow-sm',
+            'focus-within:border-brand focus-within:bg-surface',
           )}
         >
           <Search
@@ -113,7 +113,7 @@ export function VillageSearch({ value, onChange }: VillageSearchProps) {
               type="button"
               aria-label={copy.weather.clearSearch}
               className={cn(
-                'text-ink-3 hover:bg-surface-muted hover:text-ink flex size-5 shrink-0 items-center justify-center rounded-full transition-colors',
+                'text-ink-3 hover:bg-surface-muted hover:text-ink rounded-ctl flex size-5 shrink-0 items-center justify-center transition-colors',
               )}
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => {
@@ -132,7 +132,7 @@ export function VillageSearch({ value, onChange }: VillageSearchProps) {
         align="start"
         sideOffset={4}
         collisionPadding={16}
-        className="rounded-card border-line/60 bg-surface z-50 max-h-[var(--radix-popover-content-available-height)] w-[var(--radix-popover-trigger-width)] max-w-[calc(100vw-32px)] gap-0 overflow-hidden border p-1 shadow-sm"
+        className="rounded-ctl border-line bg-surface shadow-chrome z-50 max-h-[var(--radix-popover-content-available-height)] w-[var(--radix-popover-trigger-width)] max-w-[calc(100vw-32px)] gap-0 overflow-hidden border p-1"
         onOpenAutoFocus={(event) => event.preventDefault()}
         onCloseAutoFocus={(event) => event.preventDefault()}
         onInteractOutside={(event) => {

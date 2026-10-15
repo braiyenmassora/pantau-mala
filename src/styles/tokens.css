@@ -1,24 +1,25 @@
-/* Token desain pantau-mala.
-   Sumber: docs/Spesifikasi UI (handoff developer).pdf — MVP 09 Okt 2026.
-   Diimpor dari src/index.css setelah @import "tailwindcss".
-   Font diimpor di main.tsx (IBM Plex Sans 400/500/600, Mono 500/600). */
+/* Token desain pantaumala — satu sumber kebenaran.
+   Hex MapLibre di risk-category.ts harus mirror nilai di sini.
+   Font: IBM Plex Sans 400/500/600 + Mono (main.tsx). */
 
 @theme {
-  /* Font */
   --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
-  /* Netral */
-  --color-ink: #1f2328; /* text-primary */
-  --color-ink-2: #5f6368; /* text-secondary */
-  --color-ink-3: #80868b; /* text-disabled */
-  --color-line: #e8eaed; /* border / divider */
+  /* Netral — ink-2 lolos AA 4.5:1 di atas surface */
+  --color-ink: #1f2328;
+  --color-ink-2: #5f6368;
+  --color-ink-3: #80868b;
+  --color-line: #e8eaed;
   --color-surface: #ffffff;
-  --color-surface-muted: #f1f3f4;
+  --color-surface-muted: #f8f9fa; /* hover / tile soft */
   --color-map-bg: #e8eaed;
   --color-scrollbar: #dadce0;
+  /* Tren / grafik netral (bukan brand, bukan risiko) */
+  --color-chart: #5f6368;
+  --color-chart-soft: #dadce0;
 
-  /* Brand / lokasi / aksen UI */
+  /* Brand — hanya aksi / fokus / seleksi, BUKAN data */
   --color-brand: #137333;
   --color-brand-soft: #e6f4ea;
   --color-brand-mala: #d93025;
@@ -26,7 +27,7 @@
   --color-location: #137333;
   --color-location-tint: #e6f4ea;
 
-  /* Kategori risiko */
+  /* Risiko pin/badge/daftar — label teks wajib */
   --color-risk-high: #d93025;
   --color-risk-high-tint: #fce8e6;
   --color-risk-high-text: #c5221f;
@@ -37,19 +38,23 @@
   --color-risk-low-tint: #e6f4ea;
   --color-risk-low-text: #137333;
 
-  /* Spasi kelipatan 4 — skala semantik brief + PDF */
+  /* Heatmap kepadatan — kuning → oranye → merah (terlihat di basemap) */
+  --color-heat-low: #ffe08a;
+  --color-heat-mid: #f29900;
+  --color-heat-high: #d93025;
+
+  /* Spacing 4px: 4 / 8 / 12 / 16 / 24 (+ chrome layout) */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
-  --space-5: 20px;
+  --space-5: 16px; /* alias legacy → 16 */
   --space-6: 24px;
   --space-8: 32px;
   --space-10: 40px;
   --space-12: 48px;
   --space-16: 64px;
 
-  /* Layout GIS — mirror `src/lib/layout.ts` */
   --floating-control-offset: var(--space-4);
   --map-panel-width: 400px;
   --map-panel-edge: 416px;
@@ -58,12 +63,12 @@
   --card-padding: var(--space-4);
   --card-gap: var(--space-4);
   --section-gap: var(--space-6);
-  --content-gap: var(--space-5);
-  --control-height-sm: 36px;
-  --control-height-md: 40px;
+  --content-gap: var(--space-4);
+  --control-height-sm: 40px;
+  --control-height-md: 44px;
   --control-height-lg: 48px;
 
-  /* Tipografi: 12 caption · 14 isi · 16 nama baris · 22 judul · 28 angka besar */
+  /* Tipografi: 12 / 14 / 16 / 24 / 32 — minimum 12 */
   --text-xs: 12px;
   --text-xs--line-height: 16px;
   --text-sm: 14px;
@@ -74,26 +79,29 @@
   --text-paragraph--line-height: 20px;
   --text-lg: 16px;
   --text-lg--line-height: 24px;
-  --text-xl: 22px;
-  --text-xl--line-height: 28px;
-  --text-3xl: 28px;
-  --text-3xl--line-height: 32px;
+  --text-xl: 24px;
+  --text-xl--line-height: 32px;
+  --text-3xl: 32px;
+  --text-3xl--line-height: 40px;
 
-  /* Radius — 8 ctl · 12 kartu · 16 panel · 999 pill */
+  /* Radius: 8 chip/badge/kartu soft · 12 panel shell */
   --radius-ctl: 8px;
   --radius-card: 12px;
-  --radius-panel: 16px;
+  --radius-panel: 12px;
+  --radius-pill: 8px;
 
-  /* Shadow tunggal: 0 1px 3px rgba(0,0,0,.2) */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 1px 3px rgba(0, 0, 0, 0.2);
-  --shadow-map: 0 1px 3px rgba(0, 0, 0, 0.2);
+  /* Chrome soft — dasar panel pinggir, chip filter, floating UI */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-chrome: var(--shadow-sm);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.08);
+  --shadow-lg: var(--shadow-md);
+  --shadow-map: var(--shadow-md);
 
-  /* Motion — PDF §5 */
+  --duration-fast: 150ms;
+  --duration-base: 220ms;
+  --duration-slow: 300ms;
   --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --animate-view-in: view-in 0.22s var(--ease-out-soft) both;
-  /* PDF §4: Sangat tinggi 2,6 s · Sedang 3,4 s. */
+  --animate-view-in: view-in var(--duration-base) var(--ease-out-soft) both;
   --animate-halo-high: halo-pulse 2.6s var(--ease-out-soft) infinite;
   --animate-halo-mid: halo-pulse 3.4s var(--ease-out-soft) infinite;
 }
@@ -111,7 +119,6 @@
   }
 }
 
-/* Animasi Peta & Indikator Hidup */
 .animate-halo-high {
   animation: var(--animate-halo-high);
 }
@@ -131,7 +138,6 @@
   animation: indeterminate 1.5s var(--ease-out-soft) infinite;
 }
 
-/* Scale/opacity only — Tailwind v4 `translate` must not fight `transform`. */
 @keyframes halo-pulse {
   0% {
     transform: scale(0.85);
@@ -195,15 +201,22 @@
   }
 }
 
-/* Scroll panel — PDF §5 */
 .soft-scroll {
   scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
+  scrollbar-color: var(--color-scrollbar) transparent;
   overscroll-behavior: contain;
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
-.soft-scroll:hover {
-  scrollbar-color: var(--color-scrollbar) transparent;
+.soft-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.soft-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-scrollbar);
+  border-radius: 8px;
+}
+.soft-scroll::-webkit-scrollbar-track {
+  background: transparent;
 }
 .soft-fade {
   mask-image: linear-gradient(

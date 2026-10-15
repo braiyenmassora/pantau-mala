@@ -11,7 +11,7 @@ import {
 import type { RefObject } from 'react'
 import { useMemo } from 'react'
 
-import { Badge, EmptyState, InfoTooltip, Skeleton, Sparkline } from '@/components/common'
+import { Badge, EmptyState, InfoTooltip, Skeleton } from '@/components/common'
 import { Brand } from '@/components/common/brand'
 import { focusRing } from '@/components/common/focus-ring'
 import { LatestEarthquakeCard } from '@/components/panel/latest-earthquake-card'
@@ -24,10 +24,10 @@ import { TopProvincesList } from '@/components/panel/top-provinces-list'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
-import { useMeta, useRegionCatalog } from '@/data/queries'
+import { useRegionCatalog } from '@/data/queries'
 import type { Region, RiskCategory } from '@/data/types'
 import { filterRegions } from '@/lib/filter-regions'
-import { formatDateTime, formatNumber } from '@/lib/format'
+import { formatNumber } from '@/lib/format'
 import { hotspotTrend, type TrendDirection } from '@/lib/hotspot-trend'
 import { fitIndonesia } from '@/lib/indonesia-view'
 import { aggregateByProvince } from '@/lib/province-aggregates'
@@ -45,17 +45,10 @@ type SummaryPanelProps = {
   onRetry?: () => void
 }
 
-const TREND_UI: Record<
-  TrendDirection,
-  { label: string; Icon: typeof TrendingUp; colorClass: string }
-> = {
-  naik: { label: copy.detail.trendUp, Icon: TrendingUp, colorClass: 'text-risk-high' },
-  turun: {
-    label: copy.detail.trendDown,
-    Icon: TrendingDown,
-    colorClass: 'text-risk-low',
-  },
-  stabil: { label: copy.detail.trendFlat, Icon: Minus, colorClass: 'text-ink-3' },
+const TREND_UI: Record<TrendDirection, { label: string; Icon: typeof TrendingUp }> = {
+  naik: { label: copy.detail.trendUp, Icon: TrendingUp },
+  turun: { label: copy.detail.trendDown, Icon: TrendingDown },
+  stabil: { label: copy.detail.trendFlat, Icon: Minus },
 }
 
 // ponytail: panel kiri 400px tanpa divider, beranda 5 baris, provinsi 10 baris.
@@ -74,7 +67,6 @@ export function SummaryPanel({
   const selectedCategories = useMapStore((s) => s.selectedCategories)
   const panelOpen = useUiStore((s) => s.panelOpen)
 
-  const { data: meta } = useMeta()
   const { data: daftar, isPending: daftarPending } = useRegionCatalog()
 
   const selected = useMemo(
@@ -100,8 +92,7 @@ export function SummaryPanel({
   const nationalView = province === 'Semua'
   const searching = query.trim().length > 0
 
-  const pinRisk =
-    selectedCategories.size === 1 ? [...selectedCategories][0] : undefined
+  const pinRisk = selectedCategories.size === 1 ? [...selectedCategories][0] : undefined
 
   const topProvinces = useMemo(() => {
     if (!nationalView || !daftar) return []
@@ -112,11 +103,16 @@ export function SummaryPanel({
     ).slice(0, 5)
   }, [nationalView, daftar, viewRegions, pinRisk])
 
-  // Top 10 kabupaten untuk tampilan provinsi
+  // Semua kab/kota di provinsi (Sangat tinggi + Sedang + Rendah), urut risiko.
+  // Jangan di-slice: top-10 memotong Sedang bila Sangat tinggi ≥10.
   const provinceTopRegencies = useMemo(() => {
     if (nationalView) return []
-    return filtered.slice(0, 10)
-  }, [nationalView, filtered])
+    return filterRegions(regions, {
+      province,
+      selectedCategories: new Set(),
+      query: '',
+    })
+  }, [nationalView, regions, province])
 
   // Agregat untuk identitas provinsi terpilih
   const provinceStats = useMemo(() => {
@@ -143,15 +139,15 @@ export function SummaryPanel({
   }
 
   if (isError) {
+    const offline = typeof navigator !== 'undefined' && navigator.onLine === false
+    const fail = offline ? copy.empty.offline : copy.empty.loadFail
     return (
       <div className="p-4">
         <EmptyState
           icon={CloudOff}
-          title={copy.empty.loadFail.title}
-          description={copy.empty.loadFail.description}
-          action={
-            onRetry ? { label: copy.empty.loadFail.action, onClick: onRetry } : undefined
-          }
+          title={fail.title}
+          description={fail.description}
+          action={onRetry ? { label: fail.action, onClick: onRetry } : undefined}
         />
       </div>
     )
@@ -165,25 +161,21 @@ export function SummaryPanel({
     return <NoHotspotDetail kab={selectedCatalog} />
   }
 
-  const updatedDate = meta?.updated_at ? formatDateTime(meta.updated_at, 'WIB') : ''
-
   const wilayahLabel = province === 'Semua' ? copy.common.indonesia : province
   const filtering = selectedCategories.size > 0
   const clearCategories = useMapStore.getState().clearCategories
   const noHotspots =
     regions.length === 0 || regions.reduce((s, r) => s + r.hotspots_24h, 0) === 0
 
-  if (filtering && filtered.length === 0) {
+  // Filter kosong jangan menelan mode cari — tanpa SearchBox query bisa “stuck”.
+  if (filtering && filtered.length === 0 && !searching) {
     return (
       <div className="space-y-6 p-4">
         <header className="space-y-1">
           <Brand compact />
-          <div className="flex items-center gap-1">
-            <h1 className="text-ink truncate text-xl leading-7 font-semibold">
-              Pantauan titik panas Indonesia
-            </h1>
-            <InfoTooltip content={copy.panel.limitationNote} />
-          </div>
+          <h1 className="text-ink truncate text-xl leading-8 font-semibold">
+            Pantauan titik panas Indonesia
+          </h1>
         </header>
         <EmptyState
           icon={Filter}
@@ -206,15 +198,12 @@ export function SummaryPanel({
       <div className="space-y-6 p-4">
         <header className="space-y-1">
           <Brand compact />
-          <div className="flex items-center gap-1">
-            <h1 className="text-ink truncate text-xl leading-7 font-semibold">
-              Pantauan titik panas Indonesia
+          <div className="flex min-w-0 items-center gap-1">
+            <h1 className="text-ink truncate text-xl leading-8 font-semibold">
+              {copy.panel.indonesiaToday}
             </h1>
-            <InfoTooltip content={copy.panel.limitationNote} />
+            <InfoTooltip content={copy.panel.titleTip} />
           </div>
-          <p className="text-ink-2 text-xs leading-4">
-            24 jam terakhir{updatedDate ? ` · Diperbarui ${updatedDate}` : ''}
-          </p>
         </header>
         <EmptyState
           icon={ShieldCheck}
@@ -225,107 +214,99 @@ export function SummaryPanel({
     )
   }
 
-  // 1. Hasil pencarian — kartu sama dengan daftar provinsi/kabupaten
-  if (searching) {
+  // Beranda nasional + hasil cari: SearchBox tetap di sticky yang sama (hindari remount → fokus stuck).
+  if (nationalView || searching) {
     return (
-      <div className="flex flex-col gap-5 px-4 py-5">
-        <SearchBox mapRef={mapRef} />
-        <section className="space-y-3">
-          <h2 className="text-ink text-sm font-semibold">Hasil pencarian</h2>
-          {filtered.length === 0 ? (
-            <Card>
-              <CardContent className="text-ink-2 py-4 text-sm leading-5">
-                Wilayah tidak ditemukan. Coba nama kabupaten/kota lain.
-              </CardContent>
-            </Card>
-          ) : (
-            <ul className="flex flex-col gap-3">
-              {filtered.map((region) => (
-                <li key={region.code}>
-                  <RegionRow region={region} mapRef={mapRef} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </div>
-    )
-  }
-
-  // 2. Beranda nasional — header + tumpukan kartu hasil sederhana
-  if (nationalView) {
-    return (
-      <div className="flex flex-col gap-5 px-4 py-5">
-        <div className="space-y-3">
+      <div className="flex flex-col">
+        <div className="bg-surface sticky top-0 z-10 space-y-3 px-4 pt-5 pb-3">
           <Brand compact />
           <SearchBox mapRef={mapRef} />
         </div>
 
-        <header className="space-y-2">
-          <div className="flex items-center gap-1">
-            <h1 className="text-ink text-xl leading-7 font-semibold">
-              Pantauan titik panas Indonesia
-            </h1>
-            <InfoTooltip content={copy.panel.limitationNote} />
-          </div>
-          <p className="text-ink-2 text-xs leading-5">
-            24 jam terakhir{updatedDate ? ` · Diperbarui ${updatedDate}` : ''}
-          </p>
-        </header>
+        <div className="flex flex-col gap-5 px-4 pt-2 pb-5">
+          {searching ? (
+            <section className="space-y-3">
+              <h2 className="text-ink text-sm leading-5 font-semibold">
+                {copy.panel.searchResults}
+              </h2>
+              {filtered.length === 0 ? (
+                <Card>
+                  <CardContent className="text-ink-2 py-4 text-sm leading-5">
+                    Wilayah tidak ditemukan. Coba nama kabupaten/kota lain.
+                  </CardContent>
+                </Card>
+              ) : (
+                <ul className="flex flex-col">
+                  {filtered.map((region) => (
+                    <li key={region.code}>
+                      <RegionRow region={region} mapRef={mapRef} />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          ) : (
+            <>
+              <header>
+                <div className="flex min-w-0 items-start gap-1">
+                  <h1 className="text-ink min-w-0 text-2xl leading-8 font-semibold tracking-tight">
+                    {copy.panel.indonesiaToday}
+                  </h1>
+                  <InfoTooltip content={copy.panel.titleTip} className="mt-1" />
+                </div>
+              </header>
 
-        <div className="flex flex-col gap-4">
-          <LocationCard regions={regions} />
-          <LatestEarthquakeCard />
+              <div className="flex flex-col gap-4">
+                <LocationCard regions={regions} />
+                <LatestEarthquakeCard />
 
-          <section className="space-y-3">
-            <h2 className="text-ink text-sm font-semibold">
-              Provinsi dengan titik panas terbanyak
-            </h2>
-            {daftarPending && !daftar ? (
-              <div className="flex flex-col gap-2">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Skeleton key={i} className="rounded-card h-12 w-full" />
-                ))}
+                <section className="space-y-3">
+                  <h2 className="text-ink text-sm leading-5 font-semibold">
+                    Provinsi dengan titik panas terbanyak
+                  </h2>
+                  {daftarPending && !daftar ? (
+                    <div className="flex flex-col gap-2">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Skeleton key={i} className="rounded-ctl h-12 w-full" />
+                      ))}
+                    </div>
+                  ) : topProvinces.length === 0 ? (
+                    <div className="text-ink-2 flex items-center gap-2 py-2 text-sm leading-5">
+                      <Check className="text-ink-2 size-4" strokeWidth={2} aria-hidden />
+                      <span>Tidak ada deteksi dalam 24 jam terakhir</span>
+                    </div>
+                  ) : (
+                    <TopProvincesList
+                      items={topProvinces.flatMap((agg) => {
+                        const prov = daftar?.provinces.find((p) => p.name === agg.name)
+                        return prov
+                          ? [
+                              {
+                                province: prov,
+                                hotspots_24h: agg.hotspots_24h,
+                                trend_7d: agg.trend_7d,
+                              },
+                            ]
+                          : []
+                      })}
+                    />
+                  )}
+                </section>
               </div>
-            ) : topProvinces.length === 0 ? (
-              <div className="text-ink-2 flex items-center gap-2 py-2 text-sm">
-                <Check className="text-risk-low size-4" strokeWidth={2} aria-hidden />
-                <span>Tidak ada titik panas dalam 24 jam terakhir</span>
-              </div>
-            ) : (
-              <TopProvincesList
-                items={topProvinces.flatMap((agg) => {
-                  const prov = daftar?.provinces.find((p) => p.name === agg.name)
-                  return prov
-                    ? [
-                        {
-                          province: prov,
-                          hotspots_24h: agg.hotspots_24h,
-                          trend_7d: agg.trend_7d,
-                        },
-                      ]
-                    : []
-                })}
-              />
-            )}
-          </section>
+            </>
+          )}
         </div>
       </div>
     )
   }
 
-  // 3. Tampilan Panel Provinsi (Provinsi dipilih)
+  // 3. Panel provinsi — kartu pola Gempa (judul di dalam · atas hanya X)
   const provTrend = hotspotTrend(provinceStats?.trend_7d ?? [0, 0, 0, 0, 0, 0, 0])
-  const {
-    label: trendLabel,
-    Icon: TrendIcon,
-    colorClass: trendColor,
-  } = TREND_UI[provTrend]
+  const { label: trendLabel, Icon: TrendIcon } = TREND_UI[provTrend]
 
   return (
     <div className="flex flex-col">
-      {/* 1. Hanya X tutup — tanpa judul ganda / divider di atas nama */}
-      <div className="flex justify-end px-2 pt-2">
+      <div className="bg-surface sticky top-0 z-10 flex justify-end px-4 pt-3 pb-1">
         <button
           type="button"
           onClick={() => {
@@ -334,77 +315,53 @@ export function SummaryPanel({
           }}
           aria-label={copy.panel.closeDetail}
           className={cn(
-            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-10 shrink-0 items-center justify-center rounded-full transition-colors',
+            'text-ink-2 hover:bg-surface-muted rounded-ctl flex size-11 shrink-0 items-center justify-center transition-colors',
             focusRing,
           )}
         >
-          <X className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
+          <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         </button>
       </div>
 
-      <div className="flex flex-col gap-5 px-4 pt-0 pb-6">
-        <Card>
+      <div className="flex flex-col gap-5 px-4 pt-1 pb-5">
+        <Card aria-label={province}>
           <CardHeader>
-            <div className="flex items-center gap-1">
-              <h1 className="text-ink truncate text-xl leading-7 font-semibold">
+            <div className="flex min-w-0 items-center gap-1">
+              <h2 className="text-ink min-w-0 truncate text-sm leading-5 font-semibold">
                 {province}
-              </h1>
-              <InfoTooltip content={copy.panel.limitationNote} />
+              </h2>
+              <InfoTooltip content={copy.detail.riskTooltip} />
             </div>
+            <Badge
+              variant="category"
+              category={provinceStats?.risk_category ?? 'rendah'}
+            />
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-baseline gap-2">
-                <span className="text-ink font-mono text-3xl font-semibold tabular-nums">
-                  {formatNumber(provinceStats?.count_24h ?? 0)}
-                </span>
-                <span className="text-ink-2 text-xs leading-5">titik panas · 24 jam</span>
-                <InfoTooltip content="Lokasi yang terdeteksi satelit NASA FIRMS memiliki panas permukaan tinggi dalam 24 jam terakhir." />
-              </div>
-              <div className="flex shrink-0 items-center gap-1">
-                <Badge
-                  variant="category"
-                  category={provinceStats?.risk_category ?? 'rendah'}
-                />
-                <InfoTooltip content="Tingkat risiko dihitung dari jumlah titik panas 24 jam terakhir di wilayah ini. Ambang diambil dari risk_thresholds." />
-              </div>
-            </div>
-
-            <div className="text-ink-2 flex items-center gap-2 text-sm leading-5">
-              <TrendIcon
-                className={cn('size-4 shrink-0', trendColor)}
-                strokeWidth={2}
-                aria-hidden
-              />
-              <span className="text-ink font-medium">{trendLabel}</span>
-              <Sparkline
-                data={provinceStats?.trend_7d ?? [0, 0, 0, 0, 0, 0, 0]}
-                height={16}
-                width={48}
-                className="opacity-40"
-              />
-              <InfoTooltip content="Perbandingan jumlah titik panas selama 7 hari terakhir." />
-            </div>
-
-            {updatedDate ? (
-              <p className="text-ink-2 text-xs leading-5">Diperbarui {updatedDate}</p>
-            ) : null}
+          <CardContent className="space-y-3">
+            <p className="text-ink font-mono text-2xl leading-8 font-semibold tabular-nums">
+              {formatNumber(provinceStats?.count_24h ?? 0)}
+            </p>
+            <p className="text-ink text-sm leading-5">{copy.detail.hotspotUnitLine}</p>
+            <p className="text-ink-2 flex items-center gap-1.5 text-xs leading-4">
+              <TrendIcon className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+              <span>
+                {trendLabel} {copy.detail.trendVsPrevious}
+              </span>
+            </p>
           </CardContent>
         </Card>
 
         <section className="space-y-3">
-          <h2 className="text-ink text-sm font-semibold">
-            Kabupaten/kota dengan titik panas terbanyak
+          <h2 className="text-ink text-sm leading-5 font-semibold">
+            {copy.panel.topKab}
           </h2>
           {provinceTopRegencies.length === 0 ? (
-            <Card>
-              <CardContent className="text-ink-2 flex items-center gap-2 py-4 text-sm leading-5">
-                <Check className="text-risk-low size-4" strokeWidth={2} aria-hidden />
-                <span>Tidak ada titik panas dalam 24 jam terakhir</span>
-              </CardContent>
-            </Card>
+            <div className="text-ink-2 flex items-center gap-2 py-2 text-sm leading-5">
+              <Check className="size-4" strokeWidth={2} aria-hidden />
+              <span>Tidak ada deteksi dalam 24 jam terakhir</span>
+            </div>
           ) : (
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-col">
               {provinceTopRegencies.map((region) => (
                 <li key={region.code}>
                   <RegionRow region={region} mapRef={mapRef} />
@@ -421,26 +378,28 @@ export function SummaryPanel({
 function SummarySkeleton({ nationalView }: { nationalView: boolean }) {
   const rowCount = nationalView ? 5 : 10
   return (
-    <div className="flex flex-col gap-6 px-4 py-4" aria-busy>
-      <div className="space-y-2">
+    <div className="flex flex-col" aria-busy aria-label={copy.common.loading}>
+      <div className="bg-surface sticky top-0 z-10 space-y-3 px-4 pt-5 pb-3">
         <Skeleton className="rounded-ctl h-7 w-28" />
-        <Skeleton className="h-12 w-full rounded-full" />
+        <Skeleton className="rounded-ctl h-12 w-full" />
       </div>
-      <div className="space-y-2">
-        <Skeleton className="rounded-ctl h-7 w-3/4" />
-        <Skeleton className="rounded-ctl h-4 w-1/2" />
-      </div>
-      {nationalView ? (
+      <div className="flex flex-col gap-5 px-4 pt-2 pb-5">
         <div className="space-y-2">
-          <Skeleton className="rounded-ctl h-4 w-24" />
-          <Skeleton className="rounded-ctl h-10 w-full" />
+          <Skeleton className="rounded-ctl h-8 w-3/4" />
+          <Skeleton className="rounded-ctl h-4 w-1/2" />
         </div>
-      ) : null}
-      <div className="space-y-2">
-        <Skeleton className="rounded-ctl h-4 w-1/3" />
-        {Array.from({ length: rowCount }).map((_, i) => (
-          <Skeleton key={i} className="rounded-ctl h-12 w-full" />
-        ))}
+        {nationalView ? (
+          <>
+            <Skeleton className="rounded-ctl h-24 w-full" />
+            <Skeleton className="rounded-ctl h-24 w-full" />
+          </>
+        ) : null}
+        <div className="space-y-2">
+          <Skeleton className="rounded-ctl h-4 w-1/3" />
+          {Array.from({ length: rowCount }).map((_, i) => (
+            <Skeleton key={i} className="rounded-ctl h-12 w-full" />
+          ))}
+        </div>
       </div>
     </div>
   )
