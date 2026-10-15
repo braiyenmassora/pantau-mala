@@ -381,6 +381,16 @@ export const copy = {
   },
   footer: {
     sourcesLabel: 'Sumber data:',
+    mapSources: [
+      {
+        name: '© OpenStreetMap contributors',
+        href: 'https://www.openstreetmap.org/copyright',
+      },
+      {
+        name: '© CARTO',
+        href: 'https://carto.com/attributions',
+      },
+    ],
     sources: [
       {
         id: 'firms' as const,

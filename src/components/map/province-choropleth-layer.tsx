@@ -1,372 +1,241 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import type { FeatureCollection } from 'geojson'
+import { useEffect, useMemo, useRef } from 'react'
 import type {
   FillLayerSpecification,
-  GeoJSONSource,
   LineLayerSpecification,
   MapLayerMouseEvent,
 } from 'maplibre-gl'
 
 import { useMap } from '@/components/ui/map'
+import { useProvinceBoundaries } from '@/data/province-boundaries'
 import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
-import { getMapPadding } from '@/lib/indonesia-view'
 import { MAP_COLORS } from '@/lib/map-colors'
+import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
+import { normalizeProvinceName } from '@/lib/province-boundaries'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { useMapStore } from '@/store/map'
-import { useUiStore } from '@/store/ui'
 
 const SOURCE_ID = 'province-choropleth-source'
 const FILL_LAYER = 'province-choropleth-fill'
-const LINE_LAYER = 'province-choropleth-line'
-
-function matchProvince(name: string): string {
-  const norm = name
-    .toUpperCase()
-    .replace(/^DI\.\s*/, '')
-    .replace(/^PRO/, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-  if (norm.startsWith('PAPUA')) {
-    if (norm.includes('BARAT')) return 'PAPUA BARAT'
-    return 'PAPUA'
-  }
-  if (norm.includes('YOGYAKARTA')) return 'DAERAH ISTIMEWA YOGYAKARTA'
-  if (norm.includes('BANGKA')) return 'BANGKA BELITUNG'
-  if (norm.includes('ACEH')) return 'DI. ACEH'
-  return norm
-}
+const FALLBACK_LINE_LAYER = 'province-choropleth-line'
+const BASEMAP_BOUNDARY_LAYER = 'boundary_state'
 
 function buildFillPaint(
-  isNational: boolean,
-  matchedProvince: string,
-): FillLayerSpecification['paint'] {
-  return (
-    isNational
-      ? {
-          'fill-color': ['get', 'riskColor'],
-          'fill-opacity': ['case', ['>', ['get', 'hotspots'], 0], 0.14, 0],
-          'fill-antialias': true,
-          'fill-outline-color': 'transparent',
-        }
-      : {
-          'fill-color': [
+  selectedId: string | null,
+): NonNullable<FillLayerSpecification['paint']> {
+  return {
+    'fill-color': selectedId
+      ? [
+          'case',
+          ['==', ['get', 'province_id'], selectedId],
+          ['coalesce', ['feature-state', 'riskColor'], MAP_COLORS.surface],
+          [
             'case',
-            ['==', ['get', 'matched'], matchedProvince],
-            ['get', 'riskColor'],
+            ['boolean', ['feature-state', 'hover'], false],
+            ['coalesce', ['feature-state', 'riskColor'], MAP_COLORS.surface],
             MAP_COLORS.surface,
           ],
-          'fill-opacity': ['case', ['==', ['get', 'matched'], matchedProvince], 0.12, 0.2],
-          'fill-antialias': true,
-          'fill-outline-color': 'transparent',
-        }
-  ) as FillLayerSpecification['paint']
+        ]
+      : ['coalesce', ['feature-state', 'riskColor'], MAP_COLORS.surface],
+    'fill-opacity': selectedId
+      ? [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          0.2,
+          ['==', ['get', 'province_id'], selectedId],
+          0.16,
+          0.035,
+        ]
+      : [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          0.16,
+          ['>', ['coalesce', ['feature-state', 'hotspots'], 0], 0],
+          0.12,
+          0,
+        ],
+    'fill-antialias': true,
+    'fill-outline-color': 'transparent',
+  }
 }
 
-function buildLinePaint(
-  isNational: boolean,
-  matchedProvince: string,
-  hoveredMatched: string | null,
-): LineLayerSpecification['paint'] {
-  return (
-    isNational
-      ? {
-          'line-color': MAP_COLORS.surface,
-          'line-width': ['case', ['==', ['get', 'matched'], hoveredMatched ?? ''], 1.4, 0.8],
-          'line-blur': 0.35,
-          'line-opacity': [
-            'case',
-            ['==', ['get', 'matched'], hoveredMatched ?? ''],
-            0.85,
-            0.6,
-          ],
-        }
-      : {
-          'line-color': [
-            'case',
-            ['==', ['get', 'matched'], matchedProvince],
-            ['get', 'riskColor'],
-            MAP_COLORS.surface,
-          ],
-          'line-width': [
-            'case',
-            ['==', ['get', 'matched'], matchedProvince],
-            hoveredMatched === matchedProvince ? 1.5 : 1,
-            0.6,
-          ],
-          'line-blur': 0.35,
-          'line-opacity': [
-            'case',
-            ['==', ['get', 'matched'], matchedProvince],
-            hoveredMatched === matchedProvince ? 0.8 : 0.55,
-            0.5,
-          ],
-        }
-  ) as LineLayerSpecification['paint']
+function buildFallbackLinePaint(): NonNullable<LineLayerSpecification['paint']> {
+  return {
+    'line-color': MAP_COLORS.surface,
+    'line-width': ['case', ['boolean', ['feature-state', 'hover'], false], 1.4, 0.8],
+    'line-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 0.9, 0.55],
+  }
 }
 
 type ProvinceChoroplethLayerProps = {
   regions: Region[]
 }
 
-// ponytail: choropleth batas provinsi; paint/data di-update tanpa removeLayer (hindari kedip).
 export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProps) {
   const { map, isLoaded } = useMap()
   const { data: catalog } = useRegionCatalog()
-  const province = useMapStore((s) => s.province)
-  const setProvince = useMapStore((s) => s.setProvince)
-  const panelOpen = useUiStore((s) => s.panelOpen)
-  const [geoData, setGeoData] = useState<FeatureCollection | null>(null)
-  const hoveredRef = useRef<string | null>(null)
-  const fittedProvinceRef = useRef<string | null>(null)
+  const { data: boundaries, isError } = useProvinceBoundaries()
+  const province = useMapStore((state) => state.province)
+  const setProvince = useMapStore((state) => state.setProvince)
+  const reducedMotion = usePrefersReducedMotion()
   const catalogRef = useRef(catalog)
   const setProvinceRef = useRef(setProvince)
-  const provinceRef = useRef(province)
 
   useEffect(() => {
     catalogRef.current = catalog
     setProvinceRef.current = setProvince
-    provinceRef.current = province
-  }, [catalog, setProvince, province])
+  }, [catalog, setProvince])
 
-  useEffect(() => {
-    let cancelled = false
-    void fetch('/data/indonesia-provinces.geojson')
-      .then((res) => res.json())
-      .then((data: FeatureCollection) => {
-        if (!cancelled) setGeoData(data)
-      })
-      .catch(() => {})
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  const enrichedData = useMemo(() => {
-    if (!geoData) return null
+  const provinceMetrics = useMemo(() => {
+    if (!boundaries) return []
     const counts = new Map<string, number>()
-    for (const r of regions) {
-      const p = matchProvince(r.province)
-      counts.set(p, (counts.get(p) ?? 0) + r.hotspots_24h)
+    for (const region of regions) {
+      const name = normalizeProvinceName(region.province)
+      counts.set(name, (counts.get(name) ?? 0) + region.hotspots_24h)
     }
 
-    return {
-      type: 'FeatureCollection' as const,
-      features: geoData.features.map((f) => {
-        const prov = String(f.properties?.Propinsi ?? '').trim()
-        const matched = matchProvince(prov)
-        const hotspots = counts.get(matched) ?? counts.get(prov) ?? 0
-        let riskColor = RISK_CATEGORIES.rendah.dot
-        if (hotspots >= 10) riskColor = RISK_CATEGORIES.sangat_tinggi.dot
-        else if (hotspots >= 1) riskColor = RISK_CATEGORIES.sedang.dot
+    return boundaries.geometry.features.map((feature) => {
+      const provinceName = feature.properties.province_name
+      const hotspots = counts.get(normalizeProvinceName(provinceName)) ?? 0
+      const riskColor =
+        hotspots >= 10
+          ? RISK_CATEGORIES.sangat_tinggi.dot
+          : hotspots > 0
+            ? RISK_CATEGORIES.sedang.dot
+            : RISK_CATEGORIES.rendah.dot
+      return { id: feature.id, hotspots, riskColor }
+    })
+  }, [boundaries, regions])
 
-        return {
-          ...f,
-          properties: {
-            ...f.properties,
-            hotspots,
-            matched,
-            riskColor,
-          },
-        }
-      }),
-    }
-  }, [geoData, regions])
+  const selectedId = useMemo(
+    () =>
+      boundaries?.provinces.find(
+        (boundary) =>
+          normalizeProvinceName(boundary.name) === normalizeProvinceName(province),
+      )?.id ?? null,
+    [boundaries, province],
+  )
 
-  // Fit bounds sekali per pilihan provinsi — bukan tiap refresh regions
   useEffect(() => {
-    if (!map || !enrichedData || province === 'Semua') {
-      if (province === 'Semua') fittedProvinceRef.current = null
-      return
-    }
-    if (fittedProvinceRef.current === province) return
-
-    const selectedFeature = enrichedData.features.find(
-      (f) => f.properties.matched === matchProvince(province),
-    )
-    if (!selectedFeature) return
-
-    let minLon = 180
-    let maxLon = -180
-    let minLat = 90
-    let maxLat = -90
-
-    const geom = selectedFeature.geometry
-    const rings =
-      geom.type === 'Polygon'
-        ? geom.coordinates
-        : geom.type === 'MultiPolygon'
-          ? geom.coordinates.flat(1)
-          : []
-
-    for (const ring of rings) {
-      for (const [lon, lat] of ring) {
-        if (lon < minLon) minLon = lon
-        if (lon > maxLon) maxLon = lon
-        if (lat < minLat) minLat = lat
-        if (lat > maxLat) maxLat = lat
-      }
-    }
-
-    if (minLon < maxLon && minLat < maxLat) {
-      fittedProvinceRef.current = province
-      map.fitBounds(
-        [
-          [minLon, minLat],
-          [maxLon, maxLat],
-        ],
-        {
-          padding: getMapPadding(panelOpen),
-          duration: 600,
-        },
-      )
-    }
-    // shortcut: panelOpen tidak di-deps — hindari kamera loncat tiap toggle panel
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [map, province, enrichedData])
-
-  // Pasang source/layer + handler sekali; teardown hanya unmount
-  useEffect(() => {
-    if (!map || !isLoaded) return
+    if (!map || !isLoaded || !boundaries) return
+    const hasBasemapBoundary = Boolean(map.getLayer(BASEMAP_BOUNDARY_LAYER))
+    const anchor = map.getLayer(BASEMAP_BOUNDARY_LAYER)
+      ? BASEMAP_BOUNDARY_LAYER
+      : map.getLayer('tunnel_service_case')
+        ? 'tunnel_service_case'
+        : undefined
 
     if (!map.getSource(SOURCE_ID)) {
       map.addSource(SOURCE_ID, {
         type: 'geojson',
-        tolerance: 0.18,
-        buffer: 8,
-        data: { type: 'FeatureCollection', features: [] },
+        data: boundaries.geometry,
+        promoteId: 'province_id',
+        tolerance: 0,
+        buffer: 64,
       })
     }
-
     if (!map.getLayer(FILL_LAYER)) {
       map.addLayer(
-        {
-          id: FILL_LAYER,
-          type: 'fill',
-          source: SOURCE_ID,
-          paint: buildFillPaint(true, ''),
-        },
-        'tunnel_service_case',
+        { id: FILL_LAYER, type: 'fill', source: SOURCE_ID, paint: buildFillPaint(null) },
+        anchor,
       )
     }
-
-    if (!map.getLayer(LINE_LAYER)) {
+    if (!hasBasemapBoundary && !map.getLayer(FALLBACK_LINE_LAYER)) {
       map.addLayer(
         {
-          id: LINE_LAYER,
+          id: FALLBACK_LINE_LAYER,
           type: 'line',
           source: SOURCE_ID,
           layout: { 'line-join': 'round', 'line-cap': 'round' },
-          paint: buildLinePaint(true, '', null),
+          paint: buildFallbackLinePaint(),
         },
-        'tunnel_service_case',
+        anchor,
       )
     }
 
-    const applyLineHover = (hovered: string | null) => {
-      if (!map.getLayer(LINE_LAYER)) return
-      const matchedProvince = matchProvince(provinceRef.current)
-      const isNational = provinceRef.current === 'Semua'
-      const linePaint = buildLinePaint(isNational, matchedProvince, hovered)
-      for (const [key, value] of Object.entries(linePaint ?? {})) {
-        map.setPaintProperty(
-          LINE_LAYER,
-          key as keyof NonNullable<LineLayerSpecification['paint']>,
-          value,
-        )
-      }
-    }
-
-    const onClick = (e: MapLayerMouseEvent) => {
-      const feature = e.features?.[0]
-      if (!feature) return
-      const provProp = String(feature.properties?.Propinsi ?? '')
-      const target = catalogRef.current?.provinces.find(
-        (p) => matchProvince(p.name) === matchProvince(provProp),
+    let hoveredId: string | null = null
+    const targetProvince = (event: MapLayerMouseEvent) => {
+      const name = String(event.features?.[0]?.properties?.province_name ?? '')
+      return catalogRef.current?.provinces.find(
+        (candidate) =>
+          normalizeProvinceName(candidate.name) === normalizeProvinceName(name),
       )
+    }
+    const onClick = (event: MapLayerMouseEvent) => {
+      const target = targetProvince(event)
       if (target) setProvinceRef.current(target.name)
     }
-
-    const onEnter = (e: MapLayerMouseEvent) => {
-      map.getCanvas().style.cursor = 'pointer'
-      const feature = e.features?.[0]
-      if (!feature) return
-      const next = matchProvince(String(feature.properties?.Propinsi ?? ''))
-      if (hoveredRef.current === next) return
-      hoveredRef.current = next
-      applyLineHover(next)
+    const onMove = (event: MapLayerMouseEvent) => {
+      const target = targetProvince(event)
+      map.getCanvas().style.cursor = target ? 'pointer' : ''
+      const next = target
+        ? String(event.features?.[0]?.properties?.province_id ?? '')
+        : null
+      if (next === hoveredId) return
+      if (hoveredId)
+        map.setFeatureState({ source: SOURCE_ID, id: hoveredId }, { hover: false })
+      hoveredId = next
+      if (next) map.setFeatureState({ source: SOURCE_ID, id: next }, { hover: true })
     }
-
-    const onMove = (e: MapLayerMouseEvent) => {
-      const feature = e.features?.[0]
-      if (!feature) return
-      const next = matchProvince(String(feature.properties?.Propinsi ?? ''))
-      if (hoveredRef.current === next) return
-      hoveredRef.current = next
-      applyLineHover(next)
-    }
-
     const onLeave = () => {
       map.getCanvas().style.cursor = ''
-      if (hoveredRef.current === null) return
-      hoveredRef.current = null
-      applyLineHover(null)
+      if (hoveredId)
+        map.setFeatureState({ source: SOURCE_ID, id: hoveredId }, { hover: false })
+      hoveredId = null
     }
 
     map.on('click', FILL_LAYER, onClick)
-    map.on('mouseenter', FILL_LAYER, onEnter)
+    map.on('mouseenter', FILL_LAYER, onMove)
     map.on('mousemove', FILL_LAYER, onMove)
     map.on('mouseleave', FILL_LAYER, onLeave)
 
     return () => {
-      try {
-        map.off('click', FILL_LAYER, onClick)
-        map.off('mouseenter', FILL_LAYER, onEnter)
-        map.off('mousemove', FILL_LAYER, onMove)
-        map.off('mouseleave', FILL_LAYER, onLeave)
-        if (map.getLayer(LINE_LAYER)) map.removeLayer(LINE_LAYER)
-        if (map.getLayer(FILL_LAYER)) map.removeLayer(FILL_LAYER)
-        if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID)
-      } catch {
-        // teardown
-      }
+      map.off('click', FILL_LAYER, onClick)
+      map.off('mouseenter', FILL_LAYER, onMove)
+      map.off('mousemove', FILL_LAYER, onMove)
+      map.off('mouseleave', FILL_LAYER, onLeave)
+      map.getCanvas().style.cursor = ''
+      if (map.getLayer(FALLBACK_LINE_LAYER)) map.removeLayer(FALLBACK_LINE_LAYER)
+      if (map.getLayer(FILL_LAYER)) map.removeLayer(FILL_LAYER)
+      if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID)
     }
-  }, [map, isLoaded])
+  }, [map, isLoaded, boundaries])
 
-  // Update data + paint tanpa removeLayer
   useEffect(() => {
-    if (!map || !isLoaded || !enrichedData) return
-    if (
-      !map.getSource(SOURCE_ID) ||
-      !map.getLayer(FILL_LAYER) ||
-      !map.getLayer(LINE_LAYER)
-    ) {
-      return
+    if (!map || !isLoaded || !map.getSource(SOURCE_ID)) return
+    for (const { id, hotspots, riskColor } of provinceMetrics) {
+      map.setFeatureState({ source: SOURCE_ID, id }, { hotspots, riskColor })
     }
+  }, [map, isLoaded, provinceMetrics])
 
-    const src = map.getSource(SOURCE_ID) as GeoJSONSource | undefined
-    src?.setData(enrichedData)
+  useEffect(() => {
+    if (!map || !isLoaded || !boundaries || !map.getLayer(FILL_LAYER)) return
+    map.setPaintProperty(FILL_LAYER, 'fill-opacity-transition', {
+      duration: reducedMotion ? 0 : 180,
+      delay: 0,
+    })
+    map.setPaintProperty(FILL_LAYER, 'fill-color-transition', {
+      duration: reducedMotion ? 0 : 180,
+      delay: 0,
+    })
+    const fillPaint = buildFillPaint(selectedId)
+    map.setPaintProperty(FILL_LAYER, 'fill-color', fillPaint['fill-color'])
+    map.setPaintProperty(FILL_LAYER, 'fill-opacity', fillPaint['fill-opacity'])
+    map.setPaintProperty(FILL_LAYER, 'fill-antialias', fillPaint['fill-antialias'])
+    map.setPaintProperty(
+      FILL_LAYER,
+      'fill-outline-color',
+      fillPaint['fill-outline-color'],
+    )
 
-    const matchedProvince = matchProvince(province)
-    const isNational = province === 'Semua'
-    const fillPaint = buildFillPaint(isNational, matchedProvince)
-    const linePaint = buildLinePaint(isNational, matchedProvince, hoveredRef.current)
-
-    for (const [key, value] of Object.entries(fillPaint ?? {})) {
-      map.setPaintProperty(
-        FILL_LAYER,
-        key as keyof NonNullable<FillLayerSpecification['paint']>,
-        value,
-      )
+    if (map.getLayer(FALLBACK_LINE_LAYER)) {
+      const linePaint = buildFallbackLinePaint()
+      map.setPaintProperty(FALLBACK_LINE_LAYER, 'line-color', linePaint['line-color'])
+      map.setPaintProperty(FALLBACK_LINE_LAYER, 'line-width', linePaint['line-width'])
+      map.setPaintProperty(FALLBACK_LINE_LAYER, 'line-opacity', linePaint['line-opacity'])
     }
-    for (const [key, value] of Object.entries(linePaint ?? {})) {
-      map.setPaintProperty(
-        LINE_LAYER,
-        key as keyof NonNullable<LineLayerSpecification['paint']>,
-        value,
-      )
-    }
-  }, [map, isLoaded, enrichedData, province])
+  }, [map, isLoaded, boundaries, selectedId, reducedMotion])
 
+  if (isError) throw new Error('Batas provinsi belum dapat dimuat.')
   return null
 }

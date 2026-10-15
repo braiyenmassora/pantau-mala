@@ -33,9 +33,6 @@ const headers = `/*
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 
-/fonts/*
-  Cache-Control: public, max-age=31536000, immutable
-
 /data/*
   Cache-Control: public, max-age=300
 `

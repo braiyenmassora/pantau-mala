@@ -18,6 +18,12 @@ describe('PanelFooter', () => {
     expect(screen.queryByText(copy.footer.sourcesLabel)).toBeNull()
     expect(screen.getByRole('link', { name: /NASA FIRMS/ })).toBeTruthy()
     expect(screen.getByRole('link', { name: /Open-Meteo/ })).toBeTruthy()
+    expect(
+      screen
+        .getByRole('link', { name: /OpenStreetMap contributors/ })
+        .getAttribute('href'),
+    ).toBe('https://www.openstreetmap.org/copyright')
+    expect(screen.getByRole('link', { name: /CARTO/ })).toBeTruthy()
     expect(screen.queryByText(/menit lalu/)).toBeNull()
   })
 })

@@ -40,6 +40,9 @@ Kategori memakai hasil backend; tidak dihitung ulang dengan rule jumlah titik Py
 
 ## Verifikasi
 
+Sumber, ketelitian, dan pembaruan snapshot polygon provinsi dijelaskan di
+[Batas provinsi](docs/PROVINCE_BOUNDARIES.md).
+
 ```sh
 pnpm test
 pnpm run lint

@@ -87,7 +87,6 @@ try {
         aside: pick('aside'),
         legend: pick('[data-testid="map-legend"]'),
         controls: pick('[data-testid="map-controls"]'),
-        updated: pick('[data-testid="updated-at"]'),
       }
     })
 
@@ -96,9 +95,6 @@ try {
     }
     if (boxes.legend && boxes.controls && overlaps(boxes.legend, boxes.controls)) {
       throw new Error(`${w}x${h}: legend overlaps map controls`)
-    }
-    if (boxes.controls && boxes.updated && overlaps(boxes.controls, boxes.updated)) {
-      throw new Error(`${w}x${h}: controls overlap updated-at`)
     }
 
     const scrollOk = await page.locator('aside .soft-scroll').evaluate((el) => {

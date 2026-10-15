@@ -1,5 +1,6 @@
 import { SessionControl } from '@/auth/access-gate'
 import { focusRing } from '@/components/common/focus-ring'
+import { MapAttribution } from '@/components/map/map-attribution'
 import { copy } from '@/copy/id'
 import { cn } from '@/lib/utils'
 
@@ -30,6 +31,8 @@ export function PanelFooter() {
             </a>
           </span>
         ))}
+        <span aria-hidden>·</span>
+        <MapAttribution />
       </p>
       <SessionControl />
     </footer>
