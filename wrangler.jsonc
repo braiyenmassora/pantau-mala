@@ -12,6 +12,9 @@
     "traces": {
       "enabled": true,
     },
+    "issues": {
+      "enabled": true,
+    },
   },
   "assets": {
     "directory": "./dist",
