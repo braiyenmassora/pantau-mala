@@ -23,6 +23,8 @@ export function WindForecast({ forecast, selectedTime = null, onSelectTime, time
   const nextDay = points.filter((point) => point.ts >= now && point.ts <= now + 24 * 60 * 60_000)
   const maximum = Math.max(1, ...nextDay.map((point) => point.kecepatan_angin_kmj))
   const wind = current ? describeWind(current.angin_u, current.angin_v) : null
+  const keyMode = forecast.data.mode_key ?? 'unverified'
+  const keyLabel = keyMode === 'production' ? 'Production' : keyMode === 'testing' ? 'Testing' : 'belum terverifikasi'
 
   return (
     <section aria-label={copy.map.windForecast} className="space-y-3 text-xs">
@@ -31,7 +33,7 @@ export function WindForecast({ forecast, selectedTime = null, onSelectTime, time
       </p>
       {current && wind ? (
         <>
-          <div className="bg-surface-muted rounded-ctl grid grid-cols-3 gap-2 p-3">
+          <div className="bg-surface-muted rounded-ctl grid grid-cols-2 gap-2 p-3 sm:grid-cols-4">
             <div>
               <p className="text-ink-2">Kecepatan</p>
               <p className="font-mono text-sm font-semibold">{formatNumber(current.kecepatan_angin_kmj, { maximumFractionDigits: 1 })}</p>
@@ -43,13 +45,23 @@ export function WindForecast({ forecast, selectedTime = null, onSelectTime, time
               <p className="text-ink-3">km/jam</p>
             </div>
             <div>
-              <p className="text-ink-2">Dari arah</p>
-              <p className="flex items-center gap-1 font-mono text-sm font-semibold">
-                <ArrowUp className="size-4" style={{ transform: `rotate(${wind.toDegrees}deg)` }} aria-hidden />
-                {wind.from}
-              </p>
-              <p className="text-ink-3">{wind.from === 'Tenang' ? 'Angin lemah' : `${Math.round(wind.fromDegrees)}°`}</p>
+              <p className="text-ink-2">Suhu</p>
+              <p className="font-mono text-sm font-semibold">{formatNumber(current.suhu_c, { maximumFractionDigits: 1 })}</p>
+              <p className="text-ink-3">°C</p>
             </div>
+            <div>
+              <p className="text-ink-2">Kelembapan</p>
+              <p className="font-mono text-sm font-semibold">{formatNumber(current.kelembapan, { maximumFractionDigits: 0 })}</p>
+              <p className="text-ink-3">%</p>
+            </div>
+          </div>
+          <div className="text-ink-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span className="flex items-center gap-1">
+              <ArrowUp className="size-4 text-brand" style={{ transform: `rotate(${wind.toDegrees}deg)` }} aria-hidden />
+              Dari {wind.from} {wind.from === 'Tenang' ? '' : `· ${Math.round(wind.fromDegrees)}°`}
+            </span>
+            <span>Titik embun {current.titik_embun_c == null ? '—' : `${formatNumber(current.titik_embun_c, { maximumFractionDigits: 1 })} °C`}</span>
+            <span>Hujan 3j {current.curah_hujan_3j_mm == null ? '—' : `${formatNumber(current.curah_hujan_3j_mm, { maximumFractionDigits: 2 })} mm`}</span>
           </div>
           <p className="text-ink-2">Berlaku {formatDateTime(new Date(current.ts).toISOString(), timeZone)}</p>
         </>
@@ -85,7 +97,7 @@ export function WindForecast({ forecast, selectedTime = null, onSelectTime, time
         </div>
       )}
       <p className="text-ink-3 leading-4">Panah menunjukkan arah tujuan angin; label menunjukkan asalnya. Hanya prakiraan titik, bukan medan angin seluruh Indonesia.</p>
-      <p className="text-ink-3 leading-4">Validitas lisensi key belum dikonfirmasi. Windy Testing dapat memodifikasi nilai; gunakan key Production untuk data operasional.</p>
+      <p className="text-ink-3 leading-4">Key {keyLabel}. Windy adalah prakiraan titik dari model {forecast.data.model.toUpperCase()}, bukan pengukuran langsung.{forecast.data.titik_ditolak ? ` ${forecast.data.titik_ditolak} titik respons tidak dipakai karena tidak lengkap.` : ''}</p>
       <p className="text-ink-3">Respons diterima {formatDateTime(forecast.diambil, timeZone)}; bukan waktu rilis model.</p>
     </section>
   )

@@ -101,6 +101,8 @@ export type NearbyHotspotsResponse = z.infer<typeof nearbyHotspotsSchema>
 export const windyPointSchema = z.object({
   ts: number.int().min(946684800000).max(4102444800000),
   suhu_c: number.min(-100).max(70),
+  titik_embun_c: number.min(-100).max(70).nullable().optional(),
+  curah_hujan_3j_mm: number.min(0).max(10000).nullable().optional(),
   angin_u: number.min(-200).max(200),
   angin_v: number.min(-200).max(200),
   kecepatan_angin_kmj: number.min(0).max(1000),
@@ -114,6 +116,8 @@ export const windyForecastSchema = z.object({
     longitude: number.min(-180).max(180),
     model: z.string().min(1),
     titik: z.array(windyPointSchema).max(2000),
+    mode_key: z.enum(['production', 'testing', 'unverified']).optional(),
+    titik_ditolak: number.int().min(0).optional(),
   }),
   sumber: z.string(),
   keterangan: z.string(),

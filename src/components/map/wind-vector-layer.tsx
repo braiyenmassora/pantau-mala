@@ -32,6 +32,8 @@ export function WindVectorLayer() {
         {inspect && <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2"><MapInfoCard title={location.label} lines={[
           `Windy ${data?.data.model.toUpperCase()} · Prakiraan titik`,
           `Dari ${wind.from} · Hembusan ${formatNumber(point.hembusan_kmj)} km/jam`,
+          `Suhu ${formatNumber(point.suhu_c, { maximumFractionDigits: 1 })} °C · RH ${formatNumber(point.kelembapan, { maximumFractionDigits: 0 })}%`,
+          `Titik embun ${point.titik_embun_c == null ? '—' : `${formatNumber(point.titik_embun_c, { maximumFractionDigits: 1 })} °C`} · Hujan 3j ${point.curah_hujan_3j_mm == null ? '—' : `${formatNumber(point.curah_hujan_3j_mm, { maximumFractionDigits: 2 })} mm`}`,
           `Berlaku ${formatDateTime(new Date(point.ts).toISOString(), 'WIB')}`,
           'Tier key belum terverifikasi; bukan medan angin nasional.',
         ]} /></div>}

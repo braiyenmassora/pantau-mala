@@ -45,7 +45,9 @@ function buildFillPaint(
     isNational
       ? {
           'fill-color': ['get', 'riskColor'],
-          'fill-opacity': ['case', ['>', ['get', 'hotspots'], 0], 0.3, 0],
+          'fill-opacity': ['case', ['>', ['get', 'hotspots'], 0], 0.14, 0],
+          'fill-antialias': true,
+          'fill-outline-color': 'transparent',
         }
       : {
           'fill-color': [
@@ -54,7 +56,9 @@ function buildFillPaint(
             ['get', 'riskColor'],
             MAP_COLORS.surface,
           ],
-          'fill-opacity': ['case', ['==', ['get', 'matched'], matchedProvince], 0.3, 0.4],
+          'fill-opacity': ['case', ['==', ['get', 'matched'], matchedProvince], 0.12, 0.2],
+          'fill-antialias': true,
+          'fill-outline-color': 'transparent',
         }
   ) as FillLayerSpecification['paint']
 }
@@ -68,12 +72,13 @@ function buildLinePaint(
     isNational
       ? {
           'line-color': MAP_COLORS.surface,
-          'line-width': ['case', ['==', ['get', 'matched'], hoveredMatched ?? ''], 2, 1],
+          'line-width': ['case', ['==', ['get', 'matched'], hoveredMatched ?? ''], 1.4, 0.8],
+          'line-blur': 0.35,
           'line-opacity': [
             'case',
             ['==', ['get', 'matched'], hoveredMatched ?? ''],
-            1,
-            0.8,
+            0.85,
+            0.6,
           ],
         }
       : {
@@ -86,14 +91,15 @@ function buildLinePaint(
           'line-width': [
             'case',
             ['==', ['get', 'matched'], matchedProvince],
-            hoveredMatched === matchedProvince ? 2 : 1.5,
-            1,
+            hoveredMatched === matchedProvince ? 1.5 : 1,
+            0.6,
           ],
+          'line-blur': 0.35,
           'line-opacity': [
             'case',
             ['==', ['get', 'matched'], matchedProvince],
-            hoveredMatched === matchedProvince ? 1 : 0.7,
-            0.8,
+            hoveredMatched === matchedProvince ? 0.8 : 0.55,
+            0.5,
           ],
         }
   ) as LineLayerSpecification['paint']
@@ -226,6 +232,8 @@ export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProp
     if (!map.getSource(SOURCE_ID)) {
       map.addSource(SOURCE_ID, {
         type: 'geojson',
+        tolerance: 0.18,
+        buffer: 8,
         data: { type: 'FeatureCollection', features: [] },
       })
     }
@@ -248,7 +256,7 @@ export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProp
           id: LINE_LAYER,
           type: 'line',
           source: SOURCE_ID,
-          layout: { 'line-join': 'round' },
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
           paint: buildLinePaint(true, '', null),
         },
         'tunnel_service_case',
