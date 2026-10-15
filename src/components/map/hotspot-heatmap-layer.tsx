@@ -30,6 +30,7 @@ const PULSE_LAYER_MID = 'fy-hotspot-pulse-mid'
 const CLUSTERS_LAYER_ID = 'fy-hotspot-clusters-layer'
 const CLUSTER_COUNT_LAYER_ID = 'fy-hotspot-cluster-count-layer'
 const POINTS_LAYER_ID = 'fy-hotspot-points-layer'
+const CLUSTER_HIT_LAYERS = [CLUSTERS_LAYER_ID, CLUSTER_COUNT_LAYER_ID]
 
 const CLUSTER_RADIUS = 50
 const CLUSTER_MAX_ZOOM = 10
@@ -164,15 +165,23 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         type: 'circle',
         source: CLUSTERS_SOURCE_ID,
         filter: [
-          'all',
-          ['has', 'point_count'],
-          ['>=', ['coalesce', ['get', 'max_risk'], 0], 3],
+          'any',
+          [
+            'all',
+            ['has', 'point_count'],
+            ['>=', ['coalesce', ['get', 'max_risk'], 0], 3],
+          ],
+          [
+            'all',
+            ['!', ['has', 'point_count']],
+            ['>=', ['coalesce', ['get', 'risk_rank'], 0], 3],
+          ],
         ],
         paint: {
           'circle-color': HEATMAP_TRANSPARENT,
           'circle-stroke-color': RISK_CATEGORIES.sangat_tinggi.dot,
           'circle-stroke-width': 1,
-          'circle-radius': 11,
+          'circle-radius': ['case', ['has', 'point_count'], 12, 3],
           'circle-stroke-opacity': 0.3,
           'circle-radius-transition': { duration: 0 },
           'circle-stroke-opacity-transition': { duration: 0 },
@@ -186,15 +195,23 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         type: 'circle',
         source: CLUSTERS_SOURCE_ID,
         filter: [
-          'all',
-          ['has', 'point_count'],
-          ['==', ['coalesce', ['get', 'max_risk'], 0], 2],
+          'any',
+          [
+            'all',
+            ['has', 'point_count'],
+            ['==', ['coalesce', ['get', 'max_risk'], 0], 2],
+          ],
+          [
+            'all',
+            ['!', ['has', 'point_count']],
+            ['==', ['coalesce', ['get', 'risk_rank'], 0], 2],
+          ],
         ],
         paint: {
           'circle-color': HEATMAP_TRANSPARENT,
           'circle-stroke-color': RISK_CATEGORIES.sedang.dot,
           'circle-stroke-width': 1,
-          'circle-radius': 11,
+          'circle-radius': ['case', ['has', 'point_count'], 12, 3],
           'circle-stroke-opacity': 0.3,
           'circle-radius-transition': { duration: 0 },
           'circle-stroke-opacity-transition': { duration: 0 },
@@ -365,10 +382,10 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
     }
 
     if (typeof map.on === 'function') {
-      map.on('click', CLUSTERS_LAYER_ID, onClusterClick)
+      map.on('click', CLUSTER_HIT_LAYERS, onClusterClick)
       map.on('click', POINTS_LAYER_ID, onPointClick)
-      map.on('mouseenter', CLUSTERS_LAYER_ID, onClusterEnter)
-      map.on('mouseleave', CLUSTERS_LAYER_ID, onClusterLeave)
+      map.on('mouseenter', CLUSTER_HIT_LAYERS, onClusterEnter)
+      map.on('mouseleave', CLUSTER_HIT_LAYERS, onClusterLeave)
       map.on('mouseenter', POINTS_LAYER_ID, onPointEnter)
       map.on('mouseleave', POINTS_LAYER_ID, onPointLeave)
       map.on('click', onMapClick)
@@ -378,10 +395,10 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       disposed = true
       try {
         if (typeof map.off === 'function') {
-          map.off('click', CLUSTERS_LAYER_ID, onClusterClick)
+          map.off('click', CLUSTER_HIT_LAYERS, onClusterClick)
           map.off('click', POINTS_LAYER_ID, onPointClick)
-          map.off('mouseenter', CLUSTERS_LAYER_ID, onClusterEnter)
-          map.off('mouseleave', CLUSTERS_LAYER_ID, onClusterLeave)
+          map.off('mouseenter', CLUSTER_HIT_LAYERS, onClusterEnter)
+          map.off('mouseleave', CLUSTER_HIT_LAYERS, onClusterLeave)
           map.off('mouseenter', POINTS_LAYER_ID, onPointEnter)
           map.off('mouseleave', POINTS_LAYER_ID, onPointLeave)
           map.off('click', onMapClick)
@@ -418,7 +435,12 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
     if (!map || !isLoaded) return
     for (const layerId of [PULSE_LAYER_HIGH, PULSE_LAYER_MID]) {
       if (!map.getLayer(layerId)) continue
-      map.setPaintProperty(layerId, 'circle-radius', 11)
+      map.setPaintProperty(layerId, 'circle-radius', [
+        'case',
+        ['has', 'point_count'],
+        12,
+        3,
+      ])
       map.setPaintProperty(layerId, 'circle-stroke-opacity', 0.3)
     }
     if (!hasRadar || reducedMotion || typeof requestAnimationFrame !== 'function') return
@@ -432,7 +454,12 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         const midPhase = (time % 2000) / 2000
         try {
           if (map.getLayer(PULSE_LAYER_HIGH)) {
-            map.setPaintProperty(PULSE_LAYER_HIGH, 'circle-radius', 12 + highPhase * 5)
+            map.setPaintProperty(PULSE_LAYER_HIGH, 'circle-radius', [
+              'case',
+              ['has', 'point_count'],
+              12 + highPhase * 5,
+              3 + highPhase * 3,
+            ])
             map.setPaintProperty(
               PULSE_LAYER_HIGH,
               'circle-stroke-opacity',
@@ -440,7 +467,12 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
             )
           }
           if (map.getLayer(PULSE_LAYER_MID)) {
-            map.setPaintProperty(PULSE_LAYER_MID, 'circle-radius', 12 + midPhase * 5)
+            map.setPaintProperty(PULSE_LAYER_MID, 'circle-radius', [
+              'case',
+              ['has', 'point_count'],
+              12 + midPhase * 5,
+              3 + midPhase * 3,
+            ])
             map.setPaintProperty(
               PULSE_LAYER_MID,
               'circle-stroke-opacity',

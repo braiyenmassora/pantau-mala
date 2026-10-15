@@ -224,11 +224,10 @@ describe('HotspotHeatmapLayer', () => {
       }),
     )
     expect(setData).toHaveBeenCalledTimes(2)
-    expect(
-      on.mock.calls.filter(
-        ([event, layer]) =>
-          event === 'click' && layer === 'fy-hotspot-cluster-count-layer',
-      ),
-    ).toHaveLength(0)
+    expect(on).toHaveBeenCalledWith(
+      'click',
+      ['fy-hotspot-clusters-layer', 'fy-hotspot-cluster-count-layer'],
+      expect.any(Function),
+    )
   })
 })
