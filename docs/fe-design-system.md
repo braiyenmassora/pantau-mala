@@ -16,7 +16,7 @@ PDF handoff adalah **sumber kebenaran visual**. `tokens.css` dan komponen mengik
 1. Peta = hero; panel = informasi. Satu pekerjaan per section.
 2. Warna risiko hanya untuk pin / chip / legend status — bukan dekorasi. Status non-risiko (gempa, stale, suhu, error) pakai ink / brand / ink-3.
 3. Titik panas ≠ kebakaran (lihat fe-ui-copy).
-4. Wordmark **pantaumala** (IBM Plex): `pantau` hijau `#1E6B45`, `mala` orange `#C2410C`. Aksen UI/lokasi/tombol = hijau. **Tidak ada biru.**
+4. Logo **pantaumala** memakai simbol dan lettering SVG asli CMS backend: `pantau` hijau `#14634C`, `mala` orange `#C2410C`. Jangan mengganti lettering dengan font UI. Aksen UI/lokasi/tombol tetap mengikuti token FE. **Tidak ada biru.**
 5. Light mode saja. Grid **4 px**.
 
 ### Pola layout (PDF §5 — Maps-like)
@@ -152,4 +152,11 @@ _Sumber: Spesifikasi UI handoff developer PDF · token di `tokens.css`._
 
 ## Integrasi Go — catatan branch
 
-Data/API Go tidak mengubah palet PDF. AccessGate mengikuti token brand hijau + touch 40–44. Panel mobile tetap margin 16 / lebar viewport−32. State `tidak_tersedia` netral (`ink-3` / surface-muted). Nilai null = —; FWI absent dijelaskan. Brand SVG/favicon harus memakai hex PDF (`ink` + `brand`), bukan palet ember lama.
+Data/API Go tidak mengubah palet PDF. AccessGate mengikuti token brand hijau + touch 40–44. Panel mobile tetap margin 16 / lebar viewport−32. State `tidak_tersedia` netral (`ink-3` / surface-muted). Nilai null = —; FWI absent dijelaskan.
+
+Sesuai arahan owner 15 Oktober 2026, `public/brand-symbol.svg` dan
+`public/brand-wordmark.svg` identik dengan `api/cms/assets/` di repo backend.
+Komponen `Brand` memakai kedua asset tersebut di semua ukuran; varian `textOnly`
+hanya menghilangkan simbol, bukan mengubah lettering. Favicon, ikon Apple, gambar
+preview sosial, dan theme color mengikuti identitas logo yang sama. Warna logo
+adalah pengecualian khusus brand asset, bukan perubahan palet komponen FE.
