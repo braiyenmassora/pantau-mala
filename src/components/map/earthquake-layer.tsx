@@ -1,18 +1,23 @@
+import { Radio } from 'lucide-react'
+import { useState } from 'react'
+
 import { focusRing } from '@/components/common/focus-ring'
-import { mapPinTip } from '@/components/map/map-pin-tip'
+import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent } from '@/components/ui/map'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { copy } from '@/copy/id'
 import { useEarthquakes } from '@/data/queries'
+import { formatNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 function cleanWilayah(raw: string): string {
   return raw.replace(/^pusat\s+gempa\s+berada\s+di\s+/i, '').trim()
 }
 
-/** Episentrum BMKG: titik bulat oranye seragam. */
+/** Episentrum BMKG: ikon Radio (beda dari titik risiko bulat). */
 export function EarthquakeLayer() {
   const { data: earthquakes } = useEarthquakes('latest')
   const events = earthquakes?.data ?? []
+  const [hovered, setHovered] = useState<number | null>(null)
 
   if (events.length === 0) return null
 
@@ -21,7 +26,11 @@ export function EarthquakeLayer() {
       {events.map((event, idx) => {
         const [lon, lat] = event.pusat
         const lokasi = cleanWilayah(event.wilayah)
-        const m = event.magnitudo.toFixed(1)
+        const m = formatNumber(event.magnitudo, {
+          minimumFractionDigits: 1,
+          maximumFractionDigits: 1,
+        })
+        const label = `${copy.map.quakeTitle(m)}, ${lokasi}`
 
         return (
           <MapMarker
@@ -31,23 +40,34 @@ export function EarthquakeLayer() {
             anchor="center"
           >
             <MarkerContent className="relative z-20 flex items-center justify-center overflow-visible">
-              <Tooltip delayDuration={150}>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    className={cn(
-                      'border-surface bg-ink shadow-map relative size-2.5 rounded-full border-2',
-                      focusRing,
-                    )}
-                    aria-label={`Gempa M${m}, ${lokasi}`}
+              <button
+                type="button"
+                className={cn(
+                  'border-line bg-surface text-risk-mid relative flex size-7 items-center justify-center rounded-full border shadow-sm',
+                  focusRing,
+                  hovered === idx && 'z-20 scale-110',
+                )}
+                aria-label={label}
+                onMouseEnter={() => setHovered(idx)}
+                onMouseLeave={() => setHovered(null)}
+                onFocus={() => setHovered(idx)}
+                onBlur={() => setHovered(null)}
+              >
+                <Radio className="size-3.5" strokeWidth={2.25} aria-hidden />
+              </button>
+
+              {hovered === idx ? (
+                <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
+                  <MapInfoCard
+                    title={copy.map.quakeTitle(m)}
+                    lines={[
+                      lokasi,
+                      `Kedalaman ${formatNumber(event.kedalaman_km)} km`,
+                      copy.map.quakeSource,
+                    ]}
                   />
-                </TooltipTrigger>
-                <TooltipContent side="top" sideOffset={8} className={mapPinTip}>
-                  <span className="text-ink font-semibold">
-                    Gempa M{m} · {lokasi}
-                  </span>
-                </TooltipContent>
-              </Tooltip>
+                </div>
+              ) : null}
             </MarkerContent>
           </MapMarker>
         )

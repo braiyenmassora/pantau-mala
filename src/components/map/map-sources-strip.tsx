@@ -29,7 +29,6 @@ export function MapSourcesStrip() {
       {...mapOverlayGestureProps}
     >
       <p className="text-ink-2 bg-surface/90 rounded-ctl border-line flex flex-wrap items-center justify-end gap-x-1 border px-2 py-1 text-xs shadow-sm backdrop-blur-sm">
-        <span>{copy.footer.sourcesLabel}</span>
         {copy.footer.sources.map((source, i) => {
           const iso = data?.pulled_at[source.id] ?? null
           const age = iso ? formatRelativeAge(iso, nowMs) : null

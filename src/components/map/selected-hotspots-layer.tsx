@@ -1,10 +1,12 @@
 import circle from '@turf/circle'
 import distance from '@turf/distance'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FeatureCollection, Polygon } from 'geojson'
 import type { GeoJSONSource } from 'maplibre-gl'
 
+import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
+import { copy } from '@/copy/id'
 import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { formatDateTime, formatNumber } from '@/lib/format'
@@ -30,6 +32,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
   const panelOpen = useUiStore((s) => s.panelOpen)
   const { data } = useHotspots()
   const lastFitCode = useRef<string | null>(null)
+  const [hovered, setHovered] = useState<number | null>(null)
 
   const selectedRegion = useMemo(
     () => regions.find((r) => r.code === selectedCode),
@@ -188,7 +191,8 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
     <>
       {regionHotspots.map((f, i) => {
         const [lon, lat] = f.geometry.coordinates
-        const tooltip = `Titik panas ${formatDateTime(f.properties.time, selectedRegion.time_zone)} · FRP ${formatNumber(f.properties.frp_mw)} MW`
+        const stamp = formatDateTime(f.properties.time, selectedRegion.time_zone)
+        const label = `Titik panas ${stamp} · FRP ${formatNumber(f.properties.frp_mw)} MW`
 
         return (
           <MapMarker
@@ -197,17 +201,32 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
             latitude={lat}
             anchor="center"
           >
-            <MarkerContent className="relative flex items-center justify-center">
+            <MarkerContent className="relative flex items-center justify-center overflow-visible">
+              {hovered === i ? (
+                <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
+                  <MapInfoCard
+                    title={copy.extra.detections}
+                    lines={[
+                      selectedRegion.name,
+                      `Terdeteksi ${stamp}`,
+                      `FRP ${formatNumber(f.properties.frp_mw)} MW`,
+                    ]}
+                  />
+                </div>
+              ) : null}
               <span
                 tabIndex={0}
                 role="img"
-                title={tooltip}
-                aria-label={tooltip}
+                aria-label={label}
                 className={cn(
                   'border-surface relative size-2.5 cursor-pointer rounded-full border-2 shadow-sm',
                   'transition-transform duration-150 hover:scale-125',
                 )}
                 style={{ backgroundColor: style.dot }}
+                onMouseEnter={() => setHovered(i)}
+                onMouseLeave={() => setHovered(null)}
+                onFocus={() => setHovered(i)}
+                onBlur={() => setHovered(null)}
               />
             </MarkerContent>
           </MapMarker>

@@ -29,7 +29,7 @@ export function TopProvincesList({ items }: TopProvincesListProps) {
   const setQuery = useMapStore((s) => s.setQuery)
 
   return (
-    <ol className="flex flex-col gap-2">
+    <ol className="flex flex-col gap-3">
       {items.map((item) => (
         <li key={item.province.code}>
           <Card className="hover:bg-surface-muted transition-colors duration-150">
@@ -45,7 +45,7 @@ export function TopProvincesList({ items }: TopProvincesListProps) {
                 setQuery('')
               }}
             >
-              <CardContent className="flex w-full items-center gap-3 py-2">
+              <CardContent className="flex w-full items-center gap-3 py-3">
                 <span
                   className="size-2 shrink-0 rounded-full"
                   style={{ backgroundColor: provinceRiskDot(item.hotspots_24h) }}

@@ -53,12 +53,12 @@ export function LatestEarthquakeCard() {
       <CardHeader>
         <CardTitle>{copy.panel.seismicTitle}</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-1">
+      <CardContent className="space-y-2">
         <p className="text-ink text-sm leading-5 font-semibold tabular-nums">
           {copy.map.quakeTitle(magnitude)}
         </p>
         <p className="text-ink-2 text-sm leading-5">{event.wilayah}</p>
-        <p className="text-ink-3 text-xs leading-4">
+        <p className="text-ink-3 text-xs leading-5">
           Kedalaman {depth} km
           {footnote ? ` · ${footnote}` : ''}
         </p>

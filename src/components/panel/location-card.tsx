@@ -254,7 +254,7 @@ function ActiveNearbyCard({
           <p className="text-ink truncate text-sm leading-5 font-semibold">
             {titleRegion?.name ?? copy.location.nearbyLabel}
           </p>
-          <p className="text-ink-2 truncate text-xs leading-4">{captionText}</p>
+          <p className="text-ink-2 truncate text-xs leading-5">{captionText}</p>
         </div>
         <Badge variant="category" category={riskCategory} />
       </CardContent>

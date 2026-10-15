@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
+import { formatNumber } from '@/lib/format'
 import { fitProvinceBounds } from '@/lib/indonesia-view'
 import type { ProvinceAggregate } from '@/lib/province-aggregates'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
@@ -32,7 +33,7 @@ export function ProvincePin({ aggregate, hovered = false, onHover }: ProvincePin
     isHigh || isMid
       ? ({
           '--risk-color': dot,
-          '--beat': isHigh ? '1.1s' : '2.6s',
+          '--beat': isHigh ? '0.75s' : '1.8s',
         } as CSSProperties)
       : undefined
 
@@ -48,7 +49,7 @@ export function ProvincePin({ aggregate, hovered = false, onHover }: ProvincePin
           aria-label={aggregate.name}
           className={cn(
             'border-surface relative rounded-full transition-transform duration-150',
-            isHigh || isMid ? 'marker--pulse size-3 border-2' : 'size-2 border-[1.5px]',
+            isHigh || isMid ? 'marker--pulse size-4 border-2' : 'size-2.5 border-[1.5px]',
             hovered && 'z-20 scale-[1.3]',
           )}
           style={{ backgroundColor: dot, ...pulseStyle }}
@@ -64,11 +65,15 @@ export function ProvincePin({ aggregate, hovered = false, onHover }: ProvincePin
           }}
         />
 
-        {hovered && (
+        {hovered ? (
           <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
-            <MapInfoCard title={aggregate.name} />
+            <MapInfoCard
+              title={aggregate.name}
+              subtitle={RISK_CATEGORIES[risk].label}
+              meta={`${formatNumber(aggregate.hotspots_24h)} titik panas · 24 jam`}
+            />
           </div>
-        )}
+        ) : null}
       </MarkerContent>
     </MapMarker>
   )
