@@ -41,7 +41,7 @@ describe('ProvincePin', () => {
 
     const pin = screen.getByRole('button', { name: 'Kalimantan Selatan' })
     expect(pin.className).toContain('marker--pulse')
-    expect(pin.style.getPropertyValue('--beat')).toBe('1.1s')
+    expect(pin.style.getPropertyValue('--beat')).toBe('0.75s')
     expect(pin.textContent).not.toContain('212')
     expect(screen.getByText('Kalimantan Selatan')).toBeTruthy()
 
@@ -65,6 +65,6 @@ describe('ProvincePin', () => {
 
     const pin = screen.getByRole('button', { name: 'Banten' })
     expect(pin.className).toContain('marker--pulse')
-    expect(pin.style.getPropertyValue('--beat')).toBe('2.6s')
+    expect(pin.style.getPropertyValue('--beat')).toBe('1.8s')
   })
 })

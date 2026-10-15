@@ -118,13 +118,13 @@ describe('RegionLayers', () => {
     const btnHigh = screen.getByRole('button', { name: 'Kab. Sangat Rawan' })
     const pulseHigh = btnHigh.querySelector('.marker--pulse') as HTMLElement
     expect(pulseHigh).toBeTruthy()
-    expect(pulseHigh.style.getPropertyValue('--beat')).toBe('1.1s')
+    expect(pulseHigh.style.getPropertyValue('--beat')).toBe('0.75s')
 
     // Sedang: denyut soft lebih pelan
     const btnMid = screen.getByRole('button', { name: 'Kab. Sedang' })
     const pulseMid = btnMid.querySelector('.marker--pulse') as HTMLElement
     expect(pulseMid).toBeTruthy()
-    expect(pulseMid.style.getPropertyValue('--beat')).toBe('2.6s')
+    expect(pulseMid.style.getPropertyValue('--beat')).toBe('1.8s')
 
     // Rendah is static without pulse
     const btnLow = screen.getByRole('button', { name: 'Kab. Aman' })

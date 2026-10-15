@@ -64,8 +64,8 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         'z-30 flex-wrap items-center gap-2',
         'ease-out-soft transition-[left] duration-300',
         panelOpen
-          ? 'fixed top-4 right-4 hidden sm:left-[432px] sm:flex'
-          : 'fixed top-4 right-4 left-4 flex',
+          ? 'fixed top-(--floating-control-offset) right-(--floating-control-offset) hidden sm:left-(--map-overlay-inset) sm:flex'
+          : 'fixed top-(--floating-control-offset) right-(--floating-control-offset) left-(--floating-control-offset) flex',
       )}
       {...mapOverlayGestureProps}
     >

@@ -13,6 +13,12 @@ import { useEffect, useRef, type ReactNode, type RefObject } from 'react'
 
 import { Badge, InfoTooltip, Sparkline, TrendChart } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
@@ -99,14 +105,14 @@ function ConditionCell({
       <span className="text-ink-2 mt-1 shrink-0 [&>svg]:size-5" aria-hidden>
         {icon}
       </span>
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 space-y-1">
         <div className="flex items-center gap-1">
-          <p className="text-ink-2 text-xs leading-4">{label}</p>
+          <p className="text-ink-2 text-xs leading-5">{label}</p>
           {tooltip ? <InfoTooltip content={tooltip} className="size-4" /> : null}
         </div>
         <p
           className={cn(
-            'mt-1 text-base leading-5',
+            'text-base leading-6',
             isMissing ? 'text-ink-3 font-normal' : 'text-ink font-semibold tabular-nums',
           )}
         >
@@ -117,7 +123,7 @@ function ConditionCell({
   )
 }
 
-// ponytail: panel detail satu scroll tanpa tab, tanpa divider, spacing 24px/12px/8px.
+// ponytail: detail = kartu konsisten + TrendChart 7 hari dari develop.
 export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
   const titleRef = useRef<HTMLHeadingElement>(null)
   const select = useMapStore((s) => s.select)
@@ -149,7 +155,6 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
 
   return (
     <div key={region.code} className="flex flex-col">
-      {/* 1. Hanya X tutup — tanpa judul ganda / divider */}
       <div className="flex justify-end px-2 pt-2">
         <button
           type="button"
@@ -164,128 +169,133 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
         </button>
       </div>
 
-      <div className="space-y-6 px-4 pt-0 pb-6">
-        <section className="space-y-3">
-          <div>
-            <h2
-              ref={titleRef}
-              tabIndex={-1}
-              className="text-ink truncate text-xl font-semibold outline-none"
-              title={region.name}
-            >
-              {region.name}
-            </h2>
-            <p className="text-ink-2 mt-1 text-xs leading-4">
-              Provinsi {region.province}
-            </p>
-          </div>
-
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-ink font-mono text-3xl font-semibold tabular-nums">
-                {formatNumber(region.hotspots_24h)}
-              </span>
-              <span className="text-ink-2 text-xs">titik panas · 24 jam</span>
-              <InfoTooltip content="Lokasi yang terdeteksi satelit NASA FIRMS memiliki panas permukaan tinggi dalam 24 jam terakhir." />
+      <div className="flex flex-col gap-5 px-4 pt-0 pb-6">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-1">
+              <h2
+                ref={titleRef}
+                tabIndex={-1}
+                className="text-ink truncate text-xl leading-7 font-semibold outline-none"
+                title={region.name}
+              >
+                {region.name}
+              </h2>
+              <InfoTooltip content={copy.panel.limitationNote} />
             </div>
-            <div className="flex shrink-0 items-center gap-1">
-              <Badge variant="category" category={region.risk_category} />
-              <InfoTooltip content="Tingkat risiko dihitung dari jumlah titik panas 24 jam terakhir di wilayah ini. Ambang diambil dari risk_thresholds." />
-            </div>
-          </div>
-
-          <div className="text-ink-2 flex items-center gap-2 text-sm">
-            <TrendIcon
-              className={cn('size-4 shrink-0', colorClass)}
-              strokeWidth={2}
-              aria-hidden
-            />
-            <span className="text-ink font-medium">{trendLabel}</span>
-            <Sparkline
-              data={region.trend_7d}
-              height={16}
-              width={48}
-              className="opacity-40"
-            />
-            <InfoTooltip content="Perbandingan jumlah titik panas selama 7 hari terakhir." />
-          </div>
-
-          <TrendChart values={region.trend_7d} timeZone={region.time_zone} />
-
-          {stamp ? <p className="text-ink-3 text-xs">Diperbarui {stamp}</p> : null}
-        </section>
-
-        {/* 3. Kondisi saat ini */}
-        <section className="space-y-3">
-          <h3 className="text-ink text-sm font-semibold">Kondisi saat ini</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <ConditionCell
-              icon={<Droplets strokeWidth={1.75} />}
-              label="Kelembapan"
-              value={
-                region.weather.humidity != null
-                  ? `${formatNumber(region.weather.humidity)}%`
-                  : '—'
-              }
-              isMissing={region.weather.humidity == null}
-            />
-            <ConditionCell
-              icon={<Wind strokeWidth={1.75} />}
-              label="Kecepatan angin"
-              value={
-                region.weather.wind_kmh != null
-                  ? `${formatNumber(region.weather.wind_kmh)} km/jam`
-                  : '—'
-              }
-              isMissing={region.weather.wind_kmh == null}
-            />
-            <ConditionCell
-              icon={<Sun strokeWidth={1.75} />}
-              label="Hari tanpa hujan"
-              value={
-                region.weather.dry_days != null
-                  ? `${formatNumber(region.weather.dry_days)} hari`
-                  : '—'
-              }
-              isMissing={region.weather.dry_days == null}
-            />
-            <ConditionCell
-              icon={<Gauge strokeWidth={1.75} />}
-              label="Kelas FWI"
-              value={
-                region.weather_danger
-                  ? `${copy.bahaya[region.weather_danger.class]} (${formatNumber(region.weather_danger.fwi)})`
-                  : '—'
-              }
-              isMissing={!region.weather_danger}
-              tooltip="Fire Weather Index: ukuran seberapa mudah api menyala dan menyebar berdasarkan cuaca. Makin tinggi kelasnya, makin rawan."
-            />
-          </div>
-        </section>
-
-        {/* 4. Yang bisa kamu lakukan */}
-        <section className="space-y-3">
-          <h3 className="text-ink text-sm font-semibold">Yang bisa kamu lakukan</h3>
-          <ul className="space-y-2">
-            {actions.map((act, i) => (
-              <li key={i} className="flex items-start gap-2">
-                <Check
-                  className="text-risk-low mt-1 size-4 shrink-0"
-                  strokeWidth={2}
-                  aria-hidden
-                />
-                <span className="text-ink text-sm leading-5">
-                  <ActionText text={act} />
+            <p className="text-ink-2 text-xs leading-5">Provinsi {region.province}</p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-baseline gap-2">
+                <span className="text-ink font-mono text-3xl font-semibold tabular-nums">
+                  {formatNumber(region.hotspots_24h)}
                 </span>
-              </li>
-            ))}
-          </ul>
-        </section>
+                <span className="text-ink-2 text-xs leading-5">titik panas · 24 jam</span>
+                <InfoTooltip content="Lokasi yang terdeteksi satelit NASA FIRMS memiliki panas permukaan tinggi dalam 24 jam terakhir." />
+              </div>
+              <div className="flex shrink-0 items-center gap-1">
+                <Badge variant="category" category={region.risk_category} />
+                <InfoTooltip content="Tingkat risiko dihitung dari jumlah titik panas 24 jam terakhir di wilayah ini. Ambang diambil dari risk_thresholds." />
+              </div>
+            </div>
 
-        {/* 5. Disclaimer tunggal */}
-        <footer className="text-ink-2 pt-2 text-xs">
-          <p>Titik panas belum tentu kebakaran. Bukan peringatan resmi.</p>
-        </footer>
+            <div className="text-ink-2 flex items-center gap-2 text-sm leading-5">
+              <TrendIcon
+                className={cn('size-4 shrink-0', colorClass)}
+                strokeWidth={2}
+                aria-hidden
+              />
+              <span className="text-ink font-medium">{trendLabel}</span>
+              <Sparkline
+                data={region.trend_7d}
+                height={16}
+                width={48}
+                className="opacity-40"
+              />
+              <InfoTooltip content="Perbandingan jumlah titik panas selama 7 hari terakhir." />
+            </div>
+
+            <TrendChart values={region.trend_7d} timeZone={region.time_zone} />
+
+            {stamp ? (
+              <p className="text-ink-2 text-xs leading-5">Diperbarui {stamp}</p>
+            ) : null}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Kondisi saat ini</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              <ConditionCell
+                icon={<Droplets strokeWidth={2} />}
+                label="Kelembapan"
+                value={
+                  region.weather.humidity != null
+                    ? `${formatNumber(region.weather.humidity)}%`
+                    : '—'
+                }
+                isMissing={region.weather.humidity == null}
+              />
+              <ConditionCell
+                icon={<Wind strokeWidth={2} />}
+                label="Kecepatan angin"
+                value={
+                  region.weather.wind_kmh != null
+                    ? `${formatNumber(region.weather.wind_kmh)} km/jam`
+                    : '—'
+                }
+                isMissing={region.weather.wind_kmh == null}
+              />
+              <ConditionCell
+                icon={<Sun strokeWidth={2} />}
+                label="Hari tanpa hujan"
+                value={
+                  region.weather.dry_days != null
+                    ? `${formatNumber(region.weather.dry_days)} hari`
+                    : '—'
+                }
+                isMissing={region.weather.dry_days == null}
+              />
+              <ConditionCell
+                icon={<Gauge strokeWidth={2} />}
+                label="Kelas FWI"
+                value={
+                  region.weather_danger
+                    ? `${copy.bahaya[region.weather_danger.class]} (${formatNumber(region.weather_danger.fwi)})`
+                    : '—'
+                }
+                isMissing={!region.weather_danger}
+                tooltip="Fire Weather Index: ukuran seberapa mudah api menyala dan menyebar berdasarkan cuaca. Makin tinggi kelasnya, makin rawan."
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Yang bisa kamu lakukan</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-3">
+              {actions.map((act, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <Check
+                    className="text-risk-low mt-1 size-4 shrink-0"
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                  <span className="text-ink text-sm leading-6">
+                    <ActionText text={act} />
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

@@ -1,25 +1,67 @@
+import type { ReactNode } from 'react'
+
 import { cn } from '@/lib/utils'
 
 export type MapInfoCardProps = {
-  /** Nama kabupaten/kota untuk penanda atau polygon (satu baris, 14/600, tanpa angka) */
+  /** Nama wilayah / judul utama */
   title?: string
+  /** Baris sekunder di bawah judul */
+  subtitle?: string
+  /** Baris tersier */
+  meta?: string
+  /**
+   * Baris tambahan berurutan ke bawah — teks panjang tidak di-trim,
+   * tiap string = satu baris.
+   */
+  lines?: string[]
   /** Nama kecamatan untuk titik panas individual */
   district?: string
   /** Nama kabupaten/kota untuk titik panas individual */
   regency?: string
   /** Waktu deteksi titik panas, mis. "14.30 WIB" */
   detectedTime?: string
+  /** Konten tambahan (cuaca flag terpilih, dll.) */
+  children?: ReactNode
   className?: string
   /** Sembunyikan panah jika diposisikan via popup bawaan */
   hideArrow?: boolean
 }
 
-// ponytail: satu komponen kartu info untuk penanda kabupaten & titik panas individual.
+function InfoLine({
+  children,
+  strong,
+}: {
+  children: ReactNode
+  strong?: boolean
+}) {
+  return (
+    <p
+      className={cn(
+        'text-left break-words whitespace-normal',
+        strong
+          ? 'text-ink text-sm leading-5 font-semibold'
+          : 'text-ink-2 text-xs leading-5',
+      )}
+    >
+      {children}
+    </p>
+  )
+}
+
+function push(out: string[], value: string | undefined) {
+  if (value) out.push(value)
+}
+
+// ponytail: flag pin — baris vertikal, teks panjang wrap bukan ellipsis.
 export function MapInfoCard({
   title,
+  subtitle,
+  meta,
+  lines,
   district,
   regency,
   detectedTime,
+  children,
   className,
   hideArrow = false,
 }: MapInfoCardProps) {
@@ -41,30 +83,38 @@ export function MapInfoCard({
       : `Terdeteksi ${detectedTime}`
     : undefined
 
+  let heading: string | undefined
+  const body: string[] = []
+
+  if (title) {
+    heading = title
+    push(body, subtitle)
+    push(body, meta)
+    for (const line of lines ?? []) push(body, line)
+  } else {
+    heading = formattedDistrict ?? formattedRegency
+    if (formattedDistrict) push(body, formattedRegency)
+    push(body, formattedTime)
+    for (const line of lines ?? []) push(body, line)
+  }
+
   return (
     <div
       className={cn(
-        'rounded-card border-line bg-surface text-ink relative z-30 max-w-[240px] border px-3 py-2 shadow-sm',
+        'rounded-card border-line bg-surface text-ink relative z-30 w-max max-w-[min(280px,70vw)] border px-4 py-3 shadow-sm',
         className,
       )}
     >
-      {title ? (
-        <p className="text-ink truncate text-sm leading-5 font-semibold">{title}</p>
-      ) : (
-        <div className="space-y-1 text-left">
-          {formattedDistrict && (
-            <p className="text-ink truncate text-sm leading-5 font-semibold">
-              {formattedDistrict}
-            </p>
-          )}
-          {formattedRegency && (
-            <p className="text-ink-2 truncate text-xs leading-4">{formattedRegency}</p>
-          )}
-          {formattedTime && (
-            <p className="text-ink-2 truncate text-xs leading-4">{formattedTime}</p>
-          )}
+      {heading || body.length > 0 ? (
+        <div className="flex flex-col gap-1 text-left">
+          {heading ? <InfoLine strong>{heading}</InfoLine> : null}
+          {body.map((line, i) => (
+            <InfoLine key={`${i}-${line}`}>{line}</InfoLine>
+          ))}
         </div>
-      )}
+      ) : null}
+
+      {children}
 
       {!hideArrow && (
         <div

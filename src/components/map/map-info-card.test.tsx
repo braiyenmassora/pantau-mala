@@ -33,4 +33,35 @@ describe('MapInfoCard', () => {
     expect(screen.queryByText(/terdeteksi/i)).toBeNull()
     expect(screen.queryByText(/tidak diketahui/i)).toBeNull()
   })
+
+  it('renders title with subtitle and meta for shared flag pattern', () => {
+    render(
+      <MapInfoCard
+        title="Gempa M 5,2"
+        subtitle="84 km BaratLaut Donggala"
+        meta="Kedalaman 10 km · BMKG"
+      />,
+    )
+    expect(screen.getByText('Gempa M 5,2')).toBeTruthy()
+    expect(screen.getByText('84 km BaratLaut Donggala')).toBeTruthy()
+    expect(screen.getByText('Kedalaman 10 km · BMKG')).toBeTruthy()
+  })
+
+  it('stacks long lines without trimming', () => {
+    render(
+      <MapInfoCard
+        title="Titik panas"
+        lines={[
+          'Pohuwato',
+          'Terdeteksi 15 Okt 2026, 01:17 WITA',
+          'FRP 12,4 MW',
+        ]}
+      />,
+    )
+    expect(screen.getByText('Titik panas')).toBeTruthy()
+    expect(screen.getByText('Pohuwato')).toBeTruthy()
+    expect(screen.getByText('Terdeteksi 15 Okt 2026, 01:17 WITA')).toBeTruthy()
+    expect(screen.getByText('FRP 12,4 MW')).toBeTruthy()
+    expect(screen.queryByText(/\.\.\./)).toBeNull()
+  })
 })

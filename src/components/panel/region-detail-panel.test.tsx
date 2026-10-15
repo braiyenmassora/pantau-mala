@@ -119,9 +119,11 @@ describe('RegionDetailPanel', () => {
     expect(telLink).toBeTruthy()
     expect(telLink.getAttribute('href')).toBe('tel:113')
 
-    // Disclaimers
+    // Disclaimer via ikon info di samping judul
     expect(
-      screen.getByText(/Titik panas belum tentu kebakaran. Bukan peringatan resmi./),
+      screen.getByRole('button', {
+        name: copy.panel.limitationNote,
+      }),
     ).toBeTruthy()
   })
 })

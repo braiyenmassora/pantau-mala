@@ -1,11 +1,10 @@
-import { forwardRef, useState, type ButtonHTMLAttributes } from 'react'
+import { forwardRef, type ButtonHTMLAttributes } from 'react'
 
 import { RiskMarker } from '@/components/common/risk-marker'
 import { focusRing } from '@/components/common/focus-ring'
 import { DetectionFlag } from '@/components/map/detection-flag'
-import { mapPinTip } from '@/components/map/map-pin-tip'
+import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { copy } from '@/copy/id'
 import type { Region, RiskCategory } from '@/data/types'
 import { rememberFocusTrigger } from '@/lib/focus-return'
@@ -66,7 +65,6 @@ export function RegionPin({ region }: RegionPinProps) {
   const hover = useMapStore((s) => s.hover)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
-  const [tipOpen, setTipOpen] = useState(false)
 
   const hotspotRisk = effectiveRiskCategory(region)
   const style = RISK_CATEGORIES[hotspotRisk]
@@ -106,7 +104,7 @@ export function RegionPin({ region }: RegionPinProps) {
     >
       <MarkerContent
         className={cn(
-          'relative flex items-center justify-center',
+          'relative flex items-center justify-center overflow-visible',
           active ? 'z-20' : 'z-10',
         )}
       >
@@ -121,38 +119,35 @@ export function RegionPin({ region }: RegionPinProps) {
           />
         )}
 
-        {selected && <DetectionFlag region={region} />}
+        {selected ? <DetectionFlag region={region} /> : null}
 
-        <Tooltip
-          delayDuration={150}
-          open={selected ? false : tipOpen}
-          onOpenChange={(open) => {
-            if (!selected) setTipOpen(open)
-          }}
-        >
-          <TooltipTrigger asChild>
-            {isLow ? (
-              <LowMapDot active={active} label={label} onClick={onSelect} />
-            ) : (
-              <button
-                type="button"
-                className={cn(
-                  'relative origin-center rounded-full',
-                  focusRing,
-                  active && ACTIVE_PIN[hotspotRisk as 'sangat_tinggi' | 'sedang'],
-                )}
-                style={active ? { boxShadow: PIN_ACTIVE_BOX_SHADOW } : undefined}
-                aria-label={label}
-                onClick={onSelect}
-              >
-                <RiskMarker kategori={hotspotRisk} shadow active={active} />
-              </button>
+        {!selected && hoveredCode === region.code ? (
+          <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
+            <MapInfoCard
+              title={region.name}
+              subtitle={copy.map.regionMetaProvince(region.province)}
+              meta={copy.map.regionPinDetails(hotspotLabel, style.label)}
+            />
+          </div>
+        ) : null}
+
+        {isLow ? (
+          <LowMapDot active={active} label={label} onClick={onSelect} />
+        ) : (
+          <button
+            type="button"
+            className={cn(
+              'relative origin-center rounded-full',
+              focusRing,
+              active && ACTIVE_PIN[hotspotRisk as 'sangat_tinggi' | 'sedang'],
             )}
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={8} className={mapPinTip}>
-            <span className="text-ink font-semibold">{region.name}</span>
-          </TooltipContent>
-        </Tooltip>
+            style={active ? { boxShadow: PIN_ACTIVE_BOX_SHADOW } : undefined}
+            aria-label={label}
+            onClick={onSelect}
+          >
+            <RiskMarker kategori={hotspotRisk} shadow active={active} />
+          </button>
+        )}
       </MarkerContent>
     </MapMarker>
   )

@@ -21,6 +21,7 @@ import { RegionDetailPanel } from '@/components/panel/region-detail-panel'
 import { RegionRow } from '@/components/panel/region-row'
 import { SearchBox } from '@/components/panel/search-box'
 import { TopProvincesList } from '@/components/panel/top-provinces-list'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import { useMeta, useRegionCatalog } from '@/data/queries'
@@ -99,10 +100,17 @@ export function SummaryPanel({
   const nationalView = province === 'Semua'
   const searching = query.trim().length > 0
 
+  const pinRisk =
+    selectedCategories.size === 1 ? [...selectedCategories][0] : undefined
+
   const topProvinces = useMemo(() => {
     if (!nationalView || !daftar) return []
-    return aggregateByProvince(viewRegions, daftar.provinces).slice(0, 5)
-  }, [nationalView, daftar, viewRegions])
+    return aggregateByProvince(
+      viewRegions,
+      daftar.provinces,
+      pinRisk ? { pinRisk } : undefined,
+    ).slice(0, 5)
+  }, [nationalView, daftar, viewRegions, pinRisk])
 
   // Top 10 kabupaten untuk tampilan provinsi
   const provinceTopRegencies = useMemo(() => {
@@ -170,9 +178,12 @@ export function SummaryPanel({
       <div className="space-y-6 p-4">
         <header className="space-y-1">
           <Brand compact />
-          <h1 className="text-ink truncate text-xl leading-7 font-semibold">
-            Pantauan titik panas Indonesia
-          </h1>
+          <div className="flex items-center gap-1">
+            <h1 className="text-ink truncate text-xl leading-7 font-semibold">
+              Pantauan titik panas Indonesia
+            </h1>
+            <InfoTooltip content={copy.panel.limitationNote} />
+          </div>
         </header>
         <EmptyState
           icon={Filter}
@@ -195,9 +206,12 @@ export function SummaryPanel({
       <div className="space-y-6 p-4">
         <header className="space-y-1">
           <Brand compact />
-          <h1 className="text-ink truncate text-xl leading-7 font-semibold">
-            Pantauan titik panas Indonesia
-          </h1>
+          <div className="flex items-center gap-1">
+            <h1 className="text-ink truncate text-xl leading-7 font-semibold">
+              Pantauan titik panas Indonesia
+            </h1>
+            <InfoTooltip content={copy.panel.limitationNote} />
+          </div>
           <p className="text-ink-2 text-xs leading-4">
             24 jam terakhir{updatedDate ? ` · Diperbarui ${updatedDate}` : ''}
           </p>
@@ -211,19 +225,21 @@ export function SummaryPanel({
     )
   }
 
-  // 1. Tampilan Hasil Pencarian
+  // 1. Hasil pencarian — kartu sama dengan daftar provinsi/kabupaten
   if (searching) {
     return (
-      <div className="space-y-4 p-4">
+      <div className="flex flex-col gap-5 px-4 py-5">
         <SearchBox mapRef={mapRef} />
-        <section className="space-y-2">
+        <section className="space-y-3">
           <h2 className="text-ink text-sm font-semibold">Hasil pencarian</h2>
           {filtered.length === 0 ? (
-            <p className="text-ink-2 py-4 text-sm">
-              Wilayah tidak ditemukan. Coba nama kabupaten/kota lain.
-            </p>
+            <Card>
+              <CardContent className="text-ink-2 py-4 text-sm leading-5">
+                Wilayah tidak ditemukan. Coba nama kabupaten/kota lain.
+              </CardContent>
+            </Card>
           ) : (
-            <ul className="flex flex-col">
+            <ul className="flex flex-col gap-3">
               {filtered.map((region) => (
                 <li key={region.code}>
                   <RegionRow region={region} mapRef={mapRef} />
@@ -239,26 +255,29 @@ export function SummaryPanel({
   // 2. Beranda nasional — header + tumpukan kartu hasil sederhana
   if (nationalView) {
     return (
-      <div className="flex flex-col gap-4 px-4 py-4">
-        <div className="space-y-2">
+      <div className="flex flex-col gap-5 px-4 py-5">
+        <div className="space-y-3">
           <Brand compact />
           <SearchBox mapRef={mapRef} />
         </div>
 
-        <header className="space-y-1">
-          <h1 className="text-ink text-xl font-semibold">
-            Pantauan titik panas Indonesia
-          </h1>
-          <p className="text-ink-3 text-xs">
+        <header className="space-y-2">
+          <div className="flex items-center gap-1">
+            <h1 className="text-ink text-xl leading-7 font-semibold">
+              Pantauan titik panas Indonesia
+            </h1>
+            <InfoTooltip content={copy.panel.limitationNote} />
+          </div>
+          <p className="text-ink-2 text-xs leading-5">
             24 jam terakhir{updatedDate ? ` · Diperbarui ${updatedDate}` : ''}
           </p>
         </header>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-4">
           <LocationCard regions={regions} />
           <LatestEarthquakeCard />
 
-          <section className="space-y-2">
+          <section className="space-y-3">
             <h2 className="text-ink text-sm font-semibold">
               Provinsi dengan titik panas terbanyak
             </h2>
@@ -291,10 +310,6 @@ export function SummaryPanel({
             )}
           </section>
         </div>
-
-        <p className="text-ink-3 text-xs">
-          Titik panas belum tentu kebakaran. Bukan peringatan resmi.
-        </p>
       </div>
     )
   }
@@ -327,60 +342,69 @@ export function SummaryPanel({
         </button>
       </div>
 
-      <div className="space-y-6 px-4 pt-0 pb-6">
-        <section className="space-y-3">
-          <h1 className="text-ink truncate text-xl font-semibold">{province}</h1>
-
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-baseline gap-2">
-              <span className="text-ink font-mono text-3xl font-semibold tabular-nums">
-                {formatNumber(provinceStats?.count_24h ?? 0)}
-              </span>
-              <span className="text-ink-2 text-xs">titik panas · 24 jam</span>
-              <InfoTooltip content="Lokasi yang terdeteksi satelit NASA FIRMS memiliki panas permukaan tinggi dalam 24 jam terakhir." />
+      <div className="flex flex-col gap-5 px-4 pt-0 pb-6">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-1">
+              <h1 className="text-ink truncate text-xl leading-7 font-semibold">
+                {province}
+              </h1>
+              <InfoTooltip content={copy.panel.limitationNote} />
             </div>
-            <div className="flex shrink-0 items-center gap-1">
-              <Badge
-                variant="category"
-                category={provinceStats?.risk_category ?? 'rendah'}
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-ink font-mono text-3xl font-semibold tabular-nums">
+                  {formatNumber(provinceStats?.count_24h ?? 0)}
+                </span>
+                <span className="text-ink-2 text-xs leading-5">titik panas · 24 jam</span>
+                <InfoTooltip content="Lokasi yang terdeteksi satelit NASA FIRMS memiliki panas permukaan tinggi dalam 24 jam terakhir." />
+              </div>
+              <div className="flex shrink-0 items-center gap-1">
+                <Badge
+                  variant="category"
+                  category={provinceStats?.risk_category ?? 'rendah'}
+                />
+                <InfoTooltip content="Tingkat risiko dihitung dari jumlah titik panas 24 jam terakhir di wilayah ini. Ambang diambil dari risk_thresholds." />
+              </div>
+            </div>
+
+            <div className="text-ink-2 flex items-center gap-2 text-sm leading-5">
+              <TrendIcon
+                className={cn('size-4 shrink-0', trendColor)}
+                strokeWidth={2}
+                aria-hidden
               />
-              <InfoTooltip content="Tingkat risiko dihitung dari jumlah titik panas 24 jam terakhir di wilayah ini. Ambang diambil dari risk_thresholds." />
+              <span className="text-ink font-medium">{trendLabel}</span>
+              <Sparkline
+                data={provinceStats?.trend_7d ?? [0, 0, 0, 0, 0, 0, 0]}
+                height={16}
+                width={48}
+                className="opacity-40"
+              />
+              <InfoTooltip content="Perbandingan jumlah titik panas selama 7 hari terakhir." />
             </div>
-          </div>
 
-          <div className="text-ink-2 flex items-center gap-2 text-sm">
-            <TrendIcon
-              className={cn('size-4 shrink-0', trendColor)}
-              strokeWidth={2}
-              aria-hidden
-            />
-            <span className="text-ink font-medium">{trendLabel}</span>
-            <Sparkline
-              data={provinceStats?.trend_7d ?? [0, 0, 0, 0, 0, 0, 0]}
-              height={16}
-              width={48}
-              className="opacity-40"
-            />
-            <InfoTooltip content="Perbandingan jumlah titik panas selama 7 hari terakhir." />
-          </div>
+            {updatedDate ? (
+              <p className="text-ink-2 text-xs leading-5">Diperbarui {updatedDate}</p>
+            ) : null}
+          </CardContent>
+        </Card>
 
-          {updatedDate ? (
-            <p className="text-ink-3 text-xs">Diperbarui {updatedDate}</p>
-          ) : null}
-        </section>
-
-        {/* 3. 10 Kabupaten/kota dengan titik panas terbanyak */}
         <section className="space-y-3">
           <h2 className="text-ink text-sm font-semibold">
             Kabupaten/kota dengan titik panas terbanyak
           </h2>
           {provinceTopRegencies.length === 0 ? (
-            <div className="text-ink-2 flex items-center gap-2 py-3 text-sm">
-              <Check className="text-risk-low size-4" strokeWidth={2} aria-hidden />
-              <span>Tidak ada titik panas dalam 24 jam terakhir</span>
-            </div>
+            <Card>
+              <CardContent className="text-ink-2 flex items-center gap-2 py-4 text-sm leading-5">
+                <Check className="text-risk-low size-4" strokeWidth={2} aria-hidden />
+                <span>Tidak ada titik panas dalam 24 jam terakhir</span>
+              </CardContent>
+            </Card>
           ) : (
-            <ul className="flex flex-col">
+            <ul className="flex flex-col gap-3">
               {provinceTopRegencies.map((region) => (
                 <li key={region.code}>
                   <RegionRow region={region} mapRef={mapRef} />
@@ -389,11 +413,6 @@ export function SummaryPanel({
             </ul>
           )}
         </section>
-
-        {/* 4. Footer disclaimer tunggal */}
-        <footer className="text-ink-2 pt-2 text-xs">
-          <p>Titik panas belum tentu kebakaran. Bukan peringatan resmi.</p>
-        </footer>
       </div>
     </div>
   )

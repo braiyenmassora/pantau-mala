@@ -68,7 +68,7 @@ export default function App() {
       )
     })
     return () => {
-      cancelled = true
+      cancelled = true  
     }
   }, [setLocation])
 
@@ -108,6 +108,15 @@ export default function App() {
     [data, province, selectedCategories, query],
   )
 
+  // Peta ikut filter kategori/provinsi; query hanya mempersempit daftar panel.
+  const mapRegions = useMemo(
+    () =>
+      data
+        ? filterRegions(data, { province, selectedCategories, query: '' })
+        : [],
+    [data, province, selectedCategories],
+  )
+
   return (
     <TooltipProvider>
       <div className="bg-map-bg text-ink relative h-dvh w-dvw overflow-hidden">
@@ -117,13 +126,14 @@ export default function App() {
           aria-label={copy.app.panelAria}
           inert={!panelOpen || undefined}
           className={cn(
-            'absolute top-4 bottom-4 left-4 z-40 flex w-[calc(100vw-32px)] flex-col overflow-hidden sm:w-[400px]',
+            'absolute z-40 flex w-[calc(100vw-32px)] flex-col overflow-hidden sm:w-(--map-panel-width)',
+            'top-(--floating-control-offset) bottom-(--floating-control-offset) left-(--floating-control-offset)',
             'rounded-panel border-line bg-surface border shadow-sm',
             easePanel,
             'transition-[transform,opacity]',
             panelOpen
               ? 'opacity-100'
-              : 'pointer-events-none -translate-x-[432px] opacity-0',
+              : 'pointer-events-none -translate-x-(--map-overlay-inset) opacity-0',
           )}
           aria-hidden={!panelOpen}
           {...mapOverlayGestureProps}
@@ -158,7 +168,9 @@ export default function App() {
             easePanel,
             'transition-[left,background-color] duration-150',
             focusRing,
-            panelOpen ? 'left-[calc(100vw-24px)] sm:left-[416px]' : 'left-0',
+            panelOpen
+              ? 'left-[calc(100vw-24px)] sm:left-(--map-panel-edge)'
+              : 'left-0',
           )}
           {...mapOverlayGestureProps}
         >
@@ -187,7 +199,7 @@ export default function App() {
             <MapShell
               mapRef={mapRef}
               panelOpen={panelOpen}
-              regions={isPending ? [] : (data ?? [])}
+              regions={isPending ? [] : mapRegions}
             />
           </Suspense>
         </main>

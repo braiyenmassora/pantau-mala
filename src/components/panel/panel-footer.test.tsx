@@ -15,7 +15,7 @@ describe('PanelFooter', () => {
   it('lists data sources with links, without pull ages', () => {
     render(<PanelFooter />)
 
-    expect(screen.getByText(copy.footer.sourcesLabel)).toBeTruthy()
+    expect(screen.queryByText(copy.footer.sourcesLabel)).toBeNull()
     expect(screen.getByRole('link', { name: /NASA FIRMS/ })).toBeTruthy()
     expect(screen.getByRole('link', { name: /Open-Meteo/ })).toBeTruthy()
     expect(screen.queryByText(/menit lalu/)).toBeNull()

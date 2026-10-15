@@ -3,7 +3,7 @@
 |                   |                                                                                                                |
 | ----------------- | -------------------------------------------------------------------------------------------------------------- |
 | **Sumber desain** | [`Spesifikasi UI (handoff developer).pdf`](<./Spesifikasi%20UI%20(handoff%20developer).pdf>) — **09 Okt 2026** |
-| **Token kode**    | `src/styles/tokens.css` (harus mirror PDF)                                                                     |
+| **Token kode**    | `src/styles/tokens.css` (harus mirror PDF) + chrome GIS di `src/lib/layout.ts`                                 |
 | **Copy / ikon**   | [`fe-ui-copy.md`](fe-ui-copy.md)                                                                               |
 | **Kontrak data**  | [`prd-fe.md`](prd-fe.md) — jangan bentrok                                                                      |
 
@@ -27,8 +27,10 @@ PDF handoff adalah **sumber kebenaran visual**. `tokens.css` dan komponen mengik
 | Panel kiri       | Mengambang **400 px**, jarak **16** dari tepi; tab sembunyi **24×48** |
 | Chip filter      | Di atas peta; sekaligus legend warna kategori                         |
 | Kontrol peta     | Kanan bawah: lokasi, zoom +/− — tiap **40×40**, gap **8**             |
-| Legend warna pin | Kiri bawah (chip filter juga legend kategori)                         |
+| Legend warna pin | Kiri bawah; inset `--map-overlay-inset` / clearance kanan             |
 | Updated-at       | Kanan bawah                                                           |
+
+Token chrome: `--floating-control-offset`, `--map-panel-width`, `--map-panel-edge`, `--map-overlay-inset`, `--map-controls-clearance` (nilai di `LAYOUT`).
 
 ---
 

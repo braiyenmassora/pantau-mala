@@ -148,20 +148,29 @@ describe('RegionPin', () => {
     expect(pin.classList.contains('bg-risk-low')).toBe(true)
   })
 
-  it('tooltip shows nama only; hidden when selected', async () => {
+  it('hover shows MapInfoCard; swapped for DetectionFlag when selected', async () => {
     const user = userEvent.setup()
     renderPin()
     const pin = pinButton()
     await user.hover(pin)
-    const tip = await screen.findByRole('tooltip')
-    expect(tip.textContent).toBe('Kab. Pulang Pisau')
-    expect(tip.textContent).not.toContain('titik panas')
+    expect(screen.getByText('Kab. Pulang Pisau')).toBeTruthy()
+    expect(
+      screen.getByText(copy.map.regionMetaProvince('Kalimantan Tengah')),
+    ).toBeTruthy()
+    expect(
+      screen.getByText(copy.map.regionPinDetails('23', 'Sangat tinggi')),
+    ).toBeTruthy()
 
     await user.click(pin)
-    expect(screen.queryByRole('tooltip')).toBeNull()
+    expect(
+      screen.queryByText(copy.map.regionPinDetails('23', 'Sangat tinggi')),
+    ).toBeNull()
+    expect(
+      screen.getByText(copy.map.regionMetaProvince('Kalimantan Tengah')),
+    ).toBeTruthy()
   })
 
-  it('rendah pin hover shows nama only', async () => {
+  it('rendah pin hover shows MapInfoCard pattern', async () => {
     const user = userEvent.setup()
     renderPin({
       code: '62.13',
@@ -171,8 +180,8 @@ describe('RegionPin', () => {
       hotspots_24h: 0,
     })
     await user.hover(pinButton('Kab. Rendah, risiko Rendah, 0 titik panas'))
-    const tip = await screen.findByRole('tooltip')
-    expect(tip.textContent).toBe('Kab. Rendah')
+    expect(screen.getByText('Kab. Rendah')).toBeTruthy()
+    expect(screen.getByText(copy.map.regionPinDetails('0', 'Rendah'))).toBeTruthy()
   })
 
   it('shows detection flag with hotspots after click', async () => {

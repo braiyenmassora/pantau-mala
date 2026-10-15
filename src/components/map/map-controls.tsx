@@ -46,12 +46,12 @@ export function MapControls({ mapRef }: MapControlsProps) {
     <div
       data-testid="map-controls"
       className={cn(
-        'absolute right-4 bottom-4 z-30 flex flex-col items-end gap-2',
+        'absolute right-(--floating-control-offset) bottom-(--floating-control-offset) z-30 flex flex-col items-end gap-2',
         panelOpen && 'hidden sm:flex',
       )}
       {...mapOverlayGestureProps}
     >
-      <div className="rounded-card border-line bg-surface divide-line flex flex-col divide-y overflow-hidden border shadow-sm">
+      <div className="rounded-card border-line bg-surface divide-line flex flex-col divide-y overflow-hidden border shadow-sm backdrop-blur-sm">
         <button
           type="button"
           className={cn(

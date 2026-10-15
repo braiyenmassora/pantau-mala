@@ -37,7 +37,7 @@
   --color-risk-low-tint: #e6f4ea;
   --color-risk-low-text: #137333;
 
-  /* Spasi kelipatan 4: 4 8 12 16 20 24 */
+  /* Spasi kelipatan 4 — skala semantik brief + PDF */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -45,6 +45,23 @@
   --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Layout GIS — mirror `src/lib/layout.ts` */
+  --floating-control-offset: var(--space-4);
+  --map-panel-width: 400px;
+  --map-panel-edge: 416px;
+  --map-overlay-inset: 432px;
+  --map-controls-clearance: 80px;
+  --card-padding: var(--space-4);
+  --card-gap: var(--space-4);
+  --section-gap: var(--space-6);
+  --content-gap: var(--space-5);
+  --control-height-sm: 36px;
+  --control-height-md: 40px;
+  --control-height-lg: 48px;
 
   /* Tipografi: 12 caption · 14 isi · 16 nama baris · 22 judul · 28 angka besar */
   --text-xs: 12px;

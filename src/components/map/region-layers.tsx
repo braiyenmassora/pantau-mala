@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react'
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import type { Region } from '@/data/types'
+import { formatNumber } from '@/lib/format'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
@@ -74,7 +75,7 @@ export function RegionLayers({ regions }: RegionLayersProps) {
           isHigh || isMid
             ? ({
                 '--risk-color': dot,
-                '--beat': isHigh ? '1.1s' : '2.6s',
+                '--beat': isHigh ? '0.75s' : '1.8s',
               } as CSSProperties)
             : undefined
 
@@ -90,7 +91,7 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                 type="button"
                 aria-label={r.name}
                 className={cn(
-                  'relative flex size-8 items-center justify-center rounded-full transition-transform duration-150',
+                  'relative flex size-10 items-center justify-center rounded-full transition-transform duration-150',
                   isHovered && 'z-20 scale-[1.3]',
                 )}
                 onMouseEnter={() => hover(r.code)}
@@ -105,19 +106,23 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                   className={cn(
                     'border-surface rounded-full',
                     isHigh || isMid
-                      ? 'marker--pulse size-3 border-2'
-                      : 'size-2 border-[1.5px]',
+                      ? 'marker--pulse size-4 border-2'
+                      : 'size-2.5 border-[1.5px]',
                   )}
                   style={{ backgroundColor: dot, ...pulseStyle }}
                   aria-hidden
                 />
               </button>
 
-              {isHovered && (
+              {isHovered ? (
                 <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
-                  <MapInfoCard title={r.name} />
+                  <MapInfoCard
+                    title={r.name}
+                    subtitle={RISK_CATEGORIES[risk].label}
+                    meta={`${formatNumber(r.hotspots_24h)} titik panas · 24 jam`}
+                  />
                 </div>
-              )}
+              ) : null}
             </MarkerContent>
           </MapMarker>
         )
