@@ -82,6 +82,12 @@ export const copy = {
     confidence: 'Keyakinan',
     frp: 'FRP',
     sourcesUpdates: 'Sumber & pembaruan data',
+    trendChart: 'Tren titik panas',
+    trendChartNote: 'Jumlah titik panas per hari · 7 hari terakhir',
+    trendChartUnavailable: 'Riwayat tren belum tersedia.',
+    trendLatest: 'Terbaru',
+    trendPeak: 'Puncak',
+    trendAverage: 'Rata-rata',
 
     river: 'Debit sungai model',
     riverNote:
