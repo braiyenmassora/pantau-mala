@@ -5,6 +5,12 @@
   "main": "worker.ts",
   "compatibility_date": "2026-10-13",
   "workers_dev": true,
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true,
+    },
+  },
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
