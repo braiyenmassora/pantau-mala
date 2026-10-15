@@ -170,11 +170,12 @@ export const copy = {
   },
 
   panel: {
-    indonesiaToday: 'Pantau bencana alam',
-    provinceToday: (province: string) => `Pantauan Anomali Termal · ${province}`,
-    tagline: 'Platform Integrasi Pantauan Anomali Termal & Bencana Alam',
+    indonesiaToday: 'Pantauan potensi bencana',
+    provinceToday: (province: string) => `Potensi bencana · ${province}`,
+    tagline: 'Platform integrasi data untuk memantau potensi bencana alam',
     subtitle: 'Data satelit NASA FIRMS, 24 jam terakhir.',
-    limitationNote: 'Titik panas belum tentu kebakaran. Bukan peringatan resmi.',
+    limitationNote:
+      'Indikator potensi, bukan prediksi pasti atau peringatan resmi. Titik panas belum tentu kebakaran.',
     hotspot24h: 'Titik panas 24 jam',
     hotspotHint: 'Penjelasan titik panas',
     hotspotTooltip: 'Total titik panas dalam 24 jam',

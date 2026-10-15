@@ -16,7 +16,7 @@ CMS BE adalah **sumber kebenaran visual**, sesuai arahan owner pada 15 Oktober 2
 1. Peta = hero; panel = informasi. Satu pekerjaan per section.
 2. Warna risiko hanya untuk poligon / chip / legend status, bukan dekorasi. Titik deteksi satelit memakai ember; angka agregat wilayah memakai badge netral. Status non-risiko (gempa, stale, suhu, error) pakai ink / brand / ink-3.
 3. Titik panas ≠ kebakaran (lihat fe-ui-copy).
-4. Logo **pantaumala** memakai simbol dan lettering SVG asli CMS backend: `pantau` hijau `#14634C`, `mala` orange `#C2410C`. Jangan mengganti lettering dengan font UI. Aksen UI/lokasi/tombol mengikuti token CMS BE: forest `#14634C`, ember `#C2410C`, slate `#0F172A`. **Tidak ada biru dekoratif.**
+4. Logo **pantaumala** memakai simbol dan lettering SVG asli CMS backend: `pantau` hijau `#14634C`, `mala` orange `#C2410C`. Jangan mengganti lettering dengan font UI. Aksen UI/lokasi/tombol mengikuti token CMS BE: forest `#14634C`, ember `#C2410C`, slate `#0F172A`. Copy berfokus pada **potensi bencana** (kemungkinan terjadinya bencana), bukan menyatakan bencana alam definitif. **Tidak ada biru dekoratif.**
 5. Light mode saja. Grid **4 px**.
 
 ### Pola layout (PDF §5 — Maps-like)

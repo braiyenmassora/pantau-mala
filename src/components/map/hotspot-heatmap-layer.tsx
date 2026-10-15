@@ -84,7 +84,7 @@ const HEATMAP_PAINT: HeatmapLayerSpecification['paint'] = {
     10,
     0.5,
     12,
-    0,
+    0.25,
   ],
 }
 

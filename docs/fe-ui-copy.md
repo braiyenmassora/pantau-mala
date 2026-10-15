@@ -26,6 +26,21 @@ Informasi publik. Salah kata = orang bisa panik atau salah bertindak.
 
 **Aturan emas:** titik panas ≠ kebakaran. Ulangi di legend singkat atau footnote UI sekali — jangan diulang di setiap chip.
 
+### Identitas dan batas klaim produk
+
+- Judul beranda: **Pantauan potensi bencana**.
+- Tagline: **Platform integrasi data untuk memantau potensi bencana alam**.
+- Produk memantau indikator kemungkinan terjadinya bencana, bukan menyatakan setiap deteksi sebagai bencana yang sudah terjadi.
+- Jangan menyajikan jumlah deteksi, confidence satelit, atau kepadatan heatmap sebagai persentase kemungkinan bencana. Tidak ada model probabilitas bencana pada FE.
+- Gempa dari feed BMKG tetap disebut sebagai kejadian yang dilaporkan sumber, bukan prediksi gempa berikutnya.
+
+### Titik observasi dan ringkasan wilayah
+
+- Titik deteksi dan heatmap tetap aktif pada semua level zoom, memakai koordinat GeoJSON backend tanpa jitter, snap ke daratan, atau pemindahan ke pusat wilayah.
+- Filter provinsi, kategori, dan detail hanya memakai pasangan wilayah dari backend; FE tidak menebak afiliasi wilayah atau memindahkan titik ke pusat wilayah.
+- Ringkasan nasional memakai label nama provinsi dan choropleth, bukan pin lokasi sintetis. Badge angka kabupaten/kota bersifat netral dan diberi keterangan ringkasan wilayah, bukan koordinat deteksi.
+- Heatmap menunjukkan kepadatan observasi, bukan luas kebakaran atau kepastian bencana.
+
 Sebelum ship copy, tanya: _Kalau dibaca warga tanpa konteks teknis, apakah mereka mengira rumah mereka terbakar?_ Jika ya → tulis ulang.
 
 ---
