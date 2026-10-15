@@ -24,7 +24,7 @@ const SOURCE_ID = 'fy-hotspot-heatmap'
 const LAYER_ID = 'fy-hotspot-heatmap-layer'
 const POINTS_LAYER_ID = 'fy-hotspot-points-layer'
 
-export const HEATMAP_MIN_ZOOM = 7
+export const HEATMAP_MIN_ZOOM = 3.5
 
 type HotspotHeatmapLayerProps = {
   regions: Region[]

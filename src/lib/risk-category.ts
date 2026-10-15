@@ -8,44 +8,44 @@ export type RiskCategoryStyle = {
 }
 
 /** Mirrors `--color-brand` — hijau. */
-export const BRAND_HEX = '#137333'
+export const BRAND_HEX = '#14634c'
 
 /** Lokasi pengguna = brand. */
-export const LOCATION_HEX = '#137333'
+export const LOCATION_HEX = '#14634c'
 
 /** Lapisan suhu. */
 export const TEMP_HOT_HEX = BRAND_HEX
-export const TEMP_TEXT_HEX = '#1F2328'
+export const TEMP_TEXT_HEX = '#0F172A'
 export const TEMP_HALO_HEX = '#FFFFFF'
 
 /** Line / border hex — mirrors `--color-line`. */
-export const LINE_HEX = '#E8EAED'
+export const LINE_HEX = '#E2E8F0'
 
 /** Warna risiko — hex MapLibre / SVG. */
 export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
   tidak_tersedia: {
     label: 'Belum dinilai',
-    dot: '#80868B',
-    tint: '#F1F3F4',
-    text: '#5F6368',
+    dot: '#94A3B8',
+    tint: '#F1F5F9',
+    text: '#334155',
   },
   sangat_tinggi: {
     label: 'Sangat tinggi',
-    dot: '#D93025',
-    tint: '#FCE8E6',
-    text: '#C5221F',
+    dot: '#DC2626',
+    tint: '#FEF2F2',
+    text: '#991B1B',
   },
   sedang: {
     label: 'Sedang',
-    dot: '#F29900',
-    tint: '#FEF7E0',
-    text: '#854800',
+    dot: '#D97706',
+    tint: '#FFFBEB',
+    text: '#92400E',
   },
   rendah: {
     label: 'Rendah',
-    dot: '#188038',
-    tint: '#E6F4EA',
-    text: '#137333',
+    dot: '#14634C',
+    tint: '#EAF3EE',
+    text: '#0E4B39',
   },
 }
 

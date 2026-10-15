@@ -277,7 +277,7 @@ export function SummaryPanel({
             {daftarPending && !daftar ? (
               <div className="flex flex-col gap-2">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Skeleton key={i} className="rounded-card h-12 w-full" />
+                  <Skeleton key={i} className="rounded-card h-10 w-full" />
                 ))}
               </div>
             ) : topProvinces.length === 0 ? (
@@ -417,7 +417,7 @@ function SummarySkeleton({ nationalView }: { nationalView: boolean }) {
     <div className="flex flex-col gap-6 px-4 py-4" aria-busy>
       <div className="space-y-2">
         <Skeleton className="rounded-ctl h-7 w-28" />
-        <Skeleton className="h-12 w-full rounded-full" />
+        <Skeleton className="h-10 w-full rounded-ctl" />
       </div>
       <div className="space-y-2">
         <Skeleton className="rounded-ctl h-7 w-3/4" />
@@ -432,7 +432,7 @@ function SummarySkeleton({ nationalView }: { nationalView: boolean }) {
       <div className="space-y-2">
         <Skeleton className="rounded-ctl h-4 w-1/3" />
         {Array.from({ length: rowCount }).map((_, i) => (
-          <Skeleton key={i} className="rounded-ctl h-12 w-full" />
+          <Skeleton key={i} className="rounded-ctl h-10 w-full" />
         ))}
       </div>
     </div>

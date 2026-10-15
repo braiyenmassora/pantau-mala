@@ -16,7 +16,7 @@ PDF handoff adalah **sumber kebenaran visual**. `tokens.css` dan komponen mengik
 1. Peta = hero; panel = informasi. Satu pekerjaan per section.
 2. Warna risiko hanya untuk pin / chip / legend status — bukan dekorasi. Status non-risiko (gempa, stale, suhu, error) pakai ink / brand / ink-3.
 3. Titik panas ≠ kebakaran (lihat fe-ui-copy).
-4. Logo **pantaumala** memakai simbol dan lettering SVG asli CMS backend: `pantau` hijau `#14634C`, `mala` orange `#C2410C`. Jangan mengganti lettering dengan font UI. Aksen UI/lokasi/tombol tetap mengikuti token FE. **Tidak ada biru.**
+4. Logo **pantaumala** memakai simbol dan lettering SVG asli CMS backend: `pantau` hijau `#14634C`, `mala` orange `#C2410C`. Jangan mengganti lettering dengan font UI. Aksen UI/lokasi/tombol mengikuti token CMS BE: forest `#14634C`, ember `#C2410C`, slate `#0F172A`. **Tidak ada biru dekoratif.**
 5. Light mode saja. Grid **4 px**.
 
 ### Pola layout (PDF §5 — Maps-like)
@@ -65,20 +65,20 @@ Spasi: **4, 8, 12, 16, 20, 24**.
 
 | Radius                | px      | Pakai                    |
 | --------------------- | ------- | ------------------------ |
-| `--radius-ctl`        | **8**   | menu item, kontrol kotak |
-| `--radius-card`       | **12**  | kartu, dropdown          |
-| `--radius-panel`      | **16**  | panel, dialog            |
+| `--radius-ctl`        | **6**   | menu item, kontrol kotak |
+| `--radius-card`       | **8**   | kartu, dropdown          |
+| `--radius-panel`      | **12**  | panel, dialog            |
 | pill (`rounded-full`) | **999** | search, chip, tombol     |
 
 Bayangan: `shadow-sm` / `md` / `lg` / `shadow-map` (pin) — nilai di token.
 
-Touch: kontrol peta & tombol besar **40**; chip **36**; search **48**; rail **24×48**.
+Touch: kontrol peta **40**; tombol utama **40**; chip **32**; search **40**; rail **24×48**.
 
 ---
 
 ## 4. Tipografi (PDF §2)
 
-IBM Plex Sans (UI) · IBM Plex Mono (skor, jumlah, koordinat, FRP).
+DM Sans (UI) · Plus Jakarta Sans (heading) · system mono (skor, jumlah, koordinat, FRP).
 
 Hanya ukuran **12, 13, 14, 16, 20, 28**:
 
@@ -100,8 +100,8 @@ Sentence case. Sapaan “kamu”. Desimal koma kecuali koordinat.
 
 | Komponen       | Spek                                                                                                            |
 | -------------- | --------------------------------------------------------------------------------------------------------------- |
-| Search         | tinggi **48**, pill, border + `shadow-sm`, teks 14                                                              |
-| Chip filter    | tinggi **36**, pill, gap 8, teks 13/500; terpilih = latar `#14261B`, teks putih                                 |
+| Search         | tinggi **40**, compact radius, border + `shadow-sm`, teks 13                                                |
+| Chip filter    | tinggi **32**, compact radius, gap 8, teks 11/500; terpilih = latar forest-soft, teks forest                  |
 | Badge kategori | tinggi **24**, tint + text kategori, teks 12/600                                                                |
 | Tombol         | semua pill; besar **40** (teks 14); kecil **36** (teks 13); primary brand / sekunder border / lembut brand-soft |
 | Pin            | lingkaran penuh warna risiko (tanpa skor); halo pulse Sangat tinggi **2,6 s** / Sedang **3,4 s**                |

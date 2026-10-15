@@ -154,7 +154,7 @@ describe('HotspotHeatmapLayer', () => {
         ]),
       }),
     )
-    expect(HEATMAP_MIN_ZOOM).toBe(7)
+    expect(HEATMAP_MIN_ZOOM).toBe(3.5)
     expect(addLayer).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'heatmap',

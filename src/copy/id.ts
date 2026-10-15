@@ -360,7 +360,7 @@ export const copy = {
   legend: {
     /** Strip kartu kiri bawah peta — teks pendek agar mudah dibaca. */
     riskTitle: 'Risiko wilayah',
-    riskHint: 'Penanda ringkasan, bukan lokasi deteksi',
+    riskHint: 'Warna area dan titik hotspot',
     quakeTitle: 'Gempa bumi',
     quakeHint: 'Episentrum dari feed BMKG',
     densityTitle: 'Kepadatan satelit',

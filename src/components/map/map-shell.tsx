@@ -21,7 +21,6 @@ import { MapSoftLoading } from '@/components/map/map-soft-loading'
 import { ProvinceChoroplethLayer } from '@/components/map/province-choropleth-layer'
 import { ProvinceFocus } from '@/components/map/province-focus'
 import { ProvinceLabelsLayer } from '@/components/map/province-labels-layer'
-import { ProvincePinsLayer } from '@/components/map/province-pins-layer'
 import { RegionLayers } from '@/components/map/region-layers'
 import { SelectedHotspotsLayer } from '@/components/map/selected-hotspots-layer'
 import { UserLocationLayer } from '@/components/map/user-location-layer'
@@ -299,9 +298,6 @@ export function MapShell({ mapRef, panelOpen, regions, weatherRegions = regions 
         </LayerErrorBoundary>
         <LayerErrorBoundary name="ProvinceLabelsLayer" onError={markLayerFailed}>
           <ProvinceLabelsLayer regions={regions} />
-        </LayerErrorBoundary>
-        <LayerErrorBoundary name="ProvincePinsLayer" onError={markLayerFailed}>
-          <ProvincePinsLayer regions={regions} />
         </LayerErrorBoundary>
         <LayerErrorBoundary name="RegionLayers" onError={markLayerFailed}>
           <RegionLayers regions={regions} />

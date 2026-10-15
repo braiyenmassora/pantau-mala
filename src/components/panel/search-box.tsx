@@ -38,7 +38,7 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
   return (
     <div
       className={cn(
-        'border-line bg-surface group flex h-12 items-center gap-2 rounded-full border px-3 shadow-sm',
+        'border-line bg-surface group flex h-10 items-center gap-2 rounded-ctl border px-3 shadow-sm',
         'ease-out-soft transition-[border-color,box-shadow] duration-150',
         'focus-within:border-brand',
       )}

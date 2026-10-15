@@ -1,4 +1,4 @@
 export const MAP_COLORS = {
-  ink: '#1f2328',
+  ink: '#0F172A',
   surface: '#FFFFFF',
 } as const
