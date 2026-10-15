@@ -8,13 +8,13 @@ type IconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode
 }
 
-/** Tombol ikon peta — PDF: 40×40, pill. */
+/** Tombol ikon — hit 44, radius/shadow chrome seperti sidebar. */
 export function IconButton({ className, children, ...props }: IconButtonProps) {
   return (
     <button
       type="button"
       className={cn(
-        'border-line bg-surface text-ink-2 flex size-10 shrink-0 items-center justify-center rounded-full border shadow-sm',
+        'border-line bg-surface text-ink-2 rounded-ctl shadow-chrome flex size-11 shrink-0 items-center justify-center border',
         'transition-[background-color,color] duration-150 ease-in-out',
         'hover:bg-surface-muted hover:text-ink',
         focusRing,

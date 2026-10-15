@@ -1,3 +1,5 @@
+import { Activity } from 'lucide-react'
+
 import { Skeleton } from '@/components/common'
 import {
   Card,
@@ -8,9 +10,9 @@ import {
 } from '@/components/ui/card'
 import { copy } from '@/copy/id'
 import { useEarthquakes } from '@/data/queries'
-import { formatNumber } from '@/lib/format'
+import { formatDateTime, formatNumber } from '@/lib/format'
 
-// ponytail: gempa = satu kartu hasil sederhana.
+/** Gempa: label · magnitudo · wilayah · meta (waktu / kedalaman / dirasakan). */
 export function LatestEarthquakeCard() {
   const { data, isPending, isError } = useEarthquakes('latest')
   const event = data?.data?.[0]
@@ -19,11 +21,12 @@ export function LatestEarthquakeCard() {
     return (
       <Card aria-busy="true" aria-label={copy.panel.seismicTitle}>
         <CardHeader>
-          <Skeleton className="h-4 w-36" />
+          <Skeleton className="h-4 w-28" />
         </CardHeader>
-        <CardContent className="space-y-2">
-          <Skeleton className="h-5 w-28" />
+        <CardContent className="space-y-3">
+          <Skeleton className="h-7 w-16" />
           <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-3 w-2/3" />
         </CardContent>
       </Card>
     )
@@ -33,7 +36,14 @@ export function LatestEarthquakeCard() {
     return (
       <Card aria-label={copy.panel.seismicTitle}>
         <CardHeader>
-          <CardTitle>{copy.panel.seismicTitle}</CardTitle>
+          <CardTitle className="flex items-center gap-1.5">
+            <Activity
+              className="text-risk-mid size-3.5 shrink-0"
+              strokeWidth={2}
+              aria-hidden
+            />
+            {copy.panel.seismicTitle}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <CardDescription className="text-sm leading-5">
@@ -46,22 +56,34 @@ export function LatestEarthquakeCard() {
 
   const magnitude = formatNumber(event.magnitudo)
   const depth = formatNumber(event.kedalaman_km)
-  const footnote = [event.dirasakan, event.potensi].find((s) => s?.trim()) ?? ''
+  const when = formatDateTime(event.waktu, 'WIB')
+  const felt = event.dirasakan?.trim()
+  const place = event.wilayah.trim()
 
   return (
     <Card aria-label={copy.panel.seismicTitle}>
       <CardHeader>
-        <CardTitle>{copy.panel.seismicTitle}</CardTitle>
+        <CardTitle className="flex items-center gap-1.5">
+          <Activity
+            className="text-risk-mid size-3.5 shrink-0"
+            strokeWidth={2}
+            aria-hidden
+          />
+          {copy.panel.seismicTitle}
+        </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-2">
-        <p className="text-ink text-sm leading-5 font-semibold tabular-nums">
-          {copy.map.quakeTitle(magnitude)}
+      <CardContent className="space-y-3">
+        <p className="text-ink font-mono text-xl leading-7 font-semibold tabular-nums">
+          M {magnitude}
         </p>
-        <p className="text-ink-2 text-sm leading-5">{event.wilayah}</p>
-        <p className="text-ink-3 text-xs leading-5">
-          Kedalaman {depth} km
-          {footnote ? ` · ${footnote}` : ''}
-        </p>
+        <p className="text-ink text-sm leading-5">{place}</p>
+        <div className="text-ink-2 space-y-1 text-xs leading-4">
+          <p>{when}</p>
+          <p>
+            {copy.panel.seismicDepth(depth)}
+            {felt ? ` · ${copy.panel.seismicFelt(felt)}` : ''}
+          </p>
+        </div>
       </CardContent>
     </Card>
   )

@@ -1,13 +1,14 @@
 import * as React from 'react'
-import { cn } from 'cn'
+import { cn } from '@/lib/utils'
 
-/** Kartu hasil sidebar — border tipis, radius token, tanpa bayangan tebal. */
+/** Kartu panel: putih + border line halus (tanpa shadow tebal).
+ * Anatomi: label 12 · nilai · meta 12 · aksi opsional. Padding 16, radius 8. */
 function Card({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card"
       className={cn(
-        'border-line bg-surface text-ink rounded-card flex flex-col border',
+        'border-line bg-surface text-ink rounded-ctl flex flex-col border',
         className,
       )}
       {...props}
@@ -19,7 +20,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-header"
-      className={cn('flex flex-col gap-2 px-4 pt-4', className)}
+      className={cn('flex items-center justify-between gap-2 px-4 pt-4', className)}
       {...props}
     />
   )
@@ -29,7 +30,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-title"
-      className={cn('text-ink text-sm leading-5 font-semibold', className)}
+      className={cn('text-ink-2 text-xs leading-4 font-medium', className)}
       {...props}
     />
   )
@@ -39,7 +40,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-description"
-      className={cn('text-ink-2 text-xs leading-5', className)}
+      className={cn('text-ink-2 text-xs leading-4', className)}
       {...props}
     />
   )
@@ -49,7 +50,7 @@ function CardContent({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-content"
-      className={cn('px-4 pt-2.5 pb-4', className)}
+      className={cn('px-4 pt-2 pb-4', className)}
       {...props}
     />
   )
@@ -59,7 +60,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-footer"
-      className={cn('border-line flex items-center border-t px-4 py-3', className)}
+      className={cn('flex items-center px-4 pb-4', className)}
       {...props}
     />
   )

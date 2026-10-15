@@ -19,8 +19,7 @@ export function ProvincePinsLayer({ regions }: ProvincePinsLayerProps) {
   const [hoveredName, setHoveredName] = useState<string | null>(null)
 
   const isNational = province === 'Semua' && !selectedCode
-  const pinRisk =
-    selectedCategories.size === 1 ? [...selectedCategories][0] : undefined
+  const pinRisk = selectedCategories.size === 1 ? [...selectedCategories][0] : undefined
 
   const aggregates = useMemo(() => {
     if (!isNational || !catalog) return []

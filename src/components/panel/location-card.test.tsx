@@ -2,12 +2,18 @@ import { useSession } from '@/auth/session'
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { LocationCard } from '@/components/panel/location-card'
+import { TooltipProvider } from '@/components/ui/tooltip'
 import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
 import { useMapStore } from '@/store/map'
+
+function wrap(ui: ReactNode) {
+  return <TooltipProvider>{ui}</TooltipProvider>
+}
 
 const region: Region = {
   code: '62.11',
@@ -70,12 +76,15 @@ describe('LocationCard', () => {
     })
 
     render(
-      <QueryClientProvider client={client}>
-        <LocationCard regions={[region]} />
-      </QueryClientProvider>,
+      wrap(
+        <QueryClientProvider client={client}>
+          <LocationCard regions={[region]} />
+        </QueryClientProvider>,
+      ),
     )
 
     expect(screen.getByText(copy.location.nearbyNoHotspots)).toBeTruthy()
+    expect(screen.queryByText(copy.location.nearbyRadiusNote)).toBeNull()
     expect(screen.queryByRole('button', { name: 'Lihat detail' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Matikan lokasi' })).toBeNull()
   })
@@ -86,9 +95,11 @@ describe('LocationCard', () => {
       defaultOptions: { queries: { retry: false } },
     })
     render(
-      <QueryClientProvider client={client}>
-        <LocationCard regions={[region]} />
-      </QueryClientProvider>,
+      wrap(
+        <QueryClientProvider client={client}>
+          <LocationCard regions={[region]} />
+        </QueryClientProvider>,
+      ),
     )
     expect(
       screen.getByText('Izinkan lokasi untuk melihat titik panas di sekitarmu'),
@@ -102,9 +113,11 @@ describe('LocationCard', () => {
       defaultOptions: { queries: { retry: false } },
     })
     render(
-      <QueryClientProvider client={client}>
-        <LocationCard regions={[region]} />
-      </QueryClientProvider>,
+      wrap(
+        <QueryClientProvider client={client}>
+          <LocationCard regions={[region]} />
+        </QueryClientProvider>,
+      ),
     )
     expect(screen.getByText(copy.empty.locationError.description)).toBeTruthy()
     expect(

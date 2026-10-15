@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
+import { copy } from '@/copy/id'
 import { formatNumber } from '@/lib/format'
 import { fitProvinceBounds } from '@/lib/indonesia-view'
 import type { ProvinceAggregate } from '@/lib/province-aggregates'
@@ -70,7 +71,7 @@ export function ProvincePin({ aggregate, hovered = false, onHover }: ProvincePin
             <MapInfoCard
               title={aggregate.name}
               subtitle={RISK_CATEGORIES[risk].label}
-              meta={`${formatNumber(aggregate.hotspots_24h)} titik panas · 24 jam`}
+              meta={copy.map.regionMetaHotspots(formatNumber(aggregate.hotspots_24h))}
             />
           </div>
         ) : null}

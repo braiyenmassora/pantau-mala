@@ -25,7 +25,7 @@ export function PanelHeaderPill({ mapRef }: PanelHeaderPillProps) {
 
   if (selectedCode || province !== 'Semua') {
     return (
-      <div className="border-line bg-surface flex h-12 shrink-0 items-center gap-2 rounded-full border px-3 shadow-sm">
+      <div className="border-line bg-surface rounded-ctl shadow-chrome flex h-12 shrink-0 items-center gap-2 border px-3">
         <button
           type="button"
           onClick={() => {
@@ -40,7 +40,7 @@ export function PanelHeaderPill({ mapRef }: PanelHeaderPillProps) {
           }}
           aria-label={copy.panel.closeDetail}
           className={cn(
-            'text-ink-2 hover:bg-surface-muted hover:text-ink flex h-9 min-w-0 flex-1 items-center gap-2 rounded-full px-2',
+            'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex h-9 min-w-0 flex-1 items-center gap-2 px-2',
             'transition-colors duration-150',
             focusRing,
           )}

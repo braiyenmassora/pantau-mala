@@ -1,9 +1,10 @@
-import { MapPin } from 'lucide-react'
+import { LocateFixed } from 'lucide-react'
 import { useEffect, useRef, type RefObject } from 'react'
 
 import { Button, EmptyState } from '@/components/common'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
+import { chromeSurface } from '@/lib/chrome'
 import { restoreFocusTrigger } from '@/lib/focus-return'
 import { resolveUserCoords } from '@/lib/geolocation'
 import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
@@ -54,28 +55,33 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
       aria-modal="true"
       aria-labelledby="location-prompt-title"
       className={cn(
-        'rounded-panel bg-surface absolute top-[68px] z-50 w-[360px] p-4 shadow-sm',
+        chromeSurface,
+        'absolute top-[68px] z-50 w-[min(360px,calc(100vw-2rem))] p-4',
         'ease-out-soft transition-[left] duration-300',
-        panelOpen
-          ? 'left-(--map-overlay-inset)'
-          : 'left-(--floating-control-offset)',
+        panelOpen ? 'left-(--map-overlay-inset)' : 'left-(--floating-control-offset)',
       )}
       {...mapOverlayGestureProps}
     >
       <EmptyState
         variant="bare"
-        icon={MapPin}
+        icon={LocateFixed}
         titleId="location-prompt-title"
         title={copy.location.promptTitle}
         description={copy.location.promptBody}
         actions={
           <>
-            <Button variant="secondary" size="sm" onClick={dismiss}>
+            <Button
+              variant="secondary"
+              size="sm"
+              className="h-9 min-h-9 shadow-none"
+              onClick={dismiss}
+            >
               {copy.location.promptLater}
             </Button>
             <Button
               variant="primary"
               size="sm"
+              className="h-9 min-h-9 shadow-none"
               onClick={() => {
                 void resolveUserCoords().then((result) => {
                   if (result.ok) {

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
+import { chromeSurface } from '@/lib/chrome'
 import { fitIndonesia } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { cn } from '@/lib/utils'
@@ -38,13 +39,14 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
   return (
     <div
       className={cn(
-        'border-line bg-surface group flex h-12 items-center gap-2 rounded-full border px-3 shadow-sm',
+        chromeSurface,
+        'group flex h-12 items-center gap-3 px-3',
         'ease-out-soft transition-[border-color,box-shadow] duration-150',
         'focus-within:border-brand',
       )}
     >
       <Search
-        className="text-ink-3 group-focus-within:text-brand size-5 shrink-0 transition-colors duration-150"
+        className="text-ink-3 group-focus-within:text-brand size-4 shrink-0 transition-colors duration-150"
         strokeWidth={2}
         aria-hidden
       />
@@ -57,8 +59,9 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
         placeholder={copy.panel.searchPlaceholder}
         aria-label={copy.panel.searchPlaceholder}
         className={cn(
-          'h-auto min-w-0 flex-1 border-0 bg-transparent px-0 py-0 text-sm shadow-none',
-          'text-ink placeholder:text-ink-3',
+          // h-full (bukan h-auto/py-0): tinggi ketat memotong glif IBM Plex → teks hampir tak kebaca.
+          'h-full min-w-0 flex-1 border-0 bg-transparent px-0 text-sm leading-5 shadow-none',
+          'text-ink caret-ink placeholder:text-ink-3',
           'focus-visible:border-0 focus-visible:ring-0',
           '[&::-webkit-search-cancel-button]:appearance-none',
         )}
@@ -70,9 +73,9 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
           size="icon"
           aria-label={copy.panel.searchClear}
           onClick={clearAll}
-          className="text-ink-3 hover:bg-surface-muted hover:text-ink size-10 shrink-0 rounded-full"
+          className="text-ink-3 hover:bg-surface-muted hover:text-ink rounded-ctl size-8 shrink-0"
         >
-          <X className="size-5" strokeWidth={2} aria-hidden />
+          <X className="size-4" strokeWidth={2} aria-hidden />
         </Button>
       ) : null}
     </div>

@@ -1,7 +1,7 @@
 import { LocateFixed } from 'lucide-react'
 import { useMemo, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
 
-import { Badge, ProgressBar } from '@/components/common'
+import { Badge, InfoTooltip, ProgressBar } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -20,11 +20,12 @@ type LocationCardProps = {
   regions: Region[]
 }
 
-function Shell({ children }: { children: ReactNode }) {
+function Shell({ children, trailing }: { children: ReactNode; trailing?: ReactNode }) {
   return (
     <Card aria-label={copy.location.nearbyLabel}>
       <CardHeader>
         <CardTitle>{copy.location.nearbyLabel}</CardTitle>
+        {trailing}
       </CardHeader>
       <CardContent>{children}</CardContent>
     </Card>
@@ -93,7 +94,7 @@ export function LocationCard({ regions }: LocationCardProps) {
             type="button"
             variant="secondary"
             size="sm"
-            className="bg-brand-soft text-brand hover:bg-brand-soft/80 h-8 shrink-0 rounded-full border-transparent px-3 text-xs font-medium"
+            className="bg-brand-soft text-brand hover:bg-brand-soft/80 rounded-card h-8 shrink-0 border-transparent px-3 text-xs font-medium"
             onClick={(e) => requestLocation(e.currentTarget)}
           >
             Izinkan
@@ -114,7 +115,7 @@ export function LocationCard({ regions }: LocationCardProps) {
             type="button"
             variant="secondary"
             size="sm"
-            className="bg-brand-soft text-brand hover:bg-brand-soft/80 h-8 shrink-0 rounded-full border-transparent px-3 text-xs font-medium"
+            className="bg-brand-soft text-brand hover:bg-brand-soft/80 rounded-card h-8 shrink-0 border-transparent px-3 text-xs font-medium"
             onClick={() => setLocation({ status: 'requesting' })}
           >
             {copy.empty.locationError.action}
@@ -127,28 +128,29 @@ export function LocationCard({ regions }: LocationCardProps) {
   if (location.status === 'off' || location.status === 'requesting') {
     return (
       <Shell>
-        <div className="flex items-center justify-between gap-3 text-left">
-          <p className="text-ink-2 min-w-0 flex-1 text-sm leading-5">
-            {location.status === 'requesting'
-              ? copy.location.loading
-              : copy.location.riskSubtitle}
-          </p>
-          {location.status === 'requesting' ? (
-            <span className="text-ink-3 shrink-0 text-xs">{copy.location.loading}</span>
-          ) : (
+        {location.status === 'requesting' ? (
+          <div className="space-y-2 text-left" aria-busy="true">
+            <ProgressBar />
+            <p className="text-ink-2 text-sm leading-5">{copy.location.loading}</p>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between gap-3 text-left">
+            <p className="text-ink-2 min-w-0 flex-1 text-sm leading-5">
+              {copy.location.riskSubtitle}
+            </p>
             <Button
               type="button"
               variant="secondary"
               size="sm"
-              className="bg-brand-soft text-brand hover:bg-brand-soft/80 h-8 shrink-0 rounded-full border-transparent px-3 text-xs font-medium"
+              className="bg-brand-soft text-brand hover:bg-brand-soft/80 rounded-ctl h-8 shrink-0 border-transparent px-3 text-xs font-medium"
               aria-label={copy.location.allowLocationFull}
               onClick={(e) => requestLocation(e.currentTarget)}
             >
               <LocateFixed className="size-3.5" strokeWidth={2} aria-hidden />
               {copy.location.useLocation}
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </Shell>
     )
   }
@@ -200,13 +202,14 @@ function ActiveNearbyCard({
     : null
   const titleRegion = userRegion ?? nearestRegion
 
-  const locationText = nearestRegion?.name ?? titleRegion?.name ?? 'posisimu'
-  const captionText =
-    nearby.hotspotCount === 0
-      ? copy.location.nearbyNoHotspots
-      : nearby.nearest
-        ? `${formatNumber(nearby.hotspotCount)} titik panas · ${formatNumber(nearby.nearest.distanceKm)} km di ${locationText}`
-        : `${formatNumber(nearby.hotspotCount)} titik panas dekat posisimu`
+  const locationText = nearestRegion?.name ?? titleRegion?.name ?? 'lokasimu'
+  const countLabel = copy.location.hotspotCount(formatNumber(nearby.hotspotCount))
+  const nearestKm = nearby.nearest
+    ? formatNumber(nearby.nearest.distanceKm, {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+      })
+    : null
 
   const riskCategory: RiskCategory =
     nearby.hotspotCount >= 10
@@ -221,6 +224,7 @@ function ActiveNearbyCard({
       className={cn(
         detailCode &&
           'hover:bg-surface-muted cursor-pointer transition-colors duration-150',
+        detailCode && focusRing,
       )}
       role={detailCode ? 'button' : undefined}
       tabIndex={detailCode ? 0 : undefined}
@@ -241,22 +245,31 @@ function ActiveNearbyCard({
       }
     >
       <CardHeader>
-        <CardTitle>{copy.location.nearbyLabel}</CardTitle>
-      </CardHeader>
-      <CardContent
-        className={cn(
-          'flex items-center justify-between gap-3',
-          detailCode && focusRing,
-          'rounded-ctl',
-        )}
-      >
-        <div className="min-w-0 flex-1 space-y-1">
-          <p className="text-ink truncate text-sm leading-5 font-semibold">
-            {titleRegion?.name ?? copy.location.nearbyLabel}
-          </p>
-          <p className="text-ink-2 truncate text-xs leading-5">{captionText}</p>
+        <div className="flex min-w-0 items-center gap-1">
+          <CardTitle>{copy.location.nearbyLabel}</CardTitle>
+          <InfoTooltip content={copy.location.riskNearbyTip} />
         </div>
         <Badge variant="category" category={riskCategory} />
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {nearby.hotspotCount === 0 ? (
+          <p className="text-ink-2 text-sm leading-5">{copy.location.nearbyNoHotspots}</p>
+        ) : (
+          <>
+            <div className="space-y-0.5">
+              <p className="text-ink text-sm leading-5 font-semibold">{countLabel}</p>
+              <p className="text-ink-2 text-xs leading-4">
+                {copy.location.nearbyRadiusNote}
+              </p>
+            </div>
+            {nearestKm ? (
+              <div className="text-ink-2 space-y-0.5 text-xs leading-4">
+                <p>{copy.location.nearestDistance(nearestKm)}</p>
+                <p className="text-ink line-clamp-2">{locationText}</p>
+              </div>
+            ) : null}
+          </>
+        )}
       </CardContent>
     </Card>
   )

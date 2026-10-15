@@ -36,6 +36,8 @@ type MapShellProps = {
   mapRef: RefObject<MapRef | null>
   panelOpen: boolean
   regions: Region[]
+  /** false sementara /v1/regions pending — satu SoftLoading sampai framing + data siap. */
+  dataReady?: boolean
 }
 
 function MapUnavailable({ onReload }: { onReload: () => void }) {
@@ -58,7 +60,7 @@ function MapUnavailable({ onReload }: { onReload: () => void }) {
           title={copy.empty.mapFail.title}
           description={copy.empty.mapFail.description}
           action={{ label: copy.empty.mapFail.action, onClick: onReload }}
-          className="max-w-sm shadow-sm"
+          className="shadow-chrome max-w-sm"
         />
       </div>
     </div>
@@ -70,7 +72,7 @@ function BasemapBanner({ onRetry }: { onRetry: () => void }) {
   return (
     <div
       data-testid="map-basemap-banner"
-      className="rounded-card border-line bg-surface pointer-events-auto absolute z-30 flex items-center gap-3 border px-3 py-2 shadow-sm"
+      className="rounded-ctl border-line bg-surface shadow-chrome pointer-events-auto absolute z-30 flex items-center gap-3 border px-3 py-2"
       style={{
         left: panelOpen ? 432 : 16,
         top: 68,
@@ -89,7 +91,7 @@ function PartialBanner() {
   return (
     <div
       data-testid="map-partial-banner"
-      className="rounded-card border-line bg-surface pointer-events-none absolute z-30 border px-3 py-2 shadow-sm"
+      className="rounded-ctl border-line bg-surface shadow-chrome pointer-events-none absolute z-30 border px-3 py-2"
       style={{
         left: panelOpen ? 432 : 16,
         top: 68,
@@ -226,7 +228,12 @@ export class LayerErrorBoundary extends Component<
   }
 }
 
-export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
+export function MapShell({
+  mapRef,
+  panelOpen,
+  regions,
+  dataReady = true,
+}: MapShellProps) {
   const { data: catalog } = useRegionCatalog()
   const [noWebGl, setNoWebGl] = useState(() => !webGlSupported())
   const [basemapFailed, setBasemapFailed] = useState(false)
@@ -252,6 +259,7 @@ export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
   }
 
   const pad = getMapPadding(panelOpen)
+  const mapReady = framed && dataReady
 
   return (
     <div
@@ -267,7 +275,7 @@ export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
     >
       {basemapFailed && <BasemapBanner onRetry={remount} />}
       {!basemapFailed && layerFailed && <PartialBanner />}
-      {!framed && (
+      {!mapReady && (
         <div className="pointer-events-none absolute inset-0 z-20">
           <MapSoftLoading />
         </div>
@@ -279,7 +287,7 @@ export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
         blank={basemapFailed}
         className={cn(
           'ease-out-soft size-full transition-opacity duration-300',
-          framed ? 'opacity-100' : 'opacity-0',
+          mapReady ? 'opacity-100' : 'opacity-0',
         )}
         center={INDONESIA_CENTER}
         zoom={4.5}

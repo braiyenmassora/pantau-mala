@@ -8,7 +8,6 @@ import { LocationDetailSync } from '@/components/map/location-detail-sync'
 import { LocationPromptDialog } from '@/components/map/location-prompt-dialog'
 import { MapControls } from '@/components/map/map-controls'
 import { MapLegend } from '@/components/map/map-legend'
-import { MapSoftLoading } from '@/components/map/map-soft-loading'
 import { PanelFooter } from '@/components/panel/panel-footer'
 import { SummaryPanel } from '@/components/panel/summary-panel'
 import type { MapRef } from '@/components/ui/map'
@@ -68,7 +67,7 @@ export default function App() {
       )
     })
     return () => {
-      cancelled = true  
+      cancelled = true
     }
   }, [setLocation])
 
@@ -110,10 +109,7 @@ export default function App() {
 
   // Peta ikut filter kategori/provinsi; query hanya mempersempit daftar panel.
   const mapRegions = useMemo(
-    () =>
-      data
-        ? filterRegions(data, { province, selectedCategories, query: '' })
-        : [],
+    () => (data ? filterRegions(data, { province, selectedCategories, query: '' }) : []),
     [data, province, selectedCategories],
   )
 
@@ -128,7 +124,7 @@ export default function App() {
           className={cn(
             'absolute z-40 flex w-[calc(100vw-32px)] flex-col overflow-hidden sm:w-(--map-panel-width)',
             'top-(--floating-control-offset) bottom-(--floating-control-offset) left-(--floating-control-offset)',
-            'rounded-panel border-line bg-surface border shadow-sm',
+            'rounded-panel border-line bg-surface shadow-chrome border',
             easePanel,
             'transition-[transform,opacity]',
             panelOpen
@@ -163,14 +159,12 @@ export default function App() {
           aria-label={panelOpen ? copy.app.hidePanel : copy.app.showPanel}
           className={cn(
             'absolute top-1/2 z-[41] flex h-12 w-6 -translate-y-1/2 items-center justify-center',
-            'rounded-r-ctl border-line bg-surface text-ink-2 border border-l-0 shadow-sm',
+            'rounded-r-ctl border-line bg-surface text-ink-2 shadow-chrome border border-l-0',
             'hover:bg-surface-muted',
             easePanel,
             'transition-[left,background-color] duration-150',
             focusRing,
-            panelOpen
-              ? 'left-[calc(100vw-24px)] sm:left-(--map-panel-edge)'
-              : 'left-0',
+            panelOpen ? 'left-[calc(100vw-24px)] sm:left-(--map-panel-edge)' : 'left-0',
           )}
           {...mapOverlayGestureProps}
         >
@@ -185,7 +179,7 @@ export default function App() {
 
         <LocationDetailSync mapRef={mapRef} />
         <LocationPromptDialog mapRef={mapRef} />
-        <MapLegend />
+        {!isPending && <MapLegend />}
         {!isPending && <MapControls mapRef={mapRef} />}
 
         <main
@@ -194,12 +188,13 @@ export default function App() {
           aria-label={copy.app.mapAria}
           className="absolute inset-0 z-0"
         >
-          {/* Satu loader di MapShell sampai framing siap — jangan defer + SoftLoading ganda. */}
-          <Suspense fallback={<MapSoftLoading />}>
+          {/* Suspense: bg polos (tanpa teks). Label "Memuat peta…" hanya di MapShell. */}
+          <Suspense fallback={<div className="bg-map-bg size-full" aria-hidden />}>
             <MapShell
               mapRef={mapRef}
               panelOpen={panelOpen}
               regions={isPending ? [] : mapRegions}
+              dataReady={!isPending}
             />
           </Suspense>
         </main>

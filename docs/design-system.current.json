@@ -1,0 +1,201 @@
+{
+  "product": "pantaumala",
+  "source": "src/styles/tokens.css",
+  "mode": "light",
+  "principles": [
+    "Peta = hero; panel kiri = informasi",
+    "Layout gaya Google Maps (peta penuh + panel melayang)",
+    "Tanpa divider — hanya spasi",
+    "UI Bahasa Indonesia, sapaan kamu",
+    "Titik panas ≠ kebakaran; risiko ≠ peringatan resmi",
+    "Brand hanya untuk aksi/fokus/seleksi, bukan data",
+    "Warna risiko hanya marker/badge/chip/legend/choropleth",
+    "Heatmap kepadatan terpisah konsep dari tingkat risiko"
+  ],
+  "typography": {
+    "families": {
+      "sans": "IBM Plex Sans",
+      "mono": "IBM Plex Mono"
+    },
+    "weights": [400, 500, 600],
+    "scale_px": [12, 14, 16, 24, 32],
+    "minimum_px": 12,
+    "roles": {
+      "caption": { "size": 12, "lineHeight": 16, "token": "--text-xs" },
+      "body": { "size": 14, "lineHeight": 20, "token": "--text-sm / --text-base" },
+      "title": { "size": 16, "lineHeight": 24, "token": "--text-lg" },
+      "titleLg": { "size": 24, "lineHeight": 32, "token": "--text-xl" },
+      "numberLg": { "size": 32, "lineHeight": 40, "token": "--text-3xl", "font": "mono" }
+    }
+  },
+  "spacing": {
+    "unit_px": 4,
+    "scale_px": [4, 8, 12, 16, 24, 32, 48],
+    "semantic": {
+      "cardPadding": 16,
+      "sectionGap": 24,
+      "contentGap": 16,
+      "floatingControlOffset": 16
+    }
+  },
+  "radius": {
+    "ctl": { "px": 8, "use": ["chip", "badge", "control"] },
+    "card": { "px": 12, "use": ["card", "button", "dropdown"] },
+    "panel": { "px": 12, "use": ["panel", "dialog"] }
+  },
+  "elevation": {
+    "chrome": "0 1px 2px rgba(0,0,0,0.06)",
+    "sm": "0 1px 2px rgba(0,0,0,0.06)",
+    "md": "0 2px 6px rgba(0,0,0,0.08)",
+    "map": "0 2px 6px rgba(0,0,0,0.08)",
+    "use": {
+      "panel": "chrome",
+      "filterChip": "chrome",
+      "card": "none"
+    }
+  },
+  "motion": {
+    "fast_ms": 150,
+    "base_ms": 220,
+    "slow_ms": 300,
+    "ease": "cubic-bezier(0.2, 0.7, 0.2, 1)"
+  },
+  "color": {
+    "neutral": {
+      "ink": "#1F2328",
+      "ink2": "#5F6368",
+      "ink3": "#80868B",
+      "line": "#E8EAED",
+      "surface": "#FFFFFF",
+      "surfaceMuted": "#F8F9FA",
+      "mapBg": "#E8EAED",
+      "scrollbar": "#DADCE0",
+      "chart": "#5F6368",
+      "chartSoft": "#DADCE0"
+    },
+    "brand": {
+      "brand": "#137333",
+      "brandSoft": "#E6F4EA",
+      "brandMala": "#D93025",
+      "focus": "#137333",
+      "location": "#137333",
+      "locationTint": "#E6F4EA",
+      "rule": "Hanya aksi / fokus / seleksi — bukan data risiko"
+    },
+    "risk": {
+      "sangat_tinggi": {
+        "label": "Sangat tinggi",
+        "dot": "#D93025",
+        "tint": "#FCE8E6",
+        "text": "#C5221F"
+      },
+      "sedang": {
+        "label": "Sedang",
+        "dot": "#F29900",
+        "tint": "#FEF7E0",
+        "text": "#854800"
+      },
+      "rendah": {
+        "label": "Rendah",
+        "dot": "#188038",
+        "tint": "#E6F4EA",
+        "text": "#137333",
+        "note": "Rendah bukan berarti aman"
+      },
+      "tidak_tersedia": {
+        "label": "Belum dinilai",
+        "dot": "#80868B",
+        "tint": "#F1F3F4",
+        "text": "#5F6368"
+      }
+    },
+    "heatmap": {
+      "low": "#FFE08A",
+      "mid": "#F29900",
+      "high": "#D93025",
+      "rule": "Kepadatan satelit — bukan tingkat risiko"
+    }
+  },
+  "layout": {
+    "mapPanelWidth_px": 400,
+    "mapPanelEdge_px": 416,
+    "mapOverlayInset_px": 432,
+    "mapControlsClearance_px": 80,
+    "controlHeight": { "sm_px": 40, "md_px": 44, "lg_px": 48 },
+    "touchMin_px": 44,
+    "zones": {
+      "map": "full-bleed hero",
+      "panel": "left floating 400px",
+      "filterChips": "top of map",
+      "legend": "bottom-left, two cards in a row",
+      "mapControls": "bottom-right zoom + location",
+      "updatedAt": "bottom-right under controls, absolute WIB"
+    }
+  },
+  "components": {
+    "Card": {
+      "padding_px": 16,
+      "radius_px": 8,
+      "background": "surface",
+      "border": true,
+      "shadow": "none",
+      "divider": false,
+      "anatomy": [
+        "label 12 secondary + optional badge",
+        "value/title 16-24",
+        "meta 12",
+        "optional action"
+      ]
+    },
+    "Badge": {
+      "height_px": 24,
+      "radius_px": 8,
+      "variants": ["category", "meta"]
+    },
+    "Button": {
+      "variants": ["primary", "secondary", "soft", "ghost"],
+      "sizes": ["sm", "md"],
+      "minHeight_px": 44,
+      "radius_px": 12
+    },
+    "Chip": {
+      "height_px": 44,
+      "radius_px": 8,
+      "use": "filter risk + province"
+    },
+    "MapLegend": {
+      "layout": "row of 2 cards",
+      "cards": [
+        {
+          "id": "risk",
+          "title": "Tingkat risiko",
+          "items": ["Sangat tinggi", "Sedang", "Rendah"],
+          "note": "Rendah bukan berarti aman."
+        },
+        {
+          "id": "density",
+          "title": "Kepadatan",
+          "hint": "Bukan tingkat risiko",
+          "scale": ["Sedikit", "Banyak"]
+        }
+      ],
+      "alwaysVisible": true
+    },
+    "PanelFooter": {
+      "sources": ["NASA FIRMS", "Open-Meteo", "BMKG"],
+      "noUpdatedStamp": true
+    }
+  },
+  "copyRules": {
+    "language": "id",
+    "address": "kamu",
+    "forbidden": [
+      "live/real-time tanpa cadence",
+      "terjadi kebakaran di…",
+      "bahaya!",
+      "akurat tanpa bukti"
+    ],
+    "uncertaintyWords": ["terdeteksi", "diperkirakan", "berpotensi"],
+    "brandSpelling": "pantaumala"
+  }
+}

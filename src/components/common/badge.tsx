@@ -11,9 +11,9 @@ type BadgeProps =
       category: RiskCategory
     } & HTMLAttributes<HTMLSpanElement>)
 
-/** Badge kategori — PDF §4: tinggi 24, tint + text. */
+/** Badge kategori — tinggi 24, tint + text dari token (tanpa inline hex). */
 const badgeBase =
-  'inline-flex h-6 shrink-0 items-center rounded-full px-3 text-xs font-semibold'
+  'inline-flex h-6 shrink-0 items-center rounded-ctl px-2 text-xs font-semibold'
 
 export function Badge(props: BadgeProps) {
   if (props.variant === 'meta') {
@@ -33,11 +33,7 @@ export function Badge(props: BadgeProps) {
   void variant
   const style = RISK_CATEGORIES[category]
   return (
-    <span
-      style={{ backgroundColor: style.tint, color: style.text }}
-      className={cn(badgeBase, className)}
-      {...rest}
-    >
+    <span className={cn(badgeBase, style.badgeClass, className)} {...rest}>
       {style.label}
     </span>
   )

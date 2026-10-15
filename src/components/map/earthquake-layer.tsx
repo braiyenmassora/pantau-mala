@@ -1,4 +1,4 @@
-import { Radio } from 'lucide-react'
+import { Activity } from 'lucide-react'
 import { useState } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
@@ -13,7 +13,7 @@ function cleanWilayah(raw: string): string {
   return raw.replace(/^pusat\s+gempa\s+berada\s+di\s+/i, '').trim()
 }
 
-/** Episentrum BMKG: ikon Radio (beda dari titik risiko bulat). */
+/** Episentrum: Activity (seismograf) — beda dari pin risiko bulat & lokasi. */
 export function EarthquakeLayer() {
   const { data: earthquakes } = useEarthquakes('latest')
   const events = earthquakes?.data ?? []
@@ -43,7 +43,7 @@ export function EarthquakeLayer() {
               <button
                 type="button"
                 className={cn(
-                  'border-line bg-surface text-risk-mid relative flex size-7 items-center justify-center rounded-full border shadow-sm',
+                  'border-line bg-surface text-risk-mid shadow-chrome relative flex size-7 items-center justify-center rounded-full border',
                   focusRing,
                   hovered === idx && 'z-20 scale-110',
                 )}
@@ -53,18 +53,14 @@ export function EarthquakeLayer() {
                 onFocus={() => setHovered(idx)}
                 onBlur={() => setHovered(null)}
               >
-                <Radio className="size-3.5" strokeWidth={2.25} aria-hidden />
+                <Activity className="size-3.5" strokeWidth={2} aria-hidden />
               </button>
 
               {hovered === idx ? (
                 <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
                   <MapInfoCard
                     title={copy.map.quakeTitle(m)}
-                    lines={[
-                      lokasi,
-                      `Kedalaman ${formatNumber(event.kedalaman_km)} km`,
-                      copy.map.quakeSource,
-                    ]}
+                    lines={[lokasi, `Kedalaman ${formatNumber(event.kedalaman_km)} km`]}
                   />
                 </div>
               ) : null}

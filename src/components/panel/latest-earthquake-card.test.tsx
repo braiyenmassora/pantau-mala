@@ -20,7 +20,7 @@ vi.mock('@/data/queries', () => ({
           kedalaman_km: 10,
           wilayah: 'Pusat gempa berada di laut 53 km utara Ruteng, Manggarai',
           potensi: 'Tidak berpotensi tsunami',
-          dirasakan: 'Gempa ini dirasakan untuk diteruskan pada masyarakat',
+          dirasakan: 'IV di Pamijahan',
           shakemap: '',
         },
       ],
@@ -41,18 +41,16 @@ function wrap(ui: ReactNode) {
 describe('LatestEarthquakeCard', () => {
   afterEach(cleanup)
 
-  it('renders BMKG latest quake with design-token layout', () => {
+  it('renders BMKG latest quake without repeating Gempa M in the title', () => {
     wrap(<LatestEarthquakeCard />)
 
     expect(screen.getByText(copy.panel.seismicTitle)).toBeTruthy()
-    expect(screen.getByText('Gempa M 3,8')).toBeTruthy()
+    expect(screen.queryByText('Gempa M 3,8')).toBeNull()
+    expect(screen.getByText('M 3,8')).toBeTruthy()
     expect(
       screen.getByText('Pusat gempa berada di laut 53 km utara Ruteng, Manggarai'),
     ).toBeTruthy()
-    expect(
-      screen.getByText(
-        /Kedalaman 10 km · Gempa ini dirasakan untuk diteruskan pada masyarakat/,
-      ),
-    ).toBeTruthy()
+    expect(screen.getByText(/Kedalaman 10 km/)).toBeTruthy()
+    expect(screen.getByText(/Dirasakan IV di Pamijahan/)).toBeTruthy()
   })
 })

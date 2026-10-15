@@ -39,7 +39,7 @@ const pulangPisau: Region = {
     district: 'Kahayan Hilir',
   },
   summary: 'Ringkasan uji. Kalimat kedua.',
-  actions: ['Pantau perkembangan satelit.', 'Hubungi Damkar di 113 bila melihat asap.'],
+  actions: ['Pantau perkembangan satelit.', copy.detail.actionFireContact],
   score: 82,
   quality: 'ok',
   computed_at: '2026-10-09T14:05:00+07:00',
@@ -79,15 +79,21 @@ describe('RegionDetailPanel', () => {
   it('shows status hierarchy: badge, count, trend; no air/cuaca in Ringkasan', () => {
     renderDetail(pulangPisau)
     expect(screen.getByText('Sangat tinggi')).toBeTruthy()
-    expect(screen.getByText('23', { selector: 'span' })).toBeTruthy()
-    expect(screen.getByText(/titik panas · 24 jam/)).toBeTruthy()
-    expect(screen.getByText(copy.detail.trendUp)).toBeTruthy()
+    expect(document.querySelector('.text-2xl.font-mono')?.textContent).toBe('23')
+    expect(screen.getByText(copy.detail.hotspotUnitLine)).toBeTruthy()
+    expect(
+      screen.getByText(
+        (_, el) =>
+          el?.tagName === 'SPAN' &&
+          el.textContent === `${copy.detail.trendUp} ${copy.detail.trendVsPrevious}`,
+      ),
+    ).toBeTruthy()
   })
 
   it('shows the full seven-day chart immediately without opening a tab or accordion', () => {
     renderDetail(pulangPisau)
     const chart = screen.getByRole('region', { name: copy.extra.trendChart })
-    expect(within(chart).getByRole('img', { name: /Tren titik panas/ })).toBeTruthy()
+    expect(within(chart).getByRole('img', { name: /Tren 7 hari/ })).toBeTruthy()
     expect(within(chart).getByText(copy.extra.trendLatest)).toBeTruthy()
     expect(within(chart).getByText(copy.extra.trendPeak)).toBeTruthy()
     expect(within(chart).getByText(copy.extra.trendAverage)).toBeTruthy()
@@ -109,20 +115,20 @@ describe('RegionDetailPanel', () => {
     expect(screen.queryByText(/Data: NASA FIRMS · Open-Meteo/)).toBeNull()
 
     // Condition cells
-    expect(screen.getByText('Kelembapan')).toBeTruthy()
+    expect(screen.getByText(copy.detail.humidity)).toBeTruthy()
     expect(screen.getByText('48%')).toBeTruthy()
-    expect(screen.getByText('Kecepatan angin')).toBeTruthy()
-    expect(screen.getByText('12 km/jam')).toBeTruthy()
+    expect(screen.getByText(copy.detail.wind)).toBeTruthy()
+    expect(screen.getByText(`12 ${copy.detail.windUnit}`)).toBeTruthy()
 
-    // Damkar tel link
-    const telLink = screen.getByRole('link', { name: '113' })
+    // Jalur darurat 112
+    const telLink = screen.getByRole('link', { name: '112' })
     expect(telLink).toBeTruthy()
-    expect(telLink.getAttribute('href')).toBe('tel:113')
+    expect(telLink.getAttribute('href')).toBe('tel:112')
 
-    // Disclaimer via ikon info di samping judul
+    // Satu ⓘ risiko di judul (bukan di tiap angka)
     expect(
       screen.getByRole('button', {
-        name: copy.panel.limitationNote,
+        name: copy.detail.riskTooltip,
       }),
     ).toBeTruthy()
   })

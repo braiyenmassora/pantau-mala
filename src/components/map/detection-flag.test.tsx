@@ -40,10 +40,10 @@ describe('DetectionFlag', () => {
 
   it('shows name, province, temp and air above the pin', () => {
     const { container } = render(<DetectionFlag region={merauke} />)
-    const card = container.querySelector('.rounded-card')
+    const card = container.querySelector('.rounded-ctl')
     expect(card?.className).toContain('border-line')
     expect(card?.className).toContain('bg-surface')
-    expect(card?.className).toContain('shadow-sm')
+    expect(card?.className).toContain('shadow-chrome')
 
     expect(screen.getByText('Kab. Merauke')).toBeTruthy()
     expect(screen.getByText('Provinsi Papua Selatan')).toBeTruthy()

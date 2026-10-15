@@ -2,6 +2,7 @@ import { useSession } from '@/auth/session'
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { createRef, type ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -11,6 +12,16 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
 import { useMapStore } from '@/store/map'
+
+vi.mock('@/lib/indonesia-view', () => ({
+  fitIndonesia: vi.fn(),
+  getMapPadding: () => ({}),
+  PLACE_ZOOM: 8,
+}))
+
+vi.mock('@/lib/prefers-reduced-motion', () => ({
+  usePrefersReducedMotion: () => true,
+}))
 
 const region: Region = {
   code: '62.11',
@@ -153,5 +164,50 @@ describe('SummaryPanel states', () => {
     expect(
       screen.getByRole('button', { name: copy.empty.noRegionsFilter.action }),
     ).toBeTruthy()
+  })
+
+  it('keeps search input focused when switching to results', async () => {
+    const user = userEvent.setup()
+    const withHotspots = { ...region, hotspots_24h: 12 }
+    wrap(
+      <SummaryPanel
+        regions={[withHotspots]}
+        filtered={[withHotspots]}
+        mapRef={createRef<MapRef | null>()}
+        isPending={false}
+        isError={false}
+      />,
+    )
+
+    const input = screen.getByRole('textbox', {
+      name: copy.panel.searchPlaceholder,
+    })
+    await user.click(input)
+    await user.type(input, 'pulang')
+
+    expect(document.activeElement).toBe(input)
+    expect((input as HTMLInputElement).value).toBe('pulang')
+    expect(screen.getByText(copy.panel.searchResults)).toBeTruthy()
+  })
+
+  it('shows search UI when filter empty but query active', () => {
+    useMapStore.setState({
+      selectedCategories: new Set(['sedang']),
+      query: 'xyz',
+    })
+    wrap(
+      <SummaryPanel
+        regions={[region]}
+        filtered={[]}
+        mapRef={createRef<MapRef | null>()}
+        isPending={false}
+        isError={false}
+      />,
+    )
+    expect(screen.getByText(copy.panel.searchResults)).toBeTruthy()
+    expect(
+      screen.getByRole('textbox', { name: copy.panel.searchPlaceholder }),
+    ).toBeTruthy()
+    expect(screen.queryByText(copy.empty.noRegionsFilter.title)).toBeNull()
   })
 })

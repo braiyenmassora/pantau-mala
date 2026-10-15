@@ -51,11 +51,7 @@ describe('MapInfoCard', () => {
     render(
       <MapInfoCard
         title="Titik panas"
-        lines={[
-          'Pohuwato',
-          'Terdeteksi 15 Okt 2026, 01:17 WITA',
-          'FRP 12,4 MW',
-        ]}
+        lines={['Pohuwato', 'Terdeteksi 15 Okt 2026, 01:17 WITA', 'FRP 12,4 MW']}
       />,
     )
     expect(screen.getByText('Titik panas')).toBeTruthy()

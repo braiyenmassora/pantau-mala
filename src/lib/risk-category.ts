@@ -5,6 +5,10 @@ export type RiskCategoryStyle = {
   dot: string
   tint: string
   text: string
+  /** Tailwind classes for Badge — mirror tint/text tokens. */
+  badgeClass: string
+  /** Tailwind class for small risk dots in lists/filters. */
+  dotClass: string
 }
 
 /** Mirrors `--color-brand` — hijau. */
@@ -28,24 +32,32 @@ export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
     dot: '#80868B',
     tint: '#F1F3F4',
     text: '#5F6368',
+    badgeClass: 'bg-surface-muted text-ink-2',
+    dotClass: 'bg-ink-3',
   },
   sangat_tinggi: {
     label: 'Sangat tinggi',
     dot: '#D93025',
     tint: '#FCE8E6',
     text: '#C5221F',
+    badgeClass: 'bg-risk-high-tint text-risk-high-text',
+    dotClass: 'bg-risk-high',
   },
   sedang: {
     label: 'Sedang',
     dot: '#F29900',
     tint: '#FEF7E0',
     text: '#854800',
+    badgeClass: 'bg-risk-mid-tint text-risk-mid-text',
+    dotClass: 'bg-risk-mid',
   },
   rendah: {
     label: 'Rendah',
     dot: '#188038',
     tint: '#E6F4EA',
     text: '#137333',
+    badgeClass: 'bg-risk-low-tint text-risk-low-text',
+    dotClass: 'bg-risk-low',
   },
 }
 
@@ -63,8 +75,10 @@ export function withAlpha(hex: string, alpha: number): string {
 /** Transparent terminal stop for MapLibre heatmap. */
 export const HEATMAP_TRANSPARENT = 'rgba(0,0,0,0)'
 
-/** Stop heatmap jarang — antara transparan & risk-mid (bukan token UI). */
+/** Heatmap kepadatan — stop jarang + mid/high (kuning→oranye→merah, terlihat di basemap). */
 export const HEATMAP_LOW_HEX = '#FFE08A'
+export const HEATMAP_MID_HEX = RISK_CATEGORIES.sedang.dot
+export const HEATMAP_HIGH_HEX = RISK_CATEGORIES.sangat_tinggi.dot
 
 /** Wind stream (canvas fade-trail) — brand token + alpha. */
 export const WIND_PARTICLE_COLOR = withAlpha(BRAND_HEX, 0.5)

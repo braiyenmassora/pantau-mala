@@ -57,7 +57,7 @@ export function ProvinceSearchRow({
           <RiskMarker kategori={effectiveRisk} />
         ) : (
           <span
-            className="bg-brand-soft text-brand flex size-10 items-center justify-center rounded-full"
+            className="bg-brand-soft text-brand rounded-ctl flex size-10 items-center justify-center"
             aria-hidden
           >
             <MapIcon className="size-4" strokeWidth={2} />

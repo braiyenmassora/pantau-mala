@@ -12,12 +12,17 @@ vi.mock('@/auth/access-gate', () => ({
 describe('PanelFooter', () => {
   afterEach(cleanup)
 
-  it('lists data sources with links, without pull ages', () => {
-    render(<PanelFooter />)
+  it('lists source links with icons, without update stamp', () => {
+    const { container } = render(<PanelFooter />)
 
-    expect(screen.queryByText(copy.footer.sourcesLabel)).toBeNull()
+    expect(screen.queryByTestId('panel-updated-stamp')).toBeNull()
+    expect(screen.queryByText(/Diperbarui/)).toBeNull()
     expect(screen.getByRole('link', { name: /NASA FIRMS/ })).toBeTruthy()
     expect(screen.getByRole('link', { name: /Open-Meteo/ })).toBeTruthy()
-    expect(screen.queryByText(/menit lalu/)).toBeNull()
+    expect(screen.getByRole('link', { name: /BMKG/ })).toBeTruthy()
+    expect(container.querySelector('img[src="/sources/nasa-firms.png"]')).toBeTruthy()
+    expect(container.querySelector('img[src="/sources/open-meteo.png"]')).toBeTruthy()
+    expect(container.querySelector('img[src="/sources/bmkg.png"]')).toBeTruthy()
+    expect(screen.queryByText(copy.panel.limitationNote)).toBeNull()
   })
 })

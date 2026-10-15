@@ -3,6 +3,7 @@ import { useEffect, useMemo } from 'react'
 
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
+import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
 import { formatNumber } from '@/lib/format'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
@@ -91,8 +92,8 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                 type="button"
                 aria-label={r.name}
                 className={cn(
-                  'relative flex size-10 items-center justify-center rounded-full transition-transform duration-150',
-                  isHovered && 'z-20 scale-[1.3]',
+                  'relative flex size-6 items-center justify-center rounded-full transition-transform duration-150',
+                  isHovered && 'z-20 scale-125',
                 )}
                 onMouseEnter={() => hover(r.code)}
                 onMouseLeave={() => hover(null)}
@@ -119,7 +120,7 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                   <MapInfoCard
                     title={r.name}
                     subtitle={RISK_CATEGORIES[risk].label}
-                    meta={`${formatNumber(r.hotspots_24h)} titik panas · 24 jam`}
+                    meta={copy.map.regionMetaHotspots(formatNumber(r.hotspots_24h))}
                   />
                 </div>
               ) : null}

@@ -5,15 +5,16 @@ import { focusRing } from '@/components/common/focus-ring'
 import { cn } from '@/lib/utils'
 
 const variantClass = {
-  primary: 'bg-brand text-surface hover:opacity-95 shadow-sm active:translate-y-px',
-  secondary: 'border border-line bg-surface text-ink hover:bg-surface-muted shadow-sm',
-  soft: 'border border-brand/20 bg-brand-soft text-brand hover:bg-brand-soft/80 shadow-sm',
+  primary: 'bg-brand text-surface hover:opacity-95 active:translate-y-px',
+  secondary: 'border-line bg-surface text-ink hover:bg-surface-muted border',
+  soft: 'border-brand/20 bg-brand-soft text-brand hover:bg-brand-soft/80 border',
+  ghost: 'bg-transparent text-ink-2 hover:bg-surface-muted hover:text-ink',
 } as const
 
-/** PDF §4: besar 40 (teks 14) · kecil 36 (teks 13) · semua pill · teks 600. */
+/** Tinggi sentuh 44 · radius ctl (sama chrome tip/dialog) · teks 600. */
 const sizeClass = {
-  md: 'h-10 px-4 text-base font-semibold',
-  sm: 'h-9 px-3 text-sm font-semibold',
+  md: 'h-11 min-h-11 px-4 text-base font-semibold',
+  sm: 'h-11 min-h-11 px-3 text-sm font-semibold',
 } as const
 
 type AppButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -37,7 +38,7 @@ export function Button({
       type="button"
       disabled={disabled || loading}
       className={cn(
-        'relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full',
+        'rounded-ctl relative inline-flex items-center justify-center gap-2 overflow-hidden',
         'transition-[background-color,opacity,transform] duration-150 ease-in-out',
         focusRing,
         variantClass[variant],

@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 
+import { chromeSurface } from '@/lib/chrome'
 import { cn } from '@/lib/utils'
 
 export type MapInfoCardProps = {
@@ -27,13 +28,7 @@ export type MapInfoCardProps = {
   hideArrow?: boolean
 }
 
-function InfoLine({
-  children,
-  strong,
-}: {
-  children: ReactNode
-  strong?: boolean
-}) {
+function InfoLine({ children, strong }: { children: ReactNode; strong?: boolean }) {
   return (
     <p
       className={cn(
@@ -101,7 +96,8 @@ export function MapInfoCard({
   return (
     <div
       className={cn(
-        'rounded-card border-line bg-surface text-ink relative z-30 w-max max-w-[min(280px,70vw)] border px-4 py-3 shadow-sm',
+        chromeSurface,
+        'relative z-30 w-max max-w-[min(280px,70vw)] px-4 py-3',
         className,
       )}
     >

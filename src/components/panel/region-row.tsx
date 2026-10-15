@@ -1,15 +1,15 @@
 import type { RefObject } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
-import { RiskMarker } from '@/components/common/risk-marker'
 import { Sparkline } from '@/components/common/sparkline'
-import { Card, CardContent } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import type { Region } from '@/data/types'
 import { rememberFocusTrigger } from '@/lib/focus-return'
 import { formatNumber } from '@/lib/format'
 import { getMapPadding, PLACE_ZOOM } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
+import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -19,7 +19,7 @@ type RegionRowProps = {
   mapRef: RefObject<MapRef | null>
 }
 
-/** Baris kabupaten sebagai kartu hasil — sama pola dengan daftar provinsi. */
+/** Baris kab/kota — pola sama daftar provinsi beranda: dot · nama · spark · mono. */
 export function RegionRow({ region, mapRef }: RegionRowProps) {
   const hoveredCode = useMapStore((s) => s.hoveredCode)
   const selectedCode = useMapStore((s) => s.selectedCode)
@@ -29,50 +29,58 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
   const reducedMotion = usePrefersReducedMotion()
   const active = hoveredCode === region.code || selectedCode === region.code
+  const risk = effectiveRiskCategory(region)
+  const meta = RISK_CATEGORIES[risk]
+  const trend = region.trend_7d
 
   return (
-    <Card
+    <button
+      type="button"
       className={cn(
+        'rounded-ctl flex w-full items-center gap-3 px-2 py-2.5 text-left',
         'transition-colors duration-150',
         active ? 'bg-surface-muted' : 'hover:bg-surface-muted',
+        focusRing,
       )}
+      onMouseEnter={() => hover(region.code)}
+      onMouseLeave={() => hover(null)}
+      onClick={(e) => {
+        rememberFocusTrigger(e.currentTarget)
+        select(region.code, region.province)
+        if (!panelOpen) setPanelOpen(true)
+        mapRef.current?.flyTo({
+          center: region.center,
+          zoom: PLACE_ZOOM,
+          padding: getMapPadding(true),
+          duration: reducedMotion ? 0 : 600,
+        })
+      }}
     >
-      <button
-        type="button"
-        className={cn('flex w-full items-center gap-3 text-left', focusRing, 'rounded-card')}
-        onMouseEnter={() => hover(region.code)}
-        onMouseLeave={() => hover(null)}
-        onClick={(e) => {
-          rememberFocusTrigger(e.currentTarget)
-          select(region.code, region.province)
-          if (!panelOpen) setPanelOpen(true)
-          mapRef.current?.flyTo({
-            center: region.center,
-            zoom: PLACE_ZOOM,
-            padding: getMapPadding(true),
-            duration: reducedMotion ? 0 : 600,
-          })
-        }}
+      <span className={cn('size-2 shrink-0 rounded-full', meta.dotClass)} aria-hidden />
+      <span
+        className="text-ink min-w-0 flex-1 truncate text-sm leading-5 font-medium"
+        title={region.name}
       >
-        <CardContent className="flex w-full items-center gap-3 py-3">
-          <RiskMarker kategori={region.risk_category} />
-          <span
-            className="text-ink min-w-0 flex-1 truncate text-sm font-medium leading-5"
-            title={region.name}
-          >
-            {region.name}
-          </span>
-          <Sparkline
-            data={region.trend_7d}
-            height={16}
-            width={40}
-            className="shrink-0 opacity-40"
-          />
-          <span className="text-ink shrink-0 text-sm font-semibold tabular-nums leading-5">
-            {formatNumber(region.hotspots_24h)}
-          </span>
-        </CardContent>
-      </button>
-    </Card>
+        {region.name}
+      </span>
+      {trend && trend.length >= 2 ? (
+        <Sparkline
+          data={trend}
+          width={48}
+          height={18}
+          className={
+            risk === 'sangat_tinggi'
+              ? 'text-risk-high'
+              : risk === 'sedang'
+                ? 'text-risk-mid'
+                : 'text-risk-low'
+          }
+          ariaLabel={`Tren 7 hari ${region.name}`}
+        />
+      ) : null}
+      <span className="text-ink shrink-0 font-mono text-sm leading-5 font-semibold tabular-nums">
+        {formatNumber(region.hotspots_24h)}
+      </span>
+    </button>
   )
 }

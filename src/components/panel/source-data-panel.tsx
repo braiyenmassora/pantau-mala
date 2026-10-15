@@ -91,25 +91,25 @@ function SourceDataContent() {
         ) : (
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-2">
-            <DataTile
-              label={copy.extra.today}
-              value={formatNumber(national.data.titik_panas_24j)}
-            />
-            <DataTile
-              label={copy.extra.yesterday}
-              value={formatNumber(national.data.titik_panas_kemarin)}
-            />
-            <DataTile
-              label={copy.extra.dailyChange}
-              value={formatNumber(national.data.perubahan_harian, {
-                maximumFractionDigits: 1,
-              })}
-              unit="%"
-            />
-            <DataTile
-              label={copy.extra.highRegions}
-              value={formatNumber(national.data.wilayah_sangat_tinggi)}
-            />
+              <DataTile
+                label={copy.extra.today}
+                value={formatNumber(national.data.titik_panas_24j)}
+              />
+              <DataTile
+                label={copy.extra.yesterday}
+                value={formatNumber(national.data.titik_panas_kemarin)}
+              />
+              <DataTile
+                label={copy.extra.dailyChange}
+                value={formatNumber(national.data.perubahan_harian, {
+                  maximumFractionDigits: 1,
+                })}
+                unit="%"
+              />
+              <DataTile
+                label={copy.extra.highRegions}
+                value={formatNumber(national.data.wilayah_sangat_tinggi)}
+              />
             </div>
             <TrendChart
               values={national.data.tren_7h}

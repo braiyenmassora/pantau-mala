@@ -5,33 +5,84 @@ import { copy } from '@/copy/id'
 import { formatNumber, formatTrendDates } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
+type TrendTone = 'chart' | 'risk-high' | 'risk-mid' | 'risk-low'
+
+const TONE_CSS: Record<TrendTone, string> = {
+  chart: 'var(--color-chart)',
+  'risk-high': 'var(--color-risk-high)',
+  'risk-mid': 'var(--color-risk-mid)',
+  'risk-low': 'var(--color-risk-low)',
+}
+
 type TrendChartProps = {
   values: readonly number[]
   timeZone: TimeZoneId
   label?: string
-  description?: string
+  /** Opsional — biasanya disembunyikan agar hierarki lebih bersih. */
+  description?: string | null
+  /** Label untuk hari terakhir yang belum penuh, mis. "21:06 WIB". */
+  partialUntil?: string | null
+  /** Warna kurva — default chart netral; risiko untuk detail wilayah. */
+  tone?: TrendTone
   className?: string
 }
 
 const VIEWBOX_WIDTH = 360
-const VIEWBOX_HEIGHT = 132
-const PLOT_LEFT = 36
-const PLOT_RIGHT = 10
-const PLOT_TOP = 12
-const PLOT_BOTTOM = 104
+const VIEWBOX_HEIGHT = 128
+const PLOT_LEFT = 32
+const PLOT_RIGHT = 8
+const PLOT_TOP = 10
+const PLOT_BOTTOM = 100
 
-function linePath(points: readonly { x: number; y: number }[]) {
-  return points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ')
+type Point = { x: number; y: number }
+
+function smoothLinePath(points: readonly Point[]): string {
+  if (points.length === 0) return ''
+  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`
+  if (points.length === 2) {
+    return `M ${points[0].x} ${points[0].y} L ${points[1].x} ${points[1].y}`
+  }
+
+  let d = `M ${points[0].x} ${points[0].y}`
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i - 1] ?? points[i]
+    const p1 = points[i]
+    const p2 = points[i + 1]
+    const p3 = points[i + 2] ?? p2
+    const cp1x = p1.x + (p2.x - p0.x) / 6
+    const cp1y = p1.y + (p2.y - p0.y) / 6
+    const cp2x = p2.x - (p3.x - p1.x) / 6
+    const cp2y = p2.y - (p3.y - p1.y) / 6
+    d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`
+  }
+  return d
 }
 
+function areaPath(line: string, points: readonly Point[]): string {
+  if (!line || points.length === 0) return ''
+  const first = points[0]
+  const last = points.at(-1)!
+  return `${line} L ${last.x} ${PLOT_BOTTOM} L ${first.x} ${PLOT_BOTTOM} Z`
+}
+
+function dayLabel(date: string): string {
+  const day = date.split(' ')[0] ?? date
+  return String(Number.parseInt(day, 10) || day)
+}
+
+/** Grafik tren 7 hari — judul satu baris, chart, lalu 3 meta mono. */
 export function TrendChart({
   values,
   timeZone,
   label = copy.extra.trendChart,
-  description = copy.extra.trendChartNote,
+  description = null,
+  partialUntil,
+  tone = 'chart',
   className,
 }: TrendChartProps) {
   const titleId = useId().replaceAll(':', '')
+  const gradId = `${titleId}-area`
+  const stroke = TONE_CSS[tone]
   const safeValues = values
     .slice(-7)
     .map((value) => (Number.isFinite(value) && value >= 0 ? value : 0))
@@ -39,9 +90,14 @@ export function TrendChart({
 
   if (safeValues.length === 0) {
     return (
-      <section className={cn('rounded-card bg-surface-muted p-3', className)}>
-        <h3 className="text-ink text-sm font-semibold">{label}</h3>
-        <p className="text-ink-2 mt-1 text-xs">{copy.extra.trendChartUnavailable}</p>
+      <section
+        className={cn('space-y-2', className)}
+        aria-labelledby={`${titleId}-title`}
+      >
+        <h3 id={`${titleId}-title`} className="text-ink-2 text-xs leading-4 font-medium">
+          {label}
+        </h3>
+        <p className="text-ink-2 text-xs leading-4">{copy.extra.trendChartUnavailable}</p>
       </section>
     )
   }
@@ -49,68 +105,73 @@ export function TrendChart({
   const maximum = Math.max(...safeValues)
   const scaleMaximum = maximum > 0 ? Math.ceil(maximum * 1.1) : 1
   const range = PLOT_BOTTOM - PLOT_TOP
-  const step = (VIEWBOX_WIDTH - PLOT_LEFT - PLOT_RIGHT) / Math.max(1, safeValues.length - 1)
+  const step =
+    (VIEWBOX_WIDTH - PLOT_LEFT - PLOT_RIGHT) / Math.max(1, safeValues.length - 1)
   const points = safeValues.map((value, index) => ({
     x: PLOT_LEFT + step * index,
     y: PLOT_BOTTOM - (value / scaleMaximum) * range,
   }))
-  const path = linePath(points)
-  const areaPath = `${path} L ${points.at(-1)?.x ?? PLOT_RIGHT} ${PLOT_BOTTOM} L ${PLOT_LEFT} ${PLOT_BOTTOM} Z`
-  const average = Math.round(safeValues.reduce((sum, value) => sum + value, 0) / safeValues.length)
+
+  const fullLine = smoothLinePath(points)
+  const fill = areaPath(fullLine, points)
+  const partialLine = points.length >= 2 ? smoothLinePath(points.slice(-2)) : ''
+
+  const average = Math.round(
+    safeValues.reduce((sum, value) => sum + value, 0) / safeValues.length,
+  )
   const latest = safeValues.at(-1) ?? 0
   const peak = Math.max(...safeValues)
   const tickValues = [scaleMaximum, Math.round(scaleMaximum / 2), 0]
-  const ariaValues = safeValues.map((value, index) => `${dates[index]} ${value}`).join(', ')
+  const ariaValues = safeValues
+    .map((value, index) => `${dates[index]} ${value}`)
+    .join(', ')
+  const untilLabel = partialUntil ?? null
 
   return (
-    <section
-      className={cn('rounded-card bg-surface-muted p-3', className)}
-      aria-labelledby={`${titleId}-title`}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 id={`${titleId}-title`} className="text-ink text-sm font-semibold">
-            {label}
-          </h3>
-          <p className="text-ink-2 mt-1 text-xs">{description}</p>
-        </div>
-        <span className="bg-brand-soft text-brand shrink-0 rounded-full px-2 py-1 text-xs font-medium">
-          7 hari
-        </span>
+    <section className={cn('space-y-3', className)} aria-labelledby={`${titleId}-title`}>
+      <div className="min-w-0">
+        <h3 id={`${titleId}-title`} className="text-ink-2 text-xs leading-4 font-medium">
+          {label}
+        </h3>
+        {description ? (
+          <p className="text-ink-2 mt-0.5 text-xs leading-4">{description}</p>
+        ) : null}
       </div>
 
-      <div className="mt-3">
+      <div>
         <svg
-          className="h-32 w-full overflow-visible"
+          className="h-24 w-full overflow-visible"
           viewBox={`0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`}
           role="img"
           aria-label={`${label}. ${ariaValues}`}
         >
           <defs>
-            <linearGradient id={`${titleId}-fill`} x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="var(--color-brand)" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="var(--color-brand)" stopOpacity="0" />
+            <linearGradient id={gradId} x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor={stroke} stopOpacity="0.22" />
+              <stop offset="100%" stopColor={stroke} stopOpacity="0" />
             </linearGradient>
           </defs>
 
           {tickValues.map((value, index) => {
             const y = PLOT_TOP + (range / 2) * index
             return (
-              <g key={value}>
+              <g key={`${value}-${index}`}>
                 <line
                   x1={PLOT_LEFT}
                   x2={VIEWBOX_WIDTH - PLOT_RIGHT}
                   y1={y}
                   y2={y}
                   stroke="var(--color-line)"
-                  strokeDasharray="2 4"
+                  strokeWidth="1"
                   vectorEffect="non-scaling-stroke"
+                  opacity="0.7"
                 />
                 <text
-                  x={PLOT_LEFT - 8}
-                  y={y + 4}
+                  x={PLOT_LEFT - 6}
+                  y={y + 3}
                   textAnchor="end"
-                  className="fill-ink-3 font-mono text-xs"
+                  className="fill-ink-3 font-mono"
+                  fontSize="10"
                 >
                   {formatNumber(value)}
                 </text>
@@ -118,40 +179,55 @@ export function TrendChart({
             )
           })}
 
-          <path d={areaPath} fill={`url(#${titleId}-fill)`} aria-hidden />
+          {fill ? <path d={fill} fill={`url(#${gradId})`} aria-hidden /> : null}
+
           <path
-            d={path}
+            d={fullLine}
             fill="none"
-            stroke="var(--color-brand)"
+            stroke={stroke}
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth="2.5"
+            strokeWidth="2"
             vectorEffect="non-scaling-stroke"
           />
-          {points.map((point, index) => (
-            <circle
-              key={`${dates[index]}-${safeValues[index]}`}
-              cx={point.x}
-              cy={point.y}
-              r={index === points.length - 1 ? 4 : 3}
-              fill="var(--color-surface)"
-              stroke="var(--color-brand)"
+
+          {partialLine && points.length >= 2 ? (
+            <path
+              d={partialLine}
+              fill="none"
+              stroke={stroke}
+              strokeLinecap="round"
+              strokeLinejoin="round"
               strokeWidth="2"
+              strokeDasharray="5 4"
               vectorEffect="non-scaling-stroke"
+              opacity="0.85"
+            />
+          ) : null}
+
+          {untilLabel && points.length > 0 ? (
+            <text
+              x={points.at(-1)!.x}
+              y={Math.max(PLOT_TOP + 10, points.at(-1)!.y - 8)}
+              textAnchor="end"
+              className="fill-ink-3"
+              fontSize="10"
             >
-              <title>{`${dates[index]}: ${formatNumber(safeValues[index])} titik panas`}</title>
-            </circle>
-          ))}
+              {copy.extra.trendPartialToday(untilLabel)}
+            </text>
+          ) : null}
         </svg>
 
-        <div className="text-ink-3 mt-[-4px] flex justify-between pl-9 pr-1 text-xs">
-          {dates.map((date) => (
-            <span key={date}>{date}</span>
+        <div className="text-ink-3 mt-1 flex justify-between pr-1 pl-8 text-xs leading-4">
+          {dates.map((date, index) => (
+            <span key={date} className={index % 2 === 1 ? 'invisible' : undefined}>
+              {dayLabel(date)}
+            </span>
           ))}
         </div>
       </div>
 
-      <div className="border-line mt-3 grid grid-cols-3 border-t pt-2">
+      <div className="grid grid-cols-3 gap-3">
         <TrendStat label={copy.extra.trendLatest} value={latest} />
         <TrendStat label={copy.extra.trendPeak} value={peak} />
         <TrendStat label={copy.extra.trendAverage} value={average} />
@@ -162,9 +238,9 @@ export function TrendChart({
 
 function TrendStat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="min-w-0">
-      <p className="text-ink-3 truncate text-xs">{label}</p>
-      <p className="text-ink mt-1 font-mono text-sm font-semibold tabular-nums">
+    <div className="min-w-0 space-y-0.5">
+      <p className="text-ink-2 truncate text-xs leading-4">{label}</p>
+      <p className="text-ink font-mono text-sm leading-5 font-semibold tabular-nums">
         {formatNumber(value)}
       </p>
     </div>

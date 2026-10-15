@@ -1,12 +1,12 @@
 import { LocateFixed, Minus, Plus } from 'lucide-react'
-import { useEffect, useState, type RefObject } from 'react'
+import { type RefObject } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import { useHotspots, useMeta, useRegions } from '@/data/queries'
 import { rememberFocusTrigger } from '@/lib/focus-return'
-import { formatRelativeAge } from '@/lib/format'
+import { formatDateTime } from '@/lib/format'
 import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { resolveUserRegionCode } from '@/lib/resolve-user-region'
@@ -19,6 +19,11 @@ type MapControlsProps = {
   mapRef: RefObject<MapRef | null>
 }
 
+const iconClass = 'size-4 shrink-0'
+const btnClass =
+  'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-11 shrink-0 items-center justify-center transition-[background-color,color] duration-150'
+
+/** Kontrol peta — jarak 16 / ikon 16 stroke-2 / chrome sidebar. */
 export function MapControls({ mapRef }: MapControlsProps) {
   const location = useMapStore((s) => s.location)
   const setLocation = useMapStore((s) => s.setLocation)
@@ -29,37 +34,25 @@ export function MapControls({ mapRef }: MapControlsProps) {
   const { data: regions } = useRegions()
   const { data: hotspots } = useHotspots()
   const { data: meta } = useMeta()
-  const [nowMs, setNowMs] = useState(() => Date.now())
   const active = location.status === 'active' && location.coords
-
-  useEffect(() => {
-    const t = window.setInterval(() => setNowMs(Date.now()), 60_000)
-    return () => window.clearInterval(t)
-  }, [])
-
   const updatedIso = meta?.updated_at ?? meta?.pulled_at.firms ?? meta?.pulled_at.weather
   const updatedLabel = updatedIso
-    ? copy.updatedAt.stamp(formatRelativeAge(updatedIso, nowMs))
+    ? copy.updatedAt.stamp(formatDateTime(updatedIso, 'WIB'))
     : null
 
   return (
     <div
       data-testid="map-controls"
       className={cn(
-        'absolute right-(--floating-control-offset) bottom-(--floating-control-offset) z-30 flex flex-col items-end gap-2',
+        'absolute right-(--floating-control-offset) bottom-(--floating-control-offset) z-30 flex flex-col items-end gap-4',
         panelOpen && 'hidden sm:flex',
       )}
       {...mapOverlayGestureProps}
     >
-      <div className="rounded-card border-line bg-surface divide-line flex flex-col divide-y overflow-hidden border shadow-sm backdrop-blur-sm">
+      <div className="border-line bg-surface divide-line rounded-ctl shadow-chrome flex flex-col divide-y overflow-hidden border backdrop-blur-sm">
         <button
           type="button"
-          className={cn(
-            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-10 shrink-0 items-center justify-center',
-            'transition-[background-color,color] duration-150 ease-in-out',
-            active && 'text-brand bg-brand-soft',
-            focusRing,
-          )}
+          className={cn(btnClass, active && 'bg-brand-soft text-brand', focusRing)}
           aria-label={active ? copy.map.recenter : copy.map.useMyLocation}
           aria-pressed={Boolean(active)}
           onClick={(e) => {
@@ -87,38 +80,30 @@ export function MapControls({ mapRef }: MapControlsProps) {
             setLocation({ status: 'requesting' })
           }}
         >
-          <LocateFixed className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
+          <LocateFixed className={iconClass} strokeWidth={2} aria-hidden />
         </button>
 
         <button
           type="button"
-          className={cn(
-            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-10 shrink-0 items-center justify-center',
-            'transition-[background-color,color] duration-150 ease-in-out',
-            focusRing,
-          )}
+          className={cn(btnClass, focusRing)}
           aria-label={copy.map.zoomIn}
           onClick={() => mapRef.current?.zoomIn({ duration: 300 })}
         >
-          <Plus className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
+          <Plus className={iconClass} strokeWidth={2} aria-hidden />
         </button>
         <button
           type="button"
-          className={cn(
-            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-10 shrink-0 items-center justify-center',
-            'transition-[background-color,color] duration-150 ease-in-out',
-            focusRing,
-          )}
+          className={cn(btnClass, focusRing)}
           aria-label={copy.map.zoomOut}
           onClick={() => mapRef.current?.zoomOut({ duration: 300 })}
         >
-          <Minus className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
+          <Minus className={iconClass} strokeWidth={2} aria-hidden />
         </button>
       </div>
 
       {updatedLabel ? (
         <p
-          className="text-ink-2 bg-surface/90 rounded-ctl border-line pointer-events-none border px-2 py-1 text-xs leading-4 shadow-sm backdrop-blur-sm select-none"
+          className="text-ink-2 bg-surface/95 border-line rounded-ctl shadow-chrome pointer-events-none border px-4 py-2.5 text-xs leading-4 backdrop-blur-sm select-none"
           data-testid="map-updated-stamp"
         >
           {updatedLabel}
