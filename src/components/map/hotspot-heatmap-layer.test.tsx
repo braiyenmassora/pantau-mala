@@ -41,6 +41,7 @@ const getLayer = vi.fn()
 const on = vi.fn()
 const off = vi.fn()
 const getCanvas = vi.fn(() => ({ style: {} }))
+const easeTo = vi.fn()
 
 vi.mock('@/components/ui/map', () => ({
   useMap: () => ({
@@ -55,6 +56,7 @@ vi.mock('@/components/ui/map', () => ({
       on,
       off,
       getCanvas,
+      easeTo,
     },
   }),
   MapPopup: ({ children }: { children: React.ReactNode }) => (
@@ -143,7 +145,12 @@ describe('HotspotHeatmapLayer', () => {
 
     expect(addSource).toHaveBeenCalledWith(
       'fy-hotspot-heatmap',
-      expect.objectContaining({ type: 'geojson' }),
+      expect.objectContaining({
+        type: 'geojson',
+        cluster: true,
+        clusterRadius: 36,
+        clusterMaxZoom: 10,
+      }),
     )
     expect(setData).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -163,9 +170,24 @@ describe('HotspotHeatmapLayer', () => {
     )
     expect(addLayer).toHaveBeenCalledWith(
       expect.objectContaining({
+        id: 'fy-hotspot-clusters-layer',
+        type: 'circle',
+        filter: ['has', 'point_count'],
+      }),
+    )
+    expect(addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'fy-hotspot-cluster-count-layer',
+        type: 'symbol',
+        filter: ['has', 'point_count'],
+      }),
+    )
+    expect(addLayer).toHaveBeenCalledWith(
+      expect.objectContaining({
         id: 'fy-hotspot-points-layer',
         type: 'circle',
         minzoom: 0,
+        filter: ['!', ['has', 'point_count']],
       }),
     )
     expect(setData).toHaveBeenCalledWith(

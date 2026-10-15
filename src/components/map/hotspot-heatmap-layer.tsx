@@ -23,7 +23,12 @@ import { useUiStore } from '@/store/ui'
 
 const SOURCE_ID = 'fy-hotspot-heatmap'
 const LAYER_ID = 'fy-hotspot-heatmap-layer'
+const CLUSTERS_LAYER_ID = 'fy-hotspot-clusters-layer'
+const CLUSTER_COUNT_LAYER_ID = 'fy-hotspot-cluster-count-layer'
 const POINTS_LAYER_ID = 'fy-hotspot-points-layer'
+
+const CLUSTER_RADIUS = 36
+const CLUSTER_MAX_ZOOM = 10
 
 export const HEATMAP_MIN_ZOOM = 0
 
@@ -58,7 +63,7 @@ function formatDetectedTime(rawTime?: string, tz = 'WIB'): string | undefined {
 }
 
 const HEATMAP_PAINT: HeatmapLayerSpecification['paint'] = {
-  'heatmap-weight': 1,
+  'heatmap-weight': ['coalesce', ['get', 'point_count'], ['get', 'weight'], 1],
   'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 4, 5, 7, 8, 11, 24],
   'heatmap-color': [
     'interpolate',
@@ -123,6 +128,9 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       map.addSource(SOURCE_ID, {
         type: 'geojson',
         data: { type: 'FeatureCollection', features: [] },
+        cluster: true,
+        clusterRadius: CLUSTER_RADIUS,
+        clusterMaxZoom: CLUSTER_MAX_ZOOM,
       })
     }
 
@@ -136,16 +144,51 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       })
     }
 
+    if (!map.getLayer(CLUSTERS_LAYER_ID)) {
+      map.addLayer({
+        id: CLUSTERS_LAYER_ID,
+        type: 'circle',
+        source: SOURCE_ID,
+        filter: ['has', 'point_count'],
+        paint: {
+          'circle-color': MAP_COLORS.surface,
+          'circle-radius': ['step', ['get', 'point_count'], 12, 20, 16, 100, 20],
+          'circle-stroke-color': HOTSPOT_HEX,
+          'circle-stroke-width': 2,
+          'circle-opacity': 0.96,
+        },
+      })
+    }
+
+    if (!map.getLayer(CLUSTER_COUNT_LAYER_ID)) {
+      map.addLayer({
+        id: CLUSTER_COUNT_LAYER_ID,
+        type: 'symbol',
+        source: SOURCE_ID,
+        filter: ['has', 'point_count'],
+        layout: {
+          'text-field': ['get', 'point_count_abbreviated'],
+          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+          'text-size': 11,
+          'text-allow-overlap': true,
+        },
+        paint: {
+          'text-color': MAP_COLORS.ink,
+        },
+      })
+    }
+
     if (!map.getLayer(POINTS_LAYER_ID)) {
       map.addLayer({
         id: POINTS_LAYER_ID,
         type: 'circle',
         source: SOURCE_ID,
         minzoom: 0,
+        filter: ['!', ['has', 'point_count']],
         paint: {
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 1.5, 7, 2.5, 12, 3.5],
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 7, 2.5, 12, 3.5],
           'circle-color': HOTSPOT_HEX,
-          'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 0, 0.3, 10, 1],
+          'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 0, 0.5, 10, 1],
           'circle-stroke-color': MAP_COLORS.surface,
           'circle-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.7, 12, 1],
         },
@@ -202,6 +245,27 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       setActiveHotspot({ ...hit, pinned: true })
     }
 
+    const onClusterClick = async (e: MapLayerMouseEvent) => {
+      const feature = e.features?.[0]
+      if (!feature || feature.geometry.type !== 'Point') return
+
+      const clusterId = feature.properties?.cluster_id
+      const source = map.getSource(SOURCE_ID) as GeoJSONSource | undefined
+      if (typeof clusterId !== 'number' || !source?.getClusterExpansionZoom) return
+
+      try {
+        const zoom = await source.getClusterExpansionZoom(clusterId)
+        const coordinates = feature.geometry.coordinates as [number, number]
+        map.easeTo({
+          center: coordinates,
+          zoom: Math.min(zoom, 12),
+          duration: 500,
+        })
+      } catch {
+        // The source can be replaced while the map style is reloading.
+      }
+    }
+
     const onHeatmapClick = (e: MapLayerMouseEvent) => {
       if (openRegionFromEvent(e)) {
         setActiveHotspot(null)
@@ -220,6 +284,14 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       setActiveHotspot((prev) => (prev?.pinned ? prev : null))
     }
 
+    const onClusterEnter = () => {
+      map.getCanvas().style.cursor = 'pointer'
+    }
+
+    const onClusterLeave = () => {
+      map.getCanvas().style.cursor = ''
+    }
+
     const onMapClick = (e: MapMouseEvent) => {
       if (!map.getLayer(POINTS_LAYER_ID)) return
       const features = map.queryRenderedFeatures(e.point, {
@@ -231,8 +303,14 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
     }
 
     if (typeof map.on === 'function') {
+      map.on('click', CLUSTERS_LAYER_ID, onClusterClick)
+      map.on('click', CLUSTER_COUNT_LAYER_ID, onClusterClick)
       map.on('click', POINTS_LAYER_ID, onPointClick)
       map.on('click', LAYER_ID, onHeatmapClick)
+      map.on('mouseenter', CLUSTERS_LAYER_ID, onClusterEnter)
+      map.on('mouseleave', CLUSTERS_LAYER_ID, onClusterLeave)
+      map.on('mouseenter', CLUSTER_COUNT_LAYER_ID, onClusterEnter)
+      map.on('mouseleave', CLUSTER_COUNT_LAYER_ID, onClusterLeave)
       map.on('mouseenter', POINTS_LAYER_ID, onPointEnter)
       map.on('mouseleave', POINTS_LAYER_ID, onPointLeave)
       map.on('click', onMapClick)
@@ -241,13 +319,21 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
     return () => {
       try {
         if (typeof map.off === 'function') {
+          map.off('click', CLUSTERS_LAYER_ID, onClusterClick)
+          map.off('click', CLUSTER_COUNT_LAYER_ID, onClusterClick)
           map.off('click', POINTS_LAYER_ID, onPointClick)
           map.off('click', LAYER_ID, onHeatmapClick)
+          map.off('mouseenter', CLUSTERS_LAYER_ID, onClusterEnter)
+          map.off('mouseleave', CLUSTERS_LAYER_ID, onClusterLeave)
+          map.off('mouseenter', CLUSTER_COUNT_LAYER_ID, onClusterEnter)
+          map.off('mouseleave', CLUSTER_COUNT_LAYER_ID, onClusterLeave)
           map.off('mouseenter', POINTS_LAYER_ID, onPointEnter)
           map.off('mouseleave', POINTS_LAYER_ID, onPointLeave)
           map.off('click', onMapClick)
         }
         if (map.getLayer(POINTS_LAYER_ID)) map.removeLayer(POINTS_LAYER_ID)
+        if (map.getLayer(CLUSTER_COUNT_LAYER_ID)) map.removeLayer(CLUSTER_COUNT_LAYER_ID)
+        if (map.getLayer(CLUSTERS_LAYER_ID)) map.removeLayer(CLUSTERS_LAYER_ID)
         if (map.getLayer(LAYER_ID)) map.removeLayer(LAYER_ID)
         if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID)
       } catch {
