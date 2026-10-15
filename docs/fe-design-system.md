@@ -106,6 +106,16 @@ Sentence case. Sapaan “kamu”. Desimal koma kecuali koordinat.
 
 Ikon Lucide stroke **2**: 14 (ⓘ / rail), 16 inline, 18 aksi, 20 kontrol peta.
 
+### Grafik tren
+
+`TrendChart` (`src/components/common/trend-chart.tsx`) adalah komponen reusable untuk
+seri tujuh hari dari `trend_7d`/`tren_7h`. Grafik memakai SVG native agar ringan,
+responsif, dan tetap dapat dibaca screen reader. Gunakan hanya untuk insight jumlah
+titik panas; jangan mengubahnya menjadi skor risiko atau mengisi data yang tidak ada.
+Tampilkan garis, area tipis, label sumbu tanggal, serta statistik **Terbaru**,
+**Puncak**, dan **Rata-rata**. State kosong harus menjelaskan bahwa riwayat belum
+tersedia, bukan menampilkan nol.
+
 ---
 
 ## 6. Motion (PDF §5)

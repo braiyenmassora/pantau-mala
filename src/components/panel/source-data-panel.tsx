@@ -7,6 +7,7 @@ import {
   DataTile,
   SectionLabel,
   ProgressBar,
+  TrendChart,
 } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { useOptionalData } from '@/data/queries'
@@ -88,7 +89,8 @@ function SourceDataContent() {
             {copy.extra.unavailable}
           </p>
         ) : (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
             <DataTile
               label={copy.extra.today}
               value={formatNumber(national.data.titik_panas_24j)}
@@ -107,6 +109,12 @@ function SourceDataContent() {
             <DataTile
               label={copy.extra.highRegions}
               value={formatNumber(national.data.wilayah_sangat_tinggi)}
+            />
+            </div>
+            <TrendChart
+              values={national.data.tren_7h}
+              timeZone="WIB"
+              label="Tren nasional 7 hari"
             />
           </div>
         )}

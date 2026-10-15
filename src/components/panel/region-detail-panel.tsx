@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
-import { Badge, InfoRow, SectionLabel } from '@/components/common'
+import { Badge, InfoRow, SectionLabel, TrendChart } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { PanelTabs } from '@/components/panel/panel-tabs'
 import { RegionRiverPanel } from '@/components/panel/region-river-panel'
@@ -81,7 +81,6 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
 
   useEffect(() => {
     titleRef.current?.focus()
-    setTab('ringkasan')
   }, [region.code])
 
   const unavailable = copy.detail.unavailable
@@ -153,6 +152,8 @@ export function RegionDetailPanel({ region }: RegionDetailPanelProps) {
                 {region.summary ? (
                   <p className="text-paragraph text-ink line-clamp-3">{region.summary}</p>
                 ) : null}
+
+                <TrendChart values={region.trend_7d} timeZone={region.time_zone} />
 
                 <section>
                   <SectionLabel>{copy.detail.conditions}</SectionLabel>

@@ -80,7 +80,7 @@ describe('RegionDetailPanel', () => {
   it('shows status hierarchy: badge, count, trend; no air/cuaca in Ringkasan', () => {
     renderDetail(pulangPisau)
     expect(screen.getByText('Sangat tinggi')).toBeTruthy()
-    expect(screen.getByText('23')).toBeTruthy()
+    expect(screen.getAllByText('23').length).toBeGreaterThan(0)
     expect(screen.getByText(copy.detail.hotspot24hLabel)).toBeTruthy()
     expect(screen.getByText(copy.detail.trendUp)).toBeTruthy()
     expect(screen.queryByText(copy.detail.airQuality)).toBeNull()

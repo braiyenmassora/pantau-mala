@@ -87,7 +87,7 @@ export function SummaryPanel({
   }
 
   if (selected) {
-    return <RegionDetailPanel region={selected} />
+    return <RegionDetailPanel key={selected.code} region={selected} />
   }
 
   if (selectedCatalog) {

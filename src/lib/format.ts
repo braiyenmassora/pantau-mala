@@ -74,3 +74,16 @@ export function formatDateTime(iso: string, zone: TimeZoneId): string {
   const mm = String(p.minute).padStart(2, '0')
   return `${dd} ${mon} ${p.year}, ${hh}:${mm} ${zone}`
 }
+
+/** Label seven calendar days ending today in the region's local time zone. */
+export function formatTrendDates(zone: TimeZoneId, nowMs: number = Date.now()): string[] {
+  const parts = toZonedParts(new Date(nowMs).toISOString(), zone)
+  if (!parts) return Array.from({ length: 7 }, (_, index) => `Hari ${index + 1}`)
+
+  const anchor = Date.UTC(parts.year, parts.month, parts.day)
+  return Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(anchor - (6 - index) * 24 * 60 * 60 * 1000)
+    const day = String(date.getUTCDate()).padStart(2, '0')
+    return `${day} ${SHORT_MONTHS[date.getUTCMonth()]}`
+  })
+}
