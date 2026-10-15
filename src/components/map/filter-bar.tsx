@@ -12,8 +12,8 @@ import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 
-/** Chip filter — Rendah muncul jika ada di data. */
-const CATEGORY_BASE: RiskCategory[] = ['sangat_tinggi', 'sedang', 'rendah']
+/** Chip filter — hanya risiko yang tampil di peta (sangat tinggi & sedang). */
+const CATEGORY_BASE: RiskCategory[] = ['sangat_tinggi', 'sedang']
 
 type FilterBarProps = {
   panelOpen: boolean
@@ -50,12 +50,10 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
 
   const allPressed = selectedCategories.size === 0
   const allCount = preCategory.length
-  const categoryOrder = CATEGORY_BASE.filter(
-    (c) => c !== 'rendah' || counts.rendah > 0,
-  )
+  const categoryOrder = CATEGORY_BASE
 
   useEffect(() => {
-    if (selectedCategories.has('tidak_tersedia')) {
+    if (selectedCategories.has('tidak_tersedia') || selectedCategories.has('rendah')) {
       clearCategories()
     }
   }, [selectedCategories, clearCategories])
@@ -63,11 +61,11 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
   return (
     <div
       className={cn(
-        'z-30 flex flex-wrap items-center gap-2',
-        'transition-[left] duration-300 ease-out-soft',
+        'z-30 flex-wrap items-center gap-2',
+        'ease-out-soft transition-[left] duration-300',
         panelOpen
-          ? 'fixed top-4 right-4 left-4 sm:left-[432px]'
-          : 'fixed top-4 right-4 left-4',
+          ? 'fixed top-4 right-4 hidden sm:left-[432px] sm:flex'
+          : 'fixed top-4 right-4 left-4 flex',
       )}
       {...mapOverlayGestureProps}
     >
@@ -75,18 +73,16 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
 
       <Chip
         pressed={allPressed}
+        disabled={allCount === 0}
         title={copy.filter.allStatusesTitle(formatNumber(allCount))}
         aria-label={copy.filter.allStatusesTitle(formatNumber(allCount))}
         onClick={clearCategories}
+        className={cn(
+          allCount === 0 && 'pointer-events-none cursor-not-allowed opacity-40',
+        )}
       >
-        <span>{copy.filter.allStatuses}</span>
-        <span
-          className={cn(
-            'font-mono text-xs tabular-nums',
-            allPressed ? 'text-surface/80' : 'text-ink-2',
-          )}
-        >
-          {formatNumber(allCount)} {copy.filter.wilayahUnit}
+        <span>
+          Semua · <span className="tabular-nums">{formatNumber(allCount)}</span>
         </span>
       </Chip>
 
@@ -94,28 +90,25 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         const meta = RISK_CATEGORIES[category]
         const count = counts[category]
         const pressed = selectedCategories.has(category)
+        const isZero = count === 0
 
         return (
           <Chip
             key={category}
             pressed={pressed}
+            disabled={isZero}
             title={copy.filter.categoryTitle(formatNumber(count), meta.label)}
             aria-label={copy.filter.categoryTitle(formatNumber(count), meta.label)}
             onClick={() => toggleCategory(category)}
+            className={cn(isZero && 'pointer-events-none cursor-not-allowed opacity-40')}
           >
             <span
               className="size-2 shrink-0 rounded-full"
               style={{ backgroundColor: meta.dot }}
               aria-hidden
             />
-            <span>{meta.label}</span>
-            <span
-              className={cn(
-                'font-mono text-xs tabular-nums',
-                pressed ? 'text-surface/80' : 'text-ink-2',
-              )}
-            >
-              {formatNumber(count)} {copy.filter.wilayahUnit}
+            <span>
+              {meta.label} · <span className="tabular-nums">{formatNumber(count)}</span>
             </span>
           </Chip>
         )

@@ -14,9 +14,7 @@
       "count": 262,
       "with_weather": 262,
       "with_pm25": 262,
-      "quality_states": [
-        "stale"
-      ]
+      "quality_states": ["stale"]
     },
     "geojson_24h": {
       "features": 14997,

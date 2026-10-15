@@ -67,11 +67,11 @@ pnpm exec wrangler secret put PANTAU_API_KEY
 
 Jika memakai **Cloudflare Workers Builds** (Git connected), pakai pnpm (bukan Bun):
 
-| Setting | Nilai |
-| --- | --- |
-| Build command | `pnpm run build` |
-| Deploy command | `pnpm exec wrangler deploy` |
-| Build variable `VITE_DATA_URL` | `/api/v1` |
+| Setting                        | Nilai                       |
+| ------------------------------ | --------------------------- |
+| Build command                  | `pnpm run build`            |
+| Deploy command                 | `pnpm exec wrangler deploy` |
+| Build variable `VITE_DATA_URL` | `/api/v1`                   |
 
 Atau biarkan GitHub Actions (`deploy-cloudflare.yml`) yang build + deploy setelah CI `main` lulus.
 

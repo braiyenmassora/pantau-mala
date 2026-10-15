@@ -19,10 +19,7 @@ type PanelTabsProps = {
 export function PanelTabs({ tabs, value, onChange }: PanelTabsProps) {
   return (
     <div>
-      <div
-        role="tablist"
-        className="border-line flex gap-4 border-b"
-      >
+      <div role="tablist" className="border-line flex gap-4 border-b">
         {tabs.map((tab) => {
           const active = tab.id === value
           return (

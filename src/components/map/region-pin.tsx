@@ -73,7 +73,8 @@ export function RegionPin({ region }: RegionPinProps) {
   const selected = selectedCode === region.code
   const active = selected || hoveredCode === region.code
   const isLow = hotspotRisk === 'rendah'
-  const pulse = !reducedMotion && !isLow && showHaloPulse(hotspotRisk, region.hotspots_24h)
+  const pulse =
+    !reducedMotion && !isLow && showHaloPulse(hotspotRisk, region.hotspots_24h)
   const pulseClass =
     hotspotRisk === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
   const hotspotLabel = formatNumber(region.hotspots_24h)
@@ -138,8 +139,7 @@ export function RegionPin({ region }: RegionPinProps) {
                 className={cn(
                   'relative origin-center rounded-full',
                   focusRing,
-                  active &&
-                    ACTIVE_PIN[hotspotRisk as 'sangat_tinggi' | 'sedang'],
+                  active && ACTIVE_PIN[hotspotRisk as 'sangat_tinggi' | 'sedang'],
                 )}
                 style={active ? { boxShadow: PIN_ACTIVE_BOX_SHADOW } : undefined}
                 aria-label={label}

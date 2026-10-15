@@ -90,25 +90,45 @@ export async function sessionRequest(path: string, method = 'POST', body: unknow
 }
 let restorePromise: Promise<void> | undefined
 export function restoreSession() {
-  return (restorePromise ??= restoreAccess().finally(() => { restorePromise = undefined }))
+  return (restorePromise ??= restoreAccess().finally(() => {
+    restorePromise = undefined
+  }))
 }
 async function restoreAccess() {
   useSession.setState({ status: 'restoring', accessError: '' })
   try {
-    const response = await fetch('/frontend/session', { cache: 'no-store', signal: AbortSignal.timeout(15000) })
-    if (response.headers.get('x-frontend-access') === 'client') useSession.setState({ accessMode: 'client' })
-    if (response.ok && response.headers.get('content-type')?.includes('application/json')) {
-      const access = z.object({ mode: z.literal('client'), principal: principalSchema }).parse(await response.json())
+    const response = await fetch('/frontend/session', {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(15000),
+    })
+    if (response.headers.get('x-frontend-access') === 'client')
+      useSession.setState({ accessMode: 'client' })
+    if (
+      response.ok &&
+      response.headers.get('content-type')?.includes('application/json')
+    ) {
+      const access = z
+        .object({ mode: z.literal('client'), principal: principalSchema })
+        .parse(await response.json())
       clearClientData()
-      useSession.setState((s) => ({ token: null, principal: access.principal, accessMode: 'client', status: 'authenticated', generation: s.generation + 1 }))
+      useSession.setState((s) => ({
+        token: null,
+        principal: access.principal,
+        accessMode: 'client',
+        status: 'authenticated',
+        generation: s.generation + 1,
+      }))
       return
     }
-    if (response.status !== 404 && response.status !== 200) throw new Error('Akses client belum tersedia. Periksa konfigurasi server FE.')
+    if (response.status !== 404 && response.status !== 200)
+      throw new Error('Akses client belum tersedia. Periksa konfigurasi server FE.')
     useSession.setState({ accessMode: 'account' })
     acceptSession(await sessionRequest('/auth/browser-session'))
   } catch (error) {
     expireSession()
-    useSession.setState({ accessError: error instanceof Error ? error.message : 'Akses belum tersedia.' })
+    useSession.setState({
+      accessError: error instanceof Error ? error.message : 'Akses belum tersedia.',
+    })
   }
 }
 export async function login(username: string, password: string) {

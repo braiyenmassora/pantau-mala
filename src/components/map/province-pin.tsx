@@ -1,17 +1,10 @@
-import { useState } from 'react'
+import type { CSSProperties } from 'react'
 
-import { focusRing } from '@/components/common/focus-ring'
-import { RiskMarker } from '@/components/common/risk-marker'
+import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
-import { mapPinTip } from '@/components/map/map-pin-tip'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { copy } from '@/copy/id'
-import { formatNumber } from '@/lib/format'
-import { showHaloPulse } from '@/lib/halo'
 import { fitProvinceBounds } from '@/lib/indonesia-view'
-import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import type { ProvinceAggregate } from '@/lib/province-aggregates'
-import { PIN_ACTIVE_BOX_SHADOW, RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
+import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -19,27 +12,29 @@ import { useUiStore } from '@/store/ui'
 
 type ProvincePinProps = {
   aggregate: ProvinceAggregate
+  hovered?: boolean
+  onHover?: (name: string | null) => void
 }
 
-/** Pin provinsi: satu lingkaran penuh + beat pulse (angka ada di list panel). */
-export function ProvincePin({ aggregate }: ProvincePinProps) {
+// ponytail: pin provinsi beat soft tanpa angka — warna dari RISK_CATEGORIES.
+export function ProvincePin({ aggregate, hovered = false, onHover }: ProvincePinProps) {
   const { map } = useMap()
   const setProvince = useMapStore((s) => s.setProvince)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
-  const reducedMotion = usePrefersReducedMotion()
-  const [tipOpen, setTipOpen] = useState(false)
 
-  const hotspotRisk = effectiveRiskCategory(aggregate)
-  const style = RISK_CATEGORIES[hotspotRisk]
-  const pulse = !reducedMotion && showHaloPulse(hotspotRisk, aggregate.hotspots_24h)
-  const pulseClass =
-    hotspotRisk === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
-  const label = copy.map.pinAria(
-    aggregate.name,
-    style.label,
-    formatNumber(aggregate.hotspots_24h),
-  )
+  const risk = effectiveRiskCategory(aggregate)
+  const isHigh = risk === 'sangat_tinggi'
+  const isMid = risk === 'sedang'
+  const dot = RISK_CATEGORIES[risk].dot
+
+  const pulseStyle: CSSProperties | undefined =
+    isHigh || isMid
+      ? ({
+          '--risk-color': dot,
+          '--beat': isHigh ? '1.1s' : '2.6s',
+        } as CSSProperties)
+      : undefined
 
   return (
     <MapMarker
@@ -48,42 +43,32 @@ export function ProvincePin({ aggregate }: ProvincePinProps) {
       anchor="center"
     >
       <MarkerContent className="relative z-10 flex items-center justify-center overflow-visible">
-        {pulse && (
-          <span
-            aria-hidden
-            className={cn(
-              'pointer-events-none absolute top-1/2 left-1/2 size-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-2',
-              pulseClass,
-            )}
-            style={{ borderColor: withAlpha(style.dot, 0.5) }}
-          />
-        )}
+        <button
+          type="button"
+          aria-label={aggregate.name}
+          className={cn(
+            'border-surface relative rounded-full transition-transform duration-150',
+            isHigh || isMid ? 'marker--pulse size-3 border-2' : 'size-2 border-[1.5px]',
+            hovered && 'z-20 scale-[1.3]',
+          )}
+          style={{ backgroundColor: dot, ...pulseStyle }}
+          onMouseEnter={() => onHover?.(aggregate.name)}
+          onMouseLeave={() => onHover?.(null)}
+          onClick={(e) => {
+            e.stopPropagation()
+            setProvince(aggregate.name)
+            if (!panelOpen) setPanelOpen(true)
+            if (map) {
+              fitProvinceBounds(map, aggregate.bbox, true, 0)
+            }
+          }}
+        />
 
-        <Tooltip delayDuration={150} open={tipOpen} onOpenChange={setTipOpen}>
-          <TooltipTrigger asChild>
-            <button
-              type="button"
-              className={cn('relative origin-center rounded-full', focusRing)}
-              style={{ boxShadow: PIN_ACTIVE_BOX_SHADOW }}
-              aria-label={label}
-              onClick={(e) => {
-                e.stopPropagation()
-                setProvince(aggregate.name)
-                if (!panelOpen) setPanelOpen(true)
-                if (map) {
-                  fitProvinceBounds(map, aggregate.bbox, true, 0)
-                }
-              }}
-            >
-              <RiskMarker kategori={hotspotRisk} shadow active className="size-3.5" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={8} className={mapPinTip}>
-            <span className="text-ink font-semibold">
-              {copy.map.provincePinTitle(aggregate.name)}
-            </span>
-          </TooltipContent>
-        </Tooltip>
+        {hovered && (
+          <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
+            <MapInfoCard title={aggregate.name} />
+          </div>
+        )}
       </MarkerContent>
     </MapMarker>
   )

@@ -10,13 +10,18 @@ import {
   type RefObject,
 } from 'react'
 import { Button, EmptyState } from '@/components/common'
-import { IndonesiaMapFraming } from '@/components/map/indonesia-map-framing'
+import type { Map as MapLibreMap } from 'maplibre-gl'
+
+import { EarthquakeLayer } from '@/components/map/earthquake-layer'
 import { HotspotHeatmapLayer } from '@/components/map/hotspot-heatmap-layer'
+import { IndonesiaMapFraming } from '@/components/map/indonesia-map-framing'
 import { MapSoftLoading } from '@/components/map/map-soft-loading'
+import { ProvinceChoroplethLayer } from '@/components/map/province-choropleth-layer'
 import { ProvinceFocus } from '@/components/map/province-focus'
+import { ProvinceLabelsLayer } from '@/components/map/province-labels-layer'
+import { ProvincePinsLayer } from '@/components/map/province-pins-layer'
 import { RegionLayers } from '@/components/map/region-layers'
 import { SelectedHotspotsLayer } from '@/components/map/selected-hotspots-layer'
-import { EarthquakeLayer } from '@/components/map/earthquake-layer'
 import { UserLocationLayer } from '@/components/map/user-location-layer'
 import { Map, useMap, type MapRef } from '@/components/ui/map'
 import { useRegionCatalog } from '@/data/queries'
@@ -96,18 +101,101 @@ function PartialBanner() {
   )
 }
 
+function applyBasemapCleanups(map: MapLibreMap) {
+  if (!map || typeof map.getLayer !== 'function') return
+  const minorRoads = [
+    'road_minor_case',
+    'road_minor_fill',
+    'road_service_case',
+    'road_service_fill',
+    'road_path',
+    'tunnel_minor_case',
+    'tunnel_minor_fill',
+    'tunnel_service_case',
+    'tunnel_service_fill',
+    'tunnel_path',
+    'bridge_minor_case',
+    'bridge_minor_fill',
+    'bridge_service_case',
+    'bridge_service_fill',
+    'bridge_path',
+    'roadname_minor',
+  ]
+  for (const id of minorRoads) {
+    if (map.getLayer(id)) {
+      try {
+        map.setLayoutProperty(id, 'visibility', 'none')
+      } catch {
+        // layer not found or already styled
+      }
+    }
+  }
+  const hiddenLabels = [
+    'place_continent',
+    'place_state',
+    'place_city_r6',
+    'place_city_r5',
+    'place_city_dot_r7',
+    'place_city_dot_r4',
+    'place_city_dot_r2',
+    'place_city_dot_z7',
+    'place_capital_dot_z7',
+    'place_town',
+    'place_suburbs',
+    'place_hamlet',
+    'place_villages',
+  ]
+  for (const id of hiddenLabels) {
+    if (map.getLayer(id)) {
+      try {
+        map.setLayoutProperty(id, 'visibility', 'none')
+      } catch {
+        // layer not found or already styled
+      }
+    }
+  }
+  for (const id of ['place_country_1', 'place_country_2']) {
+    if (map.getLayer(id)) {
+      try {
+        map.setFilter(id, ['==', 'iso_a2', 'ID'])
+        map.setLayoutProperty(id, 'text-field', [
+          'coalesce',
+          ['get', 'name:id'],
+          ['get', 'name'],
+        ])
+      } catch {
+        // layer not found or already styled
+      }
+    }
+  }
+}
+
 function MapBasemapListener({ onBasemapError }: { onBasemapError: () => void }) {
   const { map } = useMap()
 
   useEffect(() => {
     if (!map) return
+    const onStyle = () => {
+      applyBasemapCleanups(map)
+    }
+    if (typeof map.isStyleLoaded === 'function' && map.isStyleLoaded()) {
+      applyBasemapCleanups(map)
+    }
+    if (typeof map.on === 'function') {
+      map.on('style.load', onStyle)
+    }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- MapLibre ErrorEvent shape
     const handler = (e: any) => {
       if (isBasemapStyleError(e)) onBasemapError()
     }
-    map.on('error', handler)
+    if (typeof map.on === 'function') {
+      map.on('error', handler)
+    }
     return () => {
-      map.off('error', handler)
+      if (typeof map.off === 'function') {
+        map.off('style.load', onStyle)
+        map.off('error', handler)
+      }
     }
   }, [map, onBasemapError])
 
@@ -190,7 +278,7 @@ export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
         theme="light"
         blank={basemapFailed}
         className={cn(
-          'size-full transition-opacity duration-300 ease-out-soft',
+          'ease-out-soft size-full transition-opacity duration-300',
           framed ? 'opacity-100' : 'opacity-0',
         )}
         center={INDONESIA_CENTER}
@@ -203,6 +291,15 @@ export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
         <MapBasemapListener onBasemapError={markBasemapFailed} />
         <IndonesiaMapFraming panelOpen={panelOpen} onReady={markFramed} />
         {catalog && <ProvinceFocus provinces={catalog.provinces} />}
+        <LayerErrorBoundary name="ProvinceChoroplethLayer" onError={markLayerFailed}>
+          <ProvinceChoroplethLayer regions={regions} />
+        </LayerErrorBoundary>
+        <LayerErrorBoundary name="ProvinceLabelsLayer" onError={markLayerFailed}>
+          <ProvinceLabelsLayer regions={regions} />
+        </LayerErrorBoundary>
+        <LayerErrorBoundary name="ProvincePinsLayer" onError={markLayerFailed}>
+          <ProvincePinsLayer regions={regions} />
+        </LayerErrorBoundary>
         <LayerErrorBoundary name="RegionLayers" onError={markLayerFailed}>
           <RegionLayers regions={regions} />
         </LayerErrorBoundary>

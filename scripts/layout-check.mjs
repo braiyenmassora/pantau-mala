@@ -36,11 +36,15 @@ function overlaps(a, b) {
   )
 }
 
-const child = spawn('pnpm', ['run', 'dev', '--', '--port', String(PORT), '--host', '127.0.0.1'], {
-  cwd: ROOT,
-  stdio: 'pipe',
-  env: { ...process.env },
-})
+const child = spawn(
+  'pnpm',
+  ['exec', 'vite', '--port', String(PORT), '--host', '127.0.0.1'],
+  {
+    cwd: ROOT,
+    stdio: 'pipe',
+    env: { ...process.env },
+  },
+)
 
 function shutdown() {
   child.kill('SIGTERM')

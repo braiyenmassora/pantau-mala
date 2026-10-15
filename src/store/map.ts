@@ -23,7 +23,7 @@ type MapState = {
   showTemperature: boolean
   toggleWind: () => void
   toggleTemperature: () => void
-  select: (code: string | null) => void
+  select: (code: string | null, regionProvince?: string) => void
   hover: (code: string | null) => void
   setProvince: (province: string) => void
   toggleCategory: (category: RiskCategory) => void
@@ -45,7 +45,13 @@ export const useMapStore = create<MapState>((set) => ({
   showTemperature: false,
   toggleWind: () => set((s) => ({ showWind: !s.showWind })),
   toggleTemperature: () => set((s) => ({ showTemperature: !s.showTemperature })),
-  select: (selectedCode) => set({ selectedCode }),
+  select: (selectedCode, regionProvince) =>
+    set({
+      selectedCode,
+      // Buka detail: kosongkan pencarian agar panel detail tampil bersih
+      ...(selectedCode ? { query: '' } : {}),
+      ...(regionProvince ? { province: regionProvince } : {}),
+    }),
   hover: (hoveredCode) => set({ hoveredCode }),
   setProvince: (province) => set({ province, selectedCode: null }),
   /** Single-select: pick one category, or clear if the same chip is clicked again. */

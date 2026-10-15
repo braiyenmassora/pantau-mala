@@ -8,11 +8,11 @@ export function ProgressBar({ className }: { className?: string } = {}) {
       aria-label={copy.common.loading}
       aria-busy="true"
       className={cn(
-        'rounded-full bg-line relative h-1 w-full overflow-hidden',
+        'bg-line relative h-1 w-full overflow-hidden rounded-full',
         className,
       )}
     >
-      <div className="bg-brand absolute inset-y-0 h-full w-1/3 rounded-full animate-indeterminate" />
+      <div className="bg-brand animate-indeterminate absolute inset-y-0 h-full w-1/3 rounded-full" />
     </div>
   )
 }

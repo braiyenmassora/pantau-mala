@@ -10,18 +10,24 @@ describe('RiskMarker', () => {
   it('sangat_tinggi shows red round dot', () => {
     const { container } = render(<RiskMarker kategori="sangat_tinggi" />)
     expect(container.querySelector('svg')).toBeNull()
-    expect(container.querySelector('.bg-risk-high')?.classList.contains('rounded-full')).toBe(true)
+    expect(
+      container.querySelector('.bg-risk-high')?.classList.contains('rounded-full'),
+    ).toBe(true)
   })
 
   it('sedang shows orange round dot', () => {
     const { container } = render(<RiskMarker kategori="sedang" />)
     expect(container.querySelector('svg')).toBeNull()
-    expect(container.querySelector('.bg-risk-mid')?.classList.contains('rounded-full')).toBe(true)
+    expect(
+      container.querySelector('.bg-risk-mid')?.classList.contains('rounded-full'),
+    ).toBe(true)
   })
 
   it('rendah shows green round dot', () => {
     const { container } = render(<RiskMarker kategori="rendah" />)
     expect(container.querySelector('svg')).toBeNull()
-    expect(container.querySelector('.bg-risk-low')?.classList.contains('rounded-full')).toBe(true)
+    expect(
+      container.querySelector('.bg-risk-low')?.classList.contains('rounded-full'),
+    ).toBe(true)
   })
 })

@@ -6,38 +6,38 @@
 @theme {
   /* Font */
   --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-mono: 'IBM Plex Sans', system-ui, sans-serif;
 
-  /* Netral — PDF §1 */
-  --color-ink: #14261b; /* text-primary */
-  --color-ink-2: #52645a; /* text-secondary */
-  --color-ink-3: #7a8a80; /* text-disabled */
-  --color-line: #e3e9e4; /* border */
+  /* Netral */
+  --color-ink: #1f2328; /* text-primary */
+  --color-ink-2: #5f6368; /* text-secondary */
+  --color-ink-3: #80868b; /* text-disabled */
+  --color-line: #e8eaed; /* border / divider */
   --color-surface: #ffffff;
-  --color-surface-muted: #f6f8f6;
-  --color-map-bg: #dce7ec;
-  --color-scrollbar: #d3dbd6;
+  --color-surface-muted: #f1f3f4;
+  --color-map-bg: #e8eaed;
+  --color-scrollbar: #dadce0;
 
-  /* Brand: pantau = hijau, mala = orange; lokasi / aksen UI = hijau */
-  --color-brand: #1e6b45;
-  --color-brand-soft: #edf4ef;
-  --color-brand-mala: #c2410c;
-  --color-focus: #1e6b45;
-  --color-location: #1e6b45;
-  --color-location-tint: #edf4ef;
+  /* Brand / lokasi / aksen UI */
+  --color-brand: #137333;
+  --color-brand-soft: #e6f4ea;
+  --color-brand-mala: #d93025;
+  --color-focus: #137333;
+  --color-location: #137333;
+  --color-location-tint: #e6f4ea;
 
-  /* Kategori risiko (dot / tint / text) — PDF §1 */
-  --color-risk-high: #c2410c;
-  --color-risk-high-tint: #f8d7d0;
-  --color-risk-high-text: #8e2414;
-  --color-risk-mid: #d99a0b;
-  --color-risk-mid-tint: #fbf0cf;
-  --color-risk-mid-text: #6b4e00;
-  --color-risk-low: #2e8b57;
-  --color-risk-low-tint: #e4f0e8;
-  --color-risk-low-text: #1e5a3a;
+  /* Kategori risiko */
+  --color-risk-high: #d93025;
+  --color-risk-high-tint: #fce8e6;
+  --color-risk-high-text: #c5221f;
+  --color-risk-mid: #f29900;
+  --color-risk-mid-tint: #fef7e0;
+  --color-risk-mid-text: #854800;
+  --color-risk-low: #188038;
+  --color-risk-low-tint: #e6f4ea;
+  --color-risk-low-text: #137333;
 
-  /* Spasi kelipatan 4 — PDF: 4 8 12 16 20 24 */
+  /* Spasi kelipatan 4: 4 8 12 16 20 24 */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -46,32 +46,32 @@
   --space-6: 24px;
   --space-8: 32px;
 
-  /* Tipografi — hanya 12, 13, 14, 16, 20, 28 */
+  /* Tipografi: 12 caption · 14 isi · 16 nama baris · 22 judul · 28 angka besar */
   --text-xs: 12px;
-  --text-xs--line-height: 16px; /* caption, label, badge */
-  --text-sm: 13px;
-  --text-sm--line-height: 18px; /* small, chip, section-label */
+  --text-xs--line-height: 16px;
+  --text-sm: 14px;
+  --text-sm--line-height: 20px;
   --text-base: 14px;
-  --text-base--line-height: 20px; /* body */
+  --text-base--line-height: 20px;
   --text-paragraph: 14px;
-  --text-paragraph--line-height: 22px; /* paragraph */
+  --text-paragraph--line-height: 20px;
   --text-lg: 16px;
-  --text-lg--line-height: 24px; /* title */
-  --text-xl: 20px;
-  --text-xl--line-height: 28px; /* title-lg */
+  --text-lg--line-height: 24px;
+  --text-xl: 22px;
+  --text-xl--line-height: 28px;
   --text-3xl: 28px;
-  --text-3xl--line-height: 32px; /* number-lg Mono */
+  --text-3xl--line-height: 32px;
 
-  /* Radius — PDF: 8 kontrol · 12 kartu · 16 panel · 999 pill */
+  /* Radius — 8 ctl · 12 kartu · 16 panel · 999 pill */
   --radius-ctl: 8px;
   --radius-card: 12px;
   --radius-panel: 16px;
 
-  /* Bayangan — PDF §3 */
-  --shadow-sm: 0 1px 3px rgba(20, 38, 27, 0.16);
-  --shadow-md: 0 4px 16px rgba(20, 38, 27, 0.12);
-  --shadow-lg: 0 8px 28px rgba(20, 38, 27, 0.18);
-  --shadow-map: 0 1px 3px rgba(20, 38, 27, 0.24);
+  /* Shadow tunggal: 0 1px 3px rgba(0,0,0,.2) */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-map: 0 1px 3px rgba(0, 0, 0, 0.2);
 
   /* Motion — PDF §5 */
   --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -127,7 +127,8 @@
 }
 
 @keyframes wind-drift {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0) rotate(0deg);
   }
   50% {
@@ -136,7 +137,8 @@
 }
 
 @keyframes water-ripple {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) scale(1);
   }
   50% {
@@ -154,7 +156,8 @@
 }
 
 @keyframes radar-pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 0.85;
   }
@@ -186,7 +189,13 @@
   scrollbar-color: var(--color-scrollbar) transparent;
 }
 .soft-fade {
-  mask-image: linear-gradient(to bottom, transparent 0, #000 12px, #000 calc(100% - 24px), transparent 100%);
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 12px,
+    #000 calc(100% - 24px),
+    transparent 100%
+  );
 }
 
 @media (prefers-reduced-motion: reduce) {

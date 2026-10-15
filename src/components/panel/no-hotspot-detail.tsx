@@ -12,7 +12,7 @@ type NoHotspotDetailProps = {
 export function NoHotspotDetail({ kab }: NoHotspotDetailProps) {
   const { data: meta } = useMeta()
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 py-3">
       <header>
         <h2 className="text-ink line-clamp-2 text-xl font-semibold" title={kab.name}>
           {kab.name}

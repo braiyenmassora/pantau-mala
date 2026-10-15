@@ -1,10 +1,8 @@
 /** @vitest-environment jsdom */
-import { cleanup, render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ProvincePin } from '@/components/map/province-pin'
-import { TooltipProvider } from '@/components/ui/tooltip'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
 
@@ -16,56 +14,57 @@ vi.mock('@/components/ui/map', () => ({
   MarkerContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
 
-vi.mock('@/lib/prefers-reduced-motion', () => ({
-  usePrefersReducedMotion: () => false,
-}))
-
-class ResizeObserverStub {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-}
-
 describe('ProvincePin', () => {
   afterEach(cleanup)
 
   beforeEach(() => {
-    // @ts-expect-error test stub
-    global.ResizeObserver = ResizeObserverStub
     useMapStore.setState({ province: 'Semua', selectedCode: null })
     useUiStore.setState({ panelOpen: false })
   })
 
-  it('shows RiskMarker without count badge; tooltip is province name only', async () => {
-    const user = userEvent.setup()
+  it('renders pulsing red pin without numbers; hover shows name only', () => {
+    const onHover = vi.fn()
     render(
-      <TooltipProvider>
-        <ProvincePin
-          aggregate={{
-            name: 'Kalimantan Selatan',
-            center: [115, -3],
-            bbox: [114, -4, 116, -2],
-            hotspots_24h: 212,
-            risk_category: 'sangat_tinggi',
-          }}
-        />
-      </TooltipProvider>,
+      <ProvincePin
+        aggregate={{
+          name: 'Kalimantan Selatan',
+          center: [115, -3],
+          bbox: [114, -4, 116, -2],
+          hotspots_24h: 212,
+          risk_category: 'sangat_tinggi',
+          trend_7d: [0, 0, 0, 0, 0, 0, 212],
+        }}
+        hovered
+        onHover={onHover}
+      />,
     )
-    const pin = screen.getByRole('button', {
-      name: /Kalimantan Selatan.*212 titik panas/,
-    })
-    expect(pin.querySelector('svg')).toBeNull()
-    expect(pin.querySelector('.bg-risk-high')?.classList.contains('rounded-full')).toBe(
-      true,
-    )
-    expect(pin.querySelector('span[aria-hidden].tabular-nums')).toBeNull()
+
+    const pin = screen.getByRole('button', { name: 'Kalimantan Selatan' })
+    expect(pin.className).toContain('marker--pulse')
+    expect(pin.style.getPropertyValue('--beat')).toBe('1.1s')
     expect(pin.textContent).not.toContain('212')
-    expect(screen.queryByText('Kalimantan Selatan')).toBeNull()
-    await user.hover(pin)
-    const tip = await screen.findByRole('tooltip')
-    expect(tip.textContent).toBe('Provinsi Kalimantan Selatan')
-    expect(tip.textContent).not.toContain('titik panas')
-    await user.click(pin)
+    expect(screen.getByText('Kalimantan Selatan')).toBeTruthy()
+
+    fireEvent.click(pin)
     expect(useMapStore.getState().province).toBe('Kalimantan Selatan')
+  })
+
+  it('renders slow yellow pulse for sedang', () => {
+    render(
+      <ProvincePin
+        aggregate={{
+          name: 'Banten',
+          center: [106, -6],
+          bbox: [105, -7, 107, -5],
+          hotspots_24h: 4,
+          risk_category: 'sedang',
+          trend_7d: [0, 0, 0, 0, 0, 1, 3],
+        }}
+      />,
+    )
+
+    const pin = screen.getByRole('button', { name: 'Banten' })
+    expect(pin.className).toContain('marker--pulse')
+    expect(pin.style.getPropertyValue('--beat')).toBe('2.6s')
   })
 })

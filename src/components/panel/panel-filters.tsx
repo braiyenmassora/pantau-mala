@@ -64,9 +64,7 @@ export function PanelFilters({ regions, className }: PanelFiltersProps) {
     return next
   }, [preCategory])
 
-  const categoryOrder = CATEGORY_BASE.filter(
-    (c) => c !== 'rendah' || counts.rendah > 0,
-  )
+  const categoryOrder = CATEGORY_BASE.filter((c) => c !== 'rendah' || counts.rendah > 0)
 
   const provinceLabel = province === ALL_PROVINCES ? copy.filter.allProvinces : province
   const options = useMemo(
@@ -124,11 +122,15 @@ export function PanelFilters({ regions, className }: PanelFiltersProps) {
           align="start"
           side="bottom"
           sideOffset={6}
-          className="rounded-card bg-surface text-ink z-[60] w-64 border border-line p-1 shadow-md"
+          className="rounded-card bg-surface text-ink border-line z-[60] w-64 border p-1 shadow-md"
         >
-          <div className="border-b border-line p-1">
-            <div className="flex items-center gap-2 rounded-ctl bg-surface-muted px-2 py-1">
-              <Search className="text-ink-3 size-4 shrink-0" strokeWidth={2} aria-hidden />
+          <div className="border-line border-b p-1">
+            <div className="rounded-ctl bg-surface-muted flex items-center gap-2 px-2 py-1">
+              <Search
+                className="text-ink-3 size-4 shrink-0"
+                strokeWidth={2}
+                aria-hidden
+              />
               <input
                 type="text"
                 placeholder={copy.search.searchProvince}
@@ -138,7 +140,11 @@ export function PanelFilters({ regions, className }: PanelFiltersProps) {
                 autoFocus
               />
               {search && (
-                <button type="button" onClick={() => setSearch('')} className="text-ink-3 hover:text-ink">
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  className="text-ink-3 hover:text-ink"
+                >
                   <X className="size-4 shrink-0" strokeWidth={2} />
                 </button>
               )}
@@ -176,7 +182,11 @@ export function PanelFilters({ regions, className }: PanelFiltersProps) {
                   >
                     <span className="min-w-0 flex-1 truncate">{option.label}</span>
                     {selected && (
-                      <Check className="text-brand size-4 shrink-0" strokeWidth={2} aria-hidden />
+                      <Check
+                        className="text-brand size-4 shrink-0"
+                        strokeWidth={2}
+                        aria-hidden
+                      />
                     )}
                   </button>
                 )
@@ -196,7 +206,7 @@ export function PanelFilters({ regions, className }: PanelFiltersProps) {
           <span>{copy.filter.allStatuses}</span>
           <span
             className={cn(
-              'font-mono text-xs tabular-nums',
+              'text-xs tabular-nums',
               allPressed ? 'text-surface/80' : 'text-ink-2',
             )}
           >
@@ -224,7 +234,7 @@ export function PanelFilters({ regions, className }: PanelFiltersProps) {
               <span>{meta.label}</span>
               <span
                 className={cn(
-                  'font-mono text-xs tabular-nums',
+                  'text-xs tabular-nums',
                   pressed ? 'text-surface/80' : 'text-ink-2',
                 )}
               >

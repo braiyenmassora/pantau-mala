@@ -168,7 +168,24 @@ export function decodeMeta(raw: unknown) {
       weather: data.sumber.cuaca?.status ?? 'gagal',
       air: data.sumber.udara?.status ?? 'gagal',
     },
+    pulled_at: {
+      firms: data.sumber.firms?.diperbarui ?? null,
+      // Open-Meteo: cuaca (± udara); pakai yang lebih baru.
+      weather: newerIso(
+        data.sumber.cuaca?.diperbarui ?? null,
+        data.sumber.udara?.diperbarui ?? null,
+      ),
+    },
   })
+}
+
+function newerIso(a: string | null, b: string | null): string | null {
+  const ta = a ? Date.parse(a) : NaN
+  const tb = b ? Date.parse(b) : NaN
+  if (Number.isNaN(ta) && Number.isNaN(tb)) return null
+  if (Number.isNaN(ta)) return b
+  if (Number.isNaN(tb)) return a
+  return ta >= tb ? a : b
 }
 export function decodeCatalog(raw: unknown) {
   return parseRegionCatalog(z.object({ data: z.unknown() }).parse(raw).data)

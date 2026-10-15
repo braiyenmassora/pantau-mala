@@ -8,11 +8,11 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api", "/api/*", "/auth", "/auth/*", "/frontend/session"]
+    "run_worker_first": ["/api", "/api/*", "/auth", "/auth/*", "/frontend/session"],
   },
   "vars": {
     "FE_ACCESS_MODE": "client",
     "PANTAU_API_ORIGIN": "https://api.pantaumala.live",
-    "PANTAU_CLIENT_SLUG": "pantau-mala"
-  }
+    "PANTAU_CLIENT_SLUG": "pantau-mala",
+  },
 }

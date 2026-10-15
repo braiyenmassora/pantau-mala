@@ -4,9 +4,9 @@ import { useMemo, useState } from 'react'
 import { Chip } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { copy } from '@/copy/id'
 import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
-import { copy } from '@/copy/id'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 
@@ -14,11 +14,10 @@ const ALL_PROVINCES = 'Semua'
 
 type ProvincePickerProps = {
   regions: Region[]
-  /** Compact chip for panel pill header. */
   className?: string
 }
 
-/** Dropdown provinsi — dipakai di pill header panel. */
+// ponytail: popover 280px bawah chip, max-h 320px, scrollable, baris 40px text 14px.
 export function ProvincePicker({ regions, className }: ProvincePickerProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -62,40 +61,53 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
           aria-expanded={open}
           aria-haspopup="listbox"
           aria-label={copy.filter.pickProvince}
-          className={cn('max-w-48 shrink-0', className)}
+          className={cn('max-w-[240px] shrink-0', className)}
         >
-          <MapIcon className="text-ink-2 size-4 shrink-0" strokeWidth={2} aria-hidden />
+          <MapIcon
+            className="text-ink-2 size-4 shrink-0"
+            strokeWidth={1.75}
+            aria-hidden
+          />
           <span className="min-w-0 truncate">{provinceLabel}</span>
           <ChevronDown
             className={cn(
-              'text-ink-2 size-4 shrink-0 transition-transform duration-200 ease-out-soft',
+              'text-ink-2 ease-out-soft size-4 shrink-0 transition-transform duration-200',
               open && 'rotate-180',
             )}
-            strokeWidth={2}
+            strokeWidth={1.75}
             aria-hidden
           />
         </Chip>
       </PopoverTrigger>
       <PopoverContent
-        align="end"
+        align="start"
         side="bottom"
         sideOffset={6}
-        className="rounded-card bg-surface text-ink border-line z-60 w-64 border p-1 shadow-md"
+        className="rounded-card border-line bg-surface text-ink z-50 max-h-[320px] w-[280px] overflow-hidden border p-2 shadow-sm"
       >
-        <div className="border-line border-b p-1">
-          <div className="bg-surface-muted rounded-ctl flex items-center gap-2 px-2 py-1">
-            <Search className="text-ink-3 size-4 shrink-0" strokeWidth={2} aria-hidden />
+        <div className="mb-2">
+          <div className="bg-surface-muted flex h-10 items-center gap-2 rounded-full px-3">
+            <Search
+              className="text-ink-3 size-4 shrink-0"
+              strokeWidth={1.75}
+              aria-hidden
+            />
             <input
               type="text"
-              placeholder={copy.search.searchProvince}
+              placeholder="Cari provinsi"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="text-ink placeholder:text-ink-3 w-full bg-transparent text-xs outline-none"
+              className="text-ink placeholder:text-ink-3 w-full bg-transparent text-sm outline-none"
               autoFocus
             />
             {search ? (
-              <button type="button" onClick={() => setSearch('')} className="text-ink-3 hover:text-ink">
-                <X className="size-4 shrink-0" strokeWidth={2} />
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                className="text-ink-3 hover:text-ink"
+                aria-label="Hapus pencarian"
+              >
+                <X className="size-4 shrink-0" strokeWidth={1.75} />
               </button>
             ) : null}
           </div>
@@ -103,11 +115,11 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
         <div
           role="listbox"
           aria-label={copy.search.provinces}
-          className="soft-scroll max-h-60 overflow-y-auto p-1"
+          className="soft-scroll max-h-[250px] overflow-y-auto"
         >
           {filteredOptions.length === 0 ? (
-            <p className="text-ink-3 px-3 py-2 text-center text-xs">
-              {copy.search.noProvinceFound}
+            <p className="text-ink-3 px-3 py-4 text-center text-sm">
+              Provinsi tidak ditemukan.
             </p>
           ) : (
             filteredOptions.map((option) => {
@@ -119,10 +131,11 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
                   role="option"
                   aria-selected={selected}
                   className={cn(
-                    'rounded-ctl flex h-9 w-full cursor-pointer items-center gap-2 px-2 text-left text-sm',
-                    'hover:bg-surface-muted transition-colors duration-150 ease-in-out',
+                    'rounded-ctl flex h-10 w-full cursor-pointer items-center justify-between px-3 text-left text-sm font-normal',
+                    'ease-out-soft transition-colors duration-150',
+                    'hover:bg-surface-muted',
                     focusRing,
-                    selected && 'bg-surface-muted font-semibold',
+                    selected && 'bg-brand-soft text-brand font-medium',
                   )}
                   onClick={() => {
                     setProvince(option.value)
@@ -132,7 +145,11 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
                 >
                   <span className="min-w-0 flex-1 truncate">{option.label}</span>
                   {selected ? (
-                    <Check className="text-brand size-4 shrink-0" strokeWidth={2} aria-hidden />
+                    <Check
+                      className="text-brand size-4 shrink-0"
+                      strokeWidth={2}
+                      aria-hidden
+                    />
                   ) : null}
                 </button>
               )

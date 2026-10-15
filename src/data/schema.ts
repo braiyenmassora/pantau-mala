@@ -68,6 +68,7 @@ export const regionSchema = z.object({
   province: z.string(),
   time_zone: timeZoneId,
   center: lonLat,
+  label_point: lonLat.optional(),
   risk_category: riskCategory,
   weather_danger: weatherDangerSchema.nullable(),
   hotspots_24h: z.number(),
@@ -101,6 +102,10 @@ export const metaSchema = z.object({
     weather: sourceStatus,
     air: sourceStatus,
   }),
+  pulled_at: z.object({
+    firms: z.string().nullable(),
+    weather: z.string().nullable(),
+  }),
 })
 
 const hotspotPropertiesSchema = z.object({
@@ -110,6 +115,10 @@ const hotspotPropertiesSchema = z.object({
   frp_mw: z.number(),
   // exclude_none: sering absen (~2%)
   region_code: optionalString,
+  district: optionalString,
+  kecamatan: optionalString,
+  regency: optionalString,
+  kabupaten: optionalString,
 })
 
 export const hotspotsSchema = z.object({

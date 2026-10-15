@@ -173,8 +173,7 @@ export const copy = {
     indonesiaToday: 'Pantauan titik panas Indonesia',
     provinceToday: (province: string) => `Pantauan titik panas · ${province}`,
     subtitle: 'Data satelit NASA FIRMS, 24 jam terakhir.',
-    limitationNote:
-      'Titik panas belum tentu kebakaran. Bukan peringatan resmi.',
+    limitationNote: 'Titik panas belum tentu kebakaran. Bukan peringatan resmi.',
     hotspot24h: 'Titik panas 24 jam',
     hotspotHint: 'Penjelasan titik panas',
     hotspotTooltip: 'Total titik panas dalam 24 jam',
@@ -282,8 +281,7 @@ export const copy = {
     hotspotUnit: 'titik panas',
     hotspotCount: (n: string) => `${n} titik panas`,
     nearbyNoHotspots: 'Tidak ada titik panas dalam radius 25 km.',
-    nearestLine: (km: string, place: string) =>
-      `Terdekat: ${km} km, di ${place}`,
+    nearestLine: (km: string, place: string) => `Terdekat: ${km} km, di ${place}`,
     nearestLineNoPlace: (km: string) => `Terdekat: ${km} km`,
     nearest: 'Paling dekat',
     km: 'km',
@@ -325,8 +323,7 @@ export const copy = {
     pickProvince: 'Pilih provinsi',
     allStatuses: 'Semua',
     wilayahUnit: 'wilayah',
-    allStatusesTitle: (count: string) =>
-      `Tampilkan semua kategori (${count} wilayah)`,
+    allStatusesTitle: (count: string) => `Tampilkan semua kategori (${count} wilayah)`,
     categoryTitle: (count: string, label: string) =>
       `Tampilkan hanya ${count} wilayah risiko ${label}`,
   },
@@ -352,9 +349,16 @@ export const copy = {
   },
 
   legend: {
-    /** PDF §5: kiri bawah; warna kategori juga di chip filter. */
-    pinTitle: 'Warna pin',
-    pinHint: 'Oranye = Sedang · Merah = Sangat tinggi.',
+    /** Strip kartu kiri bawah peta — teks pendek agar mudah dibaca. */
+    riskTitle: 'Risiko',
+    riskHint: 'Kuning sedang · Merah sangat tinggi',
+    quakeTitle: 'Gempa bumi',
+    quakeHint: 'Episentrum dari feed BMKG',
+    densityTitle: 'Kepadatan satelit',
+    densityHint: 'Kuning jarang · Merah padat',
+    /** @deprecated diganti riskTitle/riskHint */
+    pinTitle: 'Risiko',
+    pinHint: 'Pin radar; kuning sedang, merah sangat tinggi',
     temperatureTitle: 'Suhu udara',
     temperatureHint: 'Lapisan suhu terpisah dari titik panas satelit.',
   },
@@ -371,14 +375,17 @@ export const copy = {
     sourcesLabel: 'Sumber data:',
     sources: [
       {
+        id: 'firms' as const,
         name: 'NASA FIRMS',
         href: 'https://firms.modaps.eosdis.nasa.gov/',
       },
       {
+        id: 'weather' as const,
         name: 'Open-Meteo',
         href: 'https://open-meteo.com/',
       },
-    ] as const,
+    ],
+    pulledAgo: (relatif: string) => `(${relatif})`,
     openInNewTab: (name: string) => `${name}, buka di tab baru`,
   },
   source: {
