@@ -78,7 +78,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           allCount === 0 && 'pointer-events-none cursor-not-allowed opacity-40',
         )}
       >
-        <span className="inline-flex items-center gap-1.5">
+        <span className="inline-flex items-center gap-2">
           <span>Semua</span>
           <span className="text-ink-3" aria-hidden>
             ·
@@ -109,7 +109,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
               className={cn('size-2 shrink-0 rounded-full', meta.dotClass)}
               aria-hidden
             />
-            <span className="inline-flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-2">
               <span>{meta.label}</span>
               <span className="text-ink-3" aria-hidden>
                 ·

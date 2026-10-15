@@ -89,7 +89,7 @@ function ConditionCell({
 }) {
   return (
     <div className="flex items-start gap-2">
-      <span className="text-ink-2 mt-0.5 shrink-0 [&>svg]:size-4" aria-hidden>
+      <span className="text-ink-2 mt-1 shrink-0 [&>svg]:size-4" aria-hidden>
         {icon}
       </span>
       <div className="min-w-0 flex-1 space-y-1">
@@ -173,7 +173,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
-              <div className="space-y-0.5">
+              <div className="space-y-1">
                 <p className="text-ink font-mono text-2xl leading-8 font-semibold tabular-nums">
                   {formatNumber(region.hotspots_24h)}
                 </p>
@@ -183,7 +183,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
               </div>
               <div className="text-ink-2 space-y-1 text-xs leading-4">
                 <p>{copy.map.regionMetaProvince(region.province)}</p>
-                <p className="flex items-center gap-1.5">
+                <p className="flex items-center gap-2">
                   <TrendIcon className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
                   <span>
                     {trendLabel} {copy.detail.trendVsPrevious}

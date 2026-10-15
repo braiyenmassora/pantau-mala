@@ -37,7 +37,7 @@ export function MapLegend() {
           {MAP_RISK_ORDER.map((category) => (
             <li
               key={category}
-              className="text-ink flex items-center gap-1.5 text-xs leading-4 whitespace-nowrap"
+              className="text-ink flex items-center gap-2 text-xs leading-4 whitespace-nowrap"
             >
               <RiskMarker kategori={category} className="size-2" />
               <span>{RISK_CATEGORIES[category].label}</span>
@@ -50,7 +50,7 @@ export function MapLegend() {
         <p className="text-ink-2 text-xs leading-4 font-medium">
           {copy.legend.densityTitle}
         </p>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <div
             className="h-1.5 w-full rounded-full"
             style={{

@@ -256,14 +256,14 @@ function ActiveNearbyCard({
           <p className="text-ink-2 text-sm leading-5">{copy.location.nearbyNoHotspots}</p>
         ) : (
           <>
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               <p className="text-ink text-sm leading-5 font-semibold">{countLabel}</p>
               <p className="text-ink-2 text-xs leading-4">
                 {copy.location.nearbyRadiusNote}
               </p>
             </div>
             {nearestKm ? (
-              <div className="text-ink-2 space-y-0.5 text-xs leading-4">
+              <div className="text-ink-2 space-y-1 text-xs leading-4">
                 <p>{copy.location.nearestDistance(nearestKm)}</p>
                 <p className="text-ink line-clamp-2">{locationText}</p>
               </div>

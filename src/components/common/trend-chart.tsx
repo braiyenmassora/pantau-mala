@@ -134,7 +134,7 @@ export function TrendChart({
           {label}
         </h3>
         {description ? (
-          <p className="text-ink-2 mt-0.5 text-xs leading-4">{description}</p>
+          <p className="text-ink-2 mt-1 text-xs leading-4">{description}</p>
         ) : null}
       </div>
 
@@ -238,7 +238,7 @@ export function TrendChart({
 
 function TrendStat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="min-w-0 space-y-0.5">
+    <div className="min-w-0 space-y-1">
       <p className="text-ink-2 truncate text-xs leading-4">{label}</p>
       <p className="text-ink font-mono text-sm leading-5 font-semibold tabular-nums">
         {formatNumber(value)}
