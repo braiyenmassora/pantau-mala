@@ -9,6 +9,7 @@ import { useOptionalData, useWindyWeather } from '@/data/queries'
 import { formatDateTime, formatNumber } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { VillageSearch } from './village-search'
+import { WindForecast } from './wind-forecast'
 
 type WeatherTab = 'weather' | 'wind'
 
@@ -196,44 +197,9 @@ export function VillageWeatherPanel() {
               </p>
             )}
             {center && windy.data && (
-              <>
-                <p className="text-ink-2 text-xs leading-4">
-                  {copy.extra.windyNote(windy.data.data.model)}
-                </p>
-                <p className="text-ink-2 text-xs">
-                  {copy.weather.model(windy.data.data.model.toUpperCase())}
-                </p>
-                <ul className="divide-line mt-1 divide-y">
-                  {windy.data.data.titik.slice(0, 4).map((point) => (
-                    <li key={point.ts} className="space-y-1 py-2 text-xs">
-                      <p className="text-ink-2">
-                        {formatDateTime(new Date(point.ts).toISOString(), 'WIB')}
-                      </p>
-                      <dl className="flex flex-wrap gap-3">
-                        <div className="flex gap-1">
-                          <dt className="text-ink-2">{copy.weather.windSpeed}</dt>
-                          <dd className="text-ink font-medium tabular-nums">
-                            {formatNumber(point.kecepatan_angin_kmj)} km/j
-                          </dd>
-                        </div>
-                        <div className="flex gap-1">
-                          <dt className="text-ink-2">{copy.weather.gust}</dt>
-                          <dd className="text-ink font-medium tabular-nums">
-                            {formatNumber(point.hembusan_kmj)} km/j
-                          </dd>
-                        </div>
-                      </dl>
-                    </li>
-                  ))}
-                </ul>
-                {!windy.data.data.titik.length && (
-                  <p className="text-ink-2 text-xs">{copy.extra.empty}</p>
-                )}
-                <p className="text-ink-2 mt-2 text-xs leading-4">
-                  {windy.data.sumber} · {copy.weather.fetched}{' '}
-                  {formatDateTime(windy.data.diambil, 'WIB')}
-                </p>
-              </>
+              <div className="mt-2">
+                <WindForecast forecast={windy.data} />
+              </div>
             )}
           </div>
         </>

@@ -200,6 +200,7 @@ export default function App() {
               mapRef={mapRef}
               panelOpen={panelOpen}
               regions={isPending ? [] : mapRegions}
+              weatherRegions={data ?? []}
             />
           </Suspense>
         </main>

@@ -1,26 +1,18 @@
-name: Deploy frontend to Cloudflare
+name: Deploy personal frontend to Cloudflare
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: frontend-cloudflare-production
+  group: frontend-cloudflare-personal
   cancel-in-progress: false
 
 jobs:
   deploy:
-    if: >-
-      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
-      (github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.event == 'push' &&
-      github.event.workflow_run.head_repository.full_name == github.repository)
+    if: github.ref == 'refs/heads/lutuk/personal'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -48,6 +40,7 @@ jobs:
 
       - name: Validate frontend
         run: |
+          pnpm run lint
           pnpm exec tsc -b --pretty false
           pnpm test
           pnpm run audit:ui

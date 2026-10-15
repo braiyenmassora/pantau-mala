@@ -301,6 +301,13 @@ export const copy = {
     useMyLocation: 'Gunakan lokasi kamu',
     toggleWind: 'Aliran angin atmosfer',
     toggleTemperature: 'Tampilkan suhu udara',
+    layersButton: 'Buka lapisan cuaca dan gempa',
+    refreshWind: 'Segarkan prakiraan Windy',
+    windForecast: 'Prakiraan angin Windy',
+    windTimeline: 'Pilih waktu prakiraan angin',
+    earthquakeFeedMap: 'Jenis feed gempa di peta',
+    earthquakeFeedSelect: 'Pilih feed gempa',
+    seismicInfo: 'Informasi kegempaan BMKG',
     zoomIn: 'Perbesar',
     zoomOut: 'Perkecil',
     pinAria: (nama: string, risiko: string, n: string) =>

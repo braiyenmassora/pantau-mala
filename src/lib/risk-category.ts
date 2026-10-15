@@ -66,6 +66,15 @@ export const HEATMAP_TRANSPARENT = 'rgba(0,0,0,0)'
 /** Stop heatmap jarang — antara transparan & risk-mid (bukan token UI). */
 export const HEATMAP_LOW_HEX = '#FFE08A'
 
+/** Open-Meteo temperature step colors used by the map overlay. */
+export const TEMP_GRADIENT_STOPS = [
+  '#0F766E',
+  '#0D9488',
+  '#D97706',
+  '#EA580C',
+  '#DC2626',
+] as const
+
 /** Wind stream (canvas fade-trail) — brand token + alpha. */
 export const WIND_PARTICLE_COLOR = withAlpha(BRAND_HEX, 0.5)
 export const WIND_FADE_CLEAR = 'rgba(0, 0, 0, 0.022)'

@@ -2,6 +2,14 @@
 
 ## Branching and development workflow
 
+### Versi pribadi: `lutuk/personal`
+
+- Working copy ini adalah versi pribadi owner. Semua perubahan dikerjakan dan di-push hanya ke `lutuk/personal`.
+- Jangan switch, commit, push, atau merge ke `main` maupun `develop` dari working copy ini, kecuali owner meminta secara eksplisit.
+- Aturan versi pribadi ini menggantikan alur shared di bawah. Baca `docs/DEVELOPMENT_WORKFLOW.md` sebelum perubahan.
+- Target preview pribadi adalah Worker `pantaumala` pada `pantaumala.ripr.workers.dev`. Deploy pribadi hanya atas permintaan owner, dari branch pribadi.
+- Jangan mengubah backend/shared workspace untuk fitur pribadi tanpa persetujuan owner.
+
 Semua kontributor, developer, dan AI agent **wajib membaca dan mematuhi alur ini sebelum membuat atau mengubah kode/konfigurasi**:
 
 - Baca [docs/DEVELOPMENT_WORKFLOW.md](docs/DEVELOPMENT_WORKFLOW.md) terlebih dahulu.

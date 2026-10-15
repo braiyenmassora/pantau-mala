@@ -2,6 +2,30 @@
 
 **Wajib dibaca sebelum membuat atau mengubah kode, konfigurasi, dokumentasi, atau deployment.**
 
+## Versi pribadi (aktif pada working copy ini)
+
+Owner menetapkan `lutuk/personal` sebagai branch mandiri untuk `pantau-mala-fe-go-integration`.
+Aturan ini menggantikan alur shared di bagian berikutnya:
+
+- Kerjakan, commit, dan push hanya ke `lutuk/personal`; jangan merge ke `main` atau `develop`.
+- Jangan mengubah backend bersama untuk kebutuhan pribadi tanpa permintaan owner.
+- CI branch pribadi menjalankan validasi; deployment pribadi menggunakan `workflow_dispatch` atau CLI setelah diminta owner.
+- Target deployment pribadi: Worker `pantaumala`, URL `https://pantaumala.ripr.workers.dev`.
+- Secret tetap server-only, dan `FE_ACCESS_MODE=client` tetap read-only.
+
+```bash
+git fetch origin
+git switch lutuk/personal
+git pull --ff-only origin lutuk/personal
+pnpm run lint
+pnpm test
+pnpm run audit:ui
+pnpm run build
+git push origin lutuk/personal
+```
+
+Jangan menjalankan perintah shared berikut pada working copy pribadi ini.
+
 ## Branch policy
 
 - Semua perubahan frontend dimulai dan dikerjakan di branch `develop`.

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { expireSession, useSession } from '@/auth/session'
+import { validCoordinates } from '@/lib/environment-data'
 import { decodeRegions, decodeHotspots, decodeMeta, decodeCatalog } from './go-contract'
 import {
   earthquakesSchema,
@@ -125,14 +126,16 @@ export function useSearchVillages(query: string) {
   }
 }
 
-export function useEarthquakes(kind: 'latest' | 'felt' | 'm5' = 'latest') {
+export function useEarthquakes(kind: 'latest' | 'felt' | 'm5' = 'latest', requested = true) {
   const session = useSession()
   return useQuery({
     queryKey: ['earthquakes', kind, session.principal?.client_id, session.generation],
-    enabled: session.status === 'authenticated',
+    enabled: requested && session.status === 'authenticated',
     queryFn: ({ signal }) =>
       getData(`/earthquakes?kind=${kind}`, (raw) => earthquakesSchema.parse(raw), signal),
-    staleTime: STALE_MS,
+    staleTime: 45_000,
+    refetchInterval: 60_000,
+    retry: 1,
   })
 }
 
@@ -183,14 +186,13 @@ export function useNearbyHotspots(
   })
 }
 
-export function useWindyWeather(lat?: number | null, lon?: number | null) {
+export function useWindyWeather(lat?: number | null, lon?: number | null, requested = true) {
   const session = useSession()
   const enabled =
-    session.status === 'authenticated' &&
+    requested && session.status === 'authenticated' &&
     typeof lat === 'number' &&
     typeof lon === 'number' &&
-    Number.isFinite(lat) &&
-    Number.isFinite(lon)
+    validCoordinates(lon, lat)
 
   return useQuery({
     queryKey: [
@@ -207,6 +209,8 @@ export function useWindyWeather(lat?: number | null, lon?: number | null) {
         (raw) => windyForecastSchema.parse(raw),
         signal,
       ),
-    staleTime: STALE_MS,
+    staleTime: 15 * 60_000,
+    refetchInterval: 15 * 60_000,
+    retry: 1,
   })
 }

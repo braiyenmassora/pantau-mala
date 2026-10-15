@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 
 import type { RiskCategory } from '@/data/types'
+import type { Earthquake } from '@/data/extended-contract'
 
 /** off → requesting (pra-izin) → active | denied | error */
 export type LocationStatus = 'off' | 'requesting' | 'active' | 'denied' | 'error'
@@ -21,8 +22,18 @@ type MapState = {
   location: UserLocation
   showWind: boolean
   showTemperature: boolean
+  showEarthquakes: boolean
+  earthquakeKind: 'latest' | 'felt' | 'm5'
+  earthquakeFocus: { event: Earthquake; sequence: number } | null
+  windLocation: { lon: number; lat: number; label: string } | null
+  windTime: number | null
   toggleWind: () => void
   toggleTemperature: () => void
+  toggleEarthquakes: () => void
+  setEarthquakeKind: (kind: 'latest' | 'felt' | 'm5') => void
+  focusEarthquake: (event: Earthquake) => void
+  setWindLocation: (location: { lon: number; lat: number; label: string }) => void
+  setWindTime: (timestamp: number | null) => void
   select: (code: string | null, regionProvince?: string) => void
   hover: (code: string | null) => void
   setProvince: (province: string) => void
@@ -43,8 +54,22 @@ export const useMapStore = create<MapState>((set) => ({
   location: { status: 'off' },
   showWind: false,
   showTemperature: false,
+  showEarthquakes: true,
+  earthquakeKind: 'latest',
+  earthquakeFocus: null,
+  windLocation: null,
+  windTime: null,
   toggleWind: () => set((s) => ({ showWind: !s.showWind })),
   toggleTemperature: () => set((s) => ({ showTemperature: !s.showTemperature })),
+  toggleEarthquakes: () => set((s) => ({ showEarthquakes: !s.showEarthquakes })),
+  setEarthquakeKind: (earthquakeKind) => set({ earthquakeKind, earthquakeFocus: null }),
+  focusEarthquake: (event) =>
+    set((state) => ({
+      showEarthquakes: true,
+      earthquakeFocus: { event, sequence: (state.earthquakeFocus?.sequence ?? 0) + 1 },
+    })),
+  setWindLocation: (windLocation) => set({ windLocation, windTime: null }),
+  setWindTime: (windTime) => set({ windTime }),
   select: (selectedCode, regionProvince) =>
     set({
       selectedCode,

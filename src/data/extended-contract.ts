@@ -1,7 +1,8 @@
 import { z } from 'zod'
 const number = z.number().finite()
 const nullable = number.nullable()
-const lonLat = z.tuple([number, number])
+const lonLat = z.tuple([number.min(-180).max(180), number.min(-90).max(90)])
+const timestamp = z.iso.datetime({ offset: true })
 export const summarySchema = z.object({
   data: z.object({
     titik_panas_24j: number,
@@ -16,22 +17,22 @@ export const summarySchema = z.object({
 export const historySchema = z.object({
   data: z.array(z.object({ tanggal: z.string(), titik_panas: number, skor: nullable })),
 })
-export const earthquakesSchema = z.object({
-  data: z.array(
-    z.object({
-      waktu: z.string(),
+export const earthquakeSchema = z.object({
+      waktu: timestamp,
       pusat: lonLat,
-      magnitudo: number,
-      kedalaman_km: number,
+      magnitudo: number.min(0).max(10),
+      kedalaman_km: number.min(0).max(800),
       wilayah: z.string(),
       potensi: z.string(),
       dirasakan: z.string(),
       shakemap: z.string(),
-    }),
-  ),
+})
+export type Earthquake = z.infer<typeof earthquakeSchema>
+export const earthquakesSchema = z.object({
+  data: z.array(earthquakeSchema).max(100),
   sumber: z.string(),
   keterangan: z.string(),
-  diambil: z.string(),
+  diambil: timestamp,
 })
 export const forecastSchema = z.object({
   data: z.object({
@@ -98,25 +99,25 @@ export type NearbyHotspot = z.infer<typeof nearbyHotspotSchema>
 export type NearbyHotspotsResponse = z.infer<typeof nearbyHotspotsSchema>
 
 export const windyPointSchema = z.object({
-  ts: number,
-  suhu_c: number,
-  angin_u: number,
-  angin_v: number,
-  kecepatan_angin_kmj: number,
-  hembusan_kmj: number,
-  kelembapan: number,
+  ts: number.int().min(946684800000).max(4102444800000),
+  suhu_c: number.min(-100).max(70),
+  angin_u: number.min(-200).max(200),
+  angin_v: number.min(-200).max(200),
+  kecepatan_angin_kmj: number.min(0).max(1000),
+  hembusan_kmj: number.min(0).max(1000),
+  kelembapan: number.min(0).max(100),
 })
 
 export const windyForecastSchema = z.object({
   data: z.object({
-    latitude: number,
-    longitude: number,
-    model: z.string(),
-    titik: z.array(windyPointSchema),
+    latitude: number.min(-90).max(90),
+    longitude: number.min(-180).max(180),
+    model: z.string().min(1),
+    titik: z.array(windyPointSchema).max(2000),
   }),
   sumber: z.string(),
   keterangan: z.string(),
-  diambil: z.string(),
+  diambil: timestamp,
 })
 
 export type WindyPoint = z.infer<typeof windyPointSchema>

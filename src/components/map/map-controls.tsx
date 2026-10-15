@@ -14,6 +14,7 @@ import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
+import { MapLayerControls } from '@/components/map/map-layer-controls'
 
 type MapControlsProps = {
   mapRef: RefObject<MapRef | null>
@@ -51,6 +52,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
       )}
       {...mapOverlayGestureProps}
     >
+      <MapLayerControls mapRef={mapRef} regions={regions ?? []} />
       <div className="rounded-card border-line bg-surface divide-line flex flex-col divide-y overflow-hidden border shadow-sm backdrop-blur-sm">
         <button
           type="button"

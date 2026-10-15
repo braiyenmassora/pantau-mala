@@ -13,6 +13,8 @@ import { Button, EmptyState } from '@/components/common'
 import type { Map as MapLibreMap } from 'maplibre-gl'
 
 import { EarthquakeLayer } from '@/components/map/earthquake-layer'
+import { TemperatureLayer } from '@/components/map/temperature-layer'
+import { WindVectorLayer } from '@/components/map/wind-vector-layer'
 import { HotspotHeatmapLayer } from '@/components/map/hotspot-heatmap-layer'
 import { IndonesiaMapFraming } from '@/components/map/indonesia-map-framing'
 import { MapSoftLoading } from '@/components/map/map-soft-loading'
@@ -36,6 +38,7 @@ type MapShellProps = {
   mapRef: RefObject<MapRef | null>
   panelOpen: boolean
   regions: Region[]
+  weatherRegions?: Region[]
 }
 
 function MapUnavailable({ onReload }: { onReload: () => void }) {
@@ -226,7 +229,7 @@ export class LayerErrorBoundary extends Component<
   }
 }
 
-export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
+export function MapShell({ mapRef, panelOpen, regions, weatherRegions = regions }: MapShellProps) {
   const { data: catalog } = useRegionCatalog()
   const [noWebGl, setNoWebGl] = useState(() => !webGlSupported())
   const [basemapFailed, setBasemapFailed] = useState(false)
@@ -311,6 +314,12 @@ export function MapShell({ mapRef, panelOpen, regions }: MapShellProps) {
         </LayerErrorBoundary>
         <LayerErrorBoundary name="EarthquakeLayer" onError={markLayerFailed}>
           <EarthquakeLayer />
+        </LayerErrorBoundary>
+        <LayerErrorBoundary name="TemperatureLayer" onError={markLayerFailed}>
+          <TemperatureLayer regions={weatherRegions} />
+        </LayerErrorBoundary>
+        <LayerErrorBoundary name="WindVectorLayer" onError={markLayerFailed}>
+          <WindVectorLayer />
         </LayerErrorBoundary>
         <LayerErrorBoundary name="UserLocationLayer" onError={markLayerFailed}>
           <UserLocationLayer />

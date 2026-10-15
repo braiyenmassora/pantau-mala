@@ -1,9 +1,12 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { GeoJSONSource, MapLayerMouseEvent } from 'maplibre-gl'
 
-import { useMap } from '@/components/ui/map'
+import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import type { Region } from '@/data/types'
-import { TEMP_HALO_HEX, TEMP_HOT_HEX, TEMP_TEXT_HEX } from '@/lib/risk-category'
+import { TEMP_GRADIENT_STOPS, TEMP_HALO_HEX, TEMP_TEXT_HEX } from '@/lib/risk-category'
+import { freshTemperatureRegions } from '@/lib/environment-data'
+import { formatDateTime, formatNumber } from '@/lib/format'
+import { useCurrentTime } from '@/lib/use-current-time'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
 
@@ -11,9 +14,7 @@ const SOURCE_ID = 'open-meteo-temperature'
 const LAYER_ID = 'open-meteo-temperature-layer'
 const LABEL_LAYER_ID = 'open-meteo-temperature-label'
 
-type TemperatureLayerProps = {
-  regions: Region[]
-}
+type TemperatureLayerProps = { regions: Region[] }
 
 /**
  * Layer suhu udara (Open-Meteo).
@@ -23,15 +24,17 @@ type TemperatureLayerProps = {
 export function TemperatureLayer({ regions }: TemperatureLayerProps) {
   const { map, isLoaded } = useMap()
   const enabled = useMapStore((s) => s.showTemperature)
+  const now = useCurrentTime()
+  const activeRegions = useMemo(() => freshTemperatureRegions(regions, now), [regions, now])
+  const [inspectCode, setInspectCode] = useState<string | null>(null)
+  const inspected = useMemo(() => activeRegions.find((r) => r.code === inspectCode), [activeRegions, inspectCode])
   const select = useMapStore((s) => s.select)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
 
   const data = useMemo(
     () => ({
       type: 'FeatureCollection' as const,
-      features: regions
-        .filter((r) => r.weather.temp_c != null)
-        .map((r) => ({
+      features: activeRegions.map((r) => ({
           type: 'Feature' as const,
           geometry: {
             type: 'Point' as const,
@@ -41,11 +44,11 @@ export function TemperatureLayer({ regions }: TemperatureLayerProps) {
             code: r.code,
             name: r.name,
             temperature: r.weather.temp_c,
-            label: `${Math.round(r.weather.temp_c!)}°`,
+            label: `${Math.round(r.weather.temp_c!)}°C`,
           },
         })),
     }),
-    [regions],
+    [activeRegions],
   )
 
   useEffect(() => {
@@ -77,7 +80,14 @@ export function TemperatureLayer({ regions }: TemperatureLayerProps) {
             12,
             24,
           ],
-          'circle-color': TEMP_HOT_HEX,
+          'circle-color': [
+            'step', ['get', 'temperature'],
+            TEMP_GRADIENT_STOPS[0], 25,
+            TEMP_GRADIENT_STOPS[1], 28,
+            TEMP_GRADIENT_STOPS[2], 31,
+            TEMP_GRADIENT_STOPS[3], 34,
+            TEMP_GRADIENT_STOPS[4]
+          ],
           'circle-opacity': enabled ? 0.16 : 0,
           'circle-blur': 0.6,
           'circle-stroke-width': 0,
@@ -108,12 +118,11 @@ export function TemperatureLayer({ regions }: TemperatureLayerProps) {
     }
 
     const onCircleClick = (e: MapLayerMouseEvent) => {
-      const feature = e.features?.[0]
-      const code = feature?.properties?.code as string | undefined
-      if (code) {
-        select(code)
-        setPanelOpen(true)
-      }
+      const code = e.features?.[0]?.properties?.code as string | undefined
+      if (!code) return
+      setInspectCode(code)
+      select(code)
+      setPanelOpen(true)
     }
 
     map.on('click', LAYER_ID, onCircleClick)
@@ -142,5 +151,18 @@ export function TemperatureLayer({ regions }: TemperatureLayerProps) {
     }
   }, [map, isLoaded, data, enabled])
 
-  return null
+  if (!enabled || !inspected || inspected.weather.temp_c == null) return null
+  return (
+    <MapMarker longitude={inspected.center[0]} latitude={inspected.center[1]} anchor="bottom">
+      <MarkerContent className="pointer-events-auto">
+        <div className="bg-surface border-line rounded-card relative mb-2 max-w-xs border p-3 text-xs shadow-md">
+          <button type="button" onClick={() => setInspectCode(null)} className="text-ink-2 hover:text-ink absolute top-2 right-2 text-xs">✕</button>
+          <p className="text-ink font-semibold">{inspected.name}</p>
+          <p className="text-brand text-sm font-bold">{formatNumber(inspected.weather.temp_c)}°C · {inspected.weather.condition}</p>
+          <p className="text-ink-2">Model Open-Meteo · Kelembapan {formatNumber(inspected.weather.humidity)}%</p>
+          {inspected.weather_updated_at && <p className="text-ink-3">Observasi {formatDateTime(inspected.weather_updated_at, 'WIB')}</p>}
+        </div>
+      </MarkerContent>
+    </MapMarker>
+  )
 }
