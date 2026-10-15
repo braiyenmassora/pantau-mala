@@ -10,7 +10,18 @@ import { useMapStore } from '@/store/map'
 
 vi.mock('@/components/ui/map', () => ({
   useMap: () => ({
-    map: { flyTo: vi.fn(), setMaxBounds: vi.fn(), stop: vi.fn() },
+    map: {
+      flyTo: vi.fn(),
+      fitBounds: vi.fn(),
+      setMaxBounds: vi.fn(),
+      stop: vi.fn(),
+      getSource: vi.fn(),
+      addSource: vi.fn(),
+      getLayer: vi.fn(),
+      addLayer: vi.fn(),
+      removeLayer: vi.fn(),
+      removeSource: vi.fn(),
+    },
     isLoaded: true,
   }),
   MapMarker: ({ children }: { children: React.ReactNode }) => (

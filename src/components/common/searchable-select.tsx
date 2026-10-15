@@ -80,19 +80,24 @@ export function SearchableSelect({
           aria-expanded={open}
           aria-haspopup="listbox"
           className={cn(
-            'flex h-9 w-full items-center justify-between gap-2 rounded-full border border-line bg-surface px-3 text-sm font-medium text-ink shadow-sm',
+            'border-line bg-surface text-ink flex h-9 w-full items-center justify-between gap-2 rounded-full border px-3 text-sm font-medium shadow-sm',
             'hover:bg-surface-muted transition-colors duration-200 ease-[var(--ease-out-soft)]',
             disabled && 'cursor-not-allowed opacity-50',
             focusRing,
             className,
           )}
         >
-          <span className={cn('truncate text-left', isPlaceholder ? 'text-ink-3' : 'text-ink')}>
+          <span
+            className={cn(
+              'truncate text-left',
+              isPlaceholder ? 'text-ink-3' : 'text-ink',
+            )}
+          >
             {displayLabel}
           </span>
           <ChevronDown
             className={cn(
-              'size-4 shrink-0 text-ink-2 transition-transform duration-200 ease-[var(--ease-out-soft)]',
+              'text-ink-2 size-4 shrink-0 transition-transform duration-200 ease-[var(--ease-out-soft)]',
               open && 'rotate-180',
             )}
             strokeWidth={2}
@@ -104,11 +109,11 @@ export function SearchableSelect({
         align="start"
         side="bottom"
         sideOffset={4}
-        className="z-50 w-64 border border-line bg-surface p-1 shadow-md rounded-card"
+        className="border-line bg-surface rounded-card z-50 w-64 border p-1 shadow-md"
       >
-        <div className="border-b border-line p-1">
-          <div className="flex items-center gap-2 rounded-ctl bg-surface-muted px-2 py-1">
-            <Search className="size-4 shrink-0 text-ink-3" strokeWidth={2} aria-hidden />
+        <div className="border-line border-b p-1">
+          <div className="rounded-ctl bg-surface-muted flex items-center gap-2 px-2 py-1">
+            <Search className="text-ink-3 size-4 shrink-0" strokeWidth={2} aria-hidden />
             <input
               type="text"
               value={search}
@@ -117,7 +122,7 @@ export function SearchableSelect({
                 onSearch?.(e.target.value)
               }}
               placeholder={searchPlaceholder}
-              className="w-full bg-transparent text-xs text-ink placeholder:text-ink-3 outline-none"
+              className="text-ink placeholder:text-ink-3 w-full bg-transparent text-xs outline-none"
               autoFocus
             />
             {search && (
@@ -131,9 +136,9 @@ export function SearchableSelect({
             )}
           </div>
         </div>
-        <div role="listbox" className="max-h-56 overflow-y-auto p-1 soft-scroll">
+        <div role="listbox" className="soft-scroll max-h-56 overflow-y-auto p-1">
           {filteredOptions.length === 0 ? (
-            <p className="px-3 py-2 text-center text-xs text-ink-3">{emptyText}</p>
+            <p className="text-ink-3 px-3 py-2 text-center text-xs">{emptyText}</p>
           ) : (
             filteredOptions.map((opt) => {
               const active = opt.value === value
@@ -149,21 +154,21 @@ export function SearchableSelect({
                     setSearch('')
                   }}
                   className={cn(
-                    'flex w-full items-center justify-between gap-2 rounded-ctl px-2 py-1 text-left text-xs transition-colors duration-150',
+                    'rounded-ctl flex w-full items-center justify-between gap-2 px-2 py-1 text-left text-xs transition-colors duration-150',
                     'hover:bg-surface-muted',
-                    active && 'bg-surface-muted font-semibold text-ink',
+                    active && 'bg-surface-muted text-ink font-semibold',
                     focusRing,
                   )}
                 >
                   <div className="min-w-0 flex-1">
                     <p className="truncate">{opt.label}</p>
                     {opt.description && (
-                      <p className="truncate text-xs text-ink-3">{opt.description}</p>
+                      <p className="text-ink-3 truncate text-xs">{opt.description}</p>
                     )}
                   </div>
                   {active && (
                     <Check
-                      className="size-4 shrink-0 text-brand"
+                      className="text-brand size-4 shrink-0"
                       strokeWidth={2}
                       aria-hidden
                     />

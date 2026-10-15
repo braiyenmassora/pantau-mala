@@ -24,7 +24,12 @@ export function EarthquakeLayer() {
         const m = event.magnitudo.toFixed(1)
 
         return (
-          <MapMarker key={`${lon}-${lat}-${idx}`} longitude={lon} latitude={lat} anchor="center">
+          <MapMarker
+            key={`${lon}-${lat}-${idx}`}
+            longitude={lon}
+            latitude={lat}
+            anchor="center"
+          >
             <MarkerContent className="relative z-20 flex items-center justify-center overflow-visible">
               <Tooltip delayDuration={150}>
                 <TooltipTrigger asChild>

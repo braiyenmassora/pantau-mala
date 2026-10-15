@@ -187,4 +187,3 @@ describe('RegionPin', () => {
     expect(screen.queryByLabelText(new RegExp(copy.detail.airQuality))).toBeNull()
   })
 })
-

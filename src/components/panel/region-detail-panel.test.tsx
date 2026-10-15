@@ -1,7 +1,6 @@
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { cleanup, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/prefers-reduced-motion', () => ({
@@ -80,31 +79,49 @@ describe('RegionDetailPanel', () => {
   it('shows status hierarchy: badge, count, trend; no air/cuaca in Ringkasan', () => {
     renderDetail(pulangPisau)
     expect(screen.getByText('Sangat tinggi')).toBeTruthy()
-    expect(screen.getAllByText('23').length).toBeGreaterThan(0)
-    expect(screen.getByText(copy.detail.hotspot24hLabel)).toBeTruthy()
+    expect(screen.getByText('23', { selector: 'span' })).toBeTruthy()
+    expect(screen.getByText(/titik panas · 24 jam/)).toBeTruthy()
     expect(screen.getByText(copy.detail.trendUp)).toBeTruthy()
-    expect(screen.queryByText(copy.detail.airQuality)).toBeNull()
-    expect(screen.queryByText(copy.source.cuaca)).toBeNull()
   })
 
-  it('shows Ringkasan note, stamp, conditions; Detail/Sumber via tabs', async () => {
-    const user = userEvent.setup()
+  it('shows the full seven-day chart immediately without opening a tab or accordion', () => {
     renderDetail(pulangPisau)
+    const chart = screen.getByRole('region', { name: copy.extra.trendChart })
+    expect(within(chart).getByRole('img', { name: /Tren titik panas/ })).toBeTruthy()
+    expect(within(chart).getByText(copy.extra.trendLatest)).toBeTruthy()
+    expect(within(chart).getByText(copy.extra.trendPeak)).toBeTruthy()
+    expect(within(chart).getByText(copy.extra.trendAverage)).toBeTruthy()
+  })
+
+  it('renders all sections in a single scroll without tabs', () => {
+    renderDetail(pulangPisau)
+
+    // No tabs
+    expect(screen.queryByRole('tab')).toBeNull()
+
+    // Sticky header back button
+    expect(screen.getByRole('button', { name: copy.panel.closeDetail })).toBeTruthy()
+
+    // Sections without Ringkasan or duplicate attribution
+    expect(screen.queryByText('Ringkasan')).toBeNull()
+    expect(screen.getByText('Kondisi saat ini')).toBeTruthy()
+    expect(screen.getByText('Yang bisa kamu lakukan')).toBeTruthy()
+    expect(screen.queryByText(/Data: NASA FIRMS · Open-Meteo/)).toBeNull()
+
+    // Condition cells
+    expect(screen.getByText('Kelembapan')).toBeTruthy()
+    expect(screen.getByText('48%')).toBeTruthy()
+    expect(screen.getByText('Kecepatan angin')).toBeTruthy()
+    expect(screen.getByText('12 km/jam')).toBeTruthy()
+
+    // Damkar tel link
+    const telLink = screen.getByRole('link', { name: '113' })
+    expect(telLink).toBeTruthy()
+    expect(telLink.getAttribute('href')).toBe('tel:113')
+
+    // Disclaimers
     expect(
-      screen.getByText(copy.detail.calibrationNote('82', 'ok')),
+      screen.getByText(/Titik panas belum tentu kebakaran. Bukan peringatan resmi./),
     ).toBeTruthy()
-    expect(screen.getByText(/Diperbarui /)).toBeTruthy()
-    expect(screen.getByText(copy.detail.humidity)).toBeTruthy()
-    expect(screen.getByText(copy.detail.weatherDanger)).toBeTruthy()
-    expect(screen.getByText(/Ekstrem/)).toBeTruthy()
-
-    await user.click(screen.getByRole('tab', { name: copy.panel.tabDetail }))
-    expect(screen.getByText(copy.extra.detection)).toBeTruthy()
-    expect(screen.getByText(copy.extra.river)).toBeTruthy()
-    expect(screen.queryByText(copy.extra.loadRiver)).toBeNull()
-
-    await user.click(screen.getByRole('tab', { name: copy.panel.tabSources }))
-    expect(screen.getByText(copy.extra.computedAt)).toBeTruthy()
-    expect(screen.getByText(copy.extra.weatherAt)).toBeTruthy()
   })
 })

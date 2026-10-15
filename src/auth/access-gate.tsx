@@ -20,7 +20,8 @@ export function AccessGate({ children }: { children: ReactNode }) {
     void restoreSession()
   }, [])
   useEffect(() => {
-    if (status === 'anonymous' && accessMode === 'account') window.history.replaceState(null, '', '/login')
+    if (status === 'anonymous' && accessMode === 'account')
+      window.history.replaceState(null, '', '/login')
     else if (status === 'authenticated' && window.location.pathname === '/login')
       window.history.replaceState(null, '', '/')
   }, [status, accessMode])
@@ -61,7 +62,16 @@ export function AccessGate({ children }: { children: ReactNode }) {
         </h1>
         <p className="text-ink-2 text-base">Masuk untuk mengakses data workspace kamu.</p>
         {accessMode === 'client' ? (
-          <div className="space-y-4"><p role="alert">{accessError || 'Akses client belum tersedia.'}</p><button type="button" className={`rounded-ctl border-line h-11 border px-4 ${focusRing}`} onClick={() => void restoreSession()}>Coba lagi</button></div>
+          <div className="space-y-4">
+            <p role="alert">{accessError || 'Akses client belum tersedia.'}</p>
+            <button
+              type="button"
+              className={`rounded-ctl border-line h-11 border px-4 ${focusRing}`}
+              onClick={() => void restoreSession()}
+            >
+              Coba lagi
+            </button>
+          </div>
         ) : (
           <form
             onSubmit={(e) => {
@@ -198,7 +208,7 @@ export function SessionControl() {
         type="button"
         aria-label={copy.auth.logout}
         disabled={busy}
-        className={`rounded-full flex size-10 items-center justify-center ${focusRing}`}
+        className={`flex size-10 items-center justify-center rounded-full ${focusRing}`}
         onClick={() => {
           setBusy(true)
           setError('')

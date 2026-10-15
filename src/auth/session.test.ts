@@ -1,5 +1,12 @@
 import { beforeEach, afterEach, it, expect, vi } from 'vitest'
-import { useSession, login, switchClient, logout, expireSession, restoreSession } from './session'
+import {
+  useSession,
+  login,
+  switchClient,
+  logout,
+  expireSession,
+  restoreSession,
+} from './session'
 import { queryClient } from '@/data/query-client'
 import { useMapStore } from '@/store/map'
 import { getData } from '@/data/queries'
@@ -98,7 +105,15 @@ it('current-client 401 clears authenticated state and client data', async () => 
 })
 
 it('client gateway restores without bearer and data requests contain no credential', async () => {
-  const fetcher = vi.fn().mockResolvedValueOnce(Response.json({ mode: 'client', principal: { ...a, kind: 'key', scope: 'data:read' } }, { headers: { 'X-Frontend-Access': 'client' } })).mockResolvedValueOnce(Response.json({ data: [] }))
+  const fetcher = vi
+    .fn()
+    .mockResolvedValueOnce(
+      Response.json(
+        { mode: 'client', principal: { ...a, kind: 'key', scope: 'data:read' } },
+        { headers: { 'X-Frontend-Access': 'client' } },
+      ),
+    )
+    .mockResolvedValueOnce(Response.json({ data: [] }))
   vi.stubGlobal('fetch', fetcher)
   await restoreSession()
   expect(useSession.getState().token).toBeNull()
@@ -109,7 +124,14 @@ it('client gateway restores without bearer and data requests contain no credenti
   await expect(switchClient('fixture-b')).rejects.toThrow('CMS Go')
 })
 it('client gateway outage fails closed without account login fallback', async () => {
-  const fetcher = vi.fn().mockResolvedValue(Response.json({ error: 'unavailable' }, { status: 503, headers: { 'X-Frontend-Access': 'client' } }))
+  const fetcher = vi
+    .fn()
+    .mockResolvedValue(
+      Response.json(
+        { error: 'unavailable' },
+        { status: 503, headers: { 'X-Frontend-Access': 'client' } },
+      ),
+    )
   vi.stubGlobal('fetch', fetcher)
   await restoreSession()
   expect(useSession.getState().accessMode).toBe('client')

@@ -20,18 +20,14 @@ export type RegionFilterState = {
 }
 
 export function filterRegions(list: Region[], state: RegionFilterState): Region[] {
-  let result = list.filter((r) =>
-    LIST_RISK_CATEGORIES.has(effectiveRiskCategory(r)),
-  )
+  let result = list.filter((r) => LIST_RISK_CATEGORIES.has(effectiveRiskCategory(r)))
 
   if (state.province !== 'Semua') {
     result = result.filter((r) => r.province === state.province)
   }
 
   if (state.selectedCategories.size > 0) {
-    result = result.filter((r) =>
-      state.selectedCategories.has(effectiveRiskCategory(r)),
-    )
+    result = result.filter((r) => state.selectedCategories.has(effectiveRiskCategory(r)))
   }
 
   const q = state.query.trim()

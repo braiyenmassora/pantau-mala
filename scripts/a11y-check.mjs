@@ -48,11 +48,15 @@ async function scan(page, label) {
   console.log(`axe ok: ${label}`)
 }
 
-const child = spawn('pnpm', ['run', 'dev', '--', '--port', String(PORT), '--host', '127.0.0.1'], {
-  cwd: ROOT,
-  stdio: 'pipe',
-  env: { ...process.env },
-})
+const child = spawn(
+  'pnpm',
+  ['exec', 'vite', '--port', String(PORT), '--host', '127.0.0.1'],
+  {
+    cwd: ROOT,
+    stdio: 'pipe',
+    env: { ...process.env },
+  },
+)
 
 function shutdown() {
   child.kill('SIGTERM')
@@ -89,7 +93,10 @@ try {
   await page.keyboard.press('Escape')
   await wait(200)
 
-  await page.getByRole('button', { name: /Sangat tinggi/ }).click()
+  await page
+    .getByRole('button', { name: /Sangat tinggi/ })
+    .first()
+    .click()
   await wait(300)
   await scan(page, 'category filter')
 

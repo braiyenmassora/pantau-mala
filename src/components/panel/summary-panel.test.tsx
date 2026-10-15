@@ -155,4 +155,3 @@ describe('SummaryPanel states', () => {
     ).toBeTruthy()
   })
 })
-

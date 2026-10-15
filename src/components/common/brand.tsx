@@ -10,11 +10,7 @@ type BrandProps = {
 }
 
 /** Wordmark IBM Plex: pantau (hijau) + mala (orange). */
-export function Brand({
-  compact = false,
-  textOnly = false,
-  className,
-}: BrandProps) {
+export function Brand({ compact = false, textOnly = false, className }: BrandProps) {
   return (
     <span className={cn('inline-flex items-center gap-2 font-sans', className)}>
       {!textOnly && (

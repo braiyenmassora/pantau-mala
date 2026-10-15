@@ -75,7 +75,6 @@ describe('LocationCard', () => {
       </QueryClientProvider>,
     )
 
-    expect(screen.getByText(copy.location.nearbyLabel)).toBeTruthy()
     expect(screen.getByText(copy.location.nearbyNoHotspots)).toBeTruthy()
     expect(screen.queryByRole('button', { name: 'Lihat detail' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Matikan lokasi' })).toBeNull()
@@ -91,7 +90,10 @@ describe('LocationCard', () => {
         <LocationCard regions={[region]} />
       </QueryClientProvider>,
     )
-    expect(screen.getByText(copy.empty.locationDenied.title)).toBeTruthy()
+    expect(
+      screen.getByText('Izinkan lokasi untuk melihat titik panas di sekitarmu'),
+    ).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Izinkan' })).toBeTruthy()
   })
 
   it('shows error empty with coba lagi', () => {
@@ -104,7 +106,7 @@ describe('LocationCard', () => {
         <LocationCard regions={[region]} />
       </QueryClientProvider>,
     )
-    expect(screen.getByText(copy.empty.locationError.title)).toBeTruthy()
+    expect(screen.getByText(copy.empty.locationError.description)).toBeTruthy()
     expect(
       screen.getByRole('button', { name: copy.empty.locationError.action }),
     ).toBeTruthy()

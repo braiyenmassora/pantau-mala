@@ -7,50 +7,50 @@ export type RiskCategoryStyle = {
   text: string
 }
 
-/** Mirrors `--color-brand` — PDF §1 hijau brand. */
-export const BRAND_HEX = '#1E6B45'
+/** Mirrors `--color-brand` — hijau. */
+export const BRAND_HEX = '#137333'
 
-/** Lokasi pengguna = brand (PDF: tidak ada biru). */
-export const LOCATION_HEX = '#1E6B45'
+/** Lokasi pengguna = brand. */
+export const LOCATION_HEX = '#137333'
 
-/** Lapisan suhu — brand hijau, bukan warna risiko pin. */
+/** Lapisan suhu. */
 export const TEMP_HOT_HEX = BRAND_HEX
-export const TEMP_TEXT_HEX = '#14261B'
+export const TEMP_TEXT_HEX = '#1F2328'
 export const TEMP_HALO_HEX = '#FFFFFF'
 
 /** Line / border hex — mirrors `--color-line`. */
-export const LINE_HEX = '#E3E9E4'
+export const LINE_HEX = '#E8EAED'
 
-/** Warna risiko — hex MapLibre / SVG (PDF §1). */
+/** Warna risiko — hex MapLibre / SVG. */
 export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
   tidak_tersedia: {
     label: 'Belum dinilai',
-    dot: '#7A8A80',
-    tint: '#F6F8F6',
-    text: '#52645A',
+    dot: '#80868B',
+    tint: '#F1F3F4',
+    text: '#5F6368',
   },
   sangat_tinggi: {
     label: 'Sangat tinggi',
-    dot: '#C2410C',
-    tint: '#F8D7D0',
-    text: '#8E2414',
+    dot: '#D93025',
+    tint: '#FCE8E6',
+    text: '#C5221F',
   },
   sedang: {
     label: 'Sedang',
-    dot: '#D99A0B',
-    tint: '#FBF0CF',
-    text: '#6B4E00',
+    dot: '#F29900',
+    tint: '#FEF7E0',
+    text: '#854800',
   },
   rendah: {
     label: 'Rendah',
-    dot: '#2E8B57',
-    tint: '#E4F0E8',
-    text: '#1E5A3A',
+    dot: '#188038',
+    tint: '#E6F4EA',
+    text: '#137333',
   },
 }
 
-/** Active map pin lift — PDF shadow-map family. */
-export const PIN_ACTIVE_BOX_SHADOW = '0 2px 8px rgba(20, 38, 27, 0.2)'
+/** Active map pin lift — mirror shadow-map + ink. */
+export const PIN_ACTIVE_BOX_SHADOW = '0 2px 8px rgba(31, 35, 40, 0.2)'
 
 /** Append alpha (0–1) to a #RRGGBB hex. */
 export function withAlpha(hex: string, alpha: number): string {
@@ -63,6 +63,9 @@ export function withAlpha(hex: string, alpha: number): string {
 /** Transparent terminal stop for MapLibre heatmap. */
 export const HEATMAP_TRANSPARENT = 'rgba(0,0,0,0)'
 
-/** Wind stream (canvas fade-trail). Brand hijau; fade rendah = ekor panjang. */
-export const WIND_PARTICLE_COLOR = 'rgba(30, 107, 69, 0.5)'
+/** Stop heatmap jarang — antara transparan & risk-mid (bukan token UI). */
+export const HEATMAP_LOW_HEX = '#FFE08A'
+
+/** Wind stream (canvas fade-trail) — brand token + alpha. */
+export const WIND_PARTICLE_COLOR = withAlpha(BRAND_HEX, 0.5)
 export const WIND_FADE_CLEAR = 'rgba(0, 0, 0, 0.022)'

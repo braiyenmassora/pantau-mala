@@ -25,9 +25,9 @@ describe('copy honesty', () => {
 
 describe('effectiveRiskCategory', () => {
   it('keeps API kategori when set', () => {
-    expect(
-      effectiveRiskCategory({ risk_category: 'sedang', hotspots_24h: 99 }),
-    ).toBe('sedang')
+    expect(effectiveRiskCategory({ risk_category: 'sedang', hotspots_24h: 99 })).toBe(
+      'sedang',
+    )
   })
 
   it('maps null/tidak_tersedia from hotspot count', () => {

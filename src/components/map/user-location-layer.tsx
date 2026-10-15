@@ -64,7 +64,7 @@ export function UserLocationLayer() {
             <TooltipTrigger asChild>
               <button
                 type="button"
-                className="border-surface bg-surface shadow-md relative flex size-5 cursor-pointer items-center justify-center rounded-full border-2 transition-transform duration-150 hover:scale-110 active:scale-95"
+                className="border-surface bg-surface relative flex size-5 cursor-pointer items-center justify-center rounded-full border-2 shadow-md transition-transform duration-150 hover:scale-110 active:scale-95"
                 aria-label={copy.location.yourLocation}
                 onClick={(event) => {
                   event.stopPropagation()
@@ -82,8 +82,12 @@ export function UserLocationLayer() {
             </TooltipTrigger>
             <TooltipContent side="top" sideOffset={8} className={mapPinTip}>
               <span className="border-line flex w-full items-center justify-between gap-2 border-b pb-1">
-                <span className="text-ink font-semibold">{copy.location.yourLocation}</span>
-                <span className="text-ink-2 font-mono text-xs">{copy.location.radiusBadge}</span>
+                <span className="text-ink font-semibold">
+                  {copy.location.yourLocation}
+                </span>
+                <span className="text-ink-2 text-xs tabular-nums">
+                  {copy.location.radiusBadge}
+                </span>
               </span>
               <span className="text-ink-2">{copy.location.riskSubtitle}</span>
             </TooltipContent>

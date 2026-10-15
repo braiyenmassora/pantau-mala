@@ -67,4 +67,4 @@ Jika repository memiliki konfigurasi berikut di GitHub Actions, deploy akan dija
 - Secret `CLOUDFLARE_API_TOKEN`: API token Cloudflare khusus deployment Worker, bukan token OAuth laptop.
 - Variable `CLOUDFLARE_ACCOUNT_ID`: account ID Cloudflare untuk Worker `pantaumala`.
 
-Jika secret tersebut belum dikonfigurasi di GitHub Actions, pipeline CI tetap lulus dan langkah deploy otomatis akan dilewati (*skipped*). Deployment preview pribadi dapat dijalankan secara langsung dari laptop melalui `pnpm exec wrangler deploy`.
+Jika secret tersebut belum dikonfigurasi di GitHub Actions, pipeline CI tetap lulus dan langkah deploy otomatis akan dilewati (_skipped_). Deployment preview pribadi dapat dijalankan secara langsung dari laptop melalui `pnpm exec wrangler deploy`.

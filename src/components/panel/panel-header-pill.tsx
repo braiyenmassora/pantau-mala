@@ -1,8 +1,8 @@
 import { ArrowLeft } from 'lucide-react'
 import type { RefObject } from 'react'
 
-import { Brand } from '@/components/common/brand'
 import { focusRing } from '@/components/common/focus-ring'
+import { SearchBox } from '@/components/panel/search-box'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import { restoreFocusTrigger } from '@/lib/focus-return'
@@ -15,23 +15,25 @@ type PanelHeaderPillProps = {
   mapRef: RefObject<MapRef | null>
 }
 
-/** Pill atas panel: brand, atau kembali saat detail. Provinsi di FilterBar. */
+/** Pill atas panel: search box saat overview, tombol kembali saat detail. */
 export function PanelHeaderPill({ mapRef }: PanelHeaderPillProps) {
   const selectedCode = useMapStore((s) => s.selectedCode)
   const select = useMapStore((s) => s.select)
+  const province = useMapStore((s) => s.province)
+  const setProvince = useMapStore((s) => s.setProvince)
   const panelOpen = useUiStore((s) => s.panelOpen)
 
-  return (
-    <div
-      className={cn(
-        'border-line bg-surface flex h-12 shrink-0 items-center gap-2 rounded-full border px-3 shadow-sm',
-      )}
-    >
-      {selectedCode ? (
+  if (selectedCode || province !== 'Semua') {
+    return (
+      <div className="border-line bg-surface flex h-12 shrink-0 items-center gap-2 rounded-full border px-3 shadow-sm">
         <button
           type="button"
           onClick={() => {
-            select(null)
+            if (selectedCode) {
+              select(null)
+            } else {
+              setProvince('Semua')
+            }
             restoreFocusTrigger()
             const map = mapRef.current
             if (map) fitIndonesia(map, panelOpen, 0)
@@ -44,11 +46,13 @@ export function PanelHeaderPill({ mapRef }: PanelHeaderPillProps) {
           )}
         >
           <ArrowLeft className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-          <span className="truncate text-sm font-medium">{copy.panel.backHome}</span>
+          <span className="truncate text-sm font-medium">
+            {selectedCode ? copy.panel.backHome : 'Kembali ke Indonesia'}
+          </span>
         </button>
-      ) : (
-        <Brand textOnly />
-      )}
-    </div>
-  )
+      </div>
+    )
+  }
+
+  return <SearchBox mapRef={mapRef} />
 }

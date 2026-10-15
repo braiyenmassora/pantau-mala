@@ -121,7 +121,7 @@ export function VillageWeatherPanel() {
                 <span>
                   {name === 'weather' ? copy.weather.weatherTab : copy.weather.windTab}
                 </span>
-                <span className="text-ink-3">
+                <span className="text-ink-2">
                   {name === 'weather' ? copy.weather.bmkg : copy.weather.windy}
                 </span>
               </button>
@@ -172,7 +172,7 @@ export function VillageWeatherPanel() {
                 {!bmkg.data.prakiraan.length && (
                   <p className="text-ink-2 text-xs">{copy.extra.empty}</p>
                 )}
-                <p className="text-ink-3 mt-2 text-xs leading-4">
+                <p className="text-ink-2 mt-2 text-xs leading-4">
                   {bmkg.sumber} · {copy.weather.fetched}{' '}
                   {formatDateTime(bmkg.diambil, 'WIB')}
                 </p>
@@ -197,7 +197,9 @@ export function VillageWeatherPanel() {
             )}
             {center && windy.data && (
               <>
-                <p className="text-ink-2 text-xs leading-4">{copy.extra.windyNote(windy.data.data.model)}</p>
+                <p className="text-ink-2 text-xs leading-4">
+                  {copy.extra.windyNote(windy.data.data.model)}
+                </p>
                 <p className="text-ink-2 text-xs">
                   {copy.weather.model(windy.data.data.model.toUpperCase())}
                 </p>
@@ -227,7 +229,7 @@ export function VillageWeatherPanel() {
                 {!windy.data.data.titik.length && (
                   <p className="text-ink-2 text-xs">{copy.extra.empty}</p>
                 )}
-                <p className="text-ink-3 mt-2 text-xs leading-4">
+                <p className="text-ink-2 mt-2 text-xs leading-4">
                   {windy.data.sumber} · {copy.weather.fetched}{' '}
                   {formatDateTime(windy.data.diambil, 'WIB')}
                 </p>

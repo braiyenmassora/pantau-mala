@@ -68,6 +68,8 @@ export type Region = {
   time_zone: TimeZoneId
   /** [lon, lat] */
   center: [number, number]
+  /** [lon, lat] dari ST_PointOnSurface backend, bukan centroid */
+  label_point?: [number, number]
   risk_category: RiskCategory
   weather_danger: WeatherDanger | null
   hotspots_24h: number
@@ -90,6 +92,10 @@ export type HotspotProperties = {
   confidence: ConfidenceLevel
   frp_mw: number
   region_code?: string
+  district?: string
+  kecamatan?: string
+  regency?: string
+  kabupaten?: string
 }
 
 export type HotspotFeature = Feature<Point, HotspotProperties>
@@ -102,6 +108,11 @@ export type Meta = {
     firms: SourceStatus
     weather: SourceStatus
     air: SourceStatus
+  }
+  /** ISO per sumber untuk umur relatif di strip footer. */
+  pulled_at: {
+    firms: string | null
+    weather: string | null
   }
 }
 

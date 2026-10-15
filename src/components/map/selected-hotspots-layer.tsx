@@ -1,86 +1,194 @@
-import { useCallback, useMemo } from 'react'
+import circle from '@turf/circle'
+import distance from '@turf/distance'
+import { useEffect, useMemo, useRef } from 'react'
+import type { FeatureCollection, Polygon } from 'geojson'
+import type { GeoJSONSource } from 'maplibre-gl'
 
-import { focusRing } from '@/components/common/focus-ring'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
-import { filterHotspotsForMap } from '@/lib/filter-hotspots-for-map'
-import { showHaloPulse } from '@/lib/halo'
-import { getMapPadding, PLACE_ZOOM } from '@/lib/indonesia-view'
-import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
-import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
+import { formatDateTime, formatNumber } from '@/lib/format'
+import { getMapPadding } from '@/lib/indonesia-view'
+import { MAP_COLORS } from '@/lib/map-colors'
+import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
 
+const MASK_SOURCE_ID = 'selected-region-mask-source'
+const MASK_FILL_LAYER = 'selected-region-mask-fill'
+
 type SelectedHotspotsLayerProps = {
   regions: Region[]
 }
 
-/** Marker DOM hanya jika titik sedikit. Kab padat → heatmap saja (tanpa angka cluster). */
-const DOM_MARKER_MAX = 64
-
-/**
- * Titik klikable bila sedikit.
- * Banyak titik (Merauke dll): biarkan HotspotHeatmapLayer — tanpa bubble angka.
- */
+// ponytail: fit-bounds sekali per kabupaten; mask setData tanpa removeLayer tiap update.
 export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
-  const { map } = useMap()
-  const province = useMapStore((s) => s.province)
+  const { map, isLoaded } = useMap()
   const selectedCode = useMapStore((s) => s.selectedCode)
-  const select = useMapStore((s) => s.select)
   const panelOpen = useUiStore((s) => s.panelOpen)
-  const setPanelOpen = useUiStore((s) => s.setPanelOpen)
   const { data } = useHotspots()
-  const reducedMotion = usePrefersReducedMotion()
+  const lastFitCode = useRef<string | null>(null)
 
-  const regionByCode = useMemo(() => {
-    const m = new Map<string, Region>()
-    for (const r of regions) m.set(r.code, r)
-    return m
-  }, [regions])
-
-  const collection = useMemo(
-    () => filterHotspotsForMap(data, regions, province, selectedCode),
-    [data, regions, province, selectedCode],
+  const selectedRegion = useMemo(
+    () => regions.find((r) => r.code === selectedCode),
+    [regions, selectedCode],
   )
 
-  const selectKab = useCallback(
-    (code: string, lon: number, lat: number) => {
-      select(code)
-      if (!panelOpen) setPanelOpen(true)
-      if (!map) return
-      // Zoom ke koordinat titik yang diklik, bukan centroid kab.
-      map.setMaxBounds(null)
-      map.stop()
-      map.flyTo({
-        center: [lon, lat],
-        zoom: PLACE_ZOOM,
-        padding: getMapPadding(true),
-        duration: 0,
+  const regionHotspots = useMemo(() => {
+    if (!selectedCode || !data) return []
+    return data.features.filter((f) => f.properties.region_code === selectedCode)
+  }, [selectedCode, data])
+
+  const focus = useMemo(() => {
+    if (!selectedRegion) return null
+    let minLon = selectedRegion.center[0]
+    let maxLon = selectedRegion.center[0]
+    let minLat = selectedRegion.center[1]
+    let maxLat = selectedRegion.center[1]
+
+    for (const f of regionHotspots) {
+      const [lon, lat] = f.geometry.coordinates
+      minLon = Math.min(minLon, lon)
+      maxLon = Math.max(maxLon, lon)
+      minLat = Math.min(minLat, lat)
+      maxLat = Math.max(maxLat, lat)
+    }
+
+    const pad = 0.12
+    const bounds = {
+      minLon: minLon - pad,
+      maxLon: maxLon + pad,
+      minLat: minLat - pad,
+      maxLat: maxLat + pad,
+    }
+    const center: [number, number] = [
+      (bounds.minLon + bounds.maxLon) / 2,
+      (bounds.minLat + bounds.maxLat) / 2,
+    ]
+    const radiusKm = Math.max(
+      distance(center, [bounds.minLon, bounds.minLat], { units: 'kilometers' }),
+      distance(center, [bounds.maxLon, bounds.minLat], { units: 'kilometers' }),
+      distance(center, [bounds.maxLon, bounds.maxLat], { units: 'kilometers' }),
+      distance(center, [bounds.minLon, bounds.maxLat], { units: 'kilometers' }),
+    )
+    return { bounds, center, radiusKm }
+  }, [selectedRegion, regionHotspots])
+
+  // Fit bounds hanya saat ganti kabupaten terpilih
+  useEffect(() => {
+    if (!map || !focus || !selectedCode) {
+      lastFitCode.current = null
+      return
+    }
+    if (lastFitCode.current === selectedCode) return
+    lastFitCode.current = selectedCode
+    map.fitBounds(
+      [
+        [focus.bounds.minLon, focus.bounds.minLat],
+        [focus.bounds.maxLon, focus.bounds.maxLat],
+      ],
+      {
+        padding: getMapPadding(panelOpen),
+        duration: 600,
+        maxZoom: 11,
+      },
+    )
+    // shortcut: panelOpen tidak di-deps — menghindari fit ulang tiap toggle panel
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map, selectedCode, focus])
+
+  // Mask: setData saja; remove hanya saat unmount / tidak ada focus
+  useEffect(() => {
+    if (!map || !isLoaded) return
+
+    if (!focus) {
+      try {
+        if (map.getLayer(MASK_FILL_LAYER)) map.removeLayer(MASK_FILL_LAYER)
+        if (map.getSource(MASK_SOURCE_ID)) map.removeSource(MASK_SOURCE_ID)
+      } catch {
+        // cleanup
+      }
+      return
+    }
+
+    const hole = circle(focus.center, focus.radiusKm, {
+      units: 'kilometers',
+      steps: 64,
+    })
+    const holeRing = hole.geometry.coordinates[0]
+
+    const maskGeoJson: FeatureCollection<Polygon> = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [-180, -85],
+                [180, -85],
+                [180, 85],
+                [-180, 85],
+                [-180, -85],
+              ],
+              [...holeRing].reverse(),
+            ],
+          },
+          properties: {},
+        },
+      ],
+    }
+
+    if (!map.getSource(MASK_SOURCE_ID)) {
+      map.addSource(MASK_SOURCE_ID, {
+        type: 'geojson',
+        data: maskGeoJson,
       })
-    },
-    [map, panelOpen, select, setPanelOpen],
-  )
+    } else {
+      const src = map.getSource(MASK_SOURCE_ID) as GeoJSONSource | undefined
+      src?.setData(maskGeoJson)
+    }
 
-  // Padat: heatmap handle visual; pin kab + flag dari RegionLayers.
-  if (collection.features.length === 0 || collection.features.length > DOM_MARKER_MAX) {
+    if (!map.getLayer(MASK_FILL_LAYER)) {
+      map.addLayer({
+        id: MASK_FILL_LAYER,
+        type: 'fill',
+        source: MASK_SOURCE_ID,
+        paint: {
+          'fill-color': MAP_COLORS.surface,
+          'fill-opacity': 0.4,
+        },
+      })
+    }
+  }, [map, isLoaded, focus])
+
+  // Teardown mask hanya saat komponen unmount
+  useEffect(() => {
+    if (!map) return
+    return () => {
+      try {
+        if (map.getLayer(MASK_FILL_LAYER)) map.removeLayer(MASK_FILL_LAYER)
+        if (map.getSource(MASK_SOURCE_ID)) map.removeSource(MASK_SOURCE_ID)
+      } catch {
+        // teardown
+      }
+    }
+  }, [map])
+
+  if (!selectedRegion || regionHotspots.length === 0 || regionHotspots.length > 64)
     return null
-  }
+
+  const risk = effectiveRiskCategory(selectedRegion)
+  const style = RISK_CATEGORIES[risk]
 
   return (
     <>
-      {collection.features.map((f, i) => {
+      {regionHotspots.map((f, i) => {
         const [lon, lat] = f.geometry.coordinates
-        const code = f.properties.region_code!
-        const region = regionByCode.get(code)
-        const risk = region ? effectiveRiskCategory(region) : 'sedang'
-        const style = RISK_CATEGORIES[risk]
-        const pulse = !reducedMotion && showHaloPulse(risk)
-        const pulseClass =
-          risk === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
-        const active = selectedCode === code
+        const tooltip = `Titik panas ${formatDateTime(f.properties.time, selectedRegion.time_zone)} · FRP ${formatNumber(f.properties.frp_mw)} MW`
 
         return (
           <MapMarker
@@ -89,35 +197,17 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
             latitude={lat}
             anchor="center"
           >
-            <MarkerContent
-              className={cn(
-                'relative flex items-center justify-center',
-                active ? 'z-20' : 'z-15',
-              )}
-            >
-              {pulse && (
-                <span
-                  aria-hidden
-                  className={cn(
-                    'pointer-events-none absolute top-1/2 left-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2',
-                    pulseClass,
-                  )}
-                  style={{ borderColor: withAlpha(style.dot, 0.65) }}
-                />
-              )}
-              <button
-                type="button"
+            <MarkerContent className="relative flex items-center justify-center">
+              <span
+                tabIndex={0}
+                role="img"
+                title={tooltip}
+                aria-label={tooltip}
                 className={cn(
-                  'border-surface shadow-map relative size-2.5 rounded-full border-2',
-                  focusRing,
-                  active && 'scale-125',
+                  'border-surface relative size-2.5 cursor-pointer rounded-full border-2 shadow-sm',
+                  'transition-transform duration-150 hover:scale-125',
                 )}
                 style={{ backgroundColor: style.dot }}
-                aria-label={region ? `${region.name}, ${style.label}` : style.label}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  selectKab(code, lon, lat)
-                }}
               />
             </MarkerContent>
           </MapMarker>

@@ -49,30 +49,29 @@ export function RegionRiverPanel({ code, embedded = false }: RegionRiverPanelPro
             <caption className="sr-only">{copy.extra.river}</caption>
             <thead>
               <tr className="text-ink-2">
-                <th className="py-1.5 font-medium">{copy.extra.dateUtc}</th>
-                <th className="py-1.5 font-medium">{copy.extra.discharge}</th>
+                <th className="py-2 font-medium">{copy.extra.dateUtc}</th>
+                <th className="py-2 font-medium">{copy.extra.discharge}</th>
               </tr>
             </thead>
             <tbody>
               {river.data.data.tanggal_utc.map((day, i) => (
                 <tr key={day} className="border-line border-t">
-                  <td className="py-1.5 tabular-nums">{day} UTC</td>
-                  <td className="py-1.5 tabular-nums">
-                    <span className="inline-flex items-center gap-1.5">
+                  <td className="py-2 tabular-nums">{day} UTC</td>
+                  <td className="py-2 tabular-nums">
+                    <span className="inline-flex items-center gap-2">
                       <Waves
-                        className="text-brand size-3.5 shrink-0 animate-water-ripple"
+                        className="text-brand animate-water-ripple size-3.5 shrink-0"
                         strokeWidth={2}
                         aria-hidden
                       />
-                      {formatNumber(river.data?.data.debit_m3_detik[i] ?? null)}{' '}
-                      m³/detik
+                      {formatNumber(river.data?.data.debit_m3_detik[i] ?? null)} m³/detik
                     </span>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <p className="text-ink-3 text-xs leading-4">{copy.extra.riverAttribution}</p>
+          <p className="text-ink-2 text-xs leading-4">{copy.extra.riverAttribution}</p>
         </>
       )}
     </div>

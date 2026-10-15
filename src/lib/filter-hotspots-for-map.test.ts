@@ -84,7 +84,11 @@ describe('filterHotspotsForMap', () => {
 })
 
 it('stale unclassified regions retain satellite density', () => {
-  const stale = { ...region, risk_category: 'tidak_tersedia' as const, quality: 'stale' as const }
+  const stale = {
+    ...region,
+    risk_category: 'tidak_tersedia' as const,
+    quality: 'stale' as const,
+  }
   const out = filterHotspotsForMap(data, [stale], 'Semua', null)
   expect(out.features).toHaveLength(2)
   expect(out.features[0].properties.weight).toBe(1)

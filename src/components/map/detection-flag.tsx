@@ -40,7 +40,7 @@ export function DetectionFlag({ region, className }: DetectionFlagProps) {
         className,
       )}
     >
-      <div className="border-line bg-surface relative w-max max-w-56 rounded-card border px-3 py-2 shadow-md">
+      <div className="border-line bg-surface rounded-card relative w-max max-w-56 border px-3 py-2 shadow-md">
         <div className="flex min-w-0 flex-col gap-1 text-left">
           <p
             className="text-ink truncate text-xs leading-4 font-semibold"
@@ -48,13 +48,10 @@ export function DetectionFlag({ region, className }: DetectionFlagProps) {
           >
             {content.title}
           </p>
-          <p
-            className="text-ink-2 truncate text-xs leading-4"
-            title={content.subtitle}
-          >
+          <p className="text-ink-2 truncate text-xs leading-4" title={content.subtitle}>
             {content.subtitle}
           </p>
-          <div className="border-line mt-0.5 flex items-center gap-3 border-t pt-1.5">
+          <div className="border-line mt-1 flex items-center gap-3 border-t pt-2">
             <span
               className="text-ink-2 flex min-w-0 items-center gap-1 text-xs leading-4"
               title={region.weather.condition}
@@ -64,16 +61,14 @@ export function DetectionFlag({ region, className }: DetectionFlagProps) {
                 strokeWidth={2}
                 aria-hidden
               />
-              <span className="truncate tabular-nums">
-                {content.tempLabel ?? '—'}
-              </span>
+              <span className="truncate tabular-nums">{content.tempLabel ?? '—'}</span>
             </span>
             <span
               className="text-ink-2 flex min-w-0 items-center gap-1 text-xs leading-4"
               title={content.airLabel}
             >
               <CloudFog
-                className="size-3.5 shrink-0 animate-wind-drift"
+                className="animate-wind-drift size-3.5 shrink-0"
                 strokeWidth={2}
                 aria-hidden
               />

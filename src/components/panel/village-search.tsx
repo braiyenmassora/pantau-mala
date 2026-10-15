@@ -48,13 +48,13 @@ export function VillageSearch({ value, onChange }: VillageSearchProps) {
         <div
           ref={anchorRef}
           className={cn(
-            'group flex h-12 items-center gap-2 rounded-full border border-line bg-surface px-3 shadow-sm',
+            'group border-line bg-surface flex h-12 items-center gap-2 rounded-full border px-3 shadow-sm',
             'transition-all duration-200 ease-[var(--ease-out-soft)]',
             'focus-within:border-brand focus-within:bg-surface focus-within:shadow-sm',
           )}
         >
           <Search
-            className="text-ink-3 size-4 shrink-0 transition-colors duration-150 group-focus-within:text-brand"
+            className="text-ink-3 group-focus-within:text-brand size-4 shrink-0 transition-colors duration-150"
             strokeWidth={2}
             aria-hidden
           />
@@ -76,7 +76,7 @@ export function VillageSearch({ value, onChange }: VillageSearchProps) {
             placeholder={copy.weather.searchPlaceholder}
             className={cn(
               'text-ink placeholder:text-ink-3 min-w-0 flex-1 appearance-none border-0 bg-transparent text-xs font-normal shadow-none',
-              'outline-none ring-0 focus:border-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0',
+              'ring-0 outline-none focus:border-0 focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none',
             )}
             onFocus={() => setOpen(true)}
             onClick={() => setOpen(true)}
@@ -113,7 +113,7 @@ export function VillageSearch({ value, onChange }: VillageSearchProps) {
               type="button"
               aria-label={copy.weather.clearSearch}
               className={cn(
-                'flex size-5 shrink-0 items-center justify-center rounded-full text-ink-3 transition-colors hover:bg-surface-muted hover:text-ink',
+                'text-ink-3 hover:bg-surface-muted hover:text-ink flex size-5 shrink-0 items-center justify-center rounded-full transition-colors',
               )}
               onMouseDown={(event) => event.preventDefault()}
               onClick={() => {

@@ -54,8 +54,8 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
       aria-modal="true"
       aria-labelledby="location-prompt-title"
       className={cn(
-        'rounded-panel bg-surface absolute top-[68px] z-50 w-[360px] p-4 shadow-lg',
-        'transition-[left] duration-300 ease-[var(--ease-out-soft)]',
+        'rounded-panel bg-surface absolute top-[68px] z-50 w-[360px] p-4 shadow-sm',
+        'ease-out-soft transition-[left] duration-300',
         panelOpen ? 'left-[432px]' : 'left-4',
       )}
       {...mapOverlayGestureProps}

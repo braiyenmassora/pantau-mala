@@ -35,8 +35,12 @@ export async function installGoFixtures(context, signedIn = true) {
     saran: ['Synthetic fixture advice.'],
     status_indikator: 'pending_validation',
   }
+  await context.route('**/frontend/session', (route) =>
+    route.fulfill({ status: 404, json: { error: { code: 'not_found' } } }),
+  )
   await context.route('**/auth/**', async (route) => {
     const path = new URL(route.request().url()).pathname
+    if (path.startsWith('/src/')) return route.continue()
     if (path === '/auth/browser-session' && route.request().method() === 'POST')
       return route.fulfill({
         status: signedIn ? 200 : 401,

@@ -11,10 +11,24 @@ import type { Region } from '@/data/types'
 import { useMapStore } from '@/store/map'
 
 vi.mock('@/data/queries', () => ({
-  useHotspots: () => ({ data: { type: 'FeatureCollection', features: [{
-    type: 'Feature', geometry: { type: 'Point', coordinates: [140.1, -8.1] },
-    properties: { time: '2026-10-11T00:00:00Z', satellite: 'VIIRS', confidence: 'tinggi', frp_mw: 1, region_code: 'IDN.1.1_1' },
-  }] } }),
+  useHotspots: () => ({
+    data: {
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [140.1, -8.1] },
+          properties: {
+            time: '2026-10-11T00:00:00Z',
+            satellite: 'VIIRS',
+            confidence: 'tinggi',
+            frp_mw: 1,
+            region_code: 'IDN.1.1_1',
+          },
+        },
+      ],
+    },
+  }),
 }))
 
 const addSource = vi.fn()
@@ -24,6 +38,9 @@ const removeSource = vi.fn()
 const setData = vi.fn()
 const getSource = vi.fn()
 const getLayer = vi.fn()
+const on = vi.fn()
+const off = vi.fn()
+const getCanvas = vi.fn(() => ({ style: {} }))
 
 vi.mock('@/components/ui/map', () => ({
   useMap: () => ({
@@ -35,8 +52,14 @@ vi.mock('@/components/ui/map', () => ({
       removeSource,
       getSource,
       getLayer,
+      on,
+      off,
+      getCanvas,
     },
   }),
+  MapPopup: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="map-popup">{children}</div>
+  ),
 }))
 
 const region: Region = {
@@ -112,12 +135,26 @@ describe('HotspotHeatmapLayer', () => {
 
     render(
       <QueryClientProvider client={client}>
-        <HotspotHeatmapLayer regions={[{ ...region, risk_category: 'tidak_tersedia', quality: 'stale' }]} />
+        <HotspotHeatmapLayer
+          regions={[{ ...region, risk_category: 'tidak_tersedia', quality: 'stale' }]}
+        />
       </QueryClientProvider>,
     )
 
-    expect(addSource).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ data: expect.objectContaining({ features: expect.arrayContaining([expect.objectContaining({ properties: expect.objectContaining({ weight: 1 }) })]) }) }))
-    expect(HEATMAP_MIN_ZOOM).toBe(0)
+    expect(addSource).toHaveBeenCalledWith(
+      'fy-hotspot-heatmap',
+      expect.objectContaining({ type: 'geojson' }),
+    )
+    expect(setData).toHaveBeenCalledWith(
+      expect.objectContaining({
+        features: expect.arrayContaining([
+          expect.objectContaining({
+            properties: expect.objectContaining({ weight: 1 }),
+          }),
+        ]),
+      }),
+    )
+    expect(HEATMAP_MIN_ZOOM).toBe(7)
     expect(addLayer).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'heatmap',

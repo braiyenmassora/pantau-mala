@@ -89,4 +89,23 @@ describe('aggregateByProvince', () => {
       risk_category: 'sedang',
     })
   })
+
+  it('sums trend_7d per province', () => {
+    const rows = aggregateByProvince(
+      [
+        region({
+          province: 'Kalimantan Tengah',
+          hotspots_24h: 7,
+          trend_7d: [1, 2, 3, 4, 5, 6, 7],
+        }),
+        region({
+          province: 'Kalimantan Tengah',
+          hotspots_24h: 3,
+          trend_7d: [2, 1, 0, 1, 2, 3, 4],
+        }),
+      ],
+      provinces,
+    )
+    expect(rows[0].trend_7d).toEqual([3, 3, 3, 5, 7, 9, 11])
+  })
 })

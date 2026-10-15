@@ -47,9 +47,7 @@ export function Button({
       )}
       {...props}
     >
-      {loading && (
-        <Loader2 className="size-4 animate-spin" strokeWidth={2} aria-hidden />
-      )}
+      {loading && <Loader2 className="size-4 animate-spin" strokeWidth={2} aria-hidden />}
       {children}
     </button>
   )

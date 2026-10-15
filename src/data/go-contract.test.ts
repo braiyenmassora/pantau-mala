@@ -86,6 +86,24 @@ describe('Go wire contract', () => {
     })
     expect(meta.updated_at).toBeNull()
     expect(meta.status).toEqual({ firms: 'gagal', weather: 'gagal', air: 'gagal' })
+    expect(meta.pulled_at).toEqual({ firms: null, weather: null })
+  })
+
+  it('keeps per-source pull times for FIRMS and Open-Meteo', () => {
+    const meta = decodeMeta({
+      data: {
+        diperbarui: '2026-10-15T12:00:00+07:00',
+        sumber: {
+          firms: { status: 'ok', diperbarui: '2026-10-15T05:00:00Z' },
+          cuaca: { status: 'ok', diperbarui: '2026-10-15T05:01:00Z' },
+          udara: { status: 'ok', diperbarui: '2026-10-15T05:02:00Z' },
+        },
+      },
+    })
+    expect(meta.pulled_at).toEqual({
+      firms: '2026-10-15T05:00:00Z',
+      weather: '2026-10-15T05:02:00Z',
+    })
   })
   it('unwraps the full imported catalog including empty clients', () => {
     expect(decodeCatalog({ data: { provinces: [], regencies: [] } })).toEqual({

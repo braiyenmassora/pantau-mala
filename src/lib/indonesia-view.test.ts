@@ -66,9 +66,7 @@ describe('fitProvinceBounds', () => {
     const zoom = fitIndonesia(map as never, false, 0)
     // mock cameraForBounds zoom 4.2 — jangan diangkat ke floor tinggi yang memotong Papua
     expect(zoom).toBe(4.2)
-    expect(map.jumpTo).toHaveBeenCalledWith(
-      expect.objectContaining({ zoom: 4.2 }),
-    )
+    expect(map.jumpTo).toHaveBeenCalledWith(expect.objectContaining({ zoom: 4.2 }))
   })
 
   it('handles coordinate array center from cameraForBounds correctly', () => {

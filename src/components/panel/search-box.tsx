@@ -1,7 +1,8 @@
 import { Search, X } from 'lucide-react'
 import type { RefObject } from 'react'
 
-
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import { fitIndonesia } from '@/lib/indonesia-view'
@@ -37,17 +38,17 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
   return (
     <div
       className={cn(
-        'group flex h-12 items-center gap-2 rounded-full border border-line bg-surface px-3 shadow-sm',
-        'transition-all duration-200 ease-[var(--ease-out-soft)]',
-        'focus-within:border-brand focus-within:shadow-md',
+        'border-line bg-surface group flex h-12 items-center gap-2 rounded-full border px-3 shadow-sm',
+        'ease-out-soft transition-[border-color,box-shadow] duration-150',
+        'focus-within:border-brand',
       )}
     >
       <Search
-        className="size-5 shrink-0 text-ink-3 transition-colors duration-150 group-focus-within:text-brand"
+        className="text-ink-3 group-focus-within:text-brand size-5 shrink-0 transition-colors duration-150"
         strokeWidth={2}
         aria-hidden
       />
-      <input
+      <Input
         type="text"
         inputMode="search"
         enterKeyHint="search"
@@ -55,29 +56,25 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
         onChange={(e) => setQuery(e.target.value)}
         placeholder={copy.panel.searchPlaceholder}
         aria-label={copy.panel.searchPlaceholder}
-        style={{
-          outline: 'none',
-          boxShadow: 'none',
-          border: 'none',
-          background: 'transparent',
-        }}
         className={cn(
-          'min-w-0 flex-1 appearance-none border-0 bg-transparent text-base text-ink shadow-none',
-          'outline-none ring-0 placeholder:text-ink-3 focus:border-0 focus:outline-none focus:ring-0',
-          'focus-visible:outline-none focus-visible:ring-0',
+          'h-auto min-w-0 flex-1 border-0 bg-transparent px-0 py-0 text-sm shadow-none',
+          'text-ink placeholder:text-ink-3',
+          'focus-visible:border-0 focus-visible:ring-0',
           '[&::-webkit-search-cancel-button]:appearance-none',
         )}
       />
-      {showClear && (
-        <button
+      {showClear ? (
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           aria-label={copy.panel.searchClear}
           onClick={clearAll}
-          className="flex size-10 shrink-0 items-center justify-center rounded-full text-ink-3 transition-colors hover:bg-surface-muted hover:text-ink"
+          className="text-ink-3 hover:bg-surface-muted hover:text-ink size-10 shrink-0 rounded-full"
         >
           <X className="size-5" strokeWidth={2} aria-hidden />
-        </button>
-      )}
+        </Button>
+      ) : null}
     </div>
   )
 }

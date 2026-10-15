@@ -124,7 +124,7 @@ describe('computeNearby', () => {
     expect(result.nearest?.distanceKm).toBeGreaterThan(0)
   })
 })
-describe("computeNearbyFromApi", () => {
+describe('computeNearbyFromApi', () => {
   function apiHotspot(
     lon: number,
     lat: number,
@@ -135,30 +135,30 @@ describe("computeNearbyFromApi", () => {
       id: 1,
       longitude: lon,
       latitude: lat,
-      waktu: "2026-10-09T00:00:00Z",
-      satelit: "VIIRS",
+      waktu: '2026-10-09T00:00:00Z',
+      satelit: 'VIIRS',
       keyakinan,
       frp_mw: 2,
       kode_wilayah,
     }
   }
 
-  it("processes PostGIS nearby payload correctly without Turf", () => {
+  it('processes PostGIS nearby payload correctly without Turf', () => {
     const result = computeNearbyFromApi(
       USER,
       [
-        apiHotspot(114.25, -2.9, "tinggi", "A"),
-        apiHotspot(114.28, -2.9, "sedang", "B"),
-        apiHotspot(114.25, -2.9, "rendah", "C"),
+        apiHotspot(114.25, -2.9, 'tinggi', 'A'),
+        apiHotspot(114.28, -2.9, 'sedang', 'B'),
+        apiHotspot(114.25, -2.9, 'rendah', 'C'),
       ],
-      [region("A", 114.2, -2.9), region("B", 114.3, -2.9)],
+      [region('A', 114.2, -2.9), region('B', 114.3, -2.9)],
     )
     expect(result.hotspotCount).toBe(2)
-    expect(result.nearest?.regionCode).toBe("A")
+    expect(result.nearest?.regionCode).toBe('A')
     expect(result.nearest?.distanceKm).toBeGreaterThan(0)
   })
 
-  it("calculates accurate haversine distance", () => {
+  it('calculates accurate haversine distance', () => {
     // 1 deg latitude is approx 111 km
     const dist = haversineKm(0, 0, 1, 0)
     expect(dist).toBeGreaterThan(110)

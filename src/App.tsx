@@ -9,8 +9,7 @@ import { LocationPromptDialog } from '@/components/map/location-prompt-dialog'
 import { MapControls } from '@/components/map/map-controls'
 import { MapLegend } from '@/components/map/map-legend'
 import { MapSoftLoading } from '@/components/map/map-soft-loading'
-import { MapSourcesStrip } from '@/components/map/map-sources-strip'
-import { PanelHeaderPill } from '@/components/panel/panel-header-pill'
+import { PanelFooter } from '@/components/panel/panel-footer'
 import { SummaryPanel } from '@/components/panel/summary-panel'
 import type { MapRef } from '@/components/ui/map'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -54,22 +53,20 @@ export default function App() {
   useEffect(() => {
     let cancelled = false
     if (!navigator.permissions?.query || !('geolocation' in navigator)) return
-    void navigator.permissions
-      .query({ name: 'geolocation' })
-      .then((permission) => {
-        if (cancelled || permission.state !== 'granted') return
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            if (cancelled) return
-            setLocation({
-              status: 'active',
-              coords: { lat: position.coords.latitude, lon: position.coords.longitude },
-            })
-          },
-          () => {},
-          { enableHighAccuracy: false, timeout: 10_000, maximumAge: 300_000 },
-        )
-      })
+    void navigator.permissions.query({ name: 'geolocation' }).then((permission) => {
+      if (cancelled || permission.state !== 'granted') return
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          if (cancelled) return
+          setLocation({
+            status: 'active',
+            coords: { lat: position.coords.latitude, lon: position.coords.longitude },
+          })
+        },
+        () => {},
+        { enableHighAccuracy: false, timeout: 10_000, maximumAge: 300_000 },
+      )
+    })
     return () => {
       cancelled = true
     }
@@ -79,6 +76,15 @@ export default function App() {
     const el = panelContentRef.current
     if (el) el.scrollTop = 0
   }, [selectedCode, province, query, selectedCategories])
+
+  useEffect(() => {
+    if (selectedCode && data) {
+      const region = data.find((r) => r.code === selectedCode)
+      if (region && province !== region.province) {
+        useMapStore.getState().setProvince(region.province)
+      }
+    }
+  }, [selectedCode, data, province])
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -112,21 +118,19 @@ export default function App() {
           inert={!panelOpen || undefined}
           className={cn(
             'absolute top-4 bottom-4 left-4 z-40 flex w-[calc(100vw-32px)] flex-col overflow-hidden sm:w-[400px]',
-            'rounded-panel bg-surface shadow-md',
+            'rounded-panel border-line bg-surface border shadow-sm',
             easePanel,
             'transition-[transform,opacity]',
-            panelOpen ? 'opacity-100' : 'pointer-events-none -translate-x-108 opacity-0',
+            panelOpen
+              ? 'opacity-100'
+              : 'pointer-events-none -translate-x-[432px] opacity-0',
           )}
           aria-hidden={!panelOpen}
           {...mapOverlayGestureProps}
         >
-          <div className="shrink-0 px-4 pt-4 pb-3">
-            <PanelHeaderPill mapRef={mapRef} />
-          </div>
-
           <div
             ref={panelContentRef}
-            className="soft-scroll soft-fade min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-1 pb-8"
+            className="soft-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain"
           >
             <SummaryPanel
               regions={data ?? []}
@@ -139,6 +143,7 @@ export default function App() {
               }}
             />
           </div>
+          <PanelFooter />
         </aside>
 
         <button
@@ -147,20 +152,20 @@ export default function App() {
           aria-expanded={panelOpen}
           aria-label={panelOpen ? copy.app.hidePanel : copy.app.showPanel}
           className={cn(
-            'absolute top-1/2 z-41 flex h-12 w-6 -translate-y-1/2 items-center justify-center',
+            'absolute top-1/2 z-[41] flex h-12 w-6 -translate-y-1/2 items-center justify-center',
             'rounded-r-ctl border-line bg-surface text-ink-2 border border-l-0 shadow-sm',
             'hover:bg-surface-muted',
             easePanel,
             'transition-[left,background-color] duration-150',
             focusRing,
-            panelOpen ? 'left-[calc(100vw-24px)] sm:left-104' : 'left-0',
+            panelOpen ? 'left-[calc(100vw-24px)] sm:left-[416px]' : 'left-0',
           )}
           {...mapOverlayGestureProps}
         >
           {panelOpen ? (
-            <ChevronLeft className="size-3.5" strokeWidth={2} aria-hidden />
+            <ChevronLeft className="size-3.5" strokeWidth={1.75} aria-hidden />
           ) : (
-            <ChevronRight className="size-3.5" strokeWidth={2} aria-hidden />
+            <ChevronRight className="size-3.5" strokeWidth={1.75} aria-hidden />
           )}
         </button>
 
@@ -168,13 +173,8 @@ export default function App() {
 
         <LocationDetailSync mapRef={mapRef} />
         <LocationPromptDialog mapRef={mapRef} />
-        {!isPending && (
-          <>
-            <MapLegend panelOpen={panelOpen} />
-            <MapControls mapRef={mapRef} />
-            <MapSourcesStrip />
-          </>
-        )}
+        <MapLegend />
+        {!isPending && <MapControls mapRef={mapRef} />}
 
         <main
           inert={(mobile && panelOpen) || undefined}
@@ -187,7 +187,7 @@ export default function App() {
             <MapShell
               mapRef={mapRef}
               panelOpen={panelOpen}
-              regions={isPending ? [] : filtered}
+              regions={isPending ? [] : (data ?? [])}
             />
           </Suspense>
         </main>
