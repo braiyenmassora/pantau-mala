@@ -70,13 +70,16 @@ describe('Cloudflare Worker routing', () => {
     },
   )
 
-  it.each(['client', 'account'])(
+  it.each(['client', 'account'] as const)(
     'fails closed for missing credentials in %s mode',
     async (mode) => {
       const env = { ...environment(), PANTAU_API_KEY: '', FE_ACCESS_MODE: mode }
       const response = await handleRequest(request('/frontend/session'), env, vi.fn())
       expect(response.status).toBe(503)
       expect(response.headers.get('Cache-Control')).toBe('no-store')
+      expect(response.headers.get('X-Frontend-Access')).toBe(
+        mode === 'client' ? 'client' : null,
+      )
       expect(env.ASSETS.fetch).not.toHaveBeenCalled()
     },
   )

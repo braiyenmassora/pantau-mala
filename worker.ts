@@ -36,13 +36,13 @@ export async function handleRequest(
     const response = await gateway(request)
     return response || Response.json({ error: 'Unknown data route' }, { status: 404 })
   } catch {
-    return Response.json(
-      { error: 'Data service unavailable' },
-      {
-        status: 503,
-        headers: { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' },
-      },
-    )
+    // Tetap kirim mode client agar FE tidak jatuh ke form login akun.
+    const headers: Record<string, string> = {
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+    }
+    if (env.FE_ACCESS_MODE === 'client') headers['X-Frontend-Access'] = 'client'
+    return Response.json({ error: 'Data service unavailable' }, { status: 503, headers })
   }
 }
 
