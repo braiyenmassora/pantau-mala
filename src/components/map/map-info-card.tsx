@@ -1,5 +1,7 @@
 import type { ReactNode } from 'react'
 
+import { copy } from '@/copy/id'
+import type { ConfidenceLevel } from '@/data/types'
 import { chromeSurface } from '@/lib/chrome'
 import { cn } from '@/lib/utils'
 
@@ -21,6 +23,10 @@ export type MapInfoCardProps = {
   regency?: string
   /** Waktu deteksi titik panas, mis. "14.30 WIB" */
   detectedTime?: string
+  /** Nama satelit/sensor dari API (tampil apa adanya). */
+  satellite?: string
+  /** Tingkat keyakinan deteksi satelit. */
+  confidence?: ConfidenceLevel
   /** Konten tambahan (cuaca flag terpilih, dll.) */
   children?: ReactNode
   className?: string
@@ -47,6 +53,11 @@ function push(out: string[], value: string | undefined) {
   if (value) out.push(value)
 }
 
+function nonEmpty(value: string | undefined): string | undefined {
+  const t = value?.trim()
+  return t ? t : undefined
+}
+
 // ponytail: flag pin — baris vertikal, teks panjang wrap bukan ellipsis.
 export function MapInfoCard({
   title,
@@ -56,27 +67,44 @@ export function MapInfoCard({
   district,
   regency,
   detectedTime,
+  satellite,
+  confidence,
   children,
   className,
   hideArrow = false,
 }: MapInfoCardProps) {
-  const formattedDistrict = district
-    ? district.toLowerCase().startsWith('kecamatan')
-      ? district
-      : `Kecamatan ${district}`
+  const districtName = nonEmpty(district)
+  const regencyName = nonEmpty(regency)
+  const timeValue = nonEmpty(detectedTime)
+  const satelliteName = nonEmpty(satellite)
+
+  const formattedDistrict = districtName
+    ? districtName.toLowerCase().startsWith('kecamatan')
+      ? districtName
+      : `Kecamatan ${districtName}`
     : undefined
 
-  const formattedRegency = regency
-    ? regency.toLowerCase().startsWith('kab') || regency.toLowerCase().startsWith('kota')
-      ? regency
-      : `Kabupaten ${regency}`
+  const formattedRegency = regencyName
+    ? regencyName.toLowerCase().startsWith('kab') ||
+      regencyName.toLowerCase().startsWith('kota')
+      ? regencyName
+      : `Kabupaten ${regencyName}`
     : undefined
 
-  const formattedTime = detectedTime
-    ? detectedTime.toLowerCase().startsWith('terdeteksi')
-      ? detectedTime
-      : `Terdeteksi ${detectedTime}`
+  const formattedTime = timeValue
+    ? timeValue.toLowerCase().startsWith('terdeteksi')
+      ? timeValue
+      : `Terdeteksi ${timeValue}`
     : undefined
+
+  const formattedSatellite = satelliteName
+    ? `${copy.map.satellite}: ${satelliteName}`
+    : undefined
+
+  const formattedConfidence =
+    confidence && copy.detail.confidence[confidence]
+      ? `${copy.map.detectionConfidence}: ${copy.detail.confidence[confidence]}`
+      : undefined
 
   let heading: string | undefined
   const body: string[] = []
@@ -90,6 +118,8 @@ export function MapInfoCard({
     heading = formattedDistrict ?? formattedRegency
     if (formattedDistrict) push(body, formattedRegency)
     push(body, formattedTime)
+    push(body, formattedSatellite)
+    push(body, formattedConfidence)
     for (const line of lines ?? []) push(body, line)
   }
 
@@ -102,7 +132,7 @@ export function MapInfoCard({
       )}
     >
       {heading || body.length > 0 ? (
-        <div className="flex flex-col gap-1 text-left">
+        <div className="flex min-w-0 flex-col gap-1 text-left">
           {heading ? <InfoLine strong>{heading}</InfoLine> : null}
           {body.map((line, i) => (
             <InfoLine key={`${i}-${line}`}>{line}</InfoLine>

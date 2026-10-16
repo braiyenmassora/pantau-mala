@@ -343,6 +343,9 @@ export const copy = {
     quakeSource: 'BMKG',
     regionMetaProvince: (provinsi: string) => `Provinsi ${provinsi}`,
     regionMetaHotspots: (n: string) => `${n} titik panas`,
+    /** Label baris popup titik (bukan copy.detail.confidence / copy.extra.confidence). */
+    detectionConfidence: 'Keyakinan deteksi',
+    satellite: 'Satelit',
   },
   filter: {
     allProvinces: 'Semua provinsi',

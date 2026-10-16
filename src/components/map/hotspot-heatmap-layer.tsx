@@ -9,7 +9,7 @@ import type {
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapPopup, useMap } from '@/components/ui/map'
 import { useHotspots } from '@/data/queries'
-import type { Region, TimeZoneId } from '@/data/types'
+import type { ConfidenceLevel, Region, TimeZoneId } from '@/data/types'
 import { filterHotspotsForMap } from '@/lib/filter-hotspots-for-map'
 import { formatDateTime } from '@/lib/format'
 import { MAP_COLORS } from '@/lib/map-colors'
@@ -38,7 +38,20 @@ type ActiveHotspot = {
   district?: string
   regency?: string
   detectedTime?: string
+  satellite?: string
+  confidence?: ConfidenceLevel
   pinned: boolean
+}
+
+function readConfidence(value: unknown): ConfidenceLevel | undefined {
+  if (value === 'rendah' || value === 'sedang' || value === 'tinggi') return value
+  return undefined
+}
+
+function readOptionalString(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined
+  const t = value.trim()
+  return t ? t : undefined
 }
 
 /** Deteksi dari timestamp UTC → jam zona wilayah (bukan zona browser). */
@@ -169,18 +182,14 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         longitude: coords[0],
         latitude: coords[1],
         district:
-          typeof props.district === 'string'
-            ? props.district
-            : typeof props.kecamatan === 'string'
-              ? props.kecamatan
-              : undefined,
+          readOptionalString(props.district) ?? readOptionalString(props.kecamatan),
         regency:
-          typeof props.kabupaten === 'string'
-            ? props.kabupaten
-            : typeof props.regency === 'string'
-              ? props.regency
-              : reg?.name,
+          readOptionalString(props.kabupaten) ??
+          readOptionalString(props.regency) ??
+          readOptionalString(reg?.name),
         detectedTime: timeStr,
+        satellite: readOptionalString(props.satellite),
+        confidence: readConfidence(props.confidence),
       }
     }
 
@@ -283,6 +292,8 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
             district={activeHotspot.district}
             regency={activeHotspot.regency}
             detectedTime={activeHotspot.detectedTime}
+            satellite={activeHotspot.satellite}
+            confidence={activeHotspot.confidence}
           />
         </MapPopup>
       )}
