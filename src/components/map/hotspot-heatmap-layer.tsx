@@ -9,8 +9,9 @@ import type {
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapPopup, useMap } from '@/components/ui/map'
 import { useHotspots } from '@/data/queries'
-import type { Region } from '@/data/types'
+import type { Region, TimeZoneId } from '@/data/types'
 import { filterHotspotsForMap } from '@/lib/filter-hotspots-for-map'
+import { formatDateTime } from '@/lib/format'
 import { MAP_COLORS } from '@/lib/map-colors'
 import {
   HEATMAP_HIGH_HEX,
@@ -40,21 +41,14 @@ type ActiveHotspot = {
   pinned: boolean
 }
 
-function formatDetectedTime(rawTime?: string, tz = 'WIB'): string | undefined {
+/** Deteksi dari timestamp UTC → jam zona wilayah (bukan zona browser). */
+function formatDetectedTime(
+  rawTime: string | undefined,
+  zone: TimeZoneId,
+): string | undefined {
   if (!rawTime) return undefined
-  try {
-    const d = new Date(rawTime)
-    if (isNaN(d.getTime())) {
-      if (/^\d{1,2}[:.]\d{2}/.test(rawTime)) {
-        return `${rawTime} ${tz}`
-      }
-      return undefined
-    }
-    const pad = (n: number) => n.toString().padStart(2, '0')
-    return `${pad(d.getHours())}:${pad(d.getMinutes())} ${tz}`
-  } catch {
-    return undefined
-  }
+  if (Number.isNaN(Date.parse(rawTime))) return undefined
+  return formatDateTime(rawTime, zone)
 }
 
 const HEATMAP_PAINT = {
