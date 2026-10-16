@@ -30,6 +30,12 @@ const headers = `/*
   Permissions-Policy: geolocation=(self)
   Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.basemaps.cartocdn.com https://*.cartocdn.com; font-src 'self' data:; connect-src ${connectSrc}; worker-src 'self' blob: https://unpkg.com; child-src 'self' blob:
 
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/manifest.webmanifest
+  Cache-Control: public, max-age=86400
+
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
 

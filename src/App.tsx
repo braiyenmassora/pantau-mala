@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from 'lucide-react'
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 
 import { StatusAnnouncer } from '@/components/common/status-announcer'
@@ -123,14 +123,14 @@ export default function App() {
           aria-label={copy.app.panelAria}
           inert={!panelOpen || undefined}
           className={cn(
-            'absolute z-40 flex w-[calc(100vw-32px)] flex-col overflow-hidden sm:w-(--map-panel-width)',
+            'mobile-panel absolute z-40 flex w-[calc(100vw-32px)] flex-col overflow-hidden sm:w-(--map-panel-width)',
             'top-(--floating-control-offset) bottom-(--floating-control-offset) left-(--floating-control-offset)',
             'rounded-panel border-line bg-surface-muted shadow-map border',
             easePanel,
             'transition-[transform,opacity]',
             panelOpen
-              ? 'opacity-100'
-              : 'pointer-events-none -translate-x-(--map-overlay-inset) opacity-0',
+              ? 'mobile-panel-open translate-x-0 opacity-100'
+              : 'mobile-panel-closed pointer-events-none -translate-x-(--map-overlay-inset) opacity-0',
           )}
           aria-hidden={!panelOpen}
           {...mapOverlayGestureProps}
@@ -159,20 +159,35 @@ export default function App() {
           aria-expanded={panelOpen}
           aria-label={panelOpen ? copy.app.hidePanel : copy.app.showPanel}
           className={cn(
-            'absolute top-1/2 z-[41] flex h-12 w-6 -translate-y-1/2 items-center justify-center',
+            'mobile-panel-toggle absolute top-1/2 z-[41] flex h-12 w-6 -translate-y-1/2 items-center justify-center',
             'rounded-r-ctl border-line bg-surface text-ink-2 border border-l-0 shadow-sm',
             'hover:bg-surface-muted',
             easePanel,
             'transition-[left,background-color] duration-150',
             focusRing,
             panelOpen ? 'left-[calc(100vw-24px)] sm:left-(--map-panel-edge)' : 'left-0',
+            panelOpen && 'mobile-panel-toggle-open',
           )}
           {...mapOverlayGestureProps}
         >
           {panelOpen ? (
-            <ChevronLeft className="size-3.5" strokeWidth={1.75} aria-hidden />
+            <>
+              <ChevronLeft
+                className="size-3.5 max-sm:hidden"
+                strokeWidth={1.75}
+                aria-hidden
+              />
+              <ChevronDown className="size-4 sm:hidden" strokeWidth={1.75} aria-hidden />
+            </>
           ) : (
-            <ChevronRight className="size-3.5" strokeWidth={1.75} aria-hidden />
+            <>
+              <ChevronRight
+                className="size-3.5 max-sm:hidden"
+                strokeWidth={1.75}
+                aria-hidden
+              />
+              <ChevronUp className="size-4 sm:hidden" strokeWidth={1.75} aria-hidden />
+            </>
           )}
         </button>
 

@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils'
 /** Footer sidebar: tautan sumber tanpa label “Sumber data:”, tanpa divider tebal. */
 export function PanelFooter() {
   return (
-    <footer className="border-line/60 bg-surface shrink-0 border-t px-4 py-3">
+    <footer className="panel-footer-safe border-line/60 bg-surface shrink-0 border-t px-4 py-3">
       <p className="text-ink-2 flex flex-wrap items-center gap-x-1 gap-y-1 text-xs leading-4">
         {copy.footer.sources.map((source, i) => (
           <span key={source.href} className="inline-flex items-center gap-1">

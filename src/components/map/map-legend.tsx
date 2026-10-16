@@ -35,7 +35,9 @@ function LegendItem({
         </span>
         <span className="min-w-0">
           <span className="text-ink block text-xs leading-4 font-semibold">{title}</span>
-          <span className="text-ink-2 block text-xs leading-4">{hint}</span>
+          <span data-legend-hint className="text-ink-2 block text-xs leading-4">
+            {hint}
+          </span>
         </span>
       </CardContent>
     </Card>
@@ -52,7 +54,7 @@ export function MapLegend() {
     <div
       data-testid="map-legend"
       className={cn(
-        'pointer-events-none fixed bottom-(--floating-control-offset) z-30 flex flex-wrap items-end gap-2',
+        'map-legend pointer-events-none fixed bottom-(--floating-control-offset) z-30 flex flex-wrap items-end gap-2',
         'ease-out-soft transition-[left] duration-300',
         panelOpen
           ? 'right-(--map-controls-clearance) left-(--map-overlay-inset) max-sm:hidden'

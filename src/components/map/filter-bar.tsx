@@ -61,15 +61,15 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
   return (
     <div
       className={cn(
-        'z-30 flex-wrap items-center gap-2',
+        'mobile-filter-bar z-30 flex-wrap items-center gap-2',
         'ease-out-soft transition-[left] duration-300',
         panelOpen
-          ? 'fixed top-(--floating-control-offset) right-(--floating-control-offset) hidden sm:left-(--map-overlay-inset) sm:flex'
+          ? 'fixed top-(--floating-control-offset) right-(--floating-control-offset) sm:left-(--map-overlay-inset) sm:flex'
           : 'fixed top-(--floating-control-offset) right-(--floating-control-offset) left-(--floating-control-offset) flex',
       )}
       {...mapOverlayGestureProps}
     >
-      <ProvincePicker regions={regions} />
+      <ProvincePicker regions={regions} className="max-sm:max-w-40" />
 
       <Chip
         pressed={allPressed}
