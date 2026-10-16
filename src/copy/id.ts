@@ -135,7 +135,6 @@ export const copy = {
     searchMiss: {
       title: 'Lokasi tidak ditemukan',
       description: 'Coba nama kabupaten/kota lain.',
-      action: 'Hapus pencarian',
     },
     noHotspotsInRegion: {
       title: 'Tidak ada titik panas di wilayah ini',
@@ -188,14 +187,13 @@ export const copy = {
   },
 
   panel: {
-    indonesiaToday: 'Pantauan titik panas Indonesia',
+    indonesiaToday: 'Pantauan titik panas',
     provinceToday: (province: string) => `Pantauan titik panas · ${province}`,
     subtitle: 'Deteksi satelit NASA FIRMS · 24 jam terakhir',
-    /** Tooltip ⓘ di judul — versi lengkap disclaimer. */
-    titleTip:
-      'Titik panas dari satelit, belum tentu kebakaran. Darurat: 112 atau BPBD setempat. Pantauan satelit, bukan peringatan bencana.',
+    /** Tooltip ⓘ di judul — singkat, padat. */
+    titleTip: 'Titik panas dari satelit, bukan peringatan bencana.',
     /** Satu baris terlihat di panel (tanpa hover). */
-    limitationNote: 'Titik panas satelit, belum tentu kebakaran.',
+    limitationNote: 'Titik panas dari satelit, bukan peringatan bencana.',
     hotspot24h: 'Titik panas 24 jam',
     hotspotHint: 'Penjelasan titik panas',
     hotspotTooltip:
@@ -242,7 +240,7 @@ export const copy = {
     airTooltip: 'Perkiraan model, bukan stasiun resmi. Tidak mengubah warna pin.',
     riskTitle: 'Risiko',
     riskHint: 'Penjelasan risiko',
-    riskTooltip: 'Dari jumlah titik panas 24 jam. Belum tentu kebakaran.',
+    riskTooltip: 'Dari jumlah titik panas 24 jam.',
     hotspot24hLabel: 'Titik panas 24 jam',
     hotspotUnitLine: 'titik panas dalam 24 jam',
     hotspots24hReason: (n: string) => `${n} titik panas (24 jam)`,
@@ -358,6 +356,9 @@ export const copy = {
     allProvinces: 'Semua provinsi',
     pickProvince: 'Pilih provinsi',
     allStatuses: 'Semua',
+    /** Chip ringkas saat lebar chrome sempit (tablet + panel). */
+    riskMenu: 'Risiko',
+    riskMenuTitle: (n: string) => `Filter risiko (${n} aktif)`,
     wilayahUnit: 'wilayah',
     allStatusesTitle: (count: string) => `Tampilkan semua kategori (${count} wilayah)`,
     categoryTitle: (count: string, label: string) =>
@@ -417,7 +418,6 @@ export const copy = {
     noHotspots: 'Tidak ada titik panas dalam 24 jam terakhir',
   },
   footer: {
-    sourcesLabel: 'Sumber data:',
     sources: [
       {
         id: 'firms' as const,
@@ -435,7 +435,21 @@ export const copy = {
         href: 'https://www.bmkg.go.id/',
       },
     ],
-    pulledAgo: (relatif: string) => `(${relatif})`,
+    /** Basemap — pojok bawah peta (bukan footer panel). */
+    mapAttribution: [
+      {
+        id: 'carto' as const,
+        name: '© CARTO',
+        href: 'https://carto.com/attribution/',
+      },
+      {
+        id: 'osm' as const,
+        name: '© OpenStreetMap',
+        href: 'https://www.openstreetmap.org/copyright',
+      },
+    ],
+    /** Contoh: Diperbarui 23 menit yang lalu */
+    dataUpdated: (relatif: string) => `Diperbarui ${relatif}`,
     openInNewTab: (name: string) => `${name}, buka di tab baru`,
   },
   source: {

@@ -34,9 +34,25 @@ export function filterRegions(list: Region[], state: RegionFilterState): Region[
   if (q) {
     const fuse = new Fuse(result, {
       keys: ['name', 'province'],
-      threshold: 0.35,
+      // Lebih ketat dari 0.35 agar "pulang" tidak menyeret Malang/Subang.
+      threshold: 0.28,
     })
-    result = fuse.search(q).map((r) => r.item)
+    const qLower = q.toLowerCase()
+    result = fuse
+      .search(q)
+      .map((r) => r.item)
+      .sort((a, b) => {
+        const rank = (name: string) => {
+          const n = name.toLowerCase()
+          if (n.startsWith(qLower)) return 0
+          if (n.includes(qLower)) return 1
+          return 2
+        }
+        const d = rank(a.name) - rank(b.name)
+        if (d !== 0) return d
+        return compareRegionsByRisk(a, b)
+      })
+    return result
   }
 
   return [...result].sort(compareRegionsByRisk)

@@ -16,6 +16,7 @@ describe('LAYOUT', () => {
     expect(LAYOUT.panelWidth).toBe(400)
     expect(LAYOUT.panelEdge).toBe(LAYOUT.gutter + LAYOUT.panelWidth)
     expect(LAYOUT.overlayInset).toBe(LAYOUT.panelEdge + LAYOUT.gutter)
+    expect(LAYOUT.controlSize).toBe(44)
     expect(LAYOUT.controlsClearance).toBe(LAYOUT.controlSize * 2)
   })
 })
@@ -55,6 +56,19 @@ describe('chromeAvailWidth', () => {
     const avail = chromeAvailWidth(true, width)
     const left = chromeLeft(true, width)
     expect(left + avail + LAYOUT.gutter + LAYOUT.controlsClearance).toBe(width)
-    expect(left + avail).toBeLessThanOrEqual(width - LAYOUT.controlsClearance)
+    expect(left + avail).toBeLessThanOrEqual(
+      width - LAYOUT.gutter - LAYOUT.controlsClearance,
+    )
+  })
+
+  it('leaves room for stamp-sized clearance on narrow desktop with panel open', () => {
+    const width = 1024
+    const avail = chromeAvailWidth(true, width)
+    const left = chromeLeft(true, width)
+    // Legend right edge ≤ stamp left edge (stamp ≤ clearance, right-aligned).
+    expect(left + avail).toBeLessThanOrEqual(
+      width - LAYOUT.gutter - LAYOUT.controlsClearance,
+    )
+    expect(avail).toBeGreaterThan(0)
   })
 })

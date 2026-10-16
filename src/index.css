@@ -102,10 +102,6 @@
   .maplibregl-popup-tip {
     @apply hidden!;
   }
-  /* Basemap attribution disembunyikan; sumber data ada di footer panel. */
-  .maplibregl-ctrl-attrib {
-    display: none !important;
-  }
 }
 
 /* Penanda berdenyut — riak lebih kencang & radius lebih luas di peta */
@@ -180,7 +176,7 @@
   }
 }
 
-/* Hover pin peta — sedikit “pop”; ::before = hit area ≥24px (visual tetap kecil) */
+/* Hover pin peta — sedikit “pop”; ::before = hit area ~44px (visual tetap kecil) */
 .marker--interactive {
   position: relative;
   transition:
@@ -190,7 +186,7 @@
 .marker--interactive::before {
   content: '';
   position: absolute;
-  inset: -7px;
+  inset: -10px;
   border-radius: 9999px;
 }
 .marker--interactive:hover {

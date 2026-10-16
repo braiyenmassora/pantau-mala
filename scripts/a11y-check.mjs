@@ -112,8 +112,11 @@ try {
   await wait(800)
   await scan(page, 'region detail')
 
+  // Escape #1: detail wilayah → panel provinsi; #2: provinsi → beranda (search).
   await page.keyboard.press('Escape')
   await wait(300)
+  await page.keyboard.press('Escape')
+  await wait(400)
 
   await page.getByLabel('Cari kabupaten/kota').fill('')
   await page.getByRole('button', { name: 'Gunakan lokasi kamu' }).click()

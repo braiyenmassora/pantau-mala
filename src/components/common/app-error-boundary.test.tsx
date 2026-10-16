@@ -26,9 +26,7 @@ describe('AppErrorBoundary', () => {
 
     expect(screen.getByRole('heading', { name: copy.empty.appCrash.title })).toBeTruthy()
     expect(screen.getByText(copy.empty.appCrash.description)).toBeTruthy()
-    expect(
-      screen.getByRole('button', { name: copy.empty.appCrash.action }),
-    ).toBeTruthy()
+    expect(screen.getByRole('button', { name: copy.empty.appCrash.action })).toBeTruthy()
     expect(screen.queryByText(/synthetic boom/i)).toBeNull()
     expect(spy).toHaveBeenCalled()
   })

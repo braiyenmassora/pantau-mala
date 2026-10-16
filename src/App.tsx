@@ -99,14 +99,25 @@ export default function App() {
         restoreFocusTrigger()
         return
       }
+      // Bertingkat: detail wilayah → panel provinsi → beranda (search tersedia).
       if (selectedCode) {
         select(null)
+        restoreFocusTrigger()
+        return
+      }
+      if (province !== 'Semua') {
+        useMapStore.getState().setProvince('Semua')
+        restoreFocusTrigger()
+        return
+      }
+      if (query.trim()) {
+        useMapStore.getState().setQuery('')
         restoreFocusTrigger()
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [locationStatus, selectedCode, select, setLocation])
+  }, [locationStatus, selectedCode, province, query, select, setLocation])
 
   const filtered = useMemo(
     () => (data ? filterRegions(data, { province, selectedCategories, query }) : []),
@@ -144,7 +155,7 @@ export default function App() {
         >
           <div
             ref={panelContentRef}
-            className="soft-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain"
+            className="soft-scroll soft-fade-y-end min-h-0 flex-1 overflow-y-auto overscroll-contain"
           >
             <SummaryPanel
               regions={data ?? []}
@@ -166,14 +177,15 @@ export default function App() {
           aria-expanded={panelOpen}
           aria-label={panelOpen ? copy.app.hidePanel : copy.app.showPanel}
           className={cn(
-            'absolute top-1/2 z-[41] flex h-12 w-6 -translate-y-1/2 items-center justify-center',
+            // w-11 (44px): touch target; visual tetap tab tipis di tepi panel
+            'absolute top-1/2 z-[41] flex h-12 w-11 -translate-y-1/2 items-center justify-center',
             'rounded-r-ctl border-line bg-surface text-ink-2 shadow-chrome border border-l-0',
             'hover:bg-surface-muted',
             easePanel,
             'transition-[left,background-color] duration-150',
             focusRing,
             panelOpen
-              ? 'left-[calc(100vw-24px)] sm:left-[min(var(--map-panel-edge),calc(100vw-4rem))]'
+              ? 'left-[calc(100vw-2.75rem)] sm:left-[min(var(--map-panel-edge),calc(100vw-4rem))]'
               : 'left-0',
           )}
           {...mapOverlayGestureProps}

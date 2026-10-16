@@ -101,7 +101,7 @@ function ConditionCell({
         <div className="flex items-center gap-1">
           <p className="text-ink-2 text-xs leading-4 font-medium">{label}</p>
           {isMissing ? (
-            <InfoTooltip content={copy.detail.weatherMissingTip} className="size-4" />
+            <InfoTooltip content={copy.detail.weatherMissingTip} className="-m-4" />
           ) : null}
         </div>
         <p

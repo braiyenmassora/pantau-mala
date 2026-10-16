@@ -1,6 +1,8 @@
+import { useEffect, useRef, useState } from 'react'
+
 import { RiskMarker } from '@/components/common/risk-marker'
 import { copy } from '@/copy/id'
-import { chromeAvailWidth, chromeLeft } from '@/lib/layout'
+import { useMapChrome } from '@/lib/layout'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
@@ -11,21 +13,35 @@ const MAP_RISK_ORDER = ['sangat_tinggi', 'sedang', 'rendah'] as const
 const cardClass =
   'bg-surface/95 rounded-card border-line flex w-max shrink-0 flex-col gap-2 border px-4 py-3 shadow-chrome backdrop-blur-sm'
 
-/** Dua kartu strip — inset chromeLeft; max-width sisakan MapControls. */
+/** Dua kartu strip — inset chromeLeft; fade-x hanya saat benar-benar overflow. */
 export function MapLegend() {
   const panelOpen = useUiStore((s) => s.panelOpen)
-  const left = chromeLeft(panelOpen)
+  const { left, availWidth } = useMapChrome(panelOpen)
+  const rowRef = useRef<HTMLDivElement>(null)
+  const [overflowX, setOverflowX] = useState(false)
+
+  useEffect(() => {
+    const el = rowRef.current
+    if (!el) return
+    const sync = () => setOverflowX(el.scrollWidth > el.clientWidth + 1)
+    sync()
+    const ro = new ResizeObserver(sync)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [availWidth, panelOpen])
 
   return (
     <div
+      ref={rowRef}
       data-testid="map-legend"
       className={cn(
         'pointer-events-auto fixed bottom-(--floating-control-offset) z-30',
-        'soft-scroll soft-fade-x flex flex-row items-stretch gap-2 overflow-x-auto',
+        'soft-scroll flex flex-row items-stretch gap-2 overflow-x-auto',
+        overflowX && 'soft-fade-x pr-7',
         'ease-out-soft transition-[left,max-width] duration-300',
         panelOpen && 'max-sm:hidden',
       )}
-      style={{ left, maxWidth: chromeAvailWidth(panelOpen) }}
+      style={{ left, maxWidth: availWidth }}
       {...mapOverlayGestureProps}
     >
       <section

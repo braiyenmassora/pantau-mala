@@ -40,14 +40,22 @@ export function searchWilayah(
     hotspotByProv.set(r.province, (hotspotByProv.get(r.province) ?? 0) + 1)
   }
 
+  const qLower = q.toLowerCase()
+  const prefixBoost = (name: string, score: number) => {
+    const n = name.toLowerCase()
+    if (n.startsWith(qLower)) return score - 0.2
+    if (n.includes(qLower)) return score - 0.05
+    return score
+  }
+
   const provFuse = new Fuse(catalog.provinces, {
     keys: ['name'],
-    threshold: 0.4,
+    threshold: 0.32,
     includeScore: true,
   })
   const kabFuse = new Fuse(catalog.regencies, {
     keys: ['name', 'province'],
-    threshold: 0.4,
+    threshold: 0.32,
     includeScore: true,
   })
 
@@ -57,7 +65,7 @@ export function searchWilayah(
     .map((hit) => ({
       province: hit.item,
       hotspotCount: hotspotByProv.get(hit.item.name) ?? 0,
-      score: hit.score ?? 1,
+      score: prefixBoost(hit.item.name, hit.score ?? 1),
     }))
     .sort((a, b) => a.score - b.score || b.hotspotCount - a.hotspotCount)
 
@@ -69,7 +77,7 @@ export function searchWilayah(
       return {
         kab: hit.item,
         region,
-        score: hit.score ?? 1,
+        score: prefixBoost(hit.item.name, hit.score ?? 1),
       }
     })
     .sort((a, b) => {

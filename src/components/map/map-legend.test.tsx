@@ -1,11 +1,20 @@
 /** @vitest-environment jsdom */
 import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { MapLegend } from '@/components/map/map-legend'
 import { copy } from '@/copy/id'
 
+class ResizeObserverStub {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
 describe('MapLegend', () => {
+  beforeEach(() => {
+    global.ResizeObserver = ResizeObserverStub
+  })
   afterEach(cleanup)
 
   it('renders two elongated cards: risk row + density', () => {

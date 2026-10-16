@@ -202,14 +202,8 @@ export function SummaryPanel({
             <h1 className="text-ink truncate text-xl leading-8 font-semibold">
               {copy.panel.indonesiaToday}
             </h1>
-            <InfoTooltip content={copy.panel.titleTip} />
+            <InfoTooltip content={copy.panel.titleTip} className="-my-4" />
           </div>
-          <p
-            data-testid="panel-limitation-note"
-            className="text-ink-3 text-xs leading-4"
-          >
-            {copy.panel.limitationNote}
-          </p>
         </header>
         <EmptyState
           icon={ShieldCheck}
@@ -240,14 +234,6 @@ export function SummaryPanel({
                   icon={Search}
                   title={copy.empty.searchMiss.title}
                   description={copy.empty.searchMiss.description}
-                  action={{
-                    label: copy.empty.searchMiss.action,
-                    onClick: () => {
-                      useMapStore.getState().resetHome()
-                      const map = mapRef.current
-                      if (map) fitIndonesia(map, panelOpen, 0)
-                    },
-                  }}
                 />
               ) : (
                 <ul className="flex flex-col">
@@ -261,19 +247,13 @@ export function SummaryPanel({
             </section>
           ) : (
             <>
-              <header className="space-y-1">
-                <div className="flex min-w-0 items-start gap-1">
+              <header>
+                <div className="flex min-w-0 items-center gap-1">
                   <h1 className="text-ink min-w-0 text-xl leading-8 font-semibold break-words">
                     {copy.panel.indonesiaToday}
                   </h1>
-                  <InfoTooltip content={copy.panel.titleTip} className="mt-1" />
+                  <InfoTooltip content={copy.panel.titleTip} className="-my-4" />
                 </div>
-                <p
-                  data-testid="panel-limitation-note"
-                  className="text-ink-3 text-xs leading-4"
-                >
-                  {copy.panel.limitationNote}
-                </p>
               </header>
 
               <div className="flex flex-col gap-4">

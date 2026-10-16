@@ -91,9 +91,7 @@ describe('MapInfoCard', () => {
     'maps confidence %s to label %s',
     (level, label) => {
       render(<MapInfoCard confidence={level} regency="Kab. Test" />)
-      expect(
-        screen.getByText(`${copy.map.detectionConfidence}: ${label}`),
-      ).toBeTruthy()
+      expect(screen.getByText(`${copy.map.detectionConfidence}: ${label}`)).toBeTruthy()
       expect(screen.queryByText(new RegExp(`: ${level}$`))).toBeNull()
     },
   )
@@ -134,8 +132,7 @@ describe('MapInfoCard', () => {
   })
 
   it('wraps long satellite names within max width', () => {
-    const long =
-      'VIIRS NOAA-20 / NOAA-21 / Suomi NPP very-long-instrument-name-for-wrap'
+    const long = 'VIIRS NOAA-20 / NOAA-21 / Suomi NPP very-long-instrument-name-for-wrap'
     const { container } = render(
       <MapInfoCard regency="Kab. Test" satellite={long} confidence="rendah" />,
     )

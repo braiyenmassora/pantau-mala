@@ -48,12 +48,14 @@ export const useMapStore = create<MapState>((set) => ({
   select: (selectedCode, regionProvince) =>
     set({
       selectedCode,
+      // Lepas tip hover/flag agar tidak “nempel” setelah Escape / tutup detail.
+      hoveredCode: null,
       // Buka detail: kosongkan pencarian agar panel detail tampil bersih
       ...(selectedCode ? { query: '' } : {}),
       ...(regionProvince ? { province: regionProvince } : {}),
     }),
   hover: (hoveredCode) => set({ hoveredCode }),
-  setProvince: (province) => set({ province, selectedCode: null }),
+  setProvince: (province) => set({ province, selectedCode: null, hoveredCode: null }),
   /** Single-select: pick one category, or clear if the same chip is clicked again. */
   toggleCategory: (category) =>
     set((s) => {

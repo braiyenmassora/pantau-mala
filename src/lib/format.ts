@@ -29,17 +29,17 @@ export function formatNumber(
   return n == null ? '—' : new Intl.NumberFormat('id-ID', options).format(n)
 }
 
-/** Relatif untuk badge meta; clock = sekarang. Contoh: "46 menit lalu". */
+/** Relatif untuk badge meta; clock = sekarang. Contoh: "46 menit yang lalu". */
 export function formatRelativeAge(iso: string, nowMs: number = Date.now()): string {
   const t = new Date(iso).getTime()
   if (Number.isNaN(t)) return iso
   const mins = Math.max(0, Math.round((nowMs - t) / 60_000))
   if (mins < 1) return 'baru saja'
-  if (mins < 60) return `${mins} menit lalu`
+  if (mins < 60) return `${mins} menit yang lalu`
   const hours = Math.round(mins / 60)
-  if (hours < 48) return `${hours} jam lalu`
+  if (hours < 48) return `${hours} jam yang lalu`
   const days = Math.round(hours / 24)
-  return `${days} hari lalu`
+  return `${days} hari yang lalu`
 }
 
 /** Cadence ingest ~3 jam → stale setelah 3,5 jam. */

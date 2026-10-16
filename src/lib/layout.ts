@@ -3,6 +3,8 @@
  * Dipakai padding MapLibre + posisi overlay (panel / filter / legend).
  */
 
+import { useEffect, useState } from 'react'
+
 /** Tailwind-aligned: mobile <640, tablet 640–1023, desktop ≥1024. */
 export const BREAKPOINT = {
   /** First width where `sm:` applies. */
@@ -20,10 +22,10 @@ export const LAYOUT = {
   panelEdge: 416,
   /** Awal area peta/overlay saat panel terbuka: panelEdge + gutter. */
   overlayInset: 432,
-  /** Ruang kanan agar legend tidak menabrak MapControls. */
-  controlsClearance: 80,
-  /** Kontrol peta 40×40 (PDF). */
-  controlSize: 40,
+  /** Cadangan kanan agar legend/filter tidak menabrak kolom MapControls (~44×2). */
+  controlsClearance: 88,
+  /** Kontrol peta 44×44 (touch target). */
+  controlSize: 44,
   /** Sisa lebar peta minimum saat panel terbuka di tablet. */
   mapMinWidth: 280,
 } as const
@@ -62,4 +64,25 @@ export function chromeLeft(panelOpen: boolean, width = viewportWidth()): number 
 export function chromeAvailWidth(panelOpen: boolean, width = viewportWidth()): number {
   const left = chromeLeft(panelOpen, width)
   return Math.max(0, width - left - LAYOUT.gutter - LAYOUT.controlsClearance)
+}
+
+/** Re-render chrome overlay saat jendela di-resize. */
+export function useViewportWidth(): number {
+  const [width, setWidth] = useState(viewportWidth)
+  useEffect(() => {
+    const onResize = () => setWidth(viewportWidth())
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+  return width
+}
+
+/** left + maxWidth untuk filter / legend / banner — ikut resize. */
+export function useMapChrome(panelOpen: boolean) {
+  const width = useViewportWidth()
+  return {
+    width,
+    left: chromeLeft(panelOpen, width),
+    availWidth: chromeAvailWidth(panelOpen, width),
+  }
 }

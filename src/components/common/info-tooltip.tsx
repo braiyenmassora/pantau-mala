@@ -9,7 +9,7 @@ type InfoTooltipProps = {
   className?: string
 }
 
-// ponytail: ikon info 14px abu-abu, area klik 24px, tooltip max 240px teks 12px.
+// Ikon 14px; hit area wajib ≥44×44 (className tidak boleh mengecilkan).
 export function InfoTooltip({ content, className }: InfoTooltipProps) {
   return (
     <Tooltip>
@@ -18,9 +18,11 @@ export function InfoTooltip({ content, className }: InfoTooltipProps) {
           type="button"
           aria-label={content}
           className={cn(
-            'text-ink-3 hover:text-ink hover:bg-surface-muted rounded-ctl inline-flex size-6 shrink-0 items-center justify-center transition-colors',
+            'text-ink-3 hover:text-ink hover:bg-surface-muted rounded-ctl inline-flex shrink-0 items-center justify-center transition-colors',
             focusRing,
             className,
+            // Setelah className: cegah override size-4 di caller.
+            'size-11 min-h-11 min-w-11',
           )}
         >
           <Info className="size-3.5" strokeWidth={1.75} aria-hidden />

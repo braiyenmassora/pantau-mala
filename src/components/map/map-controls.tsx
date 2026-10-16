@@ -2,11 +2,12 @@ import { LocateFixed, Minus, Plus } from 'lucide-react'
 import { type RefObject } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
+import { MapAttributionLinks } from '@/components/map/map-attribution'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import { useHotspots, useMeta, useRegions } from '@/data/queries'
 import { rememberFocusTrigger } from '@/lib/focus-return'
-import { formatDateTime } from '@/lib/format'
+import { formatRelativeAge } from '@/lib/format'
 import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { resolveUserRegionCode } from '@/lib/resolve-user-region'
@@ -23,7 +24,7 @@ const iconClass = 'size-4 shrink-0'
 const btnClass =
   'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-11 shrink-0 items-center justify-center transition-[background-color,color] duration-150'
 
-/** Kontrol peta — jarak 16 / ikon 16 stroke-2 / chrome sidebar. */
+/** Kontrol peta + umur data + atribusi basemap di pojok bawah kanan. */
 export function MapControls({ mapRef }: MapControlsProps) {
   const location = useMapStore((s) => s.location)
   const setLocation = useMapStore((s) => s.setLocation)
@@ -34,18 +35,15 @@ export function MapControls({ mapRef }: MapControlsProps) {
   const { data: regions } = useRegions()
   const { data: hotspots } = useHotspots()
   const { data: meta } = useMeta()
-  const active = location.status === 'active' && location.coords
   const updatedIso = meta?.updated_at ?? meta?.pulled_at.firms ?? meta?.pulled_at.weather
-  const updatedLabel = updatedIso
-    ? copy.updatedAt.stamp(formatDateTime(updatedIso, 'WIB'))
-    : null
+  const relative = updatedIso ? formatRelativeAge(updatedIso) : null
+  const active = location.status === 'active' && location.coords
 
   return (
     <div
       data-testid="map-controls"
       className={cn(
         'absolute right-(--floating-control-offset) bottom-(--floating-control-offset) z-30 flex flex-col items-end gap-3 sm:gap-4',
-        // Panel mobile full-bleed — sembunyikan; tablet+ peta masih terlihat
         panelOpen && 'max-sm:hidden',
       )}
       {...mapOverlayGestureProps}
@@ -102,14 +100,14 @@ export function MapControls({ mapRef }: MapControlsProps) {
         </button>
       </div>
 
-      {updatedLabel ? (
-        <p
-          className="text-ink-2 bg-surface/95 border-line rounded-card shadow-chrome pointer-events-none border px-4 py-3 text-xs leading-4 backdrop-blur-sm select-none"
-          data-testid="map-updated-stamp"
-        >
-          {updatedLabel}
-        </p>
-      ) : null}
+      <div className="flex max-w-48 flex-col items-end gap-1 text-right">
+        {relative ? (
+          <p data-testid="map-updated-stamp" className="text-ink-2 text-xs leading-4">
+            {copy.footer.dataUpdated(relative)}
+          </p>
+        ) : null}
+        <MapAttributionLinks />
+      </div>
     </div>
   )
 }

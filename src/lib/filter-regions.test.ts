@@ -106,6 +106,34 @@ describe('filterRegions', () => {
     expect(result.map((r) => r.code)).toEqual(['62.11'])
   })
 
+  it('prefers prefix matches over loose fuzzy hits', () => {
+    const mixed = [
+      ...sample,
+      stub({
+        code: '35.07',
+        name: 'Malang',
+        province: 'Jawa Timur',
+        risk_category: 'sedang',
+        hotspots_24h: 5,
+      }),
+      stub({
+        code: '32.13',
+        name: 'Subang',
+        province: 'Jawa Barat',
+        risk_category: 'rendah',
+        hotspots_24h: 1,
+      }),
+    ]
+    const result = filterRegions(mixed, {
+      province: 'Semua',
+      selectedCategories: new Set(),
+      query: 'pulang',
+    })
+    expect(result[0]?.code).toBe('62.11')
+    expect(result.map((r) => r.code)).not.toContain('35.07')
+    expect(result.map((r) => r.code)).not.toContain('32.13')
+  })
+
   it('derives map risk from hotspots when API kategori is null/tidak_tersedia', () => {
     const live = [
       stub({

@@ -27,7 +27,7 @@ import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import { getMapPadding, INDONESIA_CENTER } from '@/lib/indonesia-view'
-import { chromeLeft } from '@/lib/layout'
+import { useMapChrome } from '@/lib/layout'
 import { isBasemapStyleError, webGlSupported } from '@/lib/map-support'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui'
@@ -69,12 +69,13 @@ function MapUnavailable({ onReload }: { onReload: () => void }) {
 
 function BasemapBanner({ onRetry }: { onRetry: () => void }) {
   const panelOpen = useUiStore((s) => s.panelOpen)
+  const { left } = useMapChrome(panelOpen)
   return (
     <div
       data-testid="map-basemap-banner"
       className="rounded-card border-line bg-surface shadow-chrome pointer-events-auto absolute z-30 flex max-w-[min(360px,calc(100vw-2rem))] items-center gap-3 border px-4 py-3"
       style={{
-        left: chromeLeft(panelOpen),
+        left,
         top: 68,
       }}
     >
@@ -88,12 +89,13 @@ function BasemapBanner({ onRetry }: { onRetry: () => void }) {
 
 function PartialBanner() {
   const panelOpen = useUiStore((s) => s.panelOpen)
+  const { left } = useMapChrome(panelOpen)
   return (
     <div
       data-testid="map-partial-banner"
       className="rounded-card border-line bg-surface shadow-chrome pointer-events-none absolute z-30 max-w-[min(360px,calc(100vw-2rem))] border px-4 py-3"
       style={{
-        left: chromeLeft(panelOpen),
+        left,
         top: 68,
       }}
       role="status"
@@ -126,6 +128,15 @@ function applyBasemapCleanups(map: MapLibreMap) {
       } catch {
         // layer not found or already styled
       }
+    }
+  }
+
+  // County Positron terlalu ramai; boundary_state tetap (fill choropleth di bawahnya).
+  if (map.getLayer('boundary_county')) {
+    try {
+      map.setLayoutProperty('boundary_county', 'visibility', 'none')
+    } catch {
+      // layer not found
     }
   }
 

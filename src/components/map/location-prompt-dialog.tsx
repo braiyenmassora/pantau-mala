@@ -8,7 +8,7 @@ import { chromeSurface } from '@/lib/chrome'
 import { restoreFocusTrigger } from '@/lib/focus-return'
 import { resolveUserCoords } from '@/lib/geolocation'
 import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
-import { chromeLeft } from '@/lib/layout'
+import { useMapChrome } from '@/lib/layout'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
@@ -23,6 +23,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
   const status = useMapStore((s) => s.location.status)
   const setLocation = useMapStore((s) => s.setLocation)
   const panelOpen = useUiStore((s) => s.panelOpen)
+  const { left } = useMapChrome(panelOpen)
   const reducedMotion = usePrefersReducedMotion()
   const dialogRef = useRef<HTMLDivElement>(null)
 
@@ -61,7 +62,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
         'ease-out-soft transition-[left] duration-300',
         panelOpen && 'max-sm:hidden',
       )}
-      style={{ left: chromeLeft(panelOpen) }}
+      style={{ left }}
       {...mapOverlayGestureProps}
     >
       <EmptyState
@@ -75,7 +76,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
             <Button
               variant="secondary"
               size="sm"
-              className="h-9 min-h-9 shadow-none"
+              className="shadow-none"
               onClick={dismiss}
             >
               {copy.location.promptLater}
@@ -83,7 +84,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
             <Button
               variant="primary"
               size="sm"
-              className="h-9 min-h-9 shadow-none"
+              className="shadow-none"
               onClick={() => {
                 void resolveUserCoords().then((result) => {
                   if (result.ok) {
