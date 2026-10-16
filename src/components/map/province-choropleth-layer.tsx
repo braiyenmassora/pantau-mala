@@ -13,6 +13,7 @@ import { MAP_COLORS } from '@/lib/map-colors'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { normalizeProvinceName } from '@/lib/province-boundaries'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { worstRiskCategory } from '@/lib/risk-rule'
 import { useMapStore } from '@/store/map'
 
 const SOURCE_ID = 'province-choropleth-source'
@@ -51,6 +52,7 @@ function buildFillPaint(
           'case',
           ['boolean', ['feature-state', 'hover'], false],
           0.16,
+          // Kosong = transparan; hijau hanya bila ada titik rendah (bukan sedang/tinggi).
           ['>', ['coalesce', ['feature-state', 'hotspots'], 0], 0],
           0.12,
           0,
@@ -109,22 +111,21 @@ export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProp
 
   const provinceMetrics = useMemo(() => {
     if (!boundaries) return []
-    const counts = new Map<string, number>()
+    const byProvince = new Map<string, Region[]>()
     for (const region of regions) {
       const name = normalizeProvinceName(region.province)
-      counts.set(name, (counts.get(name) ?? 0) + region.hotspots_24h)
+      const list = byProvince.get(name)
+      if (list) list.push(region)
+      else byProvince.set(name, [region])
     }
 
     return boundaries.geometry.features.map((feature) => {
       const provinceName = feature.properties.province_name
-      const hotspots = counts.get(normalizeProvinceName(provinceName)) ?? 0
-      const riskColor =
-        hotspots >= 10
-          ? RISK_CATEGORIES.sangat_tinggi.dot
-          : hotspots > 0
-            ? RISK_CATEGORIES.sedang.dot
-            : RISK_CATEGORIES.rendah.dot
-      return { id: feature.id, hotspots, riskColor }
+      const list = byProvince.get(normalizeProvinceName(provinceName)) ?? []
+      const hotspots = list.reduce((sum, r) => sum + r.hotspots_24h, 0)
+      // Warna dari risiko terburuk kab/kota — tanpa sedang/tinggi → hijau (rendah).
+      const risk = worstRiskCategory(list)
+      return { id: feature.id, hotspots, riskColor: RISK_CATEGORIES[risk].dot }
     })
   }, [boundaries, regions])
 

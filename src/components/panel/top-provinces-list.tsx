@@ -1,6 +1,6 @@
 import { focusRing } from '@/components/common/focus-ring'
 import { Sparkline } from '@/components/common/sparkline'
-import type { CatalogProvince } from '@/data/types'
+import type { CatalogProvince, RiskCategory } from '@/data/types'
 import { formatNumber } from '@/lib/format'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { cn } from '@/lib/utils'
@@ -9,6 +9,7 @@ import { useMapStore } from '@/store/map'
 export type TopProvinceItem = {
   province: CatalogProvince
   hotspots_24h: number
+  risk_category: RiskCategory
   trend_7d?: readonly number[]
 }
 
@@ -16,18 +17,7 @@ type TopProvincesListProps = {
   items: TopProvinceItem[]
 }
 
-function provinceRisk(hotspots: number) {
-  if (hotspots >= 10) return 'sangat_tinggi' as const
-  if (hotspots >= 1) return 'sedang' as const
-  return 'rendah' as const
-}
-
-function provinceRiskDotClass(hotspots: number): string {
-  return RISK_CATEGORIES[provinceRisk(hotspots)].dotClass
-}
-
-function provinceSparkClass(hotspots: number): string {
-  const risk = provinceRisk(hotspots)
+function provinceSparkClass(risk: RiskCategory): string {
   if (risk === 'sangat_tinggi') return 'text-risk-high'
   if (risk === 'sedang') return 'text-risk-mid'
   return 'text-risk-low'
@@ -57,7 +47,7 @@ export function TopProvincesList({ items }: TopProvincesListProps) {
             <span
               className={cn(
                 'size-2 shrink-0 rounded-full',
-                provinceRiskDotClass(item.hotspots_24h),
+                RISK_CATEGORIES[item.risk_category].dotClass,
               )}
               aria-hidden
             />
@@ -69,7 +59,7 @@ export function TopProvincesList({ items }: TopProvincesListProps) {
                 data={item.trend_7d}
                 width={48}
                 height={18}
-                className={provinceSparkClass(item.hotspots_24h)}
+                className={provinceSparkClass(item.risk_category)}
                 ariaLabel={`Tren 7 hari ${item.province.name}`}
               />
             ) : null}

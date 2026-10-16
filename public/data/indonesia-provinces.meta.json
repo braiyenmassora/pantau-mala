@@ -5,8 +5,7 @@
   "license_url": "https://www.openstreetmap.org/copyright",
   "generated_at": "2026-10-15T14:30:30.927Z",
   "simplification_degrees": 0.0001,
-  "geometry": "/data/indonesia-provinces.geojson?v=2ad162aeb89449cf",
-  "geometry_sha256": "2ad162aeb89449cf2b014e16f6a8ad457588c20f42cd2f81d0dd89eb58876786",
+  "geometry": "/data/indonesia-provinces.geojson?v=4348775b9589a95c",
   "provinces": [
     {
       "id": "2390836",
@@ -350,5 +349,6 @@
       "query": "https://nominatim.openstreetmap.org/search?state=Papua+Pegunungan&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
       "response_sha256": "f63ae6ba6751e8429a10bb3148c0ca266e226acbffdd9370bef1490102a27b08"
     }
-  ]
+  ],
+  "geometry_sha256": "4348775b9589a95ca0804bd371677fe3924b0bb573857ad59a03eeb61895532a"
 }

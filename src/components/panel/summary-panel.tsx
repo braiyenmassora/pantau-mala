@@ -284,6 +284,7 @@ export function SummaryPanel({
                               {
                                 province: prov,
                                 hotspots_24h: agg.hotspots_24h,
+                                risk_category: agg.risk_category,
                                 trend_7d: agg.trend_7d,
                               },
                             ]

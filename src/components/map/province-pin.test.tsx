@@ -6,6 +6,10 @@ import { ProvincePin } from '@/components/map/province-pin'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
 
+vi.mock('@/lib/prefers-reduced-motion', () => ({
+  usePrefersReducedMotion: () => false,
+}))
+
 vi.mock('@/components/ui/map', () => ({
   useMap: () => ({ map: { setMaxBounds: vi.fn(), stop: vi.fn(), fitBounds: vi.fn() } }),
   MapMarker: ({ children }: { children: React.ReactNode }) => (
@@ -22,8 +26,7 @@ describe('ProvincePin', () => {
     useUiStore.setState({ panelOpen: false })
   })
 
-  it('renders pulsing red pin without numbers; hover shows name only', () => {
-    const onHover = vi.fn()
+  it('renders soft halo pulse for high risk without numbers', () => {
     render(
       <ProvincePin
         aggregate={{
@@ -35,13 +38,12 @@ describe('ProvincePin', () => {
           trend_7d: [0, 0, 0, 0, 0, 0, 212],
         }}
         hovered
-        onHover={onHover}
       />,
     )
 
     const pin = screen.getByRole('button', { name: 'Kalimantan Selatan' })
-    expect(pin.className).toContain('marker--pulse')
-    expect(pin.style.getPropertyValue('--beat')).toBe('0.75s')
+    const halo = screen.getByTestId('province-pin-halo')
+    expect(halo.className).toContain('animate-halo-high')
     expect(pin.textContent).not.toContain('212')
     expect(screen.getByText('Kalimantan Selatan')).toBeTruthy()
 
@@ -49,7 +51,7 @@ describe('ProvincePin', () => {
     expect(useMapStore.getState().province).toBe('Kalimantan Selatan')
   })
 
-  it('renders slow yellow pulse for sedang', () => {
+  it('renders mid halo pulse for sedang', () => {
     render(
       <ProvincePin
         aggregate={{
@@ -63,8 +65,8 @@ describe('ProvincePin', () => {
       />,
     )
 
-    const pin = screen.getByRole('button', { name: 'Banten' })
-    expect(pin.className).toContain('marker--pulse')
-    expect(pin.style.getPropertyValue('--beat')).toBe('1.8s')
+    expect(screen.getByTestId('province-pin-halo').className).toContain(
+      'animate-halo-mid',
+    )
   })
 })

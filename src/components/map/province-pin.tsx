@@ -1,13 +1,14 @@
-import type { CSSProperties } from 'react'
-
 import { focusRing } from '@/components/common/focus-ring'
+import { RiskMarker } from '@/components/common/risk-marker'
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import { formatNumber } from '@/lib/format'
+import { showHaloPulse } from '@/lib/halo'
 import { fitProvinceBounds } from '@/lib/indonesia-view'
+import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import type { ProvinceAggregate } from '@/lib/province-aggregates'
-import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { withAlpha, RISK_CATEGORIES } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -19,25 +20,18 @@ type ProvincePinProps = {
   onHover?: (name: string | null) => void
 }
 
-// ponytail: pin provinsi beat soft tanpa angka — warna dari RISK_CATEGORIES.
+/** Pin nasional: titik warna + halo lembut (seperti overview). */
 export function ProvincePin({ aggregate, hovered = false, onHover }: ProvincePinProps) {
   const { map } = useMap()
   const setProvince = useMapStore((s) => s.setProvince)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
+  const reducedMotion = usePrefersReducedMotion()
 
   const risk = effectiveRiskCategory(aggregate)
-  const isHigh = risk === 'sangat_tinggi'
-  const isMid = risk === 'sedang'
-  const dot = RISK_CATEGORIES[risk].dot
-
-  const pulseStyle: CSSProperties | undefined =
-    isHigh || isMid
-      ? ({
-          '--risk-color': dot,
-          '--beat': isHigh ? '0.75s' : '1.8s',
-        } as CSSProperties)
-      : undefined
+  const style = RISK_CATEGORIES[risk]
+  const pulse = !reducedMotion && showHaloPulse(risk, aggregate.hotspots_24h)
+  const pulseClass = risk === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
 
   return (
     <MapMarker
@@ -45,17 +39,31 @@ export function ProvincePin({ aggregate, hovered = false, onHover }: ProvincePin
       latitude={aggregate.center[1]}
       anchor="center"
     >
-      <MarkerContent className="relative z-10 flex items-center justify-center overflow-visible">
+      <MarkerContent
+        className={cn(
+          'relative z-10 flex items-center justify-center overflow-visible',
+          hovered && 'z-20',
+        )}
+      >
+        {pulse ? (
+          <span
+            aria-hidden
+            data-testid="province-pin-halo"
+            className={cn(
+              'pointer-events-none absolute top-1/2 left-1/2 size-8 -translate-x-1/2 -translate-y-1/2 rounded-full border-2',
+              pulseClass,
+            )}
+            style={{ borderColor: withAlpha(style.dot, 0.5) }}
+          />
+        ) : null}
+
         <button
           type="button"
           aria-label={aggregate.name}
           className={cn(
-            'marker--interactive border-surface relative rounded-full',
+            'marker--interactive relative origin-center rounded-full',
             focusRing,
-            isHigh || isMid ? 'marker--pulse size-4 border-2' : 'size-2.5 border-[1.5px]',
-            hovered && 'z-20',
           )}
-          style={{ backgroundColor: dot, ...pulseStyle }}
           onMouseEnter={() => onHover?.(aggregate.name)}
           onMouseLeave={() => onHover?.(null)}
           onClick={(e) => {
@@ -66,13 +74,15 @@ export function ProvincePin({ aggregate, hovered = false, onHover }: ProvincePin
               fitProvinceBounds(map, aggregate.bbox, true, 0)
             }
           }}
-        />
+        >
+          <RiskMarker kategori={risk} shadow active className="size-3.5" />
+        </button>
 
         {hovered ? (
           <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
             <MapInfoCard
               title={aggregate.name}
-              subtitle={RISK_CATEGORIES[risk].label}
+              subtitle={style.label}
               meta={copy.map.regionMetaHotspots(formatNumber(aggregate.hotspots_24h))}
             />
           </div>

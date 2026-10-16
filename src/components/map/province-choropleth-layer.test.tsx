@@ -203,7 +203,27 @@ describe('ProvinceChoroplethLayer', () => {
 
     expect(setFeatureState).toHaveBeenCalledWith(
       { source: 'province-choropleth-source', id: '2388616' },
-      expect.objectContaining({ hotspots: 12 }),
+      expect.objectContaining({ hotspots: 12, riskColor: '#D93025' }),
+    )
+  })
+
+  it('colors green when province has only rendah (no sedang/tinggi), even if many hotspots', () => {
+    getSource.mockReturnValue({})
+    getLayer.mockReturnValue({})
+
+    const rendahOnly: Region[] = [
+      {
+        ...regions[0]!,
+        risk_category: 'rendah',
+        hotspots_24h: 20,
+      },
+    ]
+
+    render(<ProvinceChoroplethLayer regions={rendahOnly} />)
+
+    expect(setFeatureState).toHaveBeenCalledWith(
+      { source: 'province-choropleth-source', id: '2388616' },
+      expect.objectContaining({ hotspots: 20, riskColor: '#188038' }),
     )
   })
 })

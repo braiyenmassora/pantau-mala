@@ -6,6 +6,10 @@ import { ProvincePinsLayer } from '@/components/map/province-pins-layer'
 import type { Region } from '@/data/types'
 import { useMapStore } from '@/store/map'
 
+vi.mock('@/lib/prefers-reduced-motion', () => ({
+  usePrefersReducedMotion: () => false,
+}))
+
 vi.mock('@/components/ui/map', () => ({
   useMap: () => ({ map: { fitBounds: vi.fn() } }),
   MapMarker: ({ children }: { children: React.ReactNode }) => (
@@ -78,14 +82,14 @@ describe('ProvincePinsLayer', () => {
     useMapStore.setState({ province: 'Semua', selectedCode: null })
   })
 
-  it('shows red and yellow beat pins without numbers on national view', () => {
+  it('shows soft halo pins without numbers on national view', () => {
     render(<ProvincePinsLayer regions={regions} />)
 
-    const high = screen.getByRole('button', { name: 'Kalimantan Selatan' })
-    const mid = screen.getByRole('button', { name: 'Banten' })
-    expect(high.className).toContain('marker--pulse')
-    expect(high.style.getPropertyValue('--beat')).toBe('0.75s')
-    expect(mid.style.getPropertyValue('--beat')).toBe('1.8s')
+    expect(screen.getByRole('button', { name: 'Kalimantan Selatan' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Banten' })).toBeTruthy()
+    const halos = screen.getAllByTestId('province-pin-halo')
+    expect(halos.some((el) => el.className.includes('animate-halo-high'))).toBe(true)
+    expect(halos.some((el) => el.className.includes('animate-halo-mid'))).toBe(true)
     expect(screen.queryByText('50')).toBeNull()
     expect(screen.queryByText('3')).toBeNull()
   })
