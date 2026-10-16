@@ -31,7 +31,7 @@ export function createClientGateway(env, fetcher = fetch) {
       },
     })
   const allowed =
-    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages)$/
+    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages|telemetry)$/
   function upstreamHeaders(request, metadata) {
     const headers = {
       Authorization: `Bearer ${token}`,
@@ -48,10 +48,21 @@ export function createClientGateway(env, fetcher = fetch) {
     if (refererHeader) headers.Referer = `${refererHeader}/`
     const clientIP = safeClientIP(metadata.clientIP)
     if (clientIP) headers['X-Forwarded-For'] = clientIP
+    if (metadata.runtime === 'cloudflare') {
+      headers['X-Pantau-Geo-Source'] = 'cloudflare'
+      const country = safeGeoHeader(metadata.clientCountry, 64)
+      const region = safeGeoHeader(metadata.clientRegion, 128)
+      const city = safeGeoHeader(metadata.clientCity, 128)
+      if (country) headers['X-Pantau-Geo-Country'] = country
+      if (region) headers['X-Pantau-Geo-Region'] = region
+      if (city) headers['X-Pantau-Geo-City'] = city
+    }
     return headers
   }
-  async function upstream(path, headers) {
+  async function upstream(path, headers, options = {}) {
     return fetcher(new URL(path, origin), {
+      method: options.method || 'GET',
+      body: options.body,
       headers,
       redirect: 'manual',
       signal: AbortSignal.timeout(20000),
@@ -65,7 +76,28 @@ export function createClientGateway(env, fetcher = fetch) {
       url.pathname !== '/frontend/session'
     )
       return null
-    if (request.method !== 'GET') return reply(405, { error: 'Read-only frontend' })
+    if (url.pathname === '/api/v1/telemetry') {
+      if (request.method !== 'POST')
+        return reply(405, { error: 'Telemetry requires POST' })
+      if (
+        request.headers.get('content-type')?.split(';')[0].trim() !== 'application/json'
+      )
+        return reply(415, { error: 'Telemetry requires application/json' })
+      const prefer = (request.headers.get('prefer') || '')
+        .toLowerCase()
+        .split(',')
+        .map((value) => value.trim())
+      const transport = (request.headers.get('x-pantau-telemetry-transport') || '')
+        .toLowerCase()
+        .trim()
+      if (!prefer.includes('respond-async') || transport !== 'fetch-keepalive')
+        return reply(400, {
+          error:
+            'Kontrak telemetry async wajib: Prefer: respond-async dan X-Pantau-Telemetry-Transport: fetch-keepalive',
+        })
+    } else if (request.method !== 'GET') {
+      return reply(405, { error: 'Read-only frontend' })
+    }
     if (request.headers.has('authorization') || request.headers.has('x-client-id'))
       return reply(400, { error: 'Client identity is server configured' })
     if (request.headers.get('origin') && request.headers.get('origin') !== url.origin)
@@ -99,6 +131,17 @@ export function createClientGateway(env, fetcher = fetch) {
         return reply(400, { error: 'Unsupported query parameter' })
     const headers = upstreamHeaders(request, metadata)
     try {
+      let telemetryBody
+      if (url.pathname === '/api/v1/telemetry') {
+        if (url.search)
+          return reply(400, { error: 'Telemetry does not accept query parameters' })
+        try {
+          telemetryBody = await readTelemetryBody(request)
+        } catch {
+          return reply(413, { error: 'Telemetry payload exceeds 16 KiB' })
+        }
+        headers.Origin = url.origin
+      }
       // Validate fixed identity for every request, including revocation and client disablement.
       const identity = await upstream('/auth/me', headers)
       if (!identity.ok)
@@ -125,6 +168,40 @@ export function createClientGateway(env, fetcher = fetch) {
             scope: 'data:read',
           },
         })
+      if (url.pathname === '/api/v1/telemetry') {
+        const data = await upstream(
+          url.pathname,
+          {
+            ...headers,
+            'Content-Type': 'application/json',
+            Prefer: 'respond-async',
+            'X-Pantau-Telemetry-Transport': 'fetch-keepalive',
+          },
+          { method: 'POST', body: telemetryBody },
+        )
+        if (data.status !== 202) {
+          const status = [400, 401, 403, 404, 413, 415, 429, 503].includes(data.status)
+            ? data.status
+            : 502
+          const response = reply(status, { error: 'Telemetry unavailable or rejected' })
+          const retryAfter = data.headers.get('Retry-After')
+          if (retryAfter && /^\d{1,4}$/.test(retryAfter))
+            response.headers.set('Retry-After', retryAfter)
+          return response
+        }
+        const responseHeaders = {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-store',
+          'X-Content-Type-Options': 'nosniff',
+          'X-Frontend-Access': 'client',
+        }
+        const preference = data.headers.get('preference-applied')
+        if (preference) responseHeaders['Preference-Applied'] = preference
+        return Response.json(
+          { data: { accepted: true } },
+          { status: 202, headers: responseHeaders },
+        )
+      }
       const data = await upstream(url.pathname + url.search, headers)
       if (!data.ok)
         return reply(data.status === 429 ? 429 : data.status >= 500 ? 502 : data.status, {
@@ -142,6 +219,47 @@ export function createClientGateway(env, fetcher = fetch) {
       return reply(503, { error: 'Data service unavailable' })
     }
   }
+}
+
+function safeGeoHeader(value, max) {
+  if (
+    typeof value !== 'string' ||
+    value.length > max ||
+    /[\u0000-\u001f\u007f]/u.test(value)
+  )
+    return null
+  return value.trim() ? encodeURIComponent(value.trim()) : null
+}
+
+async function readTelemetryBody(request) {
+  const limit = 16 * 1024
+  if (Number(request.headers.get('content-length')) > limit)
+    throw new RangeError('payload')
+  if (!request.body) return new Uint8Array()
+  const reader = request.body.getReader()
+  const chunks = []
+  let length = 0
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) break
+      length += value.byteLength
+      if (length > limit) {
+        await reader.cancel()
+        throw new RangeError('payload')
+      }
+      chunks.push(value)
+    }
+  } finally {
+    reader.releaseLock()
+  }
+  const body = new Uint8Array(length)
+  let offset = 0
+  for (const chunk of chunks) {
+    body.set(chunk, offset)
+    offset += chunk.byteLength
+  }
+  return body
 }
 
 function sanitizeOriginHeader(value) {

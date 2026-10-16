@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { expireSession, useSession } from '@/auth/session'
 import { validCoordinates } from '@/lib/environment-data'
+import { recordFrontendApiError } from '@/observability/frontend-telemetry'
 import { decodeRegions, decodeHotspots, decodeMeta, decodeCatalog } from './go-contract'
 import {
   earthquakesSchema,
@@ -32,6 +33,7 @@ export async function getData<T>(
       ? AbortSignal.any([signal, AbortSignal.timeout(20000)])
       : AbortSignal.timeout(20000),
   })
+  recordFrontendApiError(res.status)
   if (res.status === 401) {
     if (useSession.getState().generation === generation) expireSession()
     throw new Error('Sesi berakhir. Masuk kembali.')
@@ -126,7 +128,10 @@ export function useSearchVillages(query: string) {
   }
 }
 
-export function useEarthquakes(kind: 'latest' | 'felt' | 'm5' = 'latest', requested = true) {
+export function useEarthquakes(
+  kind: 'latest' | 'felt' | 'm5' = 'latest',
+  requested = true,
+) {
   const session = useSession()
   return useQuery({
     queryKey: ['earthquakes', kind, session.principal?.client_id, session.generation],
@@ -186,10 +191,15 @@ export function useNearbyHotspots(
   })
 }
 
-export function useWindyWeather(lat?: number | null, lon?: number | null, requested = true) {
+export function useWindyWeather(
+  lat?: number | null,
+  lon?: number | null,
+  requested = true,
+) {
   const session = useSession()
   const enabled =
-    requested && session.status === 'authenticated' &&
+    requested &&
+    session.status === 'authenticated' &&
     typeof lat === 'number' &&
     typeof lon === 'number' &&
     validCoordinates(lon, lat)

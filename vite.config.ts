@@ -1,5 +1,6 @@
 /// <reference types="vitest/config" />
 import path from 'path'
+import { Readable } from 'node:stream'
 import { fileURLToPath } from 'node:url'
 import { defineConfig, loadEnv } from 'vite'
 import { createClientGateway } from './server/client-gateway.mjs'
@@ -28,6 +29,12 @@ export default defineConfig(({ mode }) => {
               new Request(`http://${req.headers.host}${req.url}`, {
                 method: req.method,
                 headers,
+                ...(req.method && !['GET', 'HEAD'].includes(req.method)
+                  ? {
+                      body: Readable.toWeb(req) as ReadableStream<Uint8Array>,
+                      duplex: 'half',
+                    }
+                  : {}),
               }),
             )
             if (!response) return next()

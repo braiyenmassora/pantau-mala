@@ -33,9 +33,17 @@ export async function handleRequest(
       },
       fetcher,
     )
+    const cf = (
+      request as Request & {
+        cf?: { country?: string; region?: string; city?: string }
+      }
+    ).cf
     const response = await gateway(request, {
       runtime: 'cloudflare',
       clientIP: request.headers.get('CF-Connecting-IP'),
+      clientCountry: cf?.country,
+      clientRegion: cf?.region,
+      clientCity: cf?.city,
     })
     return response || Response.json({ error: 'Unknown data route' }, { status: 404 })
   } catch {

@@ -21,6 +21,7 @@ import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
+import { useFrontendTelemetry } from '@/observability/frontend-telemetry'
 
 const MapShell = lazy(() =>
   import('@/components/map/map-shell').then((m) => ({ default: m.MapShell })),
@@ -29,6 +30,7 @@ const MapShell = lazy(() =>
 const easePanel = 'duration-300 ease-out-soft'
 
 export default function App() {
+  useFrontendTelemetry()
   const mapRef = useRef<MapRef | null>(null)
   const panelContentRef = useRef<HTMLDivElement>(null)
   const [mobile, setMobile] = useState(() => window.innerWidth < 640)

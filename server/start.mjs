@@ -2,6 +2,7 @@ import { access, readFile, stat } from 'node:fs/promises'
 import { createServer } from 'node:http'
 import { dirname, extname, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { Readable } from 'node:stream'
 
 import { createClientGateway } from './client-gateway.mjs'
 
@@ -65,6 +66,9 @@ createServer(async (req, res) => {
     const request = new Request(`http://${req.headers.host}${req.url}`, {
       method: req.method,
       headers,
+      ...(req.method && !['GET', 'HEAD'].includes(req.method)
+        ? { body: Readable.toWeb(req), duplex: 'half' }
+        : {}),
     })
     const api = await gateway(request)
     if (api) {

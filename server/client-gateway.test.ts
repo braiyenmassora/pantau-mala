@@ -129,6 +129,51 @@ it('refuses management, writes, supplied identity, unknown routes and cross-orig
   }
   expect(fetcher).not.toHaveBeenCalled()
 })
+it('requires the explicit async telemetry contract and forwards its body server-side', async () => {
+  const fetcher = vi
+    .fn()
+    .mockResolvedValueOnce(Response.json({ data: principal }))
+    .mockResolvedValueOnce(
+      Response.json(
+        { data: { accepted: 1 } },
+        { status: 202, headers: { 'Preference-Applied': 'respond-async' } },
+      ),
+    )
+  const gateway = createClientGateway(env, fetcher)
+  const payload = JSON.stringify({ events: [] })
+  expect(
+    (await gateway(
+      new Request('http://localhost/api/v1/telemetry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload,
+      }),
+    ))!.status,
+  ).toBe(400)
+  expect(fetcher).not.toHaveBeenCalled()
+  const response = await gateway(
+    new Request('http://localhost/api/v1/telemetry', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Prefer: 'respond-async',
+        'X-Pantau-Telemetry-Transport': 'fetch-keepalive',
+      },
+      body: payload,
+    }),
+    {
+      runtime: 'cloudflare',
+      clientIP: '203.0.113.7',
+      clientCountry: 'ID',
+      clientCity: 'Jakarta',
+    },
+  )
+  expect(response!.status).toBe(202)
+  expect(fetcher).toHaveBeenCalledTimes(2)
+  expect(fetcher.mock.calls[1][1].method).toBe('POST')
+  expect(fetcher.mock.calls[1][1].headers['X-Pantau-Geo-City']).toBe('Jakarta')
+  expect(await new Response(fetcher.mock.calls[1][1].body).text()).toBe(payload)
+})
 it('verifies fixed client and scope before serving business data', async () => {
   for (const changed of [
     { client_slug: 'other' },
@@ -179,4 +224,37 @@ it('fails closed on missing secrets and insecure external origin', () => {
   expect(() =>
     createClientGateway({ ...env, PANTAU_API_ORIGIN: 'http://external.example' }),
   ).toThrow()
+})
+
+it('rejects oversized streamed telemetry before authenticating upstream', async () => {
+  const fetcher = vi.fn()
+  const request = new Request('http://localhost/api/v1/telemetry', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Prefer: 'respond-async',
+      'X-Pantau-Telemetry-Transport': 'fetch-keepalive',
+    },
+    body: ' '.repeat(17 * 1024),
+  })
+  const result = await createClientGateway(env, fetcher)(request)
+  expect(result!.status).toBe(413)
+  expect(fetcher).not.toHaveBeenCalled()
+})
+
+it('ignores browser-supplied geo headers and uses only encoded adapter metadata', async () => {
+  const fetcher = vi.fn().mockResolvedValue(Response.json({ data: principal }))
+  const gateway = createClientGateway(env, fetcher)
+  const makeRequest = () =>
+    new Request('http://localhost/frontend/session', {
+      headers: { 'X-Pantau-Geo-City': 'Fake City', 'CF-IPCity': 'Fake City' },
+    })
+  await gateway(makeRequest(), {
+    runtime: 'cloudflare',
+    clientCountry: 'BR',
+    clientCity: 'São Paulo',
+  })
+  expect(fetcher.mock.calls[0][1].headers['X-Pantau-Geo-City']).toBe('S%C3%A3o%20Paulo')
+  await gateway(makeRequest())
+  expect(fetcher.mock.calls[1][1].headers['X-Pantau-Geo-City']).toBeUndefined()
 })
