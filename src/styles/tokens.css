@@ -16,7 +16,7 @@
   /* Netral Palet Pantau Mala (Slate & White identik CMS BE) */
   --color-ink: #0f172a; /* text-primary --slate-900 */
   --color-ink-2: #475569; /* text-secondary --slate-600 */
-  --color-ink-3: #94a3b8; /* text-disabled --slate-400 */
+  --color-ink-3: #64748b;
   --color-line: #e2e8f0; /* border / divider --slate-200 */
   --color-surface: #ffffff;
   --color-surface-muted: #f8fafc; /* --slate-50 */

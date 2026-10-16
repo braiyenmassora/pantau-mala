@@ -40,7 +40,7 @@ Token chrome: `--floating-control-offset`, `--map-panel-width`, `--map-panel-edg
 | ----------------------- | ------------------------ | ----------------- |
 | `--color-ink`           | `#0F172A`                | text-primary      |
 | `--color-ink-2`         | `#475569`                | text-secondary    |
-| `--color-ink-3`         | `#94A3B8`                | text-disabled     |
+| `--color-ink-3`         | `#64748B`                | metadata terbaca  |
 | `--color-line`          | `#E2E8F0`                | border            |
 | `--color-surface-muted` | `#F8FAFC`                | kartu info        |
 | `--color-map-bg`        | `#F1F5F9`                | fallback peta     |
@@ -171,3 +171,9 @@ Komponen `Brand` memakai kedua asset tersebut di semua ukuran; varian `textOnly`
 hanya menghilangkan simbol, bukan mengubah lettering. Favicon, ikon Apple, gambar
 preview sosial, dan theme color mengikuti identitas logo yang sama. Warna logo
 adalah pengecualian khusus brand asset, bukan perubahan palet komponen FE.
+
+## 8. Indikator model dan konteks event
+
+`TerrainIndicatorCard` adalah komponen reusable untuk indikator tanah dan elevasi Open-Meteo pada detail wilayah. Nilai selalu diberi label `Modelled`, menampilkan waktu valid dan waktu tarik, serta menjelaskan bahwa kelembapan tersebut bukan pengukuran langsung gambut dan tidak mengubah skor risiko.
+
+Konteks NASA EONET tetap dipisahkan dari titik panas FIRMS. Jika ditampilkan, gunakan label `konteks event eksternal`, bukan jumlah deteksi atau konfirmasi lapangan. Gateway client hanya meneruskan endpoint read-only yang terdaftar di `server/client-gateway.mjs`; setiap parameter query baru harus ditambah ke allowlist dan diuji.

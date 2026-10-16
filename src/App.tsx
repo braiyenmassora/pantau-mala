@@ -49,6 +49,7 @@ export default function App() {
   const query = useMapStore((s) => s.query)
   const selectedCode = useMapStore((s) => s.selectedCode)
   const select = useMapStore((s) => s.select)
+  const setProvince = useMapStore((s) => s.setProvince)
   const setLocation = useMapStore((s) => s.setLocation)
   const locationStatus = useMapStore((s) => s.location.status)
 
@@ -98,12 +99,13 @@ export default function App() {
       }
       if (selectedCode) {
         select(null)
+        setProvince('Semua')
         restoreFocusTrigger()
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [locationStatus, selectedCode, select, setLocation])
+  }, [locationStatus, selectedCode, select, setLocation, setProvince])
 
   const filtered = useMemo(
     () => (data ? filterRegions(data, { province, selectedCategories, query }) : []),

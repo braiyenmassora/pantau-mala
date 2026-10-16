@@ -139,3 +139,71 @@ export const villageSchema = z.object({
 })
 export const villagesSchema = z.object({ data: z.array(villageSchema) })
 export type Village = z.infer<typeof villageSchema>
+
+const provenanceSchema = z.object({
+  penyedia: z.string().min(1),
+  endpoint: z.url(),
+  sifat_data: z.enum(['observed', 'modelled', 'derived', 'contextual']),
+  atribusi: z.string().min(1),
+  status: z.enum(['ok', 'stale', 'unavailable']),
+  validasi: z.string().min(1),
+  waktu_valid: timestamp.nullable().optional(),
+  waktu_observasi: timestamp.nullable().optional(),
+  berlaku_hingga: timestamp.nullable().optional(),
+  waktu_tarik: timestamp,
+  request_id: z.string().min(1),
+  catatan_kualitas: z.string().optional(),
+})
+
+export const soilMoistureSchema = z.object({
+  data: z.object({
+    latitude: number.min(-90).max(90),
+    longitude: number.min(-180).max(180),
+    titik_permintaan: lonLat,
+    elevasi_mdpl: number.min(-500).max(10000).nullable(),
+    kelembapan_tanah_0_1cm_m3m3: number.min(0).max(1).nullable(),
+    kelembapan_tanah_3_9cm_m3m3: number.min(0).max(1).nullable(),
+    suhu_tanah_permukaan_c: number.min(-100).max(100).nullable(),
+    waktu_model: timestamp.nullable(),
+    provenans: provenanceSchema.extend({ sifat_data: z.literal('modelled') }),
+  }),
+  sumber: z.string(),
+  keterangan: z.string(),
+  diambil: timestamp,
+})
+export type SoilMoistureResponse = z.infer<typeof soilMoistureSchema>
+
+const sourceUrl = z.url().refine((value) => /^https?:\/\//i.test(value))
+const lineCoordinates = z.array(lonLat).min(2)
+const polygonCoordinates = z.array(z.array(lonLat).min(4)).min(1)
+const geometrySchema = z.discriminatedUnion('tipe', [
+  z.object({ waktu: timestamp, tipe: z.literal('Point'), koordinat: lonLat }),
+  z.object({ waktu: timestamp, tipe: z.literal('Polygon'), koordinat: polygonCoordinates }),
+  z.object({ waktu: timestamp, tipe: z.literal('LineString'), koordinat: lineCoordinates }),
+  z.object({ waktu: timestamp, tipe: z.literal('MultiPoint'), koordinat: z.array(lonLat).min(1) }),
+  z.object({ waktu: timestamp, tipe: z.literal('MultiLineString'), koordinat: z.array(lineCoordinates).min(1) }),
+  z.object({ waktu: timestamp, tipe: z.literal('MultiPolygon'), koordinat: z.array(polygonCoordinates).min(1) }),
+])
+
+export const nasaEonetEventSchema = z.object({
+  id: z.string().min(1),
+  judul: z.string().min(1),
+  deskripsi: z.string().optional(),
+  link: sourceUrl.optional(),
+  ditutup: timestamp.nullable().optional(),
+  kategori: z.array(z.string()),
+  sumber_primer: z.array(sourceUrl),
+  geometri: z.array(geometrySchema).min(1).max(5000),
+})
+
+export const nasaEonetCatalogSchema = z.object({
+  data: z.object({
+    events: z.array(nasaEonetEventSchema).max(100),
+    jumlah: z.number().int().min(0),
+    provenans: provenanceSchema.extend({ sifat_data: z.literal('contextual') }),
+  }).refine((value) => value.jumlah === value.events.length && new Set(value.events.map((event) => event.id)).size === value.events.length),
+  sumber: z.string(),
+  keterangan: z.string(),
+  diambil: timestamp,
+})
+export type NASAEONETCatalogResponse = z.infer<typeof nasaEonetCatalogSchema>

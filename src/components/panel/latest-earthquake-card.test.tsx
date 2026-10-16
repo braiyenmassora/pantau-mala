@@ -55,4 +55,9 @@ describe('LatestEarthquakeCard', () => {
       ),
     ).toBeTruthy()
   })
+
+  it('exposes the earthquake card as a named region', () => {
+    wrap(<LatestEarthquakeCard />)
+    expect(screen.getByRole('region', { name: copy.map.seismicInfo })).toBeTruthy()
+  })
 })

@@ -24,6 +24,7 @@ import { fitIndonesia } from '@/lib/indonesia-view'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
+import { RegionTerrainCard } from '@/components/panel/terrain-indicator-card'
 
 type RegionDetailPanelProps = {
   region: Region
@@ -218,6 +219,8 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
             ) : null}
           </CardContent>
         </Card>
+
+        <RegionTerrainCard center={region.center} timeZone={region.time_zone} />
 
         <Card>
           <CardHeader>

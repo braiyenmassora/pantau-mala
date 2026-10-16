@@ -10,6 +10,8 @@ import {
   nearbyHotspotsSchema,
   windyForecastSchema,
   villagesSchema,
+  soilMoistureSchema,
+  nasaEonetCatalogSchema,
 } from './extended-contract'
 
 const STALE_MS = 5 * 60 * 1000
@@ -72,6 +74,61 @@ function useClientQuery<T>(
     queryFn: ({ signal }) => load(signal),
     staleTime: STALE_MS,
     refetchInterval: catalog ? false : STALE_MS,
+  })
+}
+
+export function useSoilMoisture(
+  lat?: number | null,
+  lon?: number | null,
+  requested = true,
+) {
+  const session = useSession()
+  const enabled =
+    requested &&
+    session.status === 'authenticated' &&
+    typeof lat === 'number' &&
+    typeof lon === 'number' &&
+    validCoordinates(lon, lat)
+
+  return useQuery({
+    queryKey: [
+      'soil-moisture',
+      lat,
+      lon,
+      session.principal?.client_id,
+      session.generation,
+    ],
+    enabled,
+    queryFn: ({ signal }) =>
+      getData(
+        `/indicators/soil-moisture?lat=${lat}&lon=${lon}`,
+        (raw) => soilMoistureSchema.parse(raw),
+        signal,
+      ),
+    staleTime: 15 * 60_000,
+    refetchInterval: 15 * 60_000,
+    retry: 1,
+  })
+}
+
+export function useNasaEonet(
+  status: 'open' | 'closed' | 'all' = 'open',
+  limit = 20,
+  requested = false,
+) {
+  const session = useSession()
+  return useQuery({
+    queryKey: ['nasa-eonet', status, limit, session.principal?.client_id, session.generation],
+    enabled: requested && session.status === 'authenticated',
+    queryFn: ({ signal }) =>
+      getData(
+        `/external-events/nasa-eonet?status=${status}&limit=${limit}`,
+        (raw) => nasaEonetCatalogSchema.parse(raw),
+        signal,
+      ),
+    staleTime: 15 * 60_000,
+    refetchInterval: 15 * 60_000,
+    retry: 1,
   })
 }
 

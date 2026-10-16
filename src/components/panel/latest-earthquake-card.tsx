@@ -28,7 +28,7 @@ export function LatestEarthquakeCard() {
 
   if (isPending && !data) {
     return (
-      <Card aria-busy="true" aria-label={copy.panel.seismicTitle}>
+    <Card role="region" aria-busy="true" aria-label={copy.panel.seismicTitle}>
         <CardHeader>
           <Skeleton className="h-4 w-36" />
         </CardHeader>
@@ -42,7 +42,7 @@ export function LatestEarthquakeCard() {
 
   if (isError || !event) {
     return (
-      <Card aria-label={copy.panel.seismicTitle}>
+      <Card role="region" aria-label={copy.panel.seismicTitle}>
         <CardHeader>
           <CardTitle>{copy.panel.seismicTitle}</CardTitle>
         </CardHeader>
@@ -60,7 +60,7 @@ export function LatestEarthquakeCard() {
   const footnote = [event.dirasakan, event.potensi].find((s) => s?.trim()) ?? ''
 
   return (
-    <Card aria-label={copy.map.seismicInfo}>
+    <Card role="region" aria-label={copy.map.seismicInfo}>
       <CardHeader className="space-y-2">
         <div className="flex items-center justify-between gap-2">
           <CardTitle>{copy.panel.seismicTitle}</CardTitle>

@@ -38,7 +38,7 @@ export function createClientGateway(env, fetcher = fetch) {
     return response
   }
   const allowed =
-    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages|telemetry)$/
+    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages|indicators\/soil-moisture|external-events\/nasa-eonet|providers\/(registry|provenance)|telemetry)$/
   function upstreamHeaders(request, metadata) {
     const headers = {
       Authorization: `Bearer ${token}`,
@@ -136,6 +136,8 @@ export function createClientGateway(env, fetcher = fetch) {
       'lon',
       'radius_km',
       'q',
+      'status',
+      'feed',
     ])
     for (const key of url.searchParams.keys())
       if (!queryNames.has(key))

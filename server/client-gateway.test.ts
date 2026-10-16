@@ -221,6 +221,20 @@ it('forwards only allowed data and handles revoked keys, redirects, network fail
   expect(String(fetcher.mock.calls[1][0])).toBe(
     'http://127.0.0.1:8080/api/v1/regions?limit=1000',
   )
+  for (const path of [
+    '/api/v1/indicators/soil-moisture?lat=-6.2&lon=106.8',
+    '/api/v1/external-events/nasa-eonet?status=open',
+    '/api/v1/providers/registry',
+    '/api/v1/providers/provenance?limit=10',
+  ]) {
+    const f = vi
+      .fn()
+      .mockResolvedValueOnce(Response.json({ data: principal }))
+      .mockResolvedValueOnce(Response.json({ data: [] }))
+    const g = createClientGateway(env, f)
+    expect((await g(new Request('http://localhost' + path)))!.status).toBe(200)
+    expect(String(f.mock.calls[1][0])).toBe('http://127.0.0.1:8080' + path)
+  }
   for (const result of [
     new Response('secret detail', { status: 401 }),
     new Response(null, { status: 302 }),

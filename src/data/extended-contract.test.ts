@@ -6,6 +6,7 @@ import {
   forecastSchema,
   dischargeSchema,
   sourceStatusSchema,
+  soilMoistureSchema,
 } from './extended-contract'
 const envelope = {
   sumber: 'Synthetic fixture only',
@@ -91,5 +92,44 @@ describe('extended Go source contracts', () => {
       status: 'gagal',
       diperbarui: null,
     })
+  })
+})
+
+describe('SoilMoisture and NASAEONET contract schemas', () => {
+  it('parses valid soil moisture and rejects invalid values', () => {
+    const valid = {
+      data: {
+        latitude: -6.2,
+        longitude: 106.8,
+        titik_permintaan: [106.8, -6.2],
+        elevasi_mdpl: 25,
+        kelembapan_tanah_0_1cm_m3m3: 0.35,
+        kelembapan_tanah_3_9cm_m3m3: 0.38,
+        suhu_tanah_permukaan_c: 29.5,
+        waktu_model: '2026-10-17T00:00:00Z',
+        provenans: {
+          penyedia: 'Open-Meteo',
+          endpoint: 'https://api.open-meteo.com/v1/forecast',
+          sifat_data: 'modelled',
+          atribusi: 'Open-Meteo',
+          status: 'ok',
+          validasi: 'valid',
+          waktu_tarik: '2026-10-17T04:00:00Z',
+          request_id: 'test-req',
+        },
+      },
+      sumber: 'Open-Meteo',
+      keterangan: 'Indikator model',
+      diambil: '2026-10-17T04:00:00Z',
+    }
+    expect(soilMoistureSchema.parse(valid)).toBeTruthy()
+
+    // Out of range moisture (> 1.0) must fail
+    expect(() =>
+      soilMoistureSchema.parse({
+        ...valid,
+        data: { ...valid.data, kelembapan_tanah_0_1cm_m3m3: 1.5 },
+      }),
+    ).toThrow()
   })
 })

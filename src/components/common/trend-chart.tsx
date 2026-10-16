@@ -117,7 +117,7 @@ export function TrendChart({
                   x={PLOT_LEFT - 8}
                   y={y + 4}
                   textAnchor="end"
-                  className="fill-ink-3 font-mono text-xs"
+                  className="fill-ink-2 font-mono text-xs"
                 >
                   {formatNumber(value)}
                 </text>
@@ -151,7 +151,7 @@ export function TrendChart({
           ))}
         </svg>
 
-        <div className="text-ink-3 mt-[-4px] flex justify-between pr-1 pl-9 text-xs">
+        <div className="text-ink-2 mt-[-4px] flex justify-between pr-1 pl-9 text-xs">
           {dates.map((date) => (
             <span key={date}>{date}</span>
           ))}
@@ -170,7 +170,7 @@ export function TrendChart({
 function TrendStat({ label, value }: { label: string; value: number }) {
   return (
     <div className="min-w-0">
-      <p className="text-ink-3 truncate text-xs">{label}</p>
+      <p className="text-ink-2 truncate text-xs">{label}</p>
       <p className="text-ink mt-1 font-mono text-sm font-semibold tabular-nums">
         {formatNumber(value)}
       </p>
