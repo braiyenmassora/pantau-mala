@@ -147,6 +147,25 @@ describe('SummaryPanel states', () => {
     expect(screen.getByText(copy.empty.noHotspots.description('Indonesia'))).toBeTruthy()
   })
 
+  it('shows limitation disclaimer in the DOM without hover', () => {
+    const withHotspots = { ...region, hotspots_24h: 12 }
+    wrap(
+      <SummaryPanel
+        regions={[withHotspots]}
+        filtered={[withHotspots]}
+        mapRef={createRef<MapRef | null>()}
+        isPending={false}
+        isError={false}
+      />,
+    )
+    const note = screen.getByTestId('panel-limitation-note')
+    expect(note.textContent).toBe(copy.panel.limitationNote)
+    expect(note.textContent).not.toMatch(/kebakaran terjadi|terbakar/i)
+    expect(
+      screen.getByRole('button', { name: copy.panel.titleTip }),
+    ).toBeTruthy()
+  })
+
   it('shows filter empty with tampilkan semua', () => {
     useMapStore.setState({
       selectedCategories: new Set(['sedang']),

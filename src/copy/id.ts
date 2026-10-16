@@ -186,9 +186,11 @@ export const copy = {
     indonesiaToday: 'Pantauan titik panas Indonesia',
     provinceToday: (province: string) => `Pantauan titik panas · ${province}`,
     subtitle: 'Deteksi satelit NASA FIRMS · 24 jam terakhir',
-    titleTip: 'Pantauan satelit, bukan peringatan bencana.',
-    limitationNote:
-      'Titik panas dari satelit, belum tentu kebakaran. Darurat: 112 atau BPBD setempat.',
+    /** Tooltip ⓘ di judul — versi lengkap disclaimer. */
+    titleTip:
+      'Titik panas dari satelit, belum tentu kebakaran. Darurat: 112 atau BPBD setempat. Pantauan satelit, bukan peringatan bencana.',
+    /** Satu baris terlihat di panel (tanpa hover). */
+    limitationNote: 'Titik panas satelit, belum tentu kebakaran.',
     hotspot24h: 'Titik panas 24 jam',
     hotspotHint: 'Penjelasan titik panas',
     hotspotTooltip:
