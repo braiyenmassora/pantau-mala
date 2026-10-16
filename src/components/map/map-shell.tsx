@@ -21,6 +21,7 @@ import { MapSoftLoading } from '@/components/map/map-soft-loading'
 import { ProvinceChoroplethLayer } from '@/components/map/province-choropleth-layer'
 import { ProvinceFocus } from '@/components/map/province-focus'
 import { ProvinceLabelsLayer } from '@/components/map/province-labels-layer'
+import { ProvinceRadarsLayer } from '@/components/map/province-radars-layer'
 import { SelectedHotspotsLayer } from '@/components/map/selected-hotspots-layer'
 import { UserLocationLayer } from '@/components/map/user-location-layer'
 import { Map, useMap, type MapRef } from '@/components/ui/map'
@@ -227,7 +228,12 @@ export class LayerErrorBoundary extends Component<
   }
 }
 
-export function MapShell({ mapRef, panelOpen, regions, weatherRegions = regions }: MapShellProps) {
+export function MapShell({
+  mapRef,
+  panelOpen,
+  regions,
+  weatherRegions = regions,
+}: MapShellProps) {
   const { data: catalog } = useRegionCatalog()
   const [noWebGl, setNoWebGl] = useState(() => !webGlSupported())
   const [basemapFailed, setBasemapFailed] = useState(false)
@@ -297,6 +303,9 @@ export function MapShell({ mapRef, panelOpen, regions, weatherRegions = regions 
         </LayerErrorBoundary>
         <LayerErrorBoundary name="ProvinceLabelsLayer" onError={markLayerFailed}>
           <ProvinceLabelsLayer regions={regions} />
+        </LayerErrorBoundary>
+        <LayerErrorBoundary name="ProvinceRadarsLayer" onError={markLayerFailed}>
+          <ProvinceRadarsLayer regions={regions} />
         </LayerErrorBoundary>
         <LayerErrorBoundary name="HotspotHeatmapLayer" onError={markLayerFailed}>
           <HotspotHeatmapLayer regions={regions} />

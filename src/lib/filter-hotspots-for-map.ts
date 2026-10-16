@@ -1,6 +1,7 @@
 import type { Feature, FeatureCollection, Point } from 'geojson'
 
 import type { HotspotFeatureCollection, Region } from '@/data/types'
+import { normalizeProvinceName } from '@/lib/province-boundaries'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 
 export type MapHotspotProps = {
@@ -35,6 +36,12 @@ export function filterHotspotsForMap(
     const code = f.properties.region_code
     const region = code ? regionsByCode.get(code) : undefined
     if (!region) continue
+    if (
+      _province !== 'Semua' &&
+      normalizeProvinceName(region.province) !== normalizeProvinceName(_province)
+    ) {
+      continue
+    }
     if (selectedCode) {
       if (code !== selectedCode) continue
     }

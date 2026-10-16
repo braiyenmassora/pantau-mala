@@ -99,14 +99,14 @@ Sentence case. Sapaan “kamu”. Desimal koma kecuali koordinat.
 
 ## 5. Komponen kunci
 
-| Komponen         | Spek                                                                                                                   |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Search           | tinggi **36**, radius kontrol, border + `shadow-sm`, teks 13                                                           |
-| Chip filter      | tinggi **32**, compact radius, gap 8, teks 11/500; terpilih = latar forest-soft, teks forest                           |
-| Badge kategori   | tinggi **24**, radius kontrol, tint + text kategori, teks 11/600                                                       |
-| Tombol           | radius kontrol; utama **36**; kecil **32** desktop / **36** phone; primary brand / sekunder border / lembut brand-soft |
-| Deteksi satelit  | titik / heatmap dari koordinat NASA FIRMS asli, bukan pusat provinsi atau hasil sebaran sintetis                       |
-| Kelompok deteksi | satu lapisan cluster satelit, diameter 17-23 px dan border 1 px; tidak ditumpuk badge hitungan kabupaten               |
+| Komponen        | Spek                                                                                                                   |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Search          | tinggi **36**, radius kontrol, border + `shadow-sm`, teks 13                                                           |
+| Chip filter     | tinggi **32**, compact radius, gap 8, teks 11/500; terpilih = latar forest-soft, teks forest                           |
+| Badge kategori  | tinggi **24**, radius kontrol, tint + text kategori, teks 11/600                                                       |
+| Tombol          | radius kontrol; utama **36**; kecil **32** desktop / **36** phone; primary brand / sekunder border / lembut brand-soft |
+| Radar provinsi  | satu radar berdenyut per provinsi aktif di overview nasional (merah cepat ~850 ms, oranye sedang ~1800 ms)             |
+| Deteksi satelit | titik / heatmap dari koordinat NASA FIRMS asli, menyala saat provinsi/kabupaten dipilih                                |
 
 Ikon Lucide stroke **2**: 14 (ⓘ / rail), 16 inline, 18 aksi, 20 kontrol peta.
 
@@ -134,13 +134,12 @@ sebagai copy atau markup yang tampil kepada pengguna.
 
 ## 6. Motion (PDF §5)
 
-Kelompok deteksi memakai radar kecil: siklus 1 detik untuk risiko `sangat_tinggi`
-dan 2 detik untuk `sedang`. Kategori berasal dari `risk_category` BE; cluster
-mengambil kategori tertinggi dari anggotanya, bukan jumlah titik atau confidence
-sensor. Kategori yang belum tersedia tidak diberi radar. Animasi mengikuti
-`prefers-reduced-motion`, berhenti memperbarui paint saat tab tersembunyi, dan
-dibersihkan saat unmount. Heatmap memakai source tanpa clustering sehingga
-kepadatan tetap mengikuti koordinat deteksi asli pada seluruh zoom.
+Overview nasional memakai satu radar peringatan per provinsi aktif (data 24 jam
+terakhir): siklus cepat (~850 ms) untuk risiko `sangat_tinggi` dan siklus sedang
+(~1800 ms) untuk `sedang`. Titik deteksi satelit dan lapisan heatmap hanya menyala
+saat pengguna memilih provinsi atau kabupaten, menjaga tampilan nasional tetap bersih
+tanpa penumpukan ribuan titik. Animasi mengikuti `prefers-reduced-motion`, berhenti
+saat tab tersembunyi, dan dibersihkan saat unmount.
 
 - Easing panel/view: `--ease-out-soft` = `cubic-bezier(0.2, 0.7, 0.2, 1)`
 - Hover 150 ms · panel 300 ms · view-in 220 ms · zoom peta 600 ms

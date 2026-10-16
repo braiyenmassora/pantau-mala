@@ -58,6 +58,10 @@ vi.mock('@/components/map/province-labels-layer', () => ({
   ProvinceLabelsLayer: () => null,
 }))
 
+vi.mock('@/components/map/province-radars-layer', () => ({
+  ProvinceRadarsLayer: () => null,
+}))
+
 vi.mock('@/components/map/earthquake-layer', () => ({
   EarthquakeLayer: () => null,
 }))

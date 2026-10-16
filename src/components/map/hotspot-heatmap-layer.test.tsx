@@ -111,6 +111,7 @@ describe('HotspotHeatmapLayer', () => {
   })
 
   it('adds heatmap source/layer from existing hotspots', () => {
+    useMapStore.setState({ selectedCode: null, province: 'Papua' })
     const sources = new Map<string, { setData: typeof setData }>()
     getSource.mockImplementation((id: string) => sources.get(id))
     addSource.mockImplementation((id: string) => {

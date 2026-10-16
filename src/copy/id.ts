@@ -360,10 +360,10 @@ export const copy = {
 
   legend: {
     /** Strip kartu kiri bawah peta — teks pendek agar mudah dibaca. */
-    riskTitle: 'Risiko wilayah',
-    riskHint: 'Radar cepat: sangat tinggi; pelan: sedang',
-    detectionTitle: 'Deteksi satelit',
-    detectionHint: 'Angka = deteksi, bukan jumlah kebakaran',
+    riskTitle: 'Radar provinsi',
+    riskHint: 'Data 24 jam; merah cepat, oranye sedang',
+    detectionTitle: 'Deteksi & heatmap',
+    detectionHint: 'Aktif saat wilayah dipilih',
     quakeTitle: 'Gempa bumi',
     quakeHint: 'Episentrum dari feed BMKG',
     densityTitle: 'Kepadatan satelit',

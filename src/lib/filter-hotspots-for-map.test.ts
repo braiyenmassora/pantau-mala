@@ -82,6 +82,16 @@ describe('filterHotspotsForMap', () => {
     expect(out.features[1]?.properties.weight).toBe(0.2)
   })
 
+  it('filters observations to the selected province before rendering the drill-in map', () => {
+    const otherProvince = { ...region, code: 'IDN.2.1_1', province: 'Papua Barat' }
+    const out = filterHotspotsForMap(data, [region, otherProvince], 'Papua', null)
+
+    expect(out.features).toHaveLength(2)
+    expect(
+      out.features.every((feature) => feature.properties.region_code === region.code),
+    ).toBe(true)
+  })
+
   it.each([
     ['sangat_tinggi', 3],
     ['sedang', 2],

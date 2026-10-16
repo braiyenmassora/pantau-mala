@@ -120,10 +120,12 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
     setPanelOpenRef.current = setPanelOpen
   }, [regions, select, panelOpen, setPanelOpen])
 
-  const collection = useMemo(
-    () => filterHotspotsForMap(data, regions, province, selectedCode),
-    [data, regions, province, selectedCode],
-  )
+  const collection = useMemo(() => {
+    if (province === 'Semua' && !selectedCode) {
+      return filterHotspotsForMap(undefined, regions, province, selectedCode)
+    }
+    return filterHotspotsForMap(data, regions, province, selectedCode)
+  }, [data, regions, province, selectedCode])
 
   // Setup layer + handler sekali
   useEffect(() => {
