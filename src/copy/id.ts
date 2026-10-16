@@ -180,6 +180,11 @@ export const copy = {
     mapPartial: {
       title: 'Sebagian peta belum bisa ditampilkan',
     },
+    appCrash: {
+      title: 'Halaman tidak bisa ditampilkan',
+      description: 'Terjadi gangguan di aplikasi. Muat ulang untuk mencoba lagi.',
+      action: 'Muat ulang',
+    },
   },
 
   panel: {
