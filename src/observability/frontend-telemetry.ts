@@ -6,6 +6,8 @@ const SESSION_MS = 30 * 60_000
 const FIRST_FLUSH_MS = 1_000
 const FLUSH_MS = 10_000
 const MAX_BATCH = 20
+const MAX_PENDING = 40
+const MAX_ATTEMPTS = 3
 
 type Event = {
   id: string
@@ -73,7 +75,7 @@ export function startFrontendTelemetry() {
   }
   let currentSession = sessionId()
   let sessionExpires = Date.now() + SESSION_MS
-  const pending: Event[] = []
+  const pending: { event: Event; attempts: number }[] = []
   let timer: number | undefined
   let stopped = false
   let disabled = false
@@ -82,6 +84,12 @@ export function startFrontendTelemetry() {
   let firstFlush = true
   let period = Date.now()
   let budget = 0
+
+  const retry = (batch: typeof pending) => {
+    if (stopped) return
+    pending.unshift(...batch.filter((entry) => entry.attempts < MAX_ATTEMPTS))
+    pending.length = Math.min(pending.length, MAX_PENDING)
+  }
 
   const schedule = () => {
     if (stopped || disabled || timer !== undefined || !pending.length) return
@@ -96,7 +104,11 @@ export function startFrontendTelemetry() {
 
   const flush = () => {
     if (disabled || inFlight || Date.now() < cooldown || !pending.length) return
-    const events = pending.splice(0, MAX_BATCH)
+    const batch = pending.splice(0, MAX_BATCH)
+    const events = batch.map((entry) => {
+      entry.attempts++
+      return entry.event
+    })
     firstFlush = false
     inFlight = true
     void fetch('/api/v1/telemetry', {
@@ -118,13 +130,13 @@ export function startFrontendTelemetry() {
           disabled = true
           pending.length = 0
         } else if (response.status !== 202) {
-          pending.unshift(...events)
+          retry(batch)
           const seconds = Number(response.headers.get('Retry-After')) || 30
           cooldown = Date.now() + Math.min(3600, Math.max(30, seconds)) * 1000
         }
       })
       .catch(() => {
-        pending.unshift(...events)
+        retry(batch)
         cooldown = Date.now() + 30_000
       })
       .finally(() => {
@@ -134,7 +146,7 @@ export function startFrontendTelemetry() {
   }
 
   const track = (event: Omit<Event, 'id' | 'session_id' | 'path'>) => {
-    if (stopped || disabled || pending.length >= 40) return
+    if (stopped || disabled || pending.length >= MAX_PENDING) return
     if (Date.now() - period >= 60_000) {
       period = Date.now()
       budget = 0
@@ -146,10 +158,13 @@ export function startFrontendTelemetry() {
       sessionExpires = Date.now() + SESSION_MS
     }
     pending.push({
-      ...event,
-      id: crypto.randomUUID(),
-      session_id: currentSession,
-      path: pagePath(),
+      event: {
+        ...event,
+        id: crypto.randomUUID(),
+        session_id: currentSession,
+        path: pagePath(),
+      },
+      attempts: 0,
     })
     schedule()
   }

@@ -46,7 +46,9 @@ it('batches non-blocking keepalive fetch without credentials, raw errors, or URL
 
 it('keeps a failed page view for retry with its original deduplication ID', async () => {
   vi.mocked(fetch)
-    .mockResolvedValueOnce(new Response(null, { status: 503, headers: { 'Retry-After': '30' } }))
+    .mockResolvedValueOnce(
+      new Response(null, { status: 503, headers: { 'Retry-After': '30' } }),
+    )
     .mockResolvedValueOnce(new Response(null, { status: 202 }))
   stop = startFrontendTelemetry()
   await vi.advanceTimersByTimeAsync(1_000)
@@ -67,6 +69,26 @@ it('flushes short visits when the page hides before the first batch', async () =
   expect(fetch).toHaveBeenCalledTimes(1)
   await vi.advanceTimersByTimeAsync(20_000)
   expect(fetch).toHaveBeenCalledTimes(1)
+})
+
+it('retries a network failure without leaking retry bookkeeping into the payload', async () => {
+  vi.mocked(fetch)
+    .mockRejectedValueOnce(new TypeError('offline'))
+    .mockResolvedValueOnce(new Response(null, { status: 202 }))
+  stop = startFrontendTelemetry()
+  await vi.advanceTimersByTimeAsync(31_001)
+  expect(fetch).toHaveBeenCalledTimes(2)
+  expect(vi.mocked(fetch).mock.calls[1][1]?.body).toBe(
+    vi.mocked(fetch).mock.calls[0][1]?.body,
+  )
+  expect(String(vi.mocked(fetch).mock.calls[1][1]?.body)).not.toContain('attempts')
+})
+
+it('bounds retries during a prolonged outage', async () => {
+  vi.mocked(fetch).mockImplementation(async () => new Response(null, { status: 503 }))
+  stop = startFrontendTelemetry()
+  await vi.advanceTimersByTimeAsync(300_000)
+  expect(fetch).toHaveBeenCalledTimes(3)
 })
 
 it('caps a burst at 40 buffered events and 20 per batch', async () => {
