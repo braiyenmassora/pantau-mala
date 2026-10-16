@@ -25,7 +25,7 @@ it('batches non-blocking keepalive fetch without credentials, raw errors, or URL
   window.dispatchEvent(new ErrorEvent('error', { message: 'secret-password' }))
   recordFrontendApiError(500)
   expect(fetch).not.toHaveBeenCalled()
-  await vi.advanceTimersByTimeAsync(10_000)
+  await vi.advanceTimersByTimeAsync(1_000)
   expect(fetch).toHaveBeenCalledTimes(1)
   const [path, options] = vi.mocked(fetch).mock.calls[0]
   expect(path).toBe('/api/v1/telemetry')
@@ -42,6 +42,31 @@ it('batches non-blocking keepalive fetch without credentials, raw errors, or URL
   expect(String(options?.body)).not.toMatch(
     /private-query|private-fragment|secret-password|client_id|Authorization/,
   )
+})
+
+it('keeps a failed page view for retry with its original deduplication ID', async () => {
+  vi.mocked(fetch)
+    .mockResolvedValueOnce(new Response(null, { status: 503, headers: { 'Retry-After': '30' } }))
+    .mockResolvedValueOnce(new Response(null, { status: 202 }))
+  stop = startFrontendTelemetry()
+  await vi.advanceTimersByTimeAsync(1_000)
+  expect(fetch).toHaveBeenCalledTimes(1)
+  const firstBody = vi.mocked(fetch).mock.calls[0][1]?.body
+  await vi.advanceTimersByTimeAsync(29_999)
+  expect(fetch).toHaveBeenCalledTimes(1)
+  await vi.advanceTimersByTimeAsync(1)
+  expect(fetch).toHaveBeenCalledTimes(2)
+  expect(vi.mocked(fetch).mock.calls[1][1]?.body).toBe(firstBody)
+})
+
+it('flushes short visits when the page hides before the first batch', async () => {
+  stop = startFrontendTelemetry()
+  await vi.advanceTimersByTimeAsync(0)
+  window.dispatchEvent(new Event('pagehide'))
+  await vi.advanceTimersByTimeAsync(0)
+  expect(fetch).toHaveBeenCalledTimes(1)
+  await vi.advanceTimersByTimeAsync(20_000)
+  expect(fetch).toHaveBeenCalledTimes(1)
 })
 
 it('caps a burst at 40 buffered events and 20 per batch', async () => {

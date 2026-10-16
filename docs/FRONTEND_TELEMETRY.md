@@ -5,7 +5,8 @@ ditambahkan pada repo backend atas permintaan owner; perubahan FE tetap di
 `lutuk/personal`, bukan `main`/`develop` milik tim.
 
 - Pengiriman hanya `fetch` async dengan `keepalive`, maksimal 20 event/batch dan
-  40 event di RAM; flush 10 detik atau saat halaman disembunyikan/ditutup.
+  40 event di RAM; event pertama di-flush setelah 1 detik, lalu batch berikutnya
+  setiap 10 detik atau saat halaman disembunyikan/ditutup.
 - Endpoint `/api/v1/telemetry` menjadi pengecualian observabilitas yang sempit
   untuk POST. API data bisnis tetap read-only; management tetap di CMS Go.
 - Gateway dan Go mewajibkan `Prefer: respond-async` dan
@@ -21,7 +22,8 @@ ditambahkan pada repo backend atas permintaan owner; perubahan FE tetap di
 - Negara/region/kota dibaca Worker dari metadata `request.cf`, bukan header geo
   browser. Lokal bisa kosong; lokasi jaringan bersifat perkiraan, bukan GPS.
 - Endpoint belum tersedia/menolak 4xx: tracker berhenti, tidak retry berulang.
-  Gangguan jaringan, 429, dan 5xx memberi cooldown minimal 30 detik.
+  Gangguan jaringan, 429, dan 5xx mempertahankan batch di memori dan memberi
+  cooldown minimal 30 detik sebelum mencoba kembali dengan UUID deduplikasi yang sama.
 
 Deploy backend beserta migration `0007_frontend_traffic` lebih dahulu, lalu FE.
 Data muncul di CMS `/traffic?tab=frontend` (sesi admin); request API tetap di

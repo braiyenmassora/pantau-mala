@@ -3,6 +3,7 @@ import { useSession } from '@/auth/session'
 
 const SESSION_KEY = 'pantau-mala.telemetry-session'
 const SESSION_MS = 30 * 60_000
+const FIRST_FLUSH_MS = 1_000
 const FLUSH_MS = 10_000
 const MAX_BATCH = 20
 
@@ -78,6 +79,7 @@ export function startFrontendTelemetry() {
   let disabled = false
   let inFlight = false
   let cooldown = 0
+  let firstFlush = true
   let period = Date.now()
   let budget = 0
 
@@ -88,13 +90,14 @@ export function startFrontendTelemetry() {
         timer = undefined
         flush()
       },
-      Math.max(FLUSH_MS, cooldown - Date.now()),
+      Math.max(firstFlush ? FIRST_FLUSH_MS : FLUSH_MS, cooldown - Date.now()),
     )
   }
 
   const flush = () => {
     if (disabled || inFlight || Date.now() < cooldown || !pending.length) return
     const events = pending.splice(0, MAX_BATCH)
+    firstFlush = false
     inFlight = true
     void fetch('/api/v1/telemetry', {
       method: 'POST',
@@ -115,11 +118,13 @@ export function startFrontendTelemetry() {
           disabled = true
           pending.length = 0
         } else if (response.status !== 202) {
+          pending.unshift(...events)
           const seconds = Number(response.headers.get('Retry-After')) || 30
           cooldown = Date.now() + Math.min(3600, Math.max(30, seconds)) * 1000
         }
       })
       .catch(() => {
+        pending.unshift(...events)
         cooldown = Date.now() + 30_000
       })
       .finally(() => {
