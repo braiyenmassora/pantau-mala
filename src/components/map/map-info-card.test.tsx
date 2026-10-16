@@ -47,6 +47,20 @@ describe('MapInfoCard', () => {
     expect(screen.queryByText(/kebakaran terdeteksi|api aktif|bahaya/i)).toBeNull()
   })
 
+  it('uses fallback heading when region and district are missing', () => {
+    const { container } = render(
+      <MapInfoCard satellite="VIIRS NOAA-21" confidence="tinggi" />,
+    )
+    const heading = screen.getByText(copy.map.hotspotUntitled)
+    expect(heading).toBeTruthy()
+    expect(heading.className).toMatch(/font-semibold/)
+    expect(screen.getByText('Satelit: VIIRS NOAA-21')).toBeTruthy()
+    expect(
+      container.querySelectorAll('p.font-semibold, p[class*="font-semibold"]'),
+    ).toHaveLength(1)
+    expect(heading.textContent?.trim()).toBe(copy.map.hotspotUntitled)
+  })
+
   it('omits empty satellite and district without blank rows', () => {
     const { container } = render(
       <MapInfoCard

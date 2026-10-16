@@ -346,6 +346,8 @@ export const copy = {
     /** Label baris popup titik (bukan copy.detail.confidence / copy.extra.confidence). */
     detectionConfidence: 'Keyakinan deteksi',
     satellite: 'Satelit',
+    /** Heading cadangan bila nama wilayah tidak ada. */
+    hotspotUntitled: 'Titik panas satelit',
   },
   filter: {
     allProvinces: 'Semua provinsi',

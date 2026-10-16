@@ -121,6 +121,7 @@ export function MapInfoCard({
     push(body, formattedSatellite)
     push(body, formattedConfidence)
     for (const line of lines ?? []) push(body, line)
+    if (!heading && body.length > 0) heading = copy.map.hotspotUntitled
   }
 
   return (
