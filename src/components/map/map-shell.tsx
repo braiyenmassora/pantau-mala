@@ -127,6 +127,7 @@ function applyBasemapCleanups(map: MapLibreMap) {
   }
   const hiddenLabels = [
     'place_continent',
+    'place_state',
     'place_city_dot_r7',
     'place_city_dot_r4',
     'place_city_dot_r2',
@@ -148,7 +149,6 @@ function applyBasemapCleanups(map: MapLibreMap) {
   }
 
   const placeTextLayers = [
-    'place_state',
     'place_city',
     'place_city_r6',
     'place_city_r5',
@@ -175,7 +175,6 @@ function applyBasemapCleanups(map: MapLibreMap) {
   }
 
   const earlierLabels: Record<string, [number, number]> = {
-    place_state: [4, 12],
     place_city_r6: [6, 16],
     place_city_r5: [6, 16],
     place_town: [6, 16],
