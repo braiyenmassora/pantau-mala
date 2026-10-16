@@ -1,18 +1,17 @@
 import { Brand } from '@/components/common/brand'
+import { BootLoading } from '@/components/map/map-soft-loading'
 import { copy } from '@/copy/id'
-import { sessionRequest, switchClient } from './session'
-import { useQuery } from '@tanstack/react-query'
-import { z } from 'zod'
-import { Eye, EyeOff, Loader2, LogOut } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
-import { login, logout, restoreSession, useSession } from './session'
+import { login, restoreSession, useSession } from './session'
 import { focusRing } from '@/components/common/focus-ring'
-import { SearchableSelect } from '@/components/common'
+import { useUiStore } from '@/store/ui'
 
 export function AccessGate({ children }: { children: ReactNode }) {
   const accessMode = useSession((s) => s.accessMode)
   const accessError = useSession((s) => s.accessError)
   const status = useSession((s) => s.status)
+  const bootDone = useUiStore((s) => s.bootDone)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [show, setShow] = useState(false)
@@ -35,195 +34,113 @@ export function AccessGate({ children }: { children: ReactNode }) {
       await login(String(fields.get('username')), String(fields.get('password')))
       form.reset()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Tidak dapat masuk.')
+      setError(err instanceof Error ? err.message : copy.auth.loginFail)
     } finally {
       setBusy(false)
     }
   }
-  if (status === 'authenticated') return children
-  if (status === 'restoring') {
-    return (
-      <main className="bg-map-bg text-ink flex min-h-dvh flex-col items-center justify-center gap-3 p-4">
-        <Loader2 className="text-brand size-8 animate-spin" strokeWidth={2} aria-hidden />
-        <p role="status" className="text-ink-2 text-sm">
-          {copy.common.loading}
-        </p>
+
+  // Overlay tetap di pohon yang sama: restore → authenticated → mapReady.
+  const showBoot = status === 'restoring' || (status === 'authenticated' && !bootDone)
+
+  const body =
+    status === 'authenticated' ? (
+      children
+    ) : status === 'restoring' ? null : (
+      <main className="bg-map-bg text-ink flex min-h-dvh items-center justify-center p-4">
+        <section
+          className="rounded-panel bg-surface w-full max-w-sm space-y-6 p-6 shadow-sm"
+          aria-labelledby="login-title"
+        >
+          <header className="space-y-1">
+            <h1 id="login-title" className="text-xl leading-8 font-semibold">
+              <Brand />
+            </h1>
+            <p className="text-ink-2 text-sm leading-5">{copy.auth.loginLead}</p>
+          </header>
+          {accessMode === 'client' ? (
+            <div className="space-y-4">
+              <p role="alert" className="text-sm leading-5">
+                {accessError || copy.auth.clientUnavailable}
+              </p>
+              <button
+                type="button"
+                className={`rounded-card border-line h-11 border px-4 text-sm leading-5 ${focusRing}`}
+                onClick={() => void restoreSession()}
+              >
+                {copy.auth.retry}
+              </button>
+            </div>
+          ) : (
+            <form
+              onSubmit={(e) => {
+                void submit(e)
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label htmlFor="username" className="mb-1 block text-sm leading-5">
+                  {copy.auth.username}
+                </label>
+                <input
+                  id="username"
+                  name="username"
+                  autoComplete="username"
+                  required
+                  maxLength={80}
+                  className={`border-line rounded-card h-11 w-full border px-3 text-sm leading-5 ${focusRing}`}
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="mb-1 block text-sm leading-5">
+                  {copy.auth.password}
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={show ? 'text' : 'password'}
+                    autoComplete="current-password"
+                    required
+                    maxLength={128}
+                    className={`border-line rounded-card h-11 w-full border pr-12 pl-3 text-sm leading-5 ${focusRing}`}
+                  />
+                  <button
+                    type="button"
+                    aria-label={show ? copy.auth.hidePassword : copy.auth.showPassword}
+                    aria-pressed={show}
+                    onClick={() => setShow((v) => !v)}
+                    className={`absolute top-0 right-0 flex size-11 items-center justify-center ${focusRing}`}
+                  >
+                    {show ? (
+                      <EyeOff className="size-4.5" strokeWidth={2} aria-hidden />
+                    ) : (
+                      <Eye className="size-4.5" strokeWidth={2} aria-hidden />
+                    )}
+                  </button>
+                </div>
+              </div>
+              {error && (
+                <p role="alert" className="text-ink text-sm leading-5">
+                  {error}
+                </p>
+              )}
+              <button
+                disabled={busy}
+                className={`bg-brand text-surface rounded-card h-11 w-full px-4 text-sm leading-5 font-semibold disabled:opacity-60 ${focusRing}`}
+              >
+                {busy ? copy.auth.submitting : copy.auth.submit}
+              </button>
+            </form>
+          )}
+        </section>
       </main>
     )
-  }
+
   return (
-    <main className="bg-map-bg text-ink flex min-h-dvh items-center justify-center p-4">
-      <section
-        className="rounded-panel bg-surface w-full max-w-sm space-y-4 p-6 shadow-sm"
-        aria-labelledby="login-title"
-      >
-        <h1 id="login-title" className="text-xl font-semibold">
-          <Brand />
-        </h1>
-        <p className="text-ink-2 text-base">Masuk untuk mengakses data workspace kamu.</p>
-        {accessMode === 'client' ? (
-          <div className="space-y-4">
-            <p role="alert">{accessError || 'Akses client belum tersedia.'}</p>
-            <button
-              type="button"
-              className={`rounded-ctl border-line h-11 border px-4 ${focusRing}`}
-              onClick={() => void restoreSession()}
-            >
-              Coba lagi
-            </button>
-          </div>
-        ) : (
-          <form
-            onSubmit={(e) => {
-              void submit(e)
-            }}
-            className="space-y-4"
-          >
-            <div>
-              <label htmlFor="username" className="mb-1 block text-sm">
-                {copy.auth.username}
-              </label>
-              <input
-                id="username"
-                name="username"
-                autoComplete="username"
-                required
-                maxLength={80}
-                className={`border-line rounded-ctl h-11 w-full border px-3 text-lg sm:text-base ${focusRing}`}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="mb-1 block text-sm">
-                {copy.auth.password}
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  name="password"
-                  type={show ? 'text' : 'password'}
-                  autoComplete="current-password"
-                  required
-                  maxLength={128}
-                  className={`border-line rounded-ctl h-11 w-full border pr-12 pl-3 text-lg sm:text-base ${focusRing}`}
-                />
-                <button
-                  type="button"
-                  aria-label={show ? copy.auth.hidePassword : copy.auth.showPassword}
-                  aria-pressed={show}
-                  onClick={() => setShow((v) => !v)}
-                  className={`absolute top-0 right-0 flex size-11 items-center justify-center ${focusRing}`}
-                >
-                  {show ? (
-                    <EyeOff className="size-4.5" strokeWidth={2} aria-hidden />
-                  ) : (
-                    <Eye className="size-4.5" strokeWidth={2} aria-hidden />
-                  )}
-                </button>
-              </div>
-            </div>
-            {error && (
-              <p role="alert" className="text-ink text-sm">
-                {error}
-              </p>
-            )}
-            <button
-              disabled={busy}
-              className={`bg-brand text-surface rounded-card h-11 w-full px-4 font-semibold disabled:opacity-60 ${focusRing}`}
-            >
-              {busy ? 'Memproses…' : 'Masuk'}
-            </button>
-          </form>
-        )}
-      </section>
-    </main>
-  )
-}
-export function SessionControl() {
-  const accessMode = useSession((s) => s.accessMode)
-  const principal = useSession((s) => s.principal)
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
-  const generation = useSession((s) => s.generation)
-  const clients = useQuery({
-    queryKey: ['access-clients', principal?.client_id, generation],
-    queryFn: async () =>
-      z
-        .object({
-          data: z.array(
-            z.object({
-              id: z.string().uuid(),
-              slug: z.string(),
-              name: z.string(),
-              enabled: z.boolean(),
-            }),
-          ),
-        })
-        .parse(await sessionRequest('/auth/clients', 'GET'))
-        .data.filter((c) => c.enabled),
-    staleTime: 300000,
-    enabled: accessMode === 'account',
-  })
-  if (accessMode === 'client') return null
-  return (
-    <div className="border-line flex flex-wrap items-center gap-2 border-t pt-2 text-xs">
-      <span className="text-ink-2 min-w-0 flex-1 break-words">
-        {principal?.username} · {principal?.client_slug}
-      </span>
-      {clients.data && clients.data.length > 1 && (
-        <div className="w-full">
-          <label htmlFor="workspace" className="mb-1 block text-xs">
-            {copy.auth.workspace}
-          </label>
-          <SearchableSelect
-            id="workspace"
-            value={principal?.client_slug ?? ''}
-            disabled={busy}
-            options={clients.data.map((c) => ({
-              value: c.slug,
-              label: c.name || c.slug,
-            }))}
-            onChange={(val) => {
-              setBusy(true)
-              setError('')
-              void switchClient(val)
-                .catch((err) =>
-                  setError(
-                    err instanceof Error ? err.message : copy.auth.workspaceSwitchFail,
-                  ),
-                )
-                .finally(() => setBusy(false))
-            }}
-            searchPlaceholder={copy.auth.workspaceSearch}
-            emptyText={copy.auth.workspaceEmpty}
-            ariaLabel={copy.auth.workspace}
-          />
-        </div>
-      )}
-      {clients.isError && (
-        <p role="alert" className="w-full text-xs">
-          {copy.auth.workspaceListFail}
-        </p>
-      )}
-      <button
-        type="button"
-        aria-label={copy.auth.logout}
-        disabled={busy}
-        className={`rounded-card flex size-11 items-center justify-center ${focusRing}`}
-        onClick={() => {
-          setBusy(true)
-          setError('')
-          void logout()
-            .catch((err) => setError(err instanceof Error ? err.message : 'Gagal keluar'))
-            .finally(() => setBusy(false))
-        }}
-      >
-        <LogOut className="size-4" strokeWidth={2} aria-hidden />
-      </button>
-      {error && (
-        <p role="alert" className="w-full">
-          {error}
-        </p>
-      )}
-    </div>
+    <>
+      {body}
+      {showBoot ? <BootLoading /> : null}
+    </>
   )
 }

@@ -79,7 +79,7 @@ describe('RegionDetailPanel', () => {
   it('shows status hierarchy: badge, count, trend; no air/cuaca in Ringkasan', () => {
     renderDetail(pulangPisau)
     expect(screen.getByText('Sangat tinggi')).toBeTruthy()
-    expect(document.querySelector('.text-2xl.font-mono')?.textContent).toBe('23')
+    expect(document.querySelector('.text-3xl.font-mono')?.textContent).toBe('23')
     expect(screen.getByText(copy.detail.hotspotUnitLine)).toBeTruthy()
     expect(
       screen.getByText(
@@ -111,7 +111,7 @@ describe('RegionDetailPanel', () => {
     // Sections without Ringkasan or duplicate attribution
     expect(screen.queryByText('Ringkasan')).toBeNull()
     expect(screen.getByText('Kondisi saat ini')).toBeTruthy()
-    expect(screen.getByText('Yang bisa kamu lakukan')).toBeTruthy()
+    expect(screen.getByText(copy.detail.actions)).toBeTruthy()
     expect(screen.queryByText(/Data: NASA FIRMS · Open-Meteo/)).toBeNull()
 
     // Condition cells

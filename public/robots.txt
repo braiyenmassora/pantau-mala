@@ -1,0 +1,10 @@
+# https://pantaumala.live/robots.txt
+User-agent: *
+Allow: /
+
+# API / auth — bukan halaman publik
+Disallow: /api/
+Disallow: /auth/
+Disallow: /frontend/
+
+Sitemap: https://pantaumala.live/sitemap.xml

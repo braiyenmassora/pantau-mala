@@ -1,6 +1,11 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { fitIndonesia, fitProvinceBounds } from '@/lib/indonesia-view'
+import { fitIndonesia, fitProvinceBounds, getMapPadding } from '@/lib/indonesia-view'
+import { LAYOUT } from '@/lib/layout'
+
+function stubWidth(width: number) {
+  vi.stubGlobal('window', { innerWidth: width })
+}
 
 function mockMap() {
   const handlers = new Map<string, Set<() => void>>()
@@ -77,5 +82,27 @@ describe('fitProvinceBounds', () => {
     expect(map.jumpTo).toHaveBeenCalledWith(
       expect.objectContaining({ center: [115, -1], zoom: 4.5 }),
     )
+  })
+})
+
+describe('getMapPadding', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('ignores panel inset on mobile', () => {
+    stubWidth(390)
+    expect(getMapPadding(true).left).toBe(LAYOUT.gutter)
+  })
+
+  it('uses full overlay inset on desktop when panel open', () => {
+    stubWidth(1280)
+    expect(getMapPadding(true).left).toBe(LAYOUT.overlayInset)
+  })
+
+  it('keeps tablet map width at least mapMinWidth', () => {
+    stubWidth(700)
+    const pad = getMapPadding(true)
+    expect(700 - (pad.left as number)).toBeGreaterThanOrEqual(LAYOUT.mapMinWidth)
   })
 })

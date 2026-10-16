@@ -6,6 +6,7 @@ import { copy } from '@/copy/id'
 import type { Region, RiskCategory } from '@/data/types'
 import { filterRegions } from '@/lib/filter-regions'
 import { formatNumber } from '@/lib/format'
+import { chromeAvailWidth, chromeLeft } from '@/lib/layout'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
@@ -20,7 +21,7 @@ type FilterBarProps = {
   regions: Region[]
 }
 
-/** Provinsi + chip risiko di atas peta (provinsi paling kiri). */
+/** Provinsi + chip risiko — scroll-x di mobile/tablet, inset mengikuti chromeLeft. */
 export function FilterBar({ panelOpen, regions }: FilterBarProps) {
   const province = useMapStore((s) => s.province)
   const selectedCategories = useMapStore((s) => s.selectedCategories)
@@ -53,20 +54,23 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
   const categorySum =
     counts.sangat_tinggi + counts.sedang + counts.rendah + counts.tidak_tersedia
 
+  const left = chromeLeft(panelOpen)
+
   return (
     <div
       className={cn(
-        'z-30 flex-wrap items-center gap-4',
-        'ease-out-soft transition-[left] duration-300',
-        panelOpen
-          ? 'fixed top-(--floating-control-offset) right-(--floating-control-offset) hidden sm:left-(--map-overlay-inset) sm:flex'
-          : 'fixed top-(--floating-control-offset) right-(--floating-control-offset) left-(--floating-control-offset) flex',
+        'soft-scroll soft-fade-x fixed top-(--floating-control-offset) z-30',
+        'flex items-center gap-2 overflow-x-auto overscroll-x-contain pb-1',
+        'ease-out-soft transition-[left,max-width] duration-300',
+        // Panel mobile menutupi peta — sembunyikan chip; tablet+ tetap tampil
+        panelOpen && 'max-sm:hidden',
       )}
+      style={{ left, maxWidth: chromeAvailWidth(panelOpen) }}
       {...mapOverlayGestureProps}
       data-category-sum={categorySum}
       data-all-count={allCount}
     >
-      <ProvincePicker regions={regions} />
+      <ProvincePicker regions={regions} className="shrink-0" />
 
       <Chip
         pressed={allPressed}
@@ -75,6 +79,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         aria-label={copy.filter.allStatusesTitle(formatNumber(allCount))}
         onClick={clearCategories}
         className={cn(
+          'shrink-0',
           allCount === 0 && 'pointer-events-none cursor-not-allowed opacity-40',
         )}
       >
@@ -83,7 +88,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           <span className="text-ink-3" aria-hidden>
             ·
           </span>
-          <span className="font-mono text-sm font-semibold tabular-nums">
+          <span className="font-mono text-sm leading-5 font-semibold tabular-nums">
             {formatNumber(allCount)}
           </span>
         </span>
@@ -103,7 +108,10 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
             title={copy.filter.categoryTitle(formatNumber(count), meta.label)}
             aria-label={copy.filter.categoryTitle(formatNumber(count), meta.label)}
             onClick={() => toggleCategory(category)}
-            className={cn(isZero && 'pointer-events-none cursor-not-allowed opacity-40')}
+            className={cn(
+              'shrink-0',
+              isZero && 'pointer-events-none cursor-not-allowed opacity-40',
+            )}
           >
             <span
               className={cn('size-2 shrink-0 rounded-full', meta.dotClass)}
@@ -114,7 +122,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
               <span className="text-ink-3" aria-hidden>
                 ·
               </span>
-              <span className="font-mono text-sm font-semibold tabular-nums">
+              <span className="font-mono text-sm leading-5 font-semibold tabular-nums">
                 {formatNumber(count)}
               </span>
             </span>

@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { z } from 'zod'
 import { queryClient } from '@/data/query-client'
 import { useMapStore } from '@/store/map'
+import { useUiStore } from '@/store/ui'
 
 const principalSchema = z.object({
   client_id: z.string().uuid(),
@@ -37,6 +38,7 @@ function clearClientData() {
   queryClient.clear()
   useMapStore.getState().resetHome()
   useMapStore.setState({ hoveredCode: null, location: { status: 'off' } })
+  useUiStore.getState().setBootDone(false)
 }
 export function expireSession() {
   clearClientData()
@@ -58,7 +60,8 @@ function acceptSession(raw: unknown) {
 }
 export async function sessionRequest(path: string, method = 'POST', body: unknown = {}) {
   const { token, generation, accessMode } = useSession.getState()
-  if (accessMode === 'client') throw new Error('Kelola akses melalui CMS Go.')
+  if (accessMode === 'client')
+    throw new Error('Ganti ruang kerja tidak tersedia di mode ini.')
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'X-Console-Session': '1',
@@ -121,7 +124,7 @@ async function restoreAccess() {
       return
     }
     if (response.status !== 404 && response.status !== 200)
-      throw new Error('Akses client belum tersedia. Periksa konfigurasi server FE.')
+      throw new Error('Akses aplikasi belum tersedia. Coba lagi nanti.')
     useSession.setState({ accessMode: 'account' })
     acceptSession(await sessionRequest('/auth/browser-session'))
   } catch (error) {

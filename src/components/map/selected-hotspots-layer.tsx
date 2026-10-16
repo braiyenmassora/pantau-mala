@@ -9,7 +9,7 @@ import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
-import { formatDateTime, formatNumber } from '@/lib/format'
+import { formatDateTime } from '@/lib/format'
 import { getMapPadding } from '@/lib/indonesia-view'
 import { MAP_COLORS } from '@/lib/map-colors'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
@@ -192,7 +192,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
       {regionHotspots.map((f, i) => {
         const [lon, lat] = f.geometry.coordinates
         const stamp = formatDateTime(f.properties.time, selectedRegion.time_zone)
-        const label = `Titik panas ${stamp} · FRP ${formatNumber(f.properties.frp_mw)} MW`
+        const label = `Titik panas ${stamp}`
 
         return (
           <MapMarker
@@ -206,11 +206,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                 <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
                   <MapInfoCard
                     title={copy.extra.detections}
-                    lines={[
-                      selectedRegion.name,
-                      `Terdeteksi ${stamp}`,
-                      `FRP ${formatNumber(f.properties.frp_mw)} MW`,
-                    ]}
+                    lines={[selectedRegion.name, `Terdeteksi ${stamp}`]}
                   />
                 </div>
               ) : null}
@@ -219,8 +215,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                 role="img"
                 aria-label={label}
                 className={cn(
-                  'border-surface relative size-2.5 cursor-pointer rounded-full border-2 shadow-sm',
-                  'transition-transform duration-150 hover:scale-125',
+                  'marker--interactive border-surface relative size-2.5 cursor-pointer rounded-full border-2 shadow-sm',
                 )}
                 style={{ backgroundColor: style.dot }}
                 onMouseEnter={() => setHovered(i)}

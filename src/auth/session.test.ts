@@ -121,7 +121,9 @@ it('client gateway restores without bearer and data requests contain no credenti
   expect(useSession.getState().status).toBe('authenticated')
   await getData('/regions', (x) => x)
   expect(fetcher.mock.calls[1][1].headers.Authorization).toBeUndefined()
-  await expect(switchClient('fixture-b')).rejects.toThrow('CMS Go')
+  await expect(switchClient('fixture-b')).rejects.toThrow(
+    'Ganti ruang kerja tidak tersedia di mode ini.',
+  )
 })
 it('client gateway outage fails closed without account login fallback', async () => {
   const fetcher = vi
@@ -137,5 +139,5 @@ it('client gateway outage fails closed without account login fallback', async ()
   expect(useSession.getState().accessMode).toBe('client')
   expect(useSession.getState().status).toBe('anonymous')
   expect(fetcher).toHaveBeenCalledTimes(1)
-  expect(useSession.getState().accessError).toContain('konfigurasi')
+  expect(useSession.getState().accessError).toContain('Akses aplikasi belum tersedia')
 })

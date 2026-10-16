@@ -2554,16 +2554,18 @@ function MapClusterLayer<
   return null
 }
 
+// shortcut: unused map helpers stay exported so tsc noUnusedLocals stays green;
+// extract to a separate module when bundle size needs it.
 export {
   Map,
   useMap,
   MapMarker,
   MarkerContent,
-  MarkerPopup,
   MarkerTooltip,
   MarkerLabel,
-  MapPopup,
+  MarkerPopup,
   MapControls,
+  MapPopup,
   MapRoute,
   RouteProgress,
   RouteMarker,
@@ -2576,8 +2578,6 @@ export type {
   MapRef,
   MapViewport,
   MapStyleOption,
-  MapArcDatum,
-  MapArcEvent,
   MapGeoJSONData,
   MapGeoJSONFeature,
   MapGeoJSONEvent,
@@ -2585,15 +2585,6 @@ export type {
   MapMarkerProps,
   MarkerContentProps,
   MarkerPopupProps,
-  MarkerTooltipProps,
-  MarkerLabelProps,
-  MapControlsProps,
   MapPopupProps,
-  MapRouteProps,
-  RouteProgressProps,
-  RouteMarkerProps,
-  RouteAnchor,
-  MapArcProps,
   MapGeoJSONProps,
-  MapClusterLayerProps,
 }

@@ -1,4 +1,4 @@
-import { SessionControl } from '@/auth/access-gate'
+import { SessionControl } from '@/auth/session-control'
 import { focusRing } from '@/components/common/focus-ring'
 import { copy } from '@/copy/id'
 import { cn } from '@/lib/utils'
@@ -22,7 +22,7 @@ export function PanelFooter() {
             rel="noopener noreferrer"
             aria-label={copy.footer.openInNewTab(source.name)}
             className={cn(
-              'text-ink-2 hover:text-brand inline-flex items-center gap-2 font-medium no-underline transition-colors duration-150',
+              'text-ink-2 hover:text-brand inline-flex min-h-6 items-center gap-2 py-1 font-medium no-underline transition-colors duration-150',
               focusRing,
               'rounded-ctl',
             )}

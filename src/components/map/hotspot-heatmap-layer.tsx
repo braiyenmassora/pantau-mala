@@ -101,9 +101,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   }, [regions, select, panelOpen, setPanelOpen, selectedCode])
 
   // Detail kab: tip DOM di SelectedHotspotsLayer — jangan dobel dengan popup heatmap.
-  useEffect(() => {
-    if (selectedCode) setActiveHotspot(null)
-  }, [selectedCode])
+  if (selectedCode && activeHotspot) setActiveHotspot(null)
 
   useEffect(() => {
     if (!map || !isLoaded || !map.getLayer?.(POINTS_LAYER_ID)) return

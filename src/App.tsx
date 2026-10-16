@@ -16,6 +16,7 @@ import { copy } from '@/copy/id'
 import { useRegions } from '@/data/queries'
 import { filterRegions } from '@/lib/filter-regions'
 import { restoreFocusTrigger } from '@/lib/focus-return'
+import { BREAKPOINT, isMobileWidth } from '@/lib/layout'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -30,15 +31,20 @@ const easePanel = 'duration-300 ease-out-soft'
 export default function App() {
   const mapRef = useRef<MapRef | null>(null)
   const panelContentRef = useRef<HTMLDivElement>(null)
-  const [mobile, setMobile] = useState(() => window.innerWidth < 640)
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 639px)')
-    const sync = () => setMobile(mq.matches)
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
-  }, [])
+  const [mobile, setMobile] = useState(() => isMobileWidth())
   const panelOpen = useUiStore((s) => s.panelOpen)
   const togglePanel = useUiStore((s) => s.togglePanel)
+  const setPanelOpen = useUiStore((s) => s.setPanelOpen)
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${BREAKPOINT.sm - 1}px)`)
+    const onChange = () => {
+      setMobile(mq.matches)
+      // Resize ke mobile: tutup panel agar chrome peta (filter/kontrol) tetap bisa dipakai.
+      if (mq.matches) setPanelOpen(false)
+    }
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [setPanelOpen])
 
   const { data, isPending, isError, refetch } = useRegions()
   const province = useMapStore((s) => s.province)
@@ -122,7 +128,9 @@ export default function App() {
           aria-label={copy.app.panelAria}
           inert={!panelOpen || undefined}
           className={cn(
-            'absolute z-40 flex w-[calc(100vw-32px)] flex-col overflow-hidden sm:w-(--map-panel-width)',
+            // mobile: viewport−32; tablet+: max 400 tapi sisakan ruang peta
+            'absolute z-40 flex w-[calc(100vw-32px)] flex-col overflow-hidden',
+            'sm:w-[min(var(--map-panel-width),calc(100vw-5rem))]',
             'top-(--floating-control-offset) bottom-(--floating-control-offset) left-(--floating-control-offset)',
             'rounded-panel border-line bg-surface shadow-chrome border',
             easePanel,
@@ -164,7 +172,9 @@ export default function App() {
             easePanel,
             'transition-[left,background-color] duration-150',
             focusRing,
-            panelOpen ? 'left-[calc(100vw-24px)] sm:left-(--map-panel-edge)' : 'left-0',
+            panelOpen
+              ? 'left-[calc(100vw-24px)] sm:left-[min(var(--map-panel-edge),calc(100vw-4rem))]'
+              : 'left-0',
           )}
           {...mapOverlayGestureProps}
         >
@@ -188,7 +198,7 @@ export default function App() {
           aria-label={copy.app.mapAria}
           className="absolute inset-0 z-0"
         >
-          {/* Suspense: bg polos (tanpa teks). Label "Memuat peta…" hanya di MapShell. */}
+          {/* Suspense: bg polos. Overlay "Memuat…" di AccessGate sampai mapReady. */}
           <Suspense fallback={<div className="bg-map-bg size-full" aria-hidden />}>
             <MapShell
               mapRef={mapRef}

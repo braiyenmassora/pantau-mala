@@ -13,7 +13,9 @@ describe('MapLegend', () => {
 
     expect(screen.getByTestId('map-legend')).toBeTruthy()
     const risk = screen.getByLabelText(copy.legend.riskTitle)
-    const density = screen.getByLabelText(copy.legend.densityTitle)
+    const density = screen.getByLabelText(
+      `${copy.legend.densityTitle}: ${copy.legend.densityLow}, ${copy.legend.densityMid}, ${copy.legend.densityHigh}`,
+    )
     expect(risk).toBeTruthy()
     expect(density).toBeTruthy()
     expect(screen.getByText('Sangat tinggi')).toBeTruthy()

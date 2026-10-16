@@ -1,9 +1,8 @@
 import { LocateFixed } from 'lucide-react'
 import { useMemo, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
 
-import { Badge, InfoTooltip, ProgressBar } from '@/components/common'
+import { Badge, Button, InfoTooltip, ProgressBar } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { copy } from '@/copy/id'
 import { useHotspots, useNearbyHotspots } from '@/data/queries'
@@ -86,18 +85,18 @@ export function LocationCard({ regions }: LocationCardProps) {
   if (location.status === 'denied') {
     return (
       <Shell>
-        <div className="flex items-center justify-between gap-3 text-left">
+        <div className="flex flex-col gap-3 text-left min-[380px]:flex-row min-[380px]:items-center min-[380px]:justify-between">
           <p className="text-ink-2 min-w-0 flex-1 text-sm leading-5">
-            Izinkan lokasi untuk melihat titik panas di sekitarmu
+            {copy.location.deniedBody}
           </p>
           <Button
             type="button"
-            variant="secondary"
+            variant="soft"
             size="sm"
-            className="bg-brand-soft text-brand hover:bg-brand-soft/80 rounded-card h-8 shrink-0 border-transparent px-3 text-xs font-medium"
+            className="h-8 w-full shrink-0 px-3 text-xs leading-4 font-medium min-[380px]:w-auto"
             onClick={(e) => requestLocation(e.currentTarget)}
           >
-            Izinkan
+            {copy.location.useLocation}
           </Button>
         </div>
       </Shell>
@@ -107,15 +106,15 @@ export function LocationCard({ regions }: LocationCardProps) {
   if (location.status === 'error') {
     return (
       <Shell>
-        <div className="flex items-center justify-between gap-3 text-left">
+        <div className="flex flex-col gap-3 text-left min-[380px]:flex-row min-[380px]:items-center min-[380px]:justify-between">
           <p className="text-ink-2 min-w-0 flex-1 text-sm leading-5">
             {copy.empty.locationError.description}
           </p>
           <Button
             type="button"
-            variant="secondary"
+            variant="soft"
             size="sm"
-            className="bg-brand-soft text-brand hover:bg-brand-soft/80 rounded-card h-8 shrink-0 border-transparent px-3 text-xs font-medium"
+            className="h-8 w-full shrink-0 px-3 text-xs leading-4 font-medium min-[380px]:w-auto"
             onClick={() => setLocation({ status: 'requesting' })}
           >
             {copy.empty.locationError.action}
@@ -134,19 +133,23 @@ export function LocationCard({ regions }: LocationCardProps) {
             <p className="text-ink-2 text-sm leading-5">{copy.location.loading}</p>
           </div>
         ) : (
-          <div className="flex items-center justify-between gap-3 text-left">
+          <div className="flex flex-col gap-3 text-left min-[380px]:flex-row min-[380px]:items-center min-[380px]:justify-between">
             <p className="text-ink-2 min-w-0 flex-1 text-sm leading-5">
               {copy.location.riskSubtitle}
             </p>
             <Button
               type="button"
-              variant="secondary"
+              variant="soft"
               size="sm"
-              className="bg-brand-soft text-brand hover:bg-brand-soft/80 rounded-ctl h-8 shrink-0 border-transparent px-3 text-xs font-medium"
+              className="h-8 w-full shrink-0 px-3 text-xs leading-4 font-medium min-[380px]:w-auto"
               aria-label={copy.location.allowLocationFull}
               onClick={(e) => requestLocation(e.currentTarget)}
             >
-              <LocateFixed className="size-3.5" strokeWidth={2} aria-hidden />
+              <LocateFixed
+                className="panel-icon-locate size-3.5"
+                strokeWidth={2}
+                aria-hidden
+              />
               {copy.location.useLocation}
             </Button>
           </div>
@@ -256,7 +259,7 @@ function ActiveNearbyCard({
           <p className="text-ink-2 text-sm leading-5">{copy.location.nearbyNoHotspots}</p>
         ) : (
           <>
-            <div className="space-y-1">
+            <div className="space-y-2">
               <p className="text-ink text-sm leading-5 font-semibold">{countLabel}</p>
               <p className="text-ink-2 text-xs leading-4">
                 {copy.location.nearbyRadiusNote}

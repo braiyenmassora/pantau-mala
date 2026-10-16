@@ -104,7 +104,7 @@ describe('LocationCard', () => {
     expect(
       screen.getByText('Izinkan lokasi untuk melihat titik panas di sekitarmu'),
     ).toBeTruthy()
-    expect(screen.getByRole('button', { name: 'Izinkan' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: copy.location.useLocation })).toBeTruthy()
   })
 
   it('shows error empty with coba lagi', () => {

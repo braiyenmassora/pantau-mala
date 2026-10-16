@@ -13,7 +13,7 @@ type BadgeProps =
 
 /** Badge kategori — tinggi 24, tint + text dari token (tanpa inline hex). */
 const badgeBase =
-  'inline-flex h-6 shrink-0 items-center rounded-ctl px-2 text-xs font-semibold'
+  'inline-flex h-6 shrink-0 items-center rounded-ctl px-2 text-xs leading-4 font-semibold'
 
 export function Badge(props: BadgeProps) {
   if (props.variant === 'meta') {

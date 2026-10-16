@@ -1,14 +1,14 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
 
-/** Kartu panel: putih + border line halus (tanpa shadow tebal).
- * Anatomi: label 12 · nilai · meta 12 · aksi opsional. Padding 16, radius 8. */
+/** Kartu panel: putih + border line (tanpa shadow).
+ * Anatomi: label 12 · nilai · meta 12 · aksi opsional. Padding 16, radius 12. */
 function Card({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card"
       className={cn(
-        'border-line bg-surface text-ink rounded-ctl flex flex-col border',
+        'border-line bg-surface text-ink rounded-card flex flex-col border',
         className,
       )}
       {...props}

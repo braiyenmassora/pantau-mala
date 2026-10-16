@@ -2,7 +2,7 @@ import { useId } from 'react'
 
 import type { TimeZoneId } from '@/data/types'
 import { copy } from '@/copy/id'
-import { formatNumber, formatTrendDates } from '@/lib/format'
+import { chartScaleMax, formatNumber, formatTrendDates } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 type TrendTone = 'chart' | 'risk-high' | 'risk-mid' | 'risk-low'
@@ -103,7 +103,7 @@ export function TrendChart({
   }
 
   const maximum = Math.max(...safeValues)
-  const scaleMaximum = maximum > 0 ? Math.ceil(maximum * 1.1) : 1
+  const scaleMaximum = chartScaleMax(maximum)
   const range = PLOT_BOTTOM - PLOT_TOP
   const step =
     (VIEWBOX_WIDTH - PLOT_LEFT - PLOT_RIGHT) / Math.max(1, safeValues.length - 1)
@@ -121,7 +121,7 @@ export function TrendChart({
   )
   const latest = safeValues.at(-1) ?? 0
   const peak = Math.max(...safeValues)
-  const tickValues = [scaleMaximum, Math.round(scaleMaximum / 2), 0]
+  const tickValues = [scaleMaximum, scaleMaximum / 2, 0]
   const ariaValues = safeValues
     .map((value, index) => `${dates[index]} ${value}`)
     .join(', ')
@@ -134,7 +134,7 @@ export function TrendChart({
           {label}
         </h3>
         {description ? (
-          <p className="text-ink-2 mt-1 text-xs leading-4">{description}</p>
+          <p className="text-ink-2 mt-2 text-xs leading-4">{description}</p>
         ) : null}
       </div>
 

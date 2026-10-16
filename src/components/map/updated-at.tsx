@@ -49,7 +49,12 @@ export function UpdatedAtBadge() {
     hasProblem
       ? copy.updatedAt.problems(
           problems
-            .map((k) => copy.updatedAt.sourceStatus(SOURCE_LABEL[k], data.status[k]))
+            .map((k) =>
+              copy.updatedAt.sourceStatus(
+                SOURCE_LABEL[k],
+                copy.updatedAt.statusLabel[data.status[k]],
+              ),
+            )
             .join(', '),
         )
       : null,

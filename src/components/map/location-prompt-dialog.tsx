@@ -8,6 +8,7 @@ import { chromeSurface } from '@/lib/chrome'
 import { restoreFocusTrigger } from '@/lib/focus-return'
 import { resolveUserCoords } from '@/lib/geolocation'
 import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
+import { chromeLeft } from '@/lib/layout'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
@@ -56,10 +57,11 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
       aria-labelledby="location-prompt-title"
       className={cn(
         chromeSurface,
-        'absolute top-[68px] z-50 w-[min(360px,calc(100vw-2rem))] p-4',
+        'rounded-card absolute top-[68px] z-50 w-[min(360px,calc(100vw-2rem))] p-4',
         'ease-out-soft transition-[left] duration-300',
-        panelOpen ? 'left-(--map-overlay-inset)' : 'left-(--floating-control-offset)',
+        panelOpen && 'max-sm:hidden',
       )}
+      style={{ left: chromeLeft(panelOpen) }}
       {...mapOverlayGestureProps}
     >
       <EmptyState

@@ -1,5 +1,6 @@
 import { Info } from 'lucide-react'
 
+import { focusRing } from '@/components/common/focus-ring'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 
@@ -18,6 +19,7 @@ export function InfoTooltip({ content, className }: InfoTooltipProps) {
           aria-label={content}
           className={cn(
             'text-ink-3 hover:text-ink hover:bg-surface-muted rounded-ctl inline-flex size-6 shrink-0 items-center justify-center transition-colors',
+            focusRing,
             className,
           )}
         >

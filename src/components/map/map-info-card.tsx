@@ -35,7 +35,7 @@ function InfoLine({ children, strong }: { children: ReactNode; strong?: boolean 
         'text-left break-words whitespace-normal',
         strong
           ? 'text-ink text-sm leading-5 font-semibold'
-          : 'text-ink-2 text-xs leading-5',
+          : 'text-ink-2 text-xs leading-4',
       )}
     >
       {children}

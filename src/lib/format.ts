@@ -75,6 +75,12 @@ export function formatDateTime(iso: string, zone: TimeZoneId): string {
   return `${dd} ${mon} ${p.year}, ${hh}:${mm} ${zone}`
 }
 
+/** Skala Y genap agar tick tengah = max/2 (hindari label 11/6/0). */
+export function chartScaleMax(maximum: number): number {
+  if (maximum <= 0) return 1
+  return Math.max(2, Math.ceil(maximum / 2) * 2)
+}
+
 /** Label seven calendar days ending today in the region's local time zone. */
 export function formatTrendDates(zone: TimeZoneId, nowMs: number = Date.now()): string[] {
   const parts = toZonedParts(new Date(nowMs).toISOString(), zone)

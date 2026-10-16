@@ -44,8 +44,9 @@ export function MapControls({ mapRef }: MapControlsProps) {
     <div
       data-testid="map-controls"
       className={cn(
-        'absolute right-(--floating-control-offset) bottom-(--floating-control-offset) z-30 flex flex-col items-end gap-4',
-        panelOpen && 'hidden sm:flex',
+        'absolute right-(--floating-control-offset) bottom-(--floating-control-offset) z-30 flex flex-col items-end gap-3 sm:gap-4',
+        // Panel mobile full-bleed — sembunyikan; tablet+ peta masih terlihat
+        panelOpen && 'max-sm:hidden',
       )}
       {...mapOverlayGestureProps}
     >
@@ -103,7 +104,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
 
       {updatedLabel ? (
         <p
-          className="text-ink-2 bg-surface/95 border-line rounded-ctl shadow-chrome pointer-events-none border px-4 py-3 text-xs leading-4 backdrop-blur-sm select-none"
+          className="text-ink-2 bg-surface/95 border-line rounded-card shadow-chrome pointer-events-none border px-4 py-3 text-xs leading-4 backdrop-blur-sm select-none"
           data-testid="map-updated-stamp"
         >
           {updatedLabel}

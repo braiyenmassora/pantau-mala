@@ -15,7 +15,6 @@ import type { Map as MapLibreMap } from 'maplibre-gl'
 import { EarthquakeLayer } from '@/components/map/earthquake-layer'
 import { HotspotHeatmapLayer } from '@/components/map/hotspot-heatmap-layer'
 import { IndonesiaMapFraming } from '@/components/map/indonesia-map-framing'
-import { MapSoftLoading } from '@/components/map/map-soft-loading'
 import { ProvinceChoroplethLayer } from '@/components/map/province-choropleth-layer'
 import { ProvinceFocus } from '@/components/map/province-focus'
 import { ProvinceLabelsLayer } from '@/components/map/province-labels-layer'
@@ -28,6 +27,7 @@ import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import { getMapPadding, INDONESIA_CENTER } from '@/lib/indonesia-view'
+import { chromeLeft } from '@/lib/layout'
 import { isBasemapStyleError, webGlSupported } from '@/lib/map-support'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui'
@@ -72,13 +72,13 @@ function BasemapBanner({ onRetry }: { onRetry: () => void }) {
   return (
     <div
       data-testid="map-basemap-banner"
-      className="rounded-ctl border-line bg-surface shadow-chrome pointer-events-auto absolute z-30 flex items-center gap-3 border px-3 py-2"
+      className="rounded-card border-line bg-surface shadow-chrome pointer-events-auto absolute z-30 flex max-w-[min(360px,calc(100vw-2rem))] items-center gap-3 border px-4 py-3"
       style={{
-        left: panelOpen ? 432 : 16,
+        left: chromeLeft(panelOpen),
         top: 68,
       }}
     >
-      <p className="text-ink text-sm">{copy.empty.basemapFail.title}</p>
+      <p className="text-ink text-sm leading-5">{copy.empty.basemapFail.title}</p>
       <Button variant="secondary" size="sm" onClick={onRetry}>
         {copy.empty.basemapFail.action}
       </Button>
@@ -91,39 +91,35 @@ function PartialBanner() {
   return (
     <div
       data-testid="map-partial-banner"
-      className="rounded-ctl border-line bg-surface shadow-chrome pointer-events-none absolute z-30 border px-3 py-2"
+      className="rounded-card border-line bg-surface shadow-chrome pointer-events-none absolute z-30 max-w-[min(360px,calc(100vw-2rem))] border px-4 py-3"
       style={{
-        left: panelOpen ? 432 : 16,
+        left: chromeLeft(panelOpen),
         top: 68,
       }}
       role="status"
     >
-      <p className="text-ink text-sm">{copy.empty.mapPartial.title}</p>
+      <p className="text-ink text-sm leading-5">{copy.empty.mapPartial.title}</p>
     </div>
   )
 }
 
 function applyBasemapCleanups(map: MapLibreMap) {
   if (!map || typeof map.getLayer !== 'function') return
-  const minorRoads = [
-    'road_minor_case',
-    'road_minor_fill',
+
+  // Rapikan basemap: sembunyikan hanya jalur pejalan/servis yang berisik.
+  // Nama kota, desa, dan jalan tetap terlihat (sebelumnya di-hide semua).
+  const clutterRoads = [
+    'road_path',
+    'tunnel_path',
+    'bridge_path',
     'road_service_case',
     'road_service_fill',
-    'road_path',
-    'tunnel_minor_case',
-    'tunnel_minor_fill',
     'tunnel_service_case',
     'tunnel_service_fill',
-    'tunnel_path',
-    'bridge_minor_case',
-    'bridge_minor_fill',
     'bridge_service_case',
     'bridge_service_fill',
-    'bridge_path',
-    'roadname_minor',
   ]
-  for (const id of minorRoads) {
+  for (const id of clutterRoads) {
     if (map.getLayer(id)) {
       try {
         map.setLayoutProperty(id, 'visibility', 'none')
@@ -132,28 +128,13 @@ function applyBasemapCleanups(map: MapLibreMap) {
       }
     }
   }
-  const hiddenLabels = [
-    'place_continent',
-    'place_state',
-    'place_city_r6',
-    'place_city_r5',
-    'place_city_dot_r7',
-    'place_city_dot_r4',
-    'place_city_dot_r2',
-    'place_city_dot_z7',
-    'place_capital_dot_z7',
-    'place_town',
-    'place_suburbs',
-    'place_hamlet',
-    'place_villages',
-  ]
-  for (const id of hiddenLabels) {
-    if (map.getLayer(id)) {
-      try {
-        map.setLayoutProperty(id, 'visibility', 'none')
-      } catch {
-        // layer not found or already styled
-      }
+
+  // Benua saja yang disembunyikan; negara difilter ke Indonesia + prefer name:id.
+  if (map.getLayer('place_continent')) {
+    try {
+      map.setLayoutProperty('place_continent', 'visibility', 'none')
+    } catch {
+      // layer already styled
     }
   }
   for (const id of ['place_country_1', 'place_country_2']) {
@@ -168,6 +149,57 @@ function applyBasemapCleanups(map: MapLibreMap) {
       } catch {
         // layer not found or already styled
       }
+    }
+  }
+
+  // Prefer label Indonesia + turunkan minzoom agar nama daerah
+  // sudah terbaca di zoom provinsi (default Carto: desa 10+, jalan 13–16).
+  const placeTextLayers = [
+    'place_state',
+    'place_city',
+    'place_city_r6',
+    'place_city_r5',
+    'place_town',
+    'place_suburbs',
+    'place_villages',
+    'place_hamlet',
+    'roadname_major',
+    'roadname_pri',
+    'roadname_sec',
+    'roadname_minor',
+  ]
+  for (const id of placeTextLayers) {
+    if (!map.getLayer(id)) continue
+    try {
+      map.setLayoutProperty(id, 'text-field', [
+        'coalesce',
+        ['get', 'name:id'],
+        ['get', 'name'],
+      ])
+    } catch {
+      // layer tidak mendukung text-field
+    }
+  }
+
+  const earlierLabels: Record<string, [number, number]> = {
+    place_state: [4, 12],
+    place_city_r6: [6, 16],
+    place_city_r5: [6, 16],
+    place_town: [6, 16],
+    place_villages: [7, 16],
+    place_suburbs: [8, 16],
+    place_hamlet: [9, 16],
+    roadname_major: [11, 24],
+    roadname_pri: [12, 24],
+    roadname_sec: [12, 24],
+    roadname_minor: [13, 24],
+  }
+  for (const [id, [minZ, maxZ]] of Object.entries(earlierLabels)) {
+    if (!map.getLayer(id)) continue
+    try {
+      map.setLayerZoomRange(id, minZ, maxZ)
+    } catch {
+      // layer tidak mendukung zoom range
     }
   }
 }
@@ -186,8 +218,7 @@ function MapBasemapListener({ onBasemapError }: { onBasemapError: () => void }) 
     if (typeof map.on === 'function') {
       map.on('style.load', onStyle)
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- MapLibre ErrorEvent shape
-    const handler = (e: any) => {
+    const handler = (e: unknown) => {
       if (isBasemapStyleError(e)) onBasemapError()
     }
     if (typeof map.on === 'function') {
@@ -254,12 +285,18 @@ export function MapShell({
     setMountKey((k) => k + 1)
   }, [])
 
+  const pad = getMapPadding(panelOpen)
+  const mapReady = !noWebGl && framed && dataReady
+  const setBootDone = useUiStore((s) => s.setBootDone)
+
+  // Satu overlay boot di AccessGate — sync selesai di sini (juga lepas saat WebGL gagal).
+  useEffect(() => {
+    setBootDone(noWebGl || mapReady)
+  }, [noWebGl, mapReady, setBootDone])
+
   if (noWebGl) {
     return <MapUnavailable onReload={remount} />
   }
-
-  const pad = getMapPadding(panelOpen)
-  const mapReady = framed && dataReady
 
   return (
     <div
@@ -275,11 +312,6 @@ export function MapShell({
     >
       {basemapFailed && <BasemapBanner onRetry={remount} />}
       {!basemapFailed && layerFailed && <PartialBanner />}
-      {!mapReady && (
-        <div className="pointer-events-none absolute inset-0 z-20">
-          <MapSoftLoading />
-        </div>
-      )}
       <Map
         key={mountKey}
         ref={mapRef}

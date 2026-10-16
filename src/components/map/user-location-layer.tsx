@@ -82,14 +82,16 @@ export function UserLocationLayer() {
             </TooltipTrigger>
             <TooltipContent side="top" sideOffset={8} className={mapPinTip}>
               <span className="border-line flex w-full items-center justify-between gap-2 border-b pb-1">
-                <span className="text-ink font-semibold">
+                <span className="text-ink text-xs leading-4 font-semibold">
                   {copy.location.yourLocation}
                 </span>
-                <span className="text-ink-2 text-xs tabular-nums">
+                <span className="text-ink-2 text-xs leading-4 tabular-nums">
                   {copy.location.radiusBadge}
                 </span>
               </span>
-              <span className="text-ink-2">{copy.location.riskSubtitle}</span>
+              <span className="text-ink-2 text-xs leading-4">
+                {copy.location.riskSubtitle}
+              </span>
             </TooltipContent>
           </Tooltip>
         </MarkerContent>

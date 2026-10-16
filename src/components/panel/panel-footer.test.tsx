@@ -5,7 +5,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { PanelFooter } from '@/components/panel/panel-footer'
 import { copy } from '@/copy/id'
 
-vi.mock('@/auth/access-gate', () => ({
+vi.mock('@/auth/session-control', () => ({
   SessionControl: () => null,
 }))
 

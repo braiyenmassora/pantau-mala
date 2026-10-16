@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
 import { copy } from '@/copy/id'
-import { compareRegionsByRisk, effectiveRiskCategory } from '@/lib/risk-rule'
+import {
+  compareRegionsByRisk,
+  effectiveRiskCategory,
+  worstRiskCategory,
+} from '@/lib/risk-rule'
 
 describe('copy honesty', () => {
   const blob = JSON.stringify(copy)
@@ -60,5 +64,20 @@ describe('compareRegionsByRisk', () => {
       ['sedang', 5],
       ['rendah', 0],
     ])
+  })
+})
+
+describe('worstRiskCategory', () => {
+  it('uses the worst effective kategori among regions, not hotspot sum', () => {
+    expect(
+      worstRiskCategory([
+        { risk_category: 'sedang', hotspots_24h: 7 },
+        { risk_category: 'rendah', hotspots_24h: 20 },
+      ]),
+    ).toBe('sedang')
+    expect(
+      worstRiskCategory([{ risk_category: 'tidak_tersedia', hotspots_24h: 23 }]),
+    ).toBe('sangat_tinggi')
+    expect(worstRiskCategory([])).toBe('rendah')
   })
 })

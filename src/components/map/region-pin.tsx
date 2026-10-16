@@ -41,7 +41,7 @@ const LowMapDot = forwardRef<
       ref={ref}
       type="button"
       className={cn(
-        'border-surface bg-risk-low shadow-map relative size-2.5 rounded-full border-2',
+        'marker--interactive border-surface bg-risk-low shadow-map relative size-2.5 rounded-full border-2',
         focusRing,
         active && 'scale-[1.2]',
         className,
@@ -137,7 +137,7 @@ export function RegionPin({ region }: RegionPinProps) {
           <button
             type="button"
             className={cn(
-              'relative origin-center rounded-full',
+              'marker--interactive relative origin-center rounded-full',
               focusRing,
               active && ACTIVE_PIN[hotspotRisk as 'sangat_tinggi' | 'sedang'],
             )}

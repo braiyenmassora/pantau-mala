@@ -80,7 +80,7 @@ export function SearchableSelect({
           aria-expanded={open}
           aria-haspopup="listbox"
           className={cn(
-            'border-line bg-surface text-ink rounded-ctl shadow-chrome flex h-11 min-h-11 w-full items-center justify-between gap-2 border px-3 text-sm font-medium',
+            'border-line bg-surface text-ink rounded-card shadow-chrome flex h-11 min-h-11 w-full items-center justify-between gap-2 border px-3 text-sm leading-5 font-medium',
             'hover:bg-surface-muted transition-colors duration-200 ease-[var(--ease-out-soft)]',
             disabled && 'cursor-not-allowed opacity-50',
             focusRing,
@@ -109,10 +109,10 @@ export function SearchableSelect({
         align="start"
         side="bottom"
         sideOffset={4}
-        className="border-line bg-surface rounded-ctl shadow-chrome z-50 w-64 border p-1"
+        className="border-line bg-surface rounded-card shadow-chrome z-50 w-64 border p-1"
       >
         <div className="border-line border-b p-1">
-          <div className="rounded-ctl bg-surface-muted flex items-center gap-2 px-2 py-1">
+          <div className="rounded-card bg-surface-muted flex items-center gap-2 px-2 py-1">
             <Search className="text-ink-3 size-4 shrink-0" strokeWidth={2} aria-hidden />
             <input
               type="text"
@@ -122,7 +122,7 @@ export function SearchableSelect({
                 onSearch?.(e.target.value)
               }}
               placeholder={searchPlaceholder}
-              className="text-ink placeholder:text-ink-3 w-full bg-transparent text-xs outline-none"
+              className="text-ink placeholder:text-ink-3 w-full bg-transparent text-sm leading-5 outline-none"
               autoFocus
             />
             {search && (
@@ -154,7 +154,7 @@ export function SearchableSelect({
                     setSearch('')
                   }}
                   className={cn(
-                    'rounded-ctl flex w-full items-center justify-between gap-2 px-2 py-1 text-left text-xs transition-colors duration-150',
+                    'rounded-ctl flex w-full items-center justify-between gap-2 px-2 py-1 text-left text-sm leading-5 font-medium transition-colors duration-150',
                     'hover:bg-surface-muted',
                     active && 'bg-surface-muted text-ink font-semibold',
                     focusRing,
@@ -163,7 +163,9 @@ export function SearchableSelect({
                   <div className="min-w-0 flex-1">
                     <p className="truncate">{opt.label}</p>
                     {opt.description && (
-                      <p className="text-ink-3 truncate text-xs">{opt.description}</p>
+                      <p className="text-ink-3 mt-1 truncate text-xs leading-4">
+                        {opt.description}
+                      </p>
                     )}
                   </div>
                   {active && (

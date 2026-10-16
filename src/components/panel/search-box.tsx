@@ -1,7 +1,7 @@
 import { Search, X } from 'lucide-react'
 import type { RefObject } from 'react'
 
-import { Button } from '@/components/ui/button'
+import { focusRing } from '@/components/common/focus-ring'
 import { Input } from '@/components/ui/input'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
@@ -40,7 +40,7 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
     <div
       className={cn(
         chromeSurface,
-        'group flex h-12 items-center gap-3 px-3',
+        'rounded-card group flex h-12 items-center gap-3 px-3',
         'ease-out-soft transition-[border-color,box-shadow] duration-150',
         'focus-within:border-brand',
       )}
@@ -67,16 +67,17 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
         )}
       />
       {showClear ? (
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="icon"
           aria-label={copy.panel.searchClear}
           onClick={clearAll}
-          className="text-ink-3 hover:bg-surface-muted hover:text-ink rounded-ctl size-8 shrink-0"
+          className={cn(
+            'text-ink-3 hover:bg-surface-muted hover:text-ink rounded-ctl flex size-8 shrink-0 items-center justify-center',
+            focusRing,
+          )}
         >
           <X className="size-4" strokeWidth={2} aria-hidden />
-        </Button>
+        </button>
       ) : null}
     </div>
   )

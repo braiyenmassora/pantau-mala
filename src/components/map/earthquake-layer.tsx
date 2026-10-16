@@ -43,9 +43,9 @@ export function EarthquakeLayer() {
               <button
                 type="button"
                 className={cn(
-                  'border-line bg-surface text-risk-mid shadow-chrome relative flex size-7 items-center justify-center rounded-full border',
+                  'marker--quake marker--interactive border-line bg-surface text-risk-mid shadow-chrome relative flex size-7 items-center justify-center rounded-full border',
                   focusRing,
-                  hovered === idx && 'z-20 scale-110',
+                  hovered === idx && 'z-20',
                 )}
                 aria-label={label}
                 onMouseEnter={() => setHovered(idx)}
@@ -53,7 +53,11 @@ export function EarthquakeLayer() {
                 onFocus={() => setHovered(idx)}
                 onBlur={() => setHovered(null)}
               >
-                <Activity className="size-3.5" strokeWidth={2} aria-hidden />
+                <Activity
+                  className="marker--quake-icon size-3.5"
+                  strokeWidth={2}
+                  aria-hidden
+                />
               </button>
 
               {hovered === idx ? (

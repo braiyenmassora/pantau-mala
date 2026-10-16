@@ -81,20 +81,25 @@ function ConditionCell({
   label,
   value,
   isMissing = false,
+  iconClass,
 }: {
   icon: ReactNode
   label: string
   value: ReactNode | null
   isMissing?: boolean
+  iconClass?: string
 }) {
   return (
     <div className="flex items-start gap-2">
-      <span className="text-ink-2 mt-1 shrink-0 [&>svg]:size-4" aria-hidden>
+      <span
+        className={cn('text-ink-2 mt-1 shrink-0 [&>svg]:size-4', iconClass)}
+        aria-hidden
+      >
         {icon}
       </span>
       <div className="min-w-0 flex-1 space-y-1">
         <div className="flex items-center gap-1">
-          <p className="text-ink-2 text-xs leading-4">{label}</p>
+          <p className="text-ink-2 text-xs leading-4 font-medium">{label}</p>
           {isMissing ? (
             <InfoTooltip content={copy.detail.weatherMissingTip} className="size-4" />
           ) : null}
@@ -125,7 +130,10 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
   const actions =
     region.actions.length > 0
       ? region.actions.slice(0, 3).map(sanitizeAction)
-      : ['Pantau perkembangan titik panas dan arah angin.', copy.detail.actionFireContact]
+      : [
+          'Cek lagi nanti — data satelit biasanya diperbarui tiap beberapa jam.',
+          copy.detail.actionFireContact,
+        ]
 
   useEffect(() => {
     titleRef.current?.focus()
@@ -141,7 +149,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
 
   return (
     <div key={region.code} className="flex flex-col">
-      <div className="bg-surface sticky top-0 z-10 flex justify-end px-4 pt-3 pb-1">
+      <div className="bg-surface sticky top-0 z-10 flex justify-end px-4 pt-3 pb-2">
         <button
           type="button"
           onClick={handleBack}
@@ -155,26 +163,26 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
         </button>
       </div>
 
-      <div className="flex flex-col gap-5 px-4 pt-1 pb-5">
+      <div className="flex flex-col gap-6 px-4 pt-2 pb-6">
         <Card aria-label={region.name}>
           <CardHeader>
             <div className="flex min-w-0 items-center gap-1">
-              <h2
+              <h1
                 ref={titleRef}
                 tabIndex={-1}
                 className="text-ink min-w-0 truncate text-sm leading-5 font-semibold outline-none"
                 title={region.name}
               >
                 {region.name}
-              </h2>
+              </h1>
               <InfoTooltip content={copy.detail.riskTooltip} />
             </div>
             <Badge variant="category" category={risk} />
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3">
             <div className="space-y-3">
-              <div className="space-y-1">
-                <p className="text-ink font-mono text-2xl leading-8 font-semibold tabular-nums">
+              <div className="space-y-2">
+                <p className="text-ink font-mono text-3xl leading-10 font-semibold tabular-nums">
                   {formatNumber(region.hotspots_24h)}
                 </p>
                 <p className="text-ink text-sm leading-5">
@@ -184,7 +192,15 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
               <div className="text-ink-2 space-y-1 text-xs leading-4">
                 <p>{copy.map.regionMetaProvince(region.province)}</p>
                 <p className="flex items-center gap-2">
-                  <TrendIcon className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+                  <TrendIcon
+                    className={cn(
+                      'size-3.5 shrink-0',
+                      trend === 'naik' && 'panel-icon-trend-up',
+                      trend === 'turun' && 'panel-icon-trend-down',
+                    )}
+                    strokeWidth={2}
+                    aria-hidden
+                  />
                   <span>
                     {trendLabel} {copy.detail.trendVsPrevious}
                   </span>
@@ -209,9 +225,10 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 min-[360px]:grid-cols-2">
               <ConditionCell
                 icon={<Droplets strokeWidth={2} />}
+                iconClass="panel-icon-drip"
                 label={copy.detail.humidity}
                 value={
                   region.weather.humidity != null
@@ -222,6 +239,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
               />
               <ConditionCell
                 icon={<Wind strokeWidth={2} />}
+                iconClass="panel-icon-breeze"
                 label={copy.detail.wind}
                 value={
                   region.weather.wind_kmh != null
@@ -232,6 +250,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
               />
               <ConditionCell
                 icon={<Sun strokeWidth={2} />}
+                iconClass="panel-icon-sun"
                 label={copy.detail.dryDays}
                 value={
                   region.weather.dry_days != null
@@ -242,6 +261,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
               />
               <ConditionCell
                 icon={<Gauge strokeWidth={2} />}
+                iconClass="panel-icon-gauge"
                 label={copy.detail.weatherDanger}
                 value={
                   region.weather_danger
@@ -256,18 +276,18 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle>Yang bisa kamu lakukan</CardTitle>
+            <CardTitle>{copy.detail.actions}</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-3">
               {actions.map((act, i) => (
                 <li key={i} className="flex items-start gap-2">
                   <Check
-                    className="text-risk-low mt-1 size-4 shrink-0"
+                    className="panel-icon-check text-risk-low mt-1 size-4 shrink-0"
                     strokeWidth={2}
                     aria-hidden
                   />
-                  <span className="text-ink text-sm leading-6">
+                  <span className="text-ink text-sm leading-5">
                     <ActionText text={act} />
                   </span>
                 </li>

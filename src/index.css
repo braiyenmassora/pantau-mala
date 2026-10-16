@@ -149,11 +149,182 @@
   }
 }
 
+/* Episentrum gempa — riak + ikon berdenyut ringan */
+.marker--quake {
+  position: relative;
+  overflow: visible;
+}
+.marker--quake::after {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 2px solid var(--color-risk-mid);
+  animation: soft-pulse 1.6s ease-out infinite;
+  pointer-events: none;
+}
+.marker--quake-icon {
+  animation: quake-nudge 1.4s var(--ease-out-soft, ease-out) infinite;
+}
+
+@keyframes quake-nudge {
+  0%,
+  100% {
+    transform: scale(1) translateY(0);
+  }
+  40% {
+    transform: scale(1.12) translateY(-0.5px);
+  }
+  60% {
+    transform: scale(0.96) translateY(0);
+  }
+}
+
+/* Hover pin peta — sedikit “pop”; ::before = hit area ≥24px (visual tetap kecil) */
+.marker--interactive {
+  position: relative;
+  transition:
+    transform 180ms var(--ease-out-soft, ease-out),
+    box-shadow 180ms var(--ease-out-soft, ease-out);
+}
+.marker--interactive::before {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border-radius: 9999px;
+}
+.marker--interactive:hover {
+  transform: scale(1.18);
+}
+.marker--interactive:active {
+  transform: scale(0.94);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .marker--pulse::after {
     animation: none;
     transform: scale(1.6);
     opacity: 0.35;
+  }
+  .marker--quake::after,
+  .marker--quake-icon {
+    animation: none;
+  }
+  .marker--interactive,
+  .marker--interactive:hover,
+  .marker--interactive:active {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* Ikon panel sidebar — gerakan ringan, hormati reduced-motion */
+.panel-icon-drip {
+  animation: water-ripple 2.2s var(--ease-out-soft, ease-out) infinite;
+}
+.panel-icon-breeze {
+  animation: wind-drift 2.5s var(--ease-out-soft, ease-out) infinite;
+}
+.panel-icon-sun {
+  animation: sun-glow 2.8s var(--ease-out-soft, ease-out) infinite;
+}
+.panel-icon-gauge {
+  animation: gauge-tick 2.4s var(--ease-out-soft, ease-out) infinite;
+}
+.panel-icon-trend-up {
+  animation: trend-bob-up 1.8s var(--ease-out-soft, ease-out) infinite;
+}
+.panel-icon-trend-down {
+  animation: trend-bob-down 1.8s var(--ease-out-soft, ease-out) infinite;
+}
+.panel-icon-check {
+  animation: check-soft 2.6s var(--ease-out-soft, ease-out) infinite;
+}
+.panel-icon-locate {
+  animation: locate-ping 2.2s var(--ease-out-soft, ease-out) infinite;
+}
+.panel-icon-quake {
+  animation: quake-nudge 1.4s var(--ease-out-soft, ease-out) infinite;
+}
+
+@keyframes sun-glow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 1;
+  }
+}
+
+@keyframes gauge-tick {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes trend-bob-up {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes trend-bob-down {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(2px);
+  }
+}
+
+@keyframes check-soft {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes locate-ping {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.15);
+  }
+  60% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-icon-drip,
+  .panel-icon-breeze,
+  .panel-icon-sun,
+  .panel-icon-gauge,
+  .panel-icon-trend-up,
+  .panel-icon-trend-down,
+  .panel-icon-check,
+  .panel-icon-locate,
+  .panel-icon-quake {
+    animation: none;
   }
 }
 

@@ -32,3 +32,15 @@ export function compareRegionsByRisk(
   if (byCat !== 0) return byCat
   return b.hotspots_24h - a.hotspots_24h
 }
+
+/** Risiko panel provinsi = terburuk di kab/kota (sama sumber dengan chip filter). */
+export function worstRiskCategory(
+  regions: { risk_category: RiskCategory; hotspots_24h: number }[],
+): RiskCategory {
+  let worst: RiskCategory = 'rendah'
+  for (const r of regions) {
+    const next = effectiveRiskCategory(r)
+    if (RISK_SORT_RANK[next] < RISK_SORT_RANK[worst]) worst = next
+  }
+  return worst
+}

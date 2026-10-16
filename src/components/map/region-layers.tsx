@@ -92,8 +92,8 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                 type="button"
                 aria-label={r.name}
                 className={cn(
-                  'relative flex size-6 items-center justify-center rounded-full transition-transform duration-150',
-                  isHovered && 'z-20 scale-125',
+                  'marker--interactive relative flex size-6 items-center justify-center rounded-full',
+                  isHovered && 'z-20',
                 )}
                 onMouseEnter={() => hover(r.code)}
                 onMouseLeave={() => hover(null)}

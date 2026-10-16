@@ -25,7 +25,7 @@ export function PanelHeaderPill({ mapRef }: PanelHeaderPillProps) {
 
   if (selectedCode || province !== 'Semua') {
     return (
-      <div className="border-line bg-surface rounded-ctl shadow-chrome flex h-12 shrink-0 items-center gap-2 border px-3">
+      <div className="border-line bg-surface rounded-card shadow-chrome flex h-12 shrink-0 items-center gap-2 border px-3">
         <button
           type="button"
           onClick={() => {
@@ -46,8 +46,8 @@ export function PanelHeaderPill({ mapRef }: PanelHeaderPillProps) {
           )}
         >
           <ArrowLeft className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-          <span className="truncate text-sm font-medium">
-            {selectedCode ? copy.panel.backHome : 'Kembali ke Indonesia'}
+          <span className="truncate text-sm leading-5 font-medium">
+            {selectedCode ? copy.panel.backHome : copy.panel.backIndonesia}
           </span>
         </button>
       </div>

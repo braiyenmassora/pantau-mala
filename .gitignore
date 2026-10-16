@@ -12,14 +12,37 @@ dist
 dist-ssr
 *.local
 
-# Env
+# Env — only commit example (+ production Vite public URL)
 .env
 .env.*
 !.env.example
 !.env.production
+
+# Cloudflare / Wrangler local
 .dev.vars
 .dev.vars.*
 .wrangler/
+.mf/
+
+# Secrets / credentials
+*.pem
+*.p12
+*.pfx
+*.key
+!*.pubkey
+credentials.json
+**/credentials.json
+**/secrets/
+*secret*
+!*secret*.md
+.dev-access.json
+**/dev-access.json
+*.keystore
+
+# Cursor local (MCP, cache) — keep shared rules
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 
 # OS / editor
 .vscode/*

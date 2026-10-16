@@ -17,12 +17,11 @@ export function webGlSupported(): boolean {
  * Style/basemap failure (no sourceId) vs transient tile/source errors.
  * Tile misses must not kill the map.
  */
-export function isBasemapStyleError(event: {
-  error?: Error | string | { message?: string }
-  sourceId?: string
-}): boolean {
-  if (event.sourceId) return false
-  const raw = event.error
+export function isBasemapStyleError(event: unknown): boolean {
+  if (!event || typeof event !== 'object') return false
+  const e = event as { error?: Error | string | { message?: string }; sourceId?: string }
+  if (e.sourceId) return false
+  const raw = e.error
   const msg =
     typeof raw === 'string'
       ? raw

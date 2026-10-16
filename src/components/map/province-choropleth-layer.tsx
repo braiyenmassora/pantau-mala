@@ -131,7 +131,10 @@ export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProp
       .then((data: FeatureCollection) => {
         if (!cancelled) setGeoData(data)
       })
-      .catch(() => {})
+      .catch((err) => {
+        // Soft fail: peta tetap jalan tanpa fill provinsi.
+        console.warn('[choropleth] gagal memuat indonesia-provinces.geojson', err)
+      })
     return () => {
       cancelled = true
     }

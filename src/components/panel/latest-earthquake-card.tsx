@@ -38,7 +38,7 @@ export function LatestEarthquakeCard() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Activity
-              className="text-risk-mid size-3.5 shrink-0"
+              className="panel-icon-quake text-risk-mid size-3.5 shrink-0"
               strokeWidth={2}
               aria-hidden
             />
@@ -65,7 +65,7 @@ export function LatestEarthquakeCard() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Activity
-            className="text-risk-mid size-3.5 shrink-0"
+            className="panel-icon-quake text-risk-mid size-3.5 shrink-0"
             strokeWidth={2}
             aria-hidden
           />
@@ -73,10 +73,12 @@ export function LatestEarthquakeCard() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <p className="text-ink font-mono text-xl leading-7 font-semibold tabular-nums">
-          M {magnitude}
-        </p>
-        <p className="text-ink text-sm leading-5">{place}</p>
+        <div className="space-y-2">
+          <p className="text-ink font-mono text-3xl leading-10 font-semibold tabular-nums">
+            M {magnitude}
+          </p>
+          <p className="text-ink text-sm leading-5 break-words">{place}</p>
+        </div>
         <div className="text-ink-2 space-y-1 text-xs leading-4">
           <p>{when}</p>
           <p>

@@ -11,10 +11,10 @@ const variantClass = {
   ghost: 'bg-transparent text-ink-2 hover:bg-surface-muted hover:text-ink',
 } as const
 
-/** Tinggi sentuh 44 · radius ctl (sama chrome tip/dialog) · teks 600. */
+/** Tinggi sentuh 44 · radius card (12) · body 14 / 600. */
 const sizeClass = {
-  md: 'h-11 min-h-11 px-4 text-base font-semibold',
-  sm: 'h-11 min-h-11 px-3 text-sm font-semibold',
+  md: 'h-11 min-h-11 px-4 text-sm leading-5 font-semibold',
+  sm: 'h-11 min-h-11 px-3 text-sm leading-5 font-semibold',
 } as const
 
 type AppButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -38,7 +38,7 @@ export function Button({
       type="button"
       disabled={disabled || loading}
       className={cn(
-        'rounded-ctl relative inline-flex items-center justify-center gap-2 overflow-hidden',
+        'rounded-card relative inline-flex items-center justify-center gap-2 overflow-hidden',
         'transition-[background-color,opacity,transform] duration-150 ease-in-out',
         focusRing,
         variantClass[variant],

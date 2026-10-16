@@ -61,7 +61,7 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
           aria-expanded={open}
           aria-haspopup="listbox"
           aria-label={copy.filter.pickProvince}
-          className={cn('max-w-[240px] shrink-0', className)}
+          className={cn('max-w-[min(240px,55vw)] shrink-0', className)}
         >
           <MapIcon
             className="text-ink-2 size-4 shrink-0"
@@ -83,10 +83,10 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
         align="start"
         side="bottom"
         sideOffset={6}
-        className="rounded-ctl border-line bg-surface text-ink shadow-chrome z-50 max-h-80 w-70 overflow-hidden border p-2"
+        className="rounded-card border-line bg-surface text-ink shadow-chrome z-50 max-h-80 w-70 overflow-hidden border p-2"
       >
         <div className="mb-2">
-          <div className="bg-surface-muted rounded-ctl flex h-10 items-center gap-2 px-3">
+          <div className="bg-surface-muted rounded-card flex h-10 items-center gap-2 px-3">
             <Search
               className="text-ink-3 size-4 shrink-0"
               strokeWidth={1.75}
@@ -97,7 +97,7 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
               placeholder={copy.search.searchProvince}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="text-ink placeholder:text-ink-3 w-full bg-transparent text-sm outline-none"
+              className="text-ink placeholder:text-ink-3 w-full bg-transparent text-sm leading-5 outline-none"
               autoFocus
             />
             {search ? (
@@ -118,7 +118,7 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
           className="soft-scroll max-h-60 overflow-y-auto"
         >
           {filteredOptions.length === 0 ? (
-            <p className="text-ink-3 px-3 py-4 text-center text-sm">
+            <p className="text-ink-3 px-3 py-4 text-center text-sm leading-5">
               Provinsi tidak ditemukan.
             </p>
           ) : (
@@ -131,11 +131,11 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
                   role="option"
                   aria-selected={selected}
                   className={cn(
-                    'rounded-ctl flex h-10 w-full cursor-pointer items-center justify-between px-3 text-left text-sm font-normal',
+                    'rounded-ctl flex h-10 w-full cursor-pointer items-center justify-between px-3 text-left text-sm leading-5 font-medium',
                     'ease-out-soft transition-colors duration-150',
                     'hover:bg-surface-muted',
                     focusRing,
-                    selected && 'bg-brand-soft text-brand font-medium',
+                    selected && 'bg-brand-soft text-brand font-semibold',
                   )}
                   onClick={() => {
                     setProvince(option.value)

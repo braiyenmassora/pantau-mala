@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 
+import { focusRing } from '@/components/common/focus-ring'
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { copy } from '@/copy/id'
@@ -49,9 +50,10 @@ export function ProvincePin({ aggregate, hovered = false, onHover }: ProvincePin
           type="button"
           aria-label={aggregate.name}
           className={cn(
-            'border-surface relative rounded-full transition-transform duration-150',
+            'marker--interactive border-surface relative rounded-full',
+            focusRing,
             isHigh || isMid ? 'marker--pulse size-4 border-2' : 'size-2.5 border-[1.5px]',
-            hovered && 'z-20 scale-[1.3]',
+            hovered && 'z-20',
           )}
           style={{ backgroundColor: dot, ...pulseStyle }}
           onMouseEnter={() => onHover?.(aggregate.name)}

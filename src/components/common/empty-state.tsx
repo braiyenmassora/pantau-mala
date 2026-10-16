@@ -41,7 +41,7 @@ export function EmptyState({
         ) : (
           <p className={titleClass}>{title}</p>
         )}
-        <p className="text-ink-2 mt-1 text-xs leading-5">{description}</p>
+        <p className="text-ink-2 mt-2 text-xs leading-4">{description}</p>
         {actions ? (
           <div className="mt-3 flex flex-wrap gap-2">{actions}</div>
         ) : (
@@ -62,7 +62,7 @@ export function EmptyState({
   return (
     <section
       className={cn(
-        'rounded-ctl p-3',
+        'rounded-card p-4',
         variant === 'action' ? 'border-line bg-surface border' : 'bg-surface-muted',
         className,
       )}

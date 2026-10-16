@@ -1,13 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
 import { expireSession, useSession } from '@/auth/session'
 import { decodeRegions, decodeHotspots, decodeMeta, decodeCatalog } from './go-contract'
-import {
-  earthquakesSchema,
-  nearbyHotspotsSchema,
-  windyForecastSchema,
-  villagesSchema,
-} from './extended-contract'
+import { earthquakesSchema, nearbyHotspotsSchema } from './extended-contract'
 
 const STALE_MS = 5 * 60 * 1000
 
@@ -95,36 +89,6 @@ export function useRegionCatalog() {
   )
 }
 
-export function useSearchVillages(query: string) {
-  const session = useSession()
-  const normalized = query.trim()
-  const [debounced, setDebounced] = useState(normalized)
-  useEffect(() => {
-    const timeout = window.setTimeout(() => setDebounced(normalized), 300)
-    return () => window.clearTimeout(timeout)
-  }, [normalized])
-  const canSearch = Array.from(normalized).length >= 2
-  const settling = normalized !== debounced
-  const result = useQuery({
-    queryKey: ['villages', debounced, session.principal?.client_id, session.generation],
-    enabled: session.status === 'authenticated' && canSearch && !settling,
-    queryFn: ({ signal }) =>
-      getData(
-        `/villages?q=${encodeURIComponent(debounced)}&limit=20`,
-        (raw) => villagesSchema.parse(raw),
-        signal,
-      ),
-    staleTime: 60_000,
-    retry: 1,
-  })
-  return {
-    ...result,
-    data: canSearch && !settling ? result.data : undefined,
-    isError: canSearch && !settling && result.isError,
-    isSearching: canSearch && (settling || result.isFetching),
-  }
-}
-
 export function useEarthquakes(kind: 'latest' | 'felt' | 'm5' = 'latest') {
   const session = useSession()
   return useQuery({
@@ -136,20 +100,6 @@ export function useEarthquakes(kind: 'latest' | 'felt' | 'm5' = 'latest') {
   })
 }
 
-export function useOptionalData<T>(
-  name: string,
-  path: string,
-  parse: (raw: unknown) => T,
-  requested: boolean,
-) {
-  const session = useSession()
-  return useQuery({
-    queryKey: [name, path, session.principal?.client_id, session.generation],
-    enabled: requested && session.status === 'authenticated',
-    queryFn: ({ signal }) => getData(path, parse, signal),
-    staleTime: STALE_MS,
-  })
-}
 export function useNearbyHotspots(
   lat?: number | null,
   lon?: number | null,
@@ -177,34 +127,6 @@ export function useNearbyHotspots(
       getData(
         `/nearby?lat=${lat}&lon=${lon}&radius_km=${radiusKm}`,
         (raw) => nearbyHotspotsSchema.parse(raw).data,
-        signal,
-      ),
-    staleTime: STALE_MS,
-  })
-}
-
-export function useWindyWeather(lat?: number | null, lon?: number | null) {
-  const session = useSession()
-  const enabled =
-    session.status === 'authenticated' &&
-    typeof lat === 'number' &&
-    typeof lon === 'number' &&
-    Number.isFinite(lat) &&
-    Number.isFinite(lon)
-
-  return useQuery({
-    queryKey: [
-      'windy-weather',
-      lat,
-      lon,
-      session.principal?.client_id,
-      session.generation,
-    ],
-    enabled,
-    queryFn: ({ signal }) =>
-      getData(
-        `/weather/windy?lat=${lat}&lon=${lon}`,
-        (raw) => windyForecastSchema.parse(raw),
         signal,
       ),
     staleTime: STALE_MS,

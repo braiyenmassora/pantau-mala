@@ -51,13 +51,13 @@ describe('MapInfoCard', () => {
     render(
       <MapInfoCard
         title="Titik panas"
-        lines={['Pohuwato', 'Terdeteksi 15 Okt 2026, 01:17 WITA', 'FRP 12,4 MW']}
+        lines={['Pohuwato', 'Terdeteksi 15 Okt 2026, 01:17 WITA']}
       />,
     )
     expect(screen.getByText('Titik panas')).toBeTruthy()
     expect(screen.getByText('Pohuwato')).toBeTruthy()
     expect(screen.getByText('Terdeteksi 15 Okt 2026, 01:17 WITA')).toBeTruthy()
-    expect(screen.getByText('FRP 12,4 MW')).toBeTruthy()
+    expect(screen.queryByText(/FRP/i)).toBeNull()
     expect(screen.queryByText(/\.\.\./)).toBeNull()
   })
 })

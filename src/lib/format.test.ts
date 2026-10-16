@@ -1,6 +1,20 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatDateTime, formatNumber, formatRelativeAge } from '@/lib/format'
+import {
+  chartScaleMax,
+  formatDateTime,
+  formatNumber,
+  formatRelativeAge,
+} from '@/lib/format'
+
+describe('chartScaleMax', () => {
+  it('snaps to even max so mid tick stays linear', () => {
+    expect(chartScaleMax(0)).toBe(1)
+    expect(chartScaleMax(10)).toBe(10)
+    expect(chartScaleMax(11)).toBe(12)
+    expect(chartScaleMax(1)).toBe(2)
+  })
+})
 
 describe('formatNumber', () => {
   it('uses id-ID decimal comma', () => {

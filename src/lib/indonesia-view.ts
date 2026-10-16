@@ -1,6 +1,12 @@
 import type { LngLatBounds, Map as MaplibreMap, PaddingOptions } from 'maplibre-gl'
 
-import { LAYOUT } from '@/lib/layout'
+import {
+  BREAKPOINT,
+  LAYOUT,
+  chromeLeft,
+  isMobileWidth,
+  viewportWidth,
+} from '@/lib/layout'
 
 /** Geographic extent of Indonesia (Sabang → Merauke). */
 export const INDONESIA_BOUNDS: [[number, number], [number, number]] = [
@@ -23,20 +29,24 @@ export const OVERVIEW_ZOOM_FLOOR = 3.8
 
 /**
  * Padding area aman agar fit nasional tidak ketutup chip/legend/panel.
+ * Mobile: panel overlay → jangan geser kamera. Tablet: inset lebih pendek dari desktop.
  */
 export function getMapPadding(panelOpen: boolean): PaddingOptions {
-  if (typeof window !== 'undefined' && window.innerWidth < 640)
+  const width = viewportWidth()
+  if (isMobileWidth(width)) {
     return {
       left: LAYOUT.gutter,
       top: 72,
       right: LAYOUT.gutter,
       bottom: 88,
     }
+  }
+  const left = panelOpen ? chromeLeft(true, width) : 24
   return {
-    left: panelOpen ? LAYOUT.overlayInset : 24,
+    left,
     top: 72,
     right: LAYOUT.controlsClearance,
-    bottom: 96,
+    bottom: width < BREAKPOINT.lg ? 88 : 96,
   }
 }
 
