@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useSession } from '@/auth/session'
+import { timeoutSignal } from '@/lib/abort'
 import { useTelemetryStatus, type TelemetryStatus } from './telemetry-status'
 
 const SESSION_KEY = 'pantau-mala.telemetry-session'
@@ -39,9 +40,9 @@ function sessionId() {
       return saved.id
     }
   } catch {
-    return crypto.randomUUID()
+    return randomId()
   }
-  const id = crypto.randomUUID()
+  const id = randomId()
   try {
     sessionStorage.setItem(
       SESSION_KEY,
@@ -51,6 +52,15 @@ function sessionId() {
     return id
   }
   return id
+}
+
+function randomId() {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID()
+  const bytes = crypto.getRandomValues(new Uint8Array(16))
+  bytes[6] = (bytes[6] & 15) | 64
+  bytes[8] = (bytes[8] & 63) | 128
+  const hex = Array.from(bytes, (value) => value.toString(16).padStart(2, '0')).join('')
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
 }
 
 function referrerOrigin() {
@@ -74,7 +84,7 @@ export function startFrontendTelemetry() {
     useTelemetryStatus.setState({ status: 'privacy' })
     return () => {}
   }
-  if (typeof crypto.randomUUID !== 'function') {
+  if (typeof crypto.getRandomValues !== 'function') {
     useTelemetryStatus.setState({ status: 'unsupported' })
     return () => {}
   }
@@ -134,7 +144,7 @@ export function startFrontendTelemetry() {
       credentials: 'same-origin',
       cache: 'no-store',
       keepalive: true,
-      signal: AbortSignal.timeout(5000),
+      signal: timeoutSignal(5000),
       body: JSON.stringify({ events }),
     })
       .then((response) => {
@@ -160,7 +170,7 @@ export function startFrontendTelemetry() {
       })
   }
 
-  const track = (event: Omit<Event, 'id' | 'session_id' | 'path'>) => {
+  const track = (event: Omit<Event, 'id' | 'session_id' | 'path'>, id = randomId()) => {
     if (stopped || disabled || pending.length >= MAX_PENDING) return
     if (Date.now() - period >= 60_000) {
       period = Date.now()
@@ -175,7 +185,7 @@ export function startFrontendTelemetry() {
     pending.push({
       event: {
         ...event,
-        id: crypto.randomUUID(),
+        id,
         session_id: currentSession,
         path: pagePath(),
       },
@@ -197,8 +207,15 @@ export function startFrontendTelemetry() {
   window.addEventListener('unhandledrejection', onRejection)
   window.addEventListener('pagehide', flush)
   document.addEventListener('visibilitychange', onHide)
+  const edgeID = document.querySelector<HTMLMetaElement>(
+    'meta[name="pantau-page-view"]',
+  )?.content
   const initialView = window.setTimeout(
-    () => track({ type: 'page_view', referrer: referrerOrigin() }),
+    () =>
+      track(
+        { type: 'page_view', referrer: referrerOrigin() },
+        edgeID && /^[0-9a-f-]{36}$/.test(edgeID) ? edgeID : randomId(),
+      ),
     0,
   )
 

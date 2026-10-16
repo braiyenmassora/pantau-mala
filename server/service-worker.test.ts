@@ -19,7 +19,7 @@ function workerFixture() {
   const skipWaiting = vi.fn().mockResolvedValue(undefined)
   const fetcher = vi.fn().mockResolvedValue(new Response('latest shell'))
   runInNewContext(source, {
-    URL, Response, caches, fetch: fetcher,
+    URL, Response, Headers, caches, fetch: fetcher,
     self: { location: { origin: 'https://fixture.test' }, addEventListener: (name: string, handler: (event: Record<string, unknown>) => void) => handlers.set(name, handler), skipWaiting, clients: { claim: vi.fn().mockResolvedValue(undefined) } },
   })
   const dispatch = async (name: string, extra: Record<string, unknown> = {}) => {
@@ -48,6 +48,15 @@ it('serves fresh navigation and refreshes the offline shell', async () => {
   const response = await fixture.dispatch('fetch', { request: { method: 'GET', mode: 'navigate', url: 'https://fixture.test/' } })
   expect(await response?.text()).toBe('latest shell')
   expect(fixture.cache.put.mock.calls[0][0]).toBe('/index.html')
+})
+
+it('does not replay a server page-view identity from the offline shell', async () => {
+  const fixture = workerFixture()
+  const id = '00000000-0000-4000-8000-000000000001'
+  fixture.fetcher.mockResolvedValue(new Response(`<head><meta name="pantau-page-view" content="${id}"></head>`, { headers: { 'Content-Type': 'text/html' } }))
+  const response = await fixture.dispatch('fetch', { request: { method: 'GET', mode: 'navigate', url: 'https://fixture.test/' } })
+  expect(await response?.text()).toContain(id)
+  expect(await fixture.cache.put.mock.calls[0][1].text()).not.toContain('pantau-page-view')
 })
 
 it('awaits the root fallback if index.html is unavailable offline', async () => {

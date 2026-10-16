@@ -64,6 +64,10 @@ export function createClientGateway(env, fetcher = fetch) {
       if (region) headers['X-Pantau-Geo-Region'] = region
       if (city) headers['X-Pantau-Geo-City'] = city
     }
+    for (const name of ['sec-ch-ua', 'sec-ch-ua-mobile', 'sec-ch-ua-platform']) {
+      const value = request.headers.get(name)?.trim()
+      if (value && value.length <= 256) headers[name] = value
+    }
     return headers
   }
   async function upstream(path, headers, options = {}) {
@@ -72,7 +76,7 @@ export function createClientGateway(env, fetcher = fetch) {
       body: options.body,
       headers,
       redirect: 'manual',
-      signal: AbortSignal.timeout(20000),
+      signal: AbortSignal.timeout(options.timeoutMs || 20000),
     })
   }
   return async (request, metadata = {}) => {
@@ -148,9 +152,10 @@ export function createClientGateway(env, fetcher = fetch) {
           return reply(413, { error: 'Telemetry payload exceeds 16 KiB' })
         }
         headers.Origin = url.origin
+        if (metadata.viewSource === 'edge') headers['X-Pantau-Telemetry-Source'] = 'edge'
       }
       // Validate fixed identity for every request, including revocation and client disablement.
-      const identity = await upstream('/auth/me', headers)
+      const identity = await upstream('/auth/me', headers, { timeoutMs: metadata.timeoutMs })
       if (!identity.ok)
         return reply(identity.status === 429 ? 429 : 503, {
           error: 'Client access unavailable',
@@ -185,7 +190,7 @@ export function createClientGateway(env, fetcher = fetch) {
             Prefer: 'respond-async',
             'X-Pantau-Telemetry-Transport': 'fetch-keepalive',
           },
-          { method: 'POST', body: telemetryBody },
+          { method: 'POST', body: telemetryBody, timeoutMs: metadata.timeoutMs },
         )
         if (data.status !== 202) {
           const status = [400, 401, 403, 404, 413, 415, 429, 503].includes(data.status)

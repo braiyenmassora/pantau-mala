@@ -9,5 +9,7 @@ export function createClientGateway(
     clientCountry?: string | null
     clientRegion?: string | null
     clientCity?: string | null
+    viewSource?: 'edge'
+    timeoutMs?: number
   },
 ) => Promise<Response | null>

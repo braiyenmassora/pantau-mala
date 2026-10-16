@@ -351,6 +351,7 @@ export const copy = {
     hidePanel: 'Sembunyikan panel',
     showPanel: 'Tampilkan panel',
     mapAria: 'Peta titik panas Indonesia',
+    updateLabel: 'Pembaruan aplikasi',
   },
   a11y: {
     brand: 'pantaumala',

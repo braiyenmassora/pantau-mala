@@ -19,6 +19,7 @@ afterEach(() => {
   vi.clearAllTimers()
   vi.useRealTimers()
   vi.unstubAllGlobals()
+  document.querySelector('meta[name="pantau-page-view"]')?.remove()
 })
 
 it('batches non-blocking keepalive fetch without credentials, raw errors, or URL secrets', async () => {
@@ -142,9 +143,35 @@ it('respects GPC and DNT without sending or storing a session', async () => {
   expect(useTelemetryStatus.getState().status).toBe('privacy')
 })
 
+it('shares the server event ID so the fallback cannot double-count a page view', async () => {
+  const meta = document.createElement('meta')
+  meta.name = 'pantau-page-view'
+  meta.content = '00000000-0000-4000-8000-000000000001'
+  document.head.append(meta)
+  stop = startFrontendTelemetry()
+  await vi.advanceTimersByTimeAsync(1000)
+  expect(JSON.parse(String(vi.mocked(fetch).mock.calls[0][1]?.body)).events[0].id).toBe(
+    meta.content,
+  )
+})
+
+it('does not drop mobile visits when randomUUID and timeout helpers are missing', async () => {
+  vi.stubGlobal('crypto', { getRandomValues: crypto.getRandomValues.bind(crypto) })
+  vi.stubGlobal('AbortSignal', {})
+  stop = startFrontendTelemetry()
+  await vi.advanceTimersByTimeAsync(1000)
+  expect(fetch).toHaveBeenCalledOnce()
+  expect(useTelemetryStatus.getState().status).toBe('accepted')
+})
+
 it('does not let an old client response overwrite the current privacy status', async () => {
   let accept: (response: Response) => void = () => {}
-  vi.mocked(fetch).mockImplementationOnce(() => new Promise<Response>((resolve) => { accept = resolve }))
+  vi.mocked(fetch).mockImplementationOnce(
+    () =>
+      new Promise<Response>((resolve) => {
+        accept = resolve
+      }),
+  )
   stop = startFrontendTelemetry()
   await vi.advanceTimersByTimeAsync(1_000)
   stop()

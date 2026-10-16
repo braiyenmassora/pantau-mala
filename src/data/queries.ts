@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { expireSession, useSession } from '@/auth/session'
 import { validCoordinates } from '@/lib/environment-data'
 import { recordFrontendApiError } from '@/observability/frontend-telemetry'
+import { requestSignal } from '@/lib/abort'
 import { decodeRegions, decodeHotspots, decodeMeta, decodeCatalog } from './go-contract'
 import {
   earthquakesSchema,
@@ -29,9 +30,7 @@ export async function getData<T>(
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     credentials: 'same-origin',
     cache: 'no-store',
-    signal: signal
-      ? AbortSignal.any([signal, AbortSignal.timeout(20000)])
-      : AbortSignal.timeout(20000),
+    signal: requestSignal(signal, 20000),
   })
   recordFrontendApiError(res.status)
   if (res.status === 401) {

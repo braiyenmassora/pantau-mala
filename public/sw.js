@@ -70,7 +70,12 @@ self.addEventListener('fetch', (event) => {
           if (response.ok) {
             const copy = response.clone()
             event.waitUntil(
-              caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy)).catch(() => {}),
+              copy.text().then((html) => {
+                const headers = new Headers(copy.headers)
+                headers.delete('Content-Length')
+                const offline = html.replace(/<meta name="pantau-page-view" content="[0-9a-f-]{36}">/g, '')
+                return caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', new Response(offline, { headers })))
+              }).catch(() => {}),
             )
           }
           return response

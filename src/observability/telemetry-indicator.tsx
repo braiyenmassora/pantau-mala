@@ -21,11 +21,11 @@ export function TelemetryIndicator() {
   return (
     <details className="text-ink-3 mt-1 text-xs leading-4">
       <summary className={`rounded-ctl w-fit cursor-pointer ${focusRing}`}>
-        Pengukuran kunjungan: {labels[status]}
+        Diagnostik browser: {labels[status]}
       </summary>
       <p className="mt-1">
         {status === 'privacy'
-          ? 'DNT/GPC aktif: tidak mengirim event dan tidak membuat ID sesi. Ini bukan error browser.'
+          ? 'DNT/GPC aktif: sesi dan error browser tidak dikirim. Gateway tetap dapat menghitung dokumen secara agregat tanpa cookie atau ID sesi.'
           : 'Pengukuran bersifat best-effort. Pemblokir atau gangguan jaringan dapat mengurangi cakupan. HTTP 202 berarti masuk antrean, bukan bukti data sudah tersimpan.'}{' '}
         Akses peta tidak bergantung pada telemetry.
       </p>

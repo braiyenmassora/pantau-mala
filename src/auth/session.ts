@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { z } from 'zod'
 import { queryClient } from '@/data/query-client'
 import { useMapStore } from '@/store/map'
+import { timeoutSignal } from '@/lib/abort'
 
 const principalSchema = z.object({
   client_id: z.string().uuid(),
@@ -74,7 +75,7 @@ export async function sessionRequest(path: string, method = 'POST', body: unknow
     body: method === 'GET' ? undefined : JSON.stringify(body),
     credentials: 'same-origin',
     cache: 'no-store',
-    signal: AbortSignal.timeout(15000),
+    signal: timeoutSignal(15000),
   })
   if (
     res.status === 401 &&
@@ -103,7 +104,7 @@ async function restoreAccess() {
   try {
     const response = await fetch('/frontend/session', {
       cache: 'no-store',
-      signal: AbortSignal.timeout(15000),
+      signal: timeoutSignal(15000),
     })
     if (response.headers.get('x-frontend-access') === 'client')
       useSession.setState({ accessMode: 'client' })
