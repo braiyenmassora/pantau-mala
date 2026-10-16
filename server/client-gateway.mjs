@@ -30,6 +30,13 @@ export function createClientGateway(env, fetcher = fetch) {
         'X-Frontend-Access': 'client',
       },
     })
+  const withLifecycle = (response, upstreamResponse) => {
+    for (const name of ['X-Pantau-Contract-Revision', 'Deprecation', 'Sunset', 'Link']) {
+      const value = upstreamResponse.headers.get(name)
+      if (value && value.length <= 2048) response.headers.set(name, value)
+    }
+    return response
+  }
   const allowed =
     /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages|telemetry)$/
   function upstreamHeaders(request, metadata) {
@@ -157,8 +164,9 @@ export function createClientGateway(env, fetcher = fetch) {
       )
         return reply(503, { error: 'Client access configuration mismatch' })
       if (url.pathname === '/frontend/session')
-        return reply(200, {
+        return withLifecycle(reply(200, {
           mode: 'client',
+          contract_revision: identity.headers.get('X-Pantau-Contract-Revision'),
           principal: {
             client_id: principal.client_id,
             client_slug: principal.client_slug,
@@ -167,7 +175,7 @@ export function createClientGateway(env, fetcher = fetch) {
             kind: 'key',
             scope: 'data:read',
           },
-        })
+        }), identity)
       if (url.pathname === '/api/v1/telemetry') {
         const data = await upstream(
           url.pathname,
@@ -187,7 +195,7 @@ export function createClientGateway(env, fetcher = fetch) {
           const retryAfter = data.headers.get('Retry-After')
           if (retryAfter && /^\d{1,4}$/.test(retryAfter))
             response.headers.set('Retry-After', retryAfter)
-          return response
+          return withLifecycle(response, data)
         }
         const responseHeaders = {
           'Content-Type': 'application/json',
@@ -197,24 +205,24 @@ export function createClientGateway(env, fetcher = fetch) {
         }
         const preference = data.headers.get('preference-applied')
         if (preference) responseHeaders['Preference-Applied'] = preference
-        return Response.json(
+        return withLifecycle(Response.json(
           { data: { accepted: true } },
           { status: 202, headers: responseHeaders },
-        )
+        ), data)
       }
       const data = await upstream(url.pathname + url.search, headers)
       if (!data.ok)
-        return reply(data.status === 429 ? 429 : data.status >= 500 ? 502 : data.status, {
+        return withLifecycle(reply(data.status === 429 ? 429 : data.status >= 500 ? 502 : data.status, {
           error: 'Data unavailable',
-        })
-      return new Response(data.body, {
+        }), data)
+      return withLifecycle(new Response(data.body, {
         status: data.status,
         headers: {
           'Content-Type': 'application/json',
           'Cache-Control': 'no-store',
           'X-Content-Type-Options': 'nosniff',
         },
-      })
+      }), data)
     } catch {
       return reply(503, { error: 'Data service unavailable' })
     }

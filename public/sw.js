@@ -1,7 +1,8 @@
 /**
  * pantaumala service worker — lightweight offline shell and caching.
  */
-const CACHE_NAME = 'pantaumala-v1'
+const BUILD_ID = '__PANTAU_BUILD__'
+const CACHE_NAME = `pantaumala-v2-${BUILD_ID}`
 const PRECACHE_URLS = [
   '/',
   '/index.html',
@@ -14,12 +15,15 @@ const PRECACHE_URLS = [
   '/manifest.webmanifest',
 ]
 
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    event.waitUntil(self.skipWaiting())
+  }
+})
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches
-      .open(CACHE_NAME)
-      .then((cache) => cache.addAll(PRECACHE_URLS))
-      .then(() => self.skipWaiting()),
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS)),
   )
 })
 
@@ -30,7 +34,8 @@ self.addEventListener('activate', (event) => {
       .then((keys) =>
         Promise.all(
           keys.map((key) => {
-            if (key !== CACHE_NAME) return caches.delete(key)
+            if (key.startsWith('pantaumala-') && key !== CACHE_NAME)
+              return caches.delete(key)
             return undefined
           }),
         ),
@@ -44,10 +49,13 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return
 
   const url = new URL(req.url)
+  if (url.origin !== self.location.origin || url.pathname === '/sw.js') return
 
   // API and dynamic session routes: network-first, do not lock to stale cache
   if (
+    url.pathname === '/api' ||
     url.pathname.startsWith('/api/') ||
+    url.pathname === '/auth' ||
     url.pathname.startsWith('/auth/') ||
     url.pathname === '/frontend/session'
   ) {
@@ -55,9 +63,19 @@ self.addEventListener('fetch', (event) => {
   }
 
   // HTML navigation: Network first with cache fallback
-  if (req.mode === 'navigate') {
+  if (req.mode === 'navigate' || url.pathname === '/' || url.pathname === '/index.html') {
     event.respondWith(
-      fetch(req).catch(() => caches.match('/index.html') || caches.match('/')),
+      fetch(req)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone()
+            event.waitUntil(
+              caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', copy)).catch(() => {}),
+            )
+          }
+          return response
+        })
+        .catch(async () => (await caches.match('/index.html')) || (await caches.match('/')) || new Response('Aplikasi belum tersedia offline.', { status: 503 })),
     )
     return
   }
@@ -74,7 +92,7 @@ self.addEventListener('fetch', (event) => {
             url.origin === self.location.origin)
         ) {
           const clone = networkRes.clone()
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, clone))
+          event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.put(req, clone)).catch(() => {}))
         }
         return networkRes
       })

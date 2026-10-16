@@ -1,12 +1,14 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { recordFrontendApiError, startFrontendTelemetry } from './frontend-telemetry'
+import { useTelemetryStatus } from './telemetry-status'
 
 let stop: (() => void) | undefined
 
 beforeEach(() => {
   vi.useFakeTimers()
   sessionStorage.clear()
+  useTelemetryStatus.setState({ status: 'idle' })
   history.replaceState(null, '', '/?token=private-query#private-fragment')
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(null, { status: 202 })))
 })
@@ -26,6 +28,7 @@ it('batches non-blocking keepalive fetch without credentials, raw errors, or URL
   recordFrontendApiError(500)
   expect(fetch).not.toHaveBeenCalled()
   await vi.advanceTimersByTimeAsync(1_000)
+  expect(useTelemetryStatus.getState().status).toBe('accepted')
   expect(fetch).toHaveBeenCalledTimes(1)
   const [path, options] = vi.mocked(fetch).mock.calls[0]
   expect(path).toBe('/api/v1/telemetry')
@@ -54,11 +57,13 @@ it('keeps a failed page view for retry with its original deduplication ID', asyn
   await vi.advanceTimersByTimeAsync(1_000)
   expect(fetch).toHaveBeenCalledTimes(1)
   const firstBody = vi.mocked(fetch).mock.calls[0][1]?.body
+  expect(useTelemetryStatus.getState().status).toBe('retrying')
   await vi.advanceTimersByTimeAsync(29_999)
   expect(fetch).toHaveBeenCalledTimes(1)
   await vi.advanceTimersByTimeAsync(1)
   expect(fetch).toHaveBeenCalledTimes(2)
   expect(vi.mocked(fetch).mock.calls[1][1]?.body).toBe(firstBody)
+  expect(useTelemetryStatus.getState().status).toBe('accepted')
 })
 
 it('flushes short visits when the page hides before the first batch', async () => {
@@ -89,6 +94,7 @@ it('bounds retries during a prolonged outage', async () => {
   stop = startFrontendTelemetry()
   await vi.advanceTimersByTimeAsync(300_000)
   expect(fetch).toHaveBeenCalledTimes(3)
+  expect(useTelemetryStatus.getState().status).toBe('unavailable')
 })
 
 it('caps a burst at 40 buffered events and 20 per batch', async () => {
@@ -122,6 +128,7 @@ it('stops after an unsupported endpoint instead of causing repeated errors', asy
   recordFrontendApiError(500)
   await vi.advanceTimersByTimeAsync(60_000)
   expect(fetch).toHaveBeenCalledTimes(1)
+  expect(useTelemetryStatus.getState().status).toBe('rejected')
 })
 
 it('respects GPC and DNT without sending or storing a session', async () => {
@@ -132,4 +139,18 @@ it('respects GPC and DNT without sending or storing a session', async () => {
   await vi.advanceTimersByTimeAsync(20_000)
   expect(fetch).not.toHaveBeenCalled()
   expect(sessionStorage.length).toBe(0)
+  expect(useTelemetryStatus.getState().status).toBe('privacy')
+})
+
+it('does not let an old client response overwrite the current privacy status', async () => {
+  let accept: (response: Response) => void = () => {}
+  vi.mocked(fetch).mockImplementationOnce(() => new Promise<Response>((resolve) => { accept = resolve }))
+  stop = startFrontendTelemetry()
+  await vi.advanceTimersByTimeAsync(1_000)
+  stop()
+  vi.stubGlobal('navigator', { globalPrivacyControl: true })
+  startFrontendTelemetry()()
+  accept(new Response(null, { status: 202 }))
+  await vi.advanceTimersByTimeAsync(0)
+  expect(useTelemetryStatus.getState().status).toBe('privacy')
 })

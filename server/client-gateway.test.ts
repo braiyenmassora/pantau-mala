@@ -13,6 +13,25 @@ const principal = {
   scope: 'data:read',
   role: 'reader',
 }
+it('preserves backend lifecycle headers and exposes only the contract revision in the handshake', async () => {
+  const lifecycle = {
+    'X-Pantau-Contract-Revision': '2026-10-17.1',
+    Deprecation: '@1792198800',
+    Sunset: 'Mon, 16 Nov 2026 00:00:00 GMT',
+    Link: '</api-guide#contract-updates>; rel="deprecation"',
+  }
+  const fetcher = vi.fn()
+    .mockResolvedValueOnce(Response.json({ data: principal }, { headers: lifecycle }))
+    .mockResolvedValueOnce(Response.json({ data: principal }))
+    .mockResolvedValueOnce(Response.json({ data: [] }, { headers: lifecycle }))
+  const gateway = createClientGateway(env, fetcher)
+  const session = await gateway(new Request('http://localhost/frontend/session'))
+  const body = await session!.json()
+  expect(body.contract_revision).toBe(lifecycle['X-Pantau-Contract-Revision'])
+  expect(JSON.stringify(body)).not.toContain(env.PANTAU_API_KEY)
+  const response = await gateway(new Request('http://localhost/api/v1/summary'))
+  for (const [name, value] of Object.entries(lifecycle)) expect(response!.headers.get(name)).toBe(value)
+})
 it('only server forwards key; session returns fixed reader identity without token', async () => {
   const fetcher = vi.fn().mockResolvedValue(Response.json({ data: principal }))
   const gateway = createClientGateway(env, fetcher)

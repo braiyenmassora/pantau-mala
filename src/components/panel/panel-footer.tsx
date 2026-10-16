@@ -3,6 +3,7 @@ import { focusRing } from '@/components/common/focus-ring'
 import { MapAttribution } from '@/components/map/map-attribution'
 import { copy } from '@/copy/id'
 import { cn } from '@/lib/utils'
+import { TelemetryIndicator } from '@/observability/telemetry-indicator'
 
 /** Footer sidebar: tautan sumber tanpa label “Sumber data:”, tanpa divider tebal. */
 export function PanelFooter() {
@@ -34,6 +35,7 @@ export function PanelFooter() {
         <span aria-hidden>·</span>
         <MapAttribution />
       </p>
+      <TelemetryIndicator />
       <SessionControl />
     </footer>
   )

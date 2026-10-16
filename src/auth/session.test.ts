@@ -109,7 +109,7 @@ it('client gateway restores without bearer and data requests contain no credenti
     .fn()
     .mockResolvedValueOnce(
       Response.json(
-        { mode: 'client', principal: { ...a, kind: 'key', scope: 'data:read' } },
+        { mode: 'client', contract_revision: '2026-10-17.1', principal: { ...a, kind: 'key', scope: 'data:read' } },
         { headers: { 'X-Frontend-Access': 'client' } },
       ),
     )
@@ -118,6 +118,7 @@ it('client gateway restores without bearer and data requests contain no credenti
   await restoreSession()
   expect(useSession.getState().token).toBeNull()
   expect(useSession.getState().accessMode).toBe('client')
+  expect(useSession.getState().contractRevision).toBe('2026-10-17.1')
   expect(useSession.getState().status).toBe('authenticated')
   await getData('/regions', (x) => x)
   expect(fetcher.mock.calls[1][1].headers.Authorization).toBeUndefined()

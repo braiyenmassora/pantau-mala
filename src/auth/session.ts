@@ -24,6 +24,7 @@ type Session = {
   generation: number
   accessMode: 'account' | 'client'
   accessError: string
+  contractRevision: string | null
 }
 export const useSession = create<Session>(() => ({
   token: null,
@@ -32,6 +33,7 @@ export const useSession = create<Session>(() => ({
   generation: 0,
   accessMode: 'account',
   accessError: '',
+  contractRevision: null,
 }))
 function clearClientData() {
   queryClient.clear()
@@ -44,6 +46,7 @@ export function expireSession() {
     token: null,
     principal: null,
     status: 'anonymous',
+    contractRevision: null,
     generation: s.generation + 1,
   }))
 }
@@ -53,6 +56,7 @@ function acceptSession(raw: unknown) {
   useSession.setState((s) => ({
     ...next,
     status: 'authenticated',
+    contractRevision: null,
     generation: s.generation + 1,
   }))
 }
@@ -108,12 +112,13 @@ async function restoreAccess() {
       response.headers.get('content-type')?.includes('application/json')
     ) {
       const access = z
-        .object({ mode: z.literal('client'), principal: principalSchema })
+        .object({ mode: z.literal('client'), principal: principalSchema, contract_revision: z.string().max(64).nullable().optional() })
         .parse(await response.json())
       clearClientData()
       useSession.setState((s) => ({
         token: null,
         principal: access.principal,
+        contractRevision: access.contract_revision || null,
         accessMode: 'client',
         status: 'authenticated',
         generation: s.generation + 1,

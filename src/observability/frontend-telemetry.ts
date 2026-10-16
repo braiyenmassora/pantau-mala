@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useSession } from '@/auth/session'
+import { useTelemetryStatus, type TelemetryStatus } from './telemetry-status'
 
 const SESSION_KEY = 'pantau-mala.telemetry-session'
 const SESSION_MS = 30 * 60_000
@@ -68,11 +69,16 @@ function pagePath() {
 export function startFrontendTelemetry() {
   if (
     navigator.doNotTrack === '1' ||
-    (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl ||
-    !crypto.randomUUID
+    (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl
   ) {
+    useTelemetryStatus.setState({ status: 'privacy' })
     return () => {}
   }
+  if (typeof crypto.randomUUID !== 'function') {
+    useTelemetryStatus.setState({ status: 'unsupported' })
+    return () => {}
+  }
+  useTelemetryStatus.setState({ status: 'idle' })
   let currentSession = sessionId()
   let sessionExpires = Date.now() + SESSION_MS
   const pending: { event: Event; attempts: number }[] = []
@@ -85,10 +91,15 @@ export function startFrontendTelemetry() {
   let period = Date.now()
   let budget = 0
 
+  const setStatus = (status: TelemetryStatus) => {
+    if (!stopped) useTelemetryStatus.setState({ status })
+  }
+
   const retry = (batch: typeof pending) => {
     if (stopped) return
     pending.unshift(...batch.filter((entry) => entry.attempts < MAX_ATTEMPTS))
     pending.length = Math.min(pending.length, MAX_PENDING)
+    setStatus(pending.length ? 'retrying' : 'unavailable')
   }
 
   const schedule = () => {
@@ -111,6 +122,7 @@ export function startFrontendTelemetry() {
     })
     firstFlush = false
     inFlight = true
+    setStatus('sending')
     void fetch('/api/v1/telemetry', {
       method: 'POST',
       mode: 'same-origin',
@@ -129,6 +141,9 @@ export function startFrontendTelemetry() {
         if ([400, 401, 403, 404, 405, 413, 415].includes(response.status)) {
           disabled = true
           pending.length = 0
+          setStatus('rejected')
+        } else if (response.status === 202) {
+          setStatus('accepted')
         } else if (response.status !== 202) {
           retry(batch)
           const seconds = Number(response.headers.get('Retry-After')) || 30
@@ -166,6 +181,7 @@ export function startFrontendTelemetry() {
       },
       attempts: 0,
     })
+    setStatus('queued')
     schedule()
   }
 

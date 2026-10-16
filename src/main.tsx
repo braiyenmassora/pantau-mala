@@ -6,6 +6,8 @@ import { createRoot } from 'react-dom/client'
 
 import './index.css'
 import App from './App.tsx'
+import { registerAppWorker } from '@/pwa/updates'
+import { AppUpdateNotice } from '@/pwa/update-notice'
 
 if (
   import.meta.env.PROD &&
@@ -13,7 +15,7 @@ if (
   'serviceWorker' in navigator
 ) {
   window.addEventListener('load', () => {
-    void navigator.serviceWorker.register('/sw.js', { scope: '/' })
+    void registerAppWorker()
   })
 }
 
@@ -22,6 +24,7 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <AccessGate>
         <App />
+        <AppUpdateNotice />
       </AccessGate>
     </QueryClientProvider>
   </StrictMode>,

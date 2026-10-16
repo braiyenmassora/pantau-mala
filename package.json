@@ -6,7 +6,7 @@
   "packageManager": "pnpm@10.11.1",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/check-prod-data-url.mjs && node scripts/write-headers.mjs && tsc -b && vite build && node scripts/report-bundle.mjs",
+    "build": "node scripts/check-prod-data-url.mjs && node scripts/write-headers.mjs && tsc -b && vite build && node scripts/version-service-worker.mjs && node scripts/report-bundle.mjs",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "vitest run",
