@@ -42,7 +42,7 @@ it('refuses management, writes, supplied identity, unknown routes and cross-orig
   }
   expect(fetcher).not.toHaveBeenCalled()
 })
-it('verifies fixed client and scope before serving business data', async () => {
+it('verifies fixed client and scope only on session bootstrap', async () => {
   for (const changed of [
     { client_slug: 'other' },
     { scope: 'mcp:read' },
@@ -52,23 +52,24 @@ it('verifies fixed client and scope before serving business data', async () => {
       .fn()
       .mockResolvedValue(Response.json({ data: { ...principal, ...changed } }))
     const gateway = createClientGateway(env, fetcher)
-    expect((await gateway(new Request('http://localhost/api/v1/summary')))!.status).toBe(
-      503,
-    )
+    expect(
+      (await gateway(new Request('http://localhost/frontend/session')))!.status,
+    ).toBe(503)
     expect(fetcher).toHaveBeenCalledTimes(1)
   }
 })
-it('forwards only allowed data and handles revoked keys, redirects, network failures without secrets', async () => {
-  const fetcher = vi
-    .fn()
-    .mockResolvedValueOnce(Response.json({ data: principal }))
-    .mockResolvedValueOnce(Response.json({ data: [] }))
+it('forwards data with env key only (no /auth/me); session still checks identity', async () => {
+  const fetcher = vi.fn().mockResolvedValue(Response.json({ data: [] }))
   const gateway = createClientGateway(env, fetcher)
   expect(
     (await gateway(new Request('http://localhost/api/v1/regions?limit=1000')))!.status,
   ).toBe(200)
-  expect(String(fetcher.mock.calls[1][0])).toBe(
+  expect(fetcher).toHaveBeenCalledTimes(1)
+  expect(String(fetcher.mock.calls[0][0])).toBe(
     'http://127.0.0.1:8080/api/v1/regions?limit=1000',
+  )
+  expect(fetcher.mock.calls[0][1].headers.Authorization).toBe(
+    'Bearer ' + env.PANTAU_API_KEY,
   )
   for (const result of [
     new Response('secret detail', { status: 401 }),

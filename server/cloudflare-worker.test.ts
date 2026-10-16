@@ -40,20 +40,18 @@ describe('Cloudflare Worker routing', () => {
 
   it('proxies read-only data to the configured backend with a server credential', async () => {
     const env = environment()
-    const fetcher = vi
-      .fn()
-      .mockResolvedValueOnce(Response.json({ data: principal }))
-      .mockResolvedValueOnce(Response.json({ data: [] }))
+    const fetcher = vi.fn().mockResolvedValue(Response.json({ data: [] }))
     const response = await handleRequest(
       request('/api/v1/regions?limit=10'),
       env,
       fetcher,
     )
     expect(response.status).toBe(200)
-    expect(fetcher.mock.calls[1][0].toString()).toBe(
+    expect(fetcher).toHaveBeenCalledTimes(1)
+    expect(fetcher.mock.calls[0][0].toString()).toBe(
       'https://api.example.test/api/v1/regions?limit=10',
     )
-    expect(fetcher.mock.calls[1][1].headers.Authorization).toBe(
+    expect(fetcher.mock.calls[0][1].headers.Authorization).toBe(
       `Bearer ${env.PANTAU_API_KEY}`,
     )
     expect(env.ASSETS.fetch).not.toHaveBeenCalled()

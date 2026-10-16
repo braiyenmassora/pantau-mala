@@ -80,21 +80,21 @@ export function createClientGateway(env, fetcher = fetch) {
       if (!queryNames.has(key))
         return reply(400, { error: 'Unsupported query parameter' })
     try {
-      // Validate fixed identity for every request, including revocation and client disablement.
-      const identity = await upstream('/auth/me')
-      if (!identity.ok)
-        return reply(identity.status === 429 ? 429 : 503, {
-          error: 'Client access unavailable',
-        })
-      const raw = await identity.json()
-      const principal = raw.data || raw.principal || raw
-      if (
-        principal.kind !== 'key' ||
-        principal.scope !== 'data:read' ||
-        principal.client_slug !== client
-      )
-        return reply(503, { error: 'Client access configuration mismatch' })
-      if (url.pathname === '/frontend/session')
+      // Key tetap dari env. /auth/me hanya untuk session bootstrap (bukan tiap data request).
+      if (url.pathname === '/frontend/session') {
+        const identity = await upstream('/auth/me')
+        if (!identity.ok)
+          return reply(identity.status === 429 ? 429 : 503, {
+            error: 'Client access unavailable',
+          })
+        const raw = await identity.json()
+        const principal = raw.data || raw.principal || raw
+        if (
+          principal.kind !== 'key' ||
+          principal.scope !== 'data:read' ||
+          principal.client_slug !== client
+        )
+          return reply(503, { error: 'Client access configuration mismatch' })
         return reply(200, {
           mode: 'client',
           principal: {
@@ -106,6 +106,7 @@ export function createClientGateway(env, fetcher = fetch) {
             scope: 'data:read',
           },
         })
+      }
       const data = await upstream(url.pathname + url.search)
       if (!data.ok)
         return reply(data.status === 429 ? 429 : data.status >= 500 ? 502 : data.status, {
