@@ -54,5 +54,3 @@ Run the development server
 ```bash
 pnpm run dev
 ```
-
-Open http://127.0.0.1:5173/
