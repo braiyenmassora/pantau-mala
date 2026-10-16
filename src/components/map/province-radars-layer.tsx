@@ -8,7 +8,7 @@ import type { Region, RiskCategory } from '@/data/types'
 import { aggregateByProvince, provinceLabelAnchors } from '@/lib/province-aggregates'
 import { MAP_COLORS } from '@/lib/map-colors'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
-import { HEATMAP_TRANSPARENT, RISK_CATEGORIES } from '@/lib/risk-category'
+import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
 import { useMapStore } from '@/store/map'
 
 const SOURCE_ID = 'province-radars-source'
@@ -97,11 +97,11 @@ export function ProvinceRadarsLayer({ regions }: ProvinceRadarsLayerProps) {
         source: SOURCE_ID,
         filter: ['>=', ['get', 'risk_rank'], 3],
         paint: {
-          'circle-color': HEATMAP_TRANSPARENT,
+          'circle-color': withAlpha(RISK_CATEGORIES.sangat_tinggi.dot, 0.08),
           'circle-stroke-color': RISK_CATEGORIES.sangat_tinggi.dot,
-          'circle-stroke-width': 2,
+          'circle-stroke-width': 2.5,
           'circle-radius': 14,
-          'circle-stroke-opacity': 0.75,
+          'circle-stroke-opacity': 0.9,
           'circle-radius-transition': { duration: 0 },
           'circle-stroke-opacity-transition': { duration: 0 },
         },
@@ -115,11 +115,11 @@ export function ProvinceRadarsLayer({ regions }: ProvinceRadarsLayerProps) {
         source: SOURCE_ID,
         filter: ['==', ['get', 'risk_rank'], 2],
         paint: {
-          'circle-color': HEATMAP_TRANSPARENT,
+          'circle-color': withAlpha(RISK_CATEGORIES.sedang.dot, 0.08),
           'circle-stroke-color': RISK_CATEGORIES.sedang.dot,
-          'circle-stroke-width': 1.5,
+          'circle-stroke-width': 2,
           'circle-radius': 12,
-          'circle-stroke-opacity': 0.65,
+          'circle-stroke-opacity': 0.8,
           'circle-radius-transition': { duration: 0 },
           'circle-stroke-opacity-transition': { duration: 0 },
         },
@@ -197,24 +197,24 @@ export function ProvinceRadarsLayer({ regions }: ProvinceRadarsLayerProps) {
     const animate = (time: number) => {
       if (!document.hidden && time - lastFrame > 40) {
         lastFrame = time
-        const highPhase = (time % 850) / 850
-        const midPhase = (time % 1800) / 1800
+        const highPhase = (time % 720) / 720
+        const midPhase = (time % 1500) / 1500
 
         try {
           if (map.getLayer(PULSE_LAYER_HIGH)) {
-            map.setPaintProperty(PULSE_LAYER_HIGH, 'circle-radius', 6 + highPhase * 18)
+            map.setPaintProperty(PULSE_LAYER_HIGH, 'circle-radius', 7 + highPhase * 20)
             map.setPaintProperty(
               PULSE_LAYER_HIGH,
               'circle-stroke-opacity',
-              Math.max(0, 0.8 * (1 - highPhase)),
+              Math.max(0, 0.95 * (1 - highPhase)),
             )
           }
           if (map.getLayer(PULSE_LAYER_MID)) {
-            map.setPaintProperty(PULSE_LAYER_MID, 'circle-radius', 5 + midPhase * 14)
+            map.setPaintProperty(PULSE_LAYER_MID, 'circle-radius', 6 + midPhase * 16)
             map.setPaintProperty(
               PULSE_LAYER_MID,
               'circle-stroke-opacity',
-              Math.max(0, 0.7 * (1 - midPhase)),
+              Math.max(0, 0.8 * (1 - midPhase)),
             )
           }
         } catch {

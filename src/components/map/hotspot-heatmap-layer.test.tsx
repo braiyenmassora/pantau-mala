@@ -196,7 +196,7 @@ describe('HotspotHeatmapLayer', () => {
         type: 'circle',
         source: 'fy-hotspot-clusters',
         filter: ['has', 'point_count'],
-        paint: expect.objectContaining({ 'circle-stroke-width': 1 }),
+        paint: expect.objectContaining({ 'circle-stroke-width': 1.5 }),
       }),
     )
     expect(addLayer).toHaveBeenCalledWith(
@@ -204,7 +204,7 @@ describe('HotspotHeatmapLayer', () => {
         id: 'fy-hotspot-cluster-count-layer',
         type: 'symbol',
         filter: ['has', 'point_count'],
-        layout: expect.objectContaining({ 'text-allow-overlap': false }),
+        layout: expect.objectContaining({ 'text-allow-overlap': true }),
       }),
     )
     expect(addLayer).toHaveBeenCalledWith(

@@ -182,9 +182,9 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         paint: {
           'circle-color': HEATMAP_TRANSPARENT,
           'circle-stroke-color': RISK_CATEGORIES.sangat_tinggi.dot,
-          'circle-stroke-width': 1,
+          'circle-stroke-width': 2,
           'circle-radius': ['case', ['has', 'point_count'], 12, 3],
-          'circle-stroke-opacity': 0.3,
+          'circle-stroke-opacity': 0.7,
           'circle-radius-transition': { duration: 0 },
           'circle-stroke-opacity-transition': { duration: 0 },
         },
@@ -212,9 +212,9 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         paint: {
           'circle-color': HEATMAP_TRANSPARENT,
           'circle-stroke-color': RISK_CATEGORIES.sedang.dot,
-          'circle-stroke-width': 1,
+          'circle-stroke-width': 1.5,
           'circle-radius': ['case', ['has', 'point_count'], 12, 3],
-          'circle-stroke-opacity': 0.3,
+          'circle-stroke-opacity': 0.55,
           'circle-radius-transition': { duration: 0 },
           'circle-stroke-opacity-transition': { duration: 0 },
         },
@@ -238,7 +238,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
             RISK_CATEGORIES.sedang.dot,
             HOTSPOT_HEX,
           ],
-          'circle-stroke-width': 1,
+          'circle-stroke-width': 1.5,
           'circle-opacity': 0.98,
         },
       })
@@ -254,11 +254,14 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
           'text-field': ['get', 'point_count_abbreviated'],
           'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
           'text-size': 11,
-          'text-allow-overlap': false,
-          'text-ignore-placement': false,
+          'text-allow-overlap': true,
+          'text-ignore-placement': true,
+          'text-padding': 2,
         },
         paint: {
           'text-color': MAP_COLORS.ink,
+          'text-halo-color': MAP_COLORS.surface,
+          'text-halo-width': 1,
         },
       })
     }
@@ -440,10 +443,14 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       map.setPaintProperty(layerId, 'circle-radius', [
         'case',
         ['has', 'point_count'],
-        12,
-        3,
+        11,
+        3.5,
       ])
-      map.setPaintProperty(layerId, 'circle-stroke-opacity', 0.3)
+      map.setPaintProperty(
+        layerId,
+        'circle-stroke-opacity',
+        layerId === PULSE_LAYER_HIGH ? 0.7 : 0.55,
+      )
     }
     if (!hasRadar || reducedMotion || typeof requestAnimationFrame !== 'function') return
 
@@ -459,26 +466,26 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
             map.setPaintProperty(PULSE_LAYER_HIGH, 'circle-radius', [
               'case',
               ['has', 'point_count'],
-              12 + highPhase * 5,
-              3 + highPhase * 3,
+              11 + highPhase * 8,
+              3.5 + highPhase * 3.5,
             ])
             map.setPaintProperty(
               PULSE_LAYER_HIGH,
               'circle-stroke-opacity',
-              0.35 * (1 - highPhase),
+              0.85 * (1 - highPhase),
             )
           }
           if (map.getLayer(PULSE_LAYER_MID)) {
             map.setPaintProperty(PULSE_LAYER_MID, 'circle-radius', [
               'case',
               ['has', 'point_count'],
-              12 + midPhase * 5,
-              3 + midPhase * 3,
+              11 + midPhase * 6,
+              3.5 + midPhase * 3,
             ])
             map.setPaintProperty(
               PULSE_LAYER_MID,
               'circle-stroke-opacity',
-              0.35 * (1 - midPhase),
+              0.65 * (1 - midPhase),
             )
           }
         } catch {
