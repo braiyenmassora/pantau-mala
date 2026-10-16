@@ -105,23 +105,16 @@ function PartialBanner() {
 
 function applyBasemapCleanups(map: MapLibreMap) {
   if (!map || typeof map.getLayer !== 'function') return
+
+  // Keep useful Indonesian labels while removing visual clutter from service paths.
   const minorRoads = [
-    'road_minor_case',
-    'road_minor_fill',
     'road_service_case',
     'road_service_fill',
     'road_path',
-    'tunnel_minor_case',
-    'tunnel_minor_fill',
     'tunnel_service_case',
     'tunnel_service_fill',
-    'tunnel_path',
-    'bridge_minor_case',
-    'bridge_minor_fill',
     'bridge_service_case',
     'bridge_service_fill',
-    'bridge_path',
-    'roadname_minor',
   ]
   for (const id of minorRoads) {
     if (map.getLayer(id)) {
@@ -134,9 +127,6 @@ function applyBasemapCleanups(map: MapLibreMap) {
   }
   const hiddenLabels = [
     'place_continent',
-    'place_state',
-    'place_city_r6',
-    'place_city_r5',
     'place_city_dot_r7',
     'place_city_dot_r4',
     'place_city_dot_r2',
@@ -156,6 +146,55 @@ function applyBasemapCleanups(map: MapLibreMap) {
       }
     }
   }
+
+  const placeTextLayers = [
+    'place_state',
+    'place_city',
+    'place_city_r6',
+    'place_city_r5',
+    'place_town',
+    'place_suburbs',
+    'place_villages',
+    'place_hamlet',
+    'roadname_major',
+    'roadname_pri',
+    'roadname_sec',
+  ]
+  for (const id of placeTextLayers) {
+    if (!map.getLayer(id)) continue
+    try {
+      map.setLayoutProperty(id, 'visibility', 'visible')
+      map.setLayoutProperty(id, 'text-field', [
+        'coalesce',
+        ['get', 'name:id'],
+        ['get', 'name'],
+      ])
+    } catch {
+      // layer not found or already styled
+    }
+  }
+
+  const earlierLabels: Record<string, [number, number]> = {
+    place_state: [4, 12],
+    place_city_r6: [6, 16],
+    place_city_r5: [6, 16],
+    place_town: [6, 16],
+    place_villages: [7, 16],
+    place_suburbs: [8, 16],
+    place_hamlet: [9, 16],
+    roadname_major: [11, 24],
+    roadname_pri: [12, 24],
+    roadname_sec: [12, 24],
+  }
+  for (const [id, [minZoom, maxZoom]] of Object.entries(earlierLabels)) {
+    if (!map.getLayer(id)) continue
+    try {
+      map.setLayerZoomRange(id, minZoom, maxZoom)
+    } catch {
+      // layer not found or already styled
+    }
+  }
+
   for (const id of ['place_country_1', 'place_country_2']) {
     if (map.getLayer(id)) {
       try {

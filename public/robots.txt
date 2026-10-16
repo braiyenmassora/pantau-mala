@@ -1,0 +1,10 @@
+# https://pantaumala.ripr.workers.dev/robots.txt
+User-agent: *
+Allow: /
+
+# API dan sesi client bukan halaman publik.
+Disallow: /api/
+Disallow: /auth/
+Disallow: /frontend/
+
+Sitemap: https://pantaumala.ripr.workers.dev/sitemap.xml
