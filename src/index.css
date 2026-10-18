@@ -280,7 +280,7 @@
     min-height: 40px;
   }
 
-  .mobile-map-controls-panel-open {
+  .map-controls.mobile-map-controls-panel-open {
     bottom: calc(min(64dvh, 620px) + 56px + env(safe-area-inset-bottom));
   }
 
