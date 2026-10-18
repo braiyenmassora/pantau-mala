@@ -56,7 +56,7 @@ describe('DataFreshnessBanner', () => {
     expect(screen.getByText(/bisa sudah berubah/i)).toBeTruthy()
   })
 
-  it('shows source failure in plain language', () => {
+  it('hides source failure without snack or card', () => {
     useMeta.mockReturnValue({
       isPending: false,
       isError: false,
@@ -66,11 +66,7 @@ describe('DataFreshnessBanner', () => {
         pulled_at: { firms: null, weather: null },
       },
     })
-    wrap(<DataFreshnessBanner />)
-    expect(screen.getByText(copy.empty.dataSourceFail.title)).toBeTruthy()
-    expect(
-      screen.getByText(copy.empty.dataSourceFail.description(copy.source.cuacaPlain)),
-    ).toBeTruthy()
-    expect(screen.queryByText(/\(gagal\)/i)).toBeNull()
+    const { container } = wrap(<DataFreshnessBanner />)
+    expect(container.firstChild).toBeNull()
   })
 })

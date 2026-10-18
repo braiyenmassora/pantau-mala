@@ -41,11 +41,9 @@ export function MapControls({ mapRef }: MapControlsProps) {
     freshness.updatedAt ?? meta?.pulled_at.firms ?? meta?.pulled_at.weather
   const relative = updatedIso ? formatRelativeAge(updatedIso) : null
   const stampLabel = relative
-    ? freshness.problemSources.length > 0
-      ? copy.updatedAt.problemStamp(relative)
-      : freshness.stale
-        ? copy.updatedAt.staleStamp(relative)
-        : copy.footer.dataUpdated(relative)
+    ? freshness.stale
+      ? copy.updatedAt.staleStamp(relative)
+      : copy.footer.dataUpdated(relative)
     : null
   const hasCoords =
     (location.status === 'active' || location.status === 'outside') &&
@@ -119,10 +117,10 @@ export function MapControls({ mapRef }: MapControlsProps) {
         {stampLabel ? (
           <p
             data-testid="map-updated-stamp"
-            role={freshness.warn ? 'alert' : 'status'}
+            role={freshness.stale ? 'alert' : 'status'}
             className={cn(
               'text-xs leading-4',
-              freshness.warn
+              freshness.stale
                 ? 'bg-risk-mid-tint text-risk-mid-text rounded-ctl px-2 py-1 font-medium'
                 : 'text-ink-2',
             )}

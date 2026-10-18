@@ -3,15 +3,9 @@ import { AlertTriangle, CloudOff } from 'lucide-react'
 import { EmptyState } from '@/components/common'
 import { copy } from '@/copy/id'
 import { useMeta } from '@/data/queries'
-import { getDataFreshness, type MetaSourceKey } from '@/lib/data-freshness'
+import { getDataFreshness } from '@/lib/data-freshness'
 import { formatRelativeAge } from '@/lib/format'
 import { cn } from '@/lib/utils'
-
-const SOURCE_LABEL: Record<MetaSourceKey, string> = {
-  firms: copy.source.firmsPlain,
-  weather: copy.source.cuacaPlain,
-  air: copy.source.udaraPlain,
-}
 
 type DataFreshnessBannerProps = {
   className?: string
@@ -80,21 +74,8 @@ export function DataFreshnessBanner({
     )
   }
 
-  if (freshness.problemSources.length > 0) {
-    const list = freshness.problemSources.map((k) => SOURCE_LABEL[k]).join(', ')
-    return (
-      <EmptyState
-        icon={AlertTriangle}
-        variant="action"
-        className={cn(
-          'border-risk-mid/40 bg-risk-mid-tint text-risk-mid-text',
-          className,
-        )}
-        title={copy.empty.dataSourceFail.title}
-        description={copy.empty.dataSourceFail.description(list)}
-      />
-    )
-  }
+  // Sumber gagal: diam saja (tanpa card/snack). Hanya tampilkan bila data usang.
+  if (!freshness.stale) return null
 
   return (
     <EmptyState
