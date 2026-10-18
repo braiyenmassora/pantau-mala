@@ -130,28 +130,13 @@ export const copy = {
     topRiskColumn: 'Titik panas',
     topKab: 'Kabupaten/kota',
     searchResults: 'Hasil pencarian',
-    betaTooltip: 'Bukan peringatan kebakaran.',
     searchPlaceholder: 'Cari kabupaten/kota',
     searchClear: 'Hapus pencarian dan pilihan',
     closeDetail: 'Tutup detail',
     backHome: 'Kembali ke pantauan',
     backIndonesia: 'Kembali ke Indonesia',
-    tabSummary: 'Ringkasan',
-    tabDetail: 'Detail',
-    tabSources: 'Sumber',
-    seismicTitle: 'Gempa terkini (BMKG)',
-    atmosphereTitle: 'Kondisi atmosfer & udara',
-    avgTemp: 'Suhu rata-rata',
-    avgHumidity: 'Kelembapan',
-    avgWind: 'Angin rata-rata',
-    maxPm25: 'PM2.5 tertinggi',
-    seismicEmpty: 'Belum ada data gempa terkini dari BMKG',
-    seismicMain: (m: string, tempat: string) => `M ${m} · ${tempat}`,
-    seismicDepth: (km: string) => `Kedalaman ${km} km`,
-    seismicFelt: (text: string) => `Dirasakan ${text}`,
   },
   detail: {
-    summary: 'Ringkasan',
     actions: 'Yang bisa kamu lakukan',
     actionFireContact:
       'Jika melihat asap atau api, hubungi 112 atau BPBD setempat.',
@@ -203,28 +188,10 @@ export const copy = {
     weatherDangerTooltip:
       'Indeks cuaca kebakaran diperoleh dari Open-Meteo.',
     fwiUnit: 'FWI',
-    flagDate: 'Deteksi',
     lastDetection: 'Deteksi satelit terakhir',
-    lastDetectionEmpty: 'Belum ada deteksi satelit dalam 24 jam.',
-    satelliteLabel: 'Satelit',
-    confidenceLabel: 'Keyakinan deteksi',
-    updatedAt: (when: string) => `Diperbarui ${when}`,
     trendUp: 'Naik',
     trendDown: 'Turun',
     trendFlat: 'Stabil',
-    trendAria: (label: string) => `Tren jumlah titik 7 hari: ${label}`,
-    confidence: {
-      rendah: 'Rendah',
-      sedang: 'Sedang',
-      tinggi: 'Tinggi',
-    },
-    /** Tooltip ⓘ deteksi satelit terakhir: sumber data. */
-    confidenceHelp: 'Data deteksi satelit diperoleh dari NASA FIRMS.',
-    confidenceTip: {
-      rendah: 'Satelit kurang yakin. Bisa panas lain, bukan api.',
-      sedang: 'Satelit cukup yakin ada panas di sini.',
-      tinggi: 'Satelit sangat yakin ada panas di sini.',
-    },
   },
   /** Label tampilan untuk weather_danger.source. */
   bahayaSumberLabel: {
@@ -250,24 +217,10 @@ export const copy = {
   },
   location: {
     nearbyLabel: 'Dekat kamu',
-    nearbyHint: 'Radius 25 km dari lokasimu',
     yourLocation: 'Lokasi kamu',
-    radius25: 'Dalam radius 25 km',
     radiusBadge: 'Radius 25 km',
-    hotspotUnit: 'titik panas',
     hotspotUnitLine: 'titik panas dalam 25 km dari lokasimu',
-    hotspotCount: (n: string) => `${n} titik panas`,
-    nearbyCountLine: (n: string) => `${n} titik panas dalam 25 km dari lokasimu`,
-    nearbyRadiusNote: 'dalam 25 km dari lokasimu',
-    nearbyNoHotspots: 'Tidak ada titik panas satelit dalam 25 km dari lokasimu.',
-    nearbyFar:
-      'Lokasi kamu jauh dari wilayah pantauan. Cari kabupaten/kota di kolom pencarian.',
-    nearestLine: (km: string, place: string) => `Terdekat ${km} km di ${place}`,
     nearestDistance: (km: string) => `Terdekat ${km} km`,
-    nearestLineNoPlace: (km: string) => `Terdekat ${km} km`,
-    nearest: 'Paling dekat',
-    km: 'km',
-    riskLabel: 'Risiko',
     riskTitle: 'Dekat kamu',
     riskSubtitle: 'Izinkan lokasi untuk melihat titik panas di sekitarmu.',
     riskNearbyTip:
@@ -304,13 +257,8 @@ export const copy = {
       `${n} titik panas · Risiko ${risiko}`,
     regionMetaProvince: (provinsi: string) => `Provinsi ${provinsi}`,
     regionMetaHotspots: (n: string) => `${n} titik panas`,
-    /** Label baris popup titik (bukan copy.detail.confidence). */
-    detectionConfidence: 'Keyakinan deteksi',
-    satellite: 'Satelit',
     /** Heading cadangan bila nama wilayah tidak ada. */
     hotspotUntitled: 'Titik panas satelit',
-    /** Satu baris di popup peta (bukan kartu terpisah). */
-    popupDisclaimer: 'Bukan konfirmasi kebakaran atau peringatan resmi.',
   },
   filter: {
     allProvinces: 'Semua provinsi',

@@ -15,6 +15,13 @@ vi.mock('@/components/ui/map', () => ({
 }))
 
 vi.mock('@/data/queries', () => ({
+  useMeta: () => ({
+    data: {
+      updated_at: new Date().toISOString(),
+      status: { firms: 'ok', weather: 'ok', air: 'ok' },
+      pulled_at: { firms: null, weather: null },
+    },
+  }),
   useRegionCatalog: () => ({
     data: {
       provinces: [

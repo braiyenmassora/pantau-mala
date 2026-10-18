@@ -88,7 +88,6 @@ describe('LocationCard', () => {
 
     expect(screen.getByText('0')).toBeTruthy()
     expect(screen.getByText(copy.location.hotspotUnitLine)).toBeTruthy()
-    expect(screen.queryByText(copy.location.nearbyNoHotspots)).toBeNull()
     expect(screen.queryByText(copy.panel.coverageNote)).toBeNull()
     expect(
       screen.queryByRole('button', { name: copy.location.searchManual }),
@@ -104,7 +103,6 @@ describe('LocationCard', () => {
 
     expect(screen.getByText('0')).toBeTruthy()
     expect(screen.getByText(copy.location.hotspotUnitLine)).toBeTruthy()
-    expect(screen.queryByText(copy.location.nearbyFar)).toBeNull()
     expect(
       screen.queryByRole('button', { name: copy.location.searchManual }),
     ).toBeNull()
@@ -144,7 +142,6 @@ describe('LocationCard', () => {
     renderCard()
     expect(screen.getByText(copy.location.outsideTitle)).toBeTruthy()
     expect(screen.getByText(copy.location.outsideBody)).toBeTruthy()
-    expect(screen.queryByText(copy.location.nearbyNoHotspots)).toBeNull()
     expect(screen.queryByText(/titik panas dalam 25 km/)).toBeNull()
   })
 })
