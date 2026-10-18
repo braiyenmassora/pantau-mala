@@ -28,9 +28,10 @@ export function EmptyState({
   className,
 }: EmptyStateProps) {
   const titleClass = 'text-ink text-sm leading-5 font-semibold'
+  // Ikon ikut warna teks induk (brand default; risk-mid di banner peringatan).
   const body = (
     <div className="flex items-start gap-2">
-      <span className="bg-brand-soft text-brand rounded-ctl flex size-8 shrink-0 items-center justify-center">
+      <span className="rounded-ctl flex size-8 shrink-0 items-center justify-center bg-current/10 text-current">
         <Icon className="size-4" strokeWidth={2} aria-hidden />
       </span>
       <div className="min-w-0 flex-1">
@@ -56,13 +57,13 @@ export function EmptyState({
   )
 
   if (variant === 'bare') {
-    return <div className={className}>{body}</div>
+    return <div className={cn('text-brand', className)}>{body}</div>
   }
 
   return (
     <section
       className={cn(
-        'rounded-card p-4',
+        'text-brand rounded-card p-4',
         variant === 'action' ? 'border-line bg-surface border' : 'bg-surface-muted',
         className,
       )}

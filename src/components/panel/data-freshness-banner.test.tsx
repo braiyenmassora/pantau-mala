@@ -56,18 +56,21 @@ describe('DataFreshnessBanner', () => {
     expect(screen.getByText(/bisa sudah berubah/i)).toBeTruthy()
   })
 
-  it('shows source failure with source names', () => {
+  it('shows source failure in plain language', () => {
     useMeta.mockReturnValue({
       isPending: false,
       isError: false,
       data: {
         updated_at: new Date(Date.now() - 10 * 60_000).toISOString(),
-        status: { firms: 'gagal', weather: 'ok', air: 'ok' },
+        status: { firms: 'ok', weather: 'gagal', air: 'ok' },
         pulled_at: { firms: null, weather: null },
       },
     })
     wrap(<DataFreshnessBanner />)
     expect(screen.getByText(copy.empty.dataSourceFail.title)).toBeTruthy()
-    expect(screen.getByText(/NASA FIRMS \(gagal\)/)).toBeTruthy()
+    expect(
+      screen.getByText(copy.empty.dataSourceFail.description(copy.source.cuacaPlain)),
+    ).toBeTruthy()
+    expect(screen.queryByText(/\(gagal\)/i)).toBeNull()
   })
 })

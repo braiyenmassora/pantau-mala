@@ -8,9 +8,9 @@ import { formatRelativeAge } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 const SOURCE_LABEL: Record<MetaSourceKey, string> = {
-  firms: copy.source.firms,
-  weather: copy.source.cuaca,
-  air: copy.source.udara,
+  firms: copy.source.firmsPlain,
+  weather: copy.source.cuacaPlain,
+  air: copy.source.udaraPlain,
 }
 
 type DataFreshnessBannerProps = {
@@ -81,14 +81,7 @@ export function DataFreshnessBanner({
   }
 
   if (freshness.problemSources.length > 0) {
-    const list = freshness.problemSources
-      .map((k) =>
-        copy.updatedAt.sourceStatus(
-          SOURCE_LABEL[k],
-          copy.updatedAt.statusLabel[data!.status[k]],
-        ),
-      )
-      .join(', ')
+    const list = freshness.problemSources.map((k) => SOURCE_LABEL[k]).join(', ')
     return (
       <EmptyState
         icon={AlertTriangle}

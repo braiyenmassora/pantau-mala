@@ -81,9 +81,9 @@ export const copy = {
         `Pembaruan terakhir ${waktu}. Angka di bawah bisa sudah berubah.`,
     },
     dataSourceFail: {
-      title: 'Sebagian sumber data bermasalah',
+      title: 'Data tidak lengkap',
       description: (list: string) =>
-        `${list}. Data di layar bisa tidak lengkap.`,
+        `Sumber data ${list} gagal dimuat. Informasi yang ditampilkan mungkin tidak lengkap.`,
     },
     metaUnavailable: {
       title: 'Status pembaruan belum diketahui',
@@ -279,14 +279,7 @@ export const copy = {
     cadence: 'Data biasanya diperbarui setiap beberapa jam dari satelit dan cuaca',
     stale: 'Data mungkin sudah usang',
     staleStamp: (when: string) => `Data mungkin usang · ${when}`,
-    problems: (list: string) => `Ada sumber bermasalah: ${list}`,
-    problemStamp: (when: string) => `Sumber bermasalah · ${when}`,
-    statusLabel: {
-      ok: 'diperbarui',
-      terlambat: 'terlambat',
-      gagal: 'gagal',
-    },
-    sourceStatus: (name: string, status: string) => `${name} (${status})`,
+    problemStamp: (when: string) => `Data tidak lengkap · ${when}`,
   },
   app: {
     panelAria: 'Panel informasi',
@@ -390,6 +383,10 @@ export const copy = {
     firms: 'NASA FIRMS',
     cuaca: 'Cuaca',
     udara: 'Kualitas udara',
+    /** Label banner peringatan. */
+    firmsPlain: 'Titik panas satelit',
+    cuacaPlain: 'Cuaca',
+    udaraPlain: 'Kualitas udara',
   },
   common: {
     retry: 'Coba lagi',
