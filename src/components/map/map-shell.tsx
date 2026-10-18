@@ -329,8 +329,15 @@ export function MapShell({
         center={INDONESIA_CENTER}
         zoom={4.5}
         attributionControl={false}
+        boxZoom={false}
+        cooperativeGestures={false}
+        doubleClickZoom
+        dragPan
         dragRotate={false}
         pitchWithRotate={false}
+        scrollZoom
+        touchPitch={false}
+        touchZoomRotate
         loading={false}
       >
         <MapBasemapListener onBasemapError={markBasemapFailed} />

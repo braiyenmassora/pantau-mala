@@ -1,4 +1,4 @@
-import type { LngLatBounds, Map as MaplibreMap, PaddingOptions } from 'maplibre-gl'
+import type { Map as MaplibreMap, PaddingOptions } from 'maplibre-gl'
 
 import { LAYOUT } from '@/lib/layout'
 
@@ -6,6 +6,12 @@ import { LAYOUT } from '@/lib/layout'
 export const INDONESIA_BOUNDS: [[number, number], [number, number]] = [
   [94.9, -11.2],
   [141.1, 6.3],
+]
+
+/** Comfortable navigation envelope around the archipelago. */
+export const INDONESIA_NAVIGATION_BOUNDS: [[number, number], [number, number]] = [
+  [88, -16],
+  [148, 12],
 ]
 
 /** Rough center before the first fitBounds. */
@@ -19,7 +25,7 @@ export const LOCATION_ZOOM = 5.5
  * Lantai zoom overview nasional — jangan naikkan di atas cameraForBounds:
  * Sabang→Merauke harus muat (Papua tidak boleh terpotong).
  */
-export const OVERVIEW_ZOOM_FLOOR = 3.8
+export const OVERVIEW_ZOOM_FLOOR = 3.2
 
 /**
  * Padding area aman agar fit nasional tidak ketutup chip/legend/panel.
@@ -30,7 +36,7 @@ export function getMapPadding(panelOpen: boolean): PaddingOptions {
       left: LAYOUT.gutter,
       top: 72,
       right: LAYOUT.gutter,
-      bottom: 88,
+      bottom: panelOpen ? Math.min(window.innerHeight * 0.64, 620) + LAYOUT.gutter : 88,
     }
   return {
     left: panelOpen ? LAYOUT.overlayInset : 24,
@@ -66,22 +72,6 @@ function overviewCamera(map: MaplibreMap, panelOpen: boolean) {
 /** Matches --ease-out-soft cubic-bezier(0.2, 0.7, 0.2, 1). */
 export function easeOutSoft(t: number): number {
   return 1 - (1 - t) ** 3
-}
-
-/** Expand bounds 10% on each side (relative to width/height). */
-export function expandBounds10(
-  bounds: LngLatBounds,
-): [[number, number], [number, number]] {
-  const west = bounds.getWest()
-  const south = bounds.getSouth()
-  const east = bounds.getEast()
-  const north = bounds.getNorth()
-  const lonPad = (east - west) * 0.1
-  const latPad = (north - south) * 0.1
-  return [
-    [west - lonPad, south - latPad],
-    [east + lonPad, north + latPad],
-  ]
 }
 
 function clearMapLimits(map: MaplibreMap) {
@@ -150,9 +140,9 @@ export function fitProvinceBounds(
   )
 }
 
-/** Read current view bounds and lock maxBounds to +10% padding. */
+/** Keep panning inside a generous Indonesia envelope, not the current viewport. */
 export function applyDynamicMaxBounds(map: MaplibreMap) {
-  map.setMaxBounds(expandBounds10(map.getBounds()))
+  map.setMaxBounds(INDONESIA_NAVIGATION_BOUNDS)
 }
 
 /**
@@ -177,7 +167,7 @@ export function fitIndonesia(map: MaplibreMap, panelOpen: boolean, duration = 0)
       easing: easeOutSoft,
     })
   }
-  map.setMinZoom(Math.max(OVERVIEW_ZOOM_FLOOR, zoom - 0.35))
+  map.setMinZoom(OVERVIEW_ZOOM_FLOOR)
   scheduleMaxBounds(map, duration)
   return zoom
 }
@@ -194,7 +184,7 @@ export function refreshFitMinZoom(map: MaplibreMap, panelOpen: boolean): number 
     bearing: map.getBearing(),
     pitch: map.getPitch(),
   }
-  const minZoom = Math.max(OVERVIEW_ZOOM_FLOOR, zoom - 0.35)
+  const minZoom = OVERVIEW_ZOOM_FLOOR
   const wasOverview = prev.zoom <= zoom + 0.15
 
   clearMapLimits(map)

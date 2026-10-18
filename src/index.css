@@ -6,8 +6,12 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-heading: 'Plus Jakarta Sans', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  --font-sans: 'DM Sans', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-heading:
+    'Plus Jakarta Sans', 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    system-ui, sans-serif;
+  --font-sans:
+    'DM Sans', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -193,14 +197,33 @@
   .mobile-panel {
     inset: auto 0 0;
     width: 100%;
-    height: min(78dvh, 700px);
-    max-height: min(78dvh, 700px);
+    height: min(64dvh, 620px);
+    max-height: min(64dvh, 620px);
     border-right: 0;
     border-bottom: 0;
     border-left: 0;
     border-radius: var(--radius-panel) var(--radius-panel) 0 0;
     padding-bottom: env(safe-area-inset-bottom);
     box-shadow: 0 -8px 24px -12px rgb(15 23 42 / 0.28);
+  }
+
+  .mobile-panel-handle {
+    display: flex;
+    min-height: 36px;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    background: transparent;
+    color: var(--color-ink-3);
+  }
+
+  .mobile-panel-handle span {
+    display: block;
+    width: 40px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--color-line);
   }
 
   .mobile-panel-open {
@@ -222,12 +245,14 @@
     border: 1px solid var(--color-line);
     border-radius: 999px;
     box-shadow: var(--shadow-map);
-    transition: bottom 300ms var(--ease-out-soft), background-color 150ms ease,
+    transition:
+      bottom 300ms var(--ease-out-soft),
+      background-color 150ms ease,
       color 150ms ease;
   }
 
   .mobile-panel-toggle-open {
-    bottom: calc(min(78dvh, 700px) + 8px + env(safe-area-inset-bottom));
+    bottom: calc(min(64dvh, 620px) + 8px + env(safe-area-inset-bottom));
   }
 
   .mobile-filter-bar {
@@ -235,6 +260,7 @@
     right: var(--floating-control-offset);
     left: var(--floating-control-offset);
     flex-wrap: nowrap;
+    gap: 6px;
     max-width: calc(100vw - (var(--floating-control-offset) * 2));
     overflow-x: auto;
     padding-bottom: 2px;
@@ -252,6 +278,10 @@
 
   .mobile-filter-bar button {
     min-height: 40px;
+  }
+
+  .mobile-map-controls-panel-open {
+    bottom: calc(min(64dvh, 620px) + 56px + env(safe-area-inset-bottom));
   }
 
   .map-controls {

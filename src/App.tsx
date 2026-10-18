@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from 'lucide-react'
-import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef } from 'react'
 
 import { StatusAnnouncer } from '@/components/common/status-announcer'
 import { focusRing } from '@/components/common/focus-ring'
@@ -33,13 +33,6 @@ export default function App() {
   useFrontendTelemetry()
   const mapRef = useRef<MapRef | null>(null)
   const panelContentRef = useRef<HTMLDivElement>(null)
-  const [mobile, setMobile] = useState(() => window.innerWidth < 640)
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 639px)')
-    const sync = () => setMobile(mq.matches)
-    mq.addEventListener('change', sync)
-    return () => mq.removeEventListener('change', sync)
-  }, [])
   const panelOpen = useUiStore((s) => s.panelOpen)
   const togglePanel = useUiStore((s) => s.togglePanel)
 
@@ -139,6 +132,16 @@ export default function App() {
           aria-hidden={!panelOpen}
           {...mapOverlayGestureProps}
         >
+          <button
+            type="button"
+            onClick={togglePanel}
+            aria-expanded={panelOpen}
+            aria-label={copy.app.hidePanel}
+            className="mobile-panel-handle sm:hidden"
+            {...mapOverlayGestureProps}
+          >
+            <span aria-hidden />
+          </button>
           <div
             ref={panelContentRef}
             className="soft-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain"
@@ -169,7 +172,9 @@ export default function App() {
             easePanel,
             'transition-[left,background-color] duration-150',
             focusRing,
-            panelOpen ? 'left-[calc(100vw-24px)] sm:left-(--map-panel-edge)' : 'left-0',
+            panelOpen
+              ? 'left-[calc(100vw-24px)] max-sm:hidden sm:left-(--map-panel-edge)'
+              : 'left-0',
             panelOpen && 'mobile-panel-toggle-open',
           )}
           {...mapOverlayGestureProps}
@@ -202,12 +207,7 @@ export default function App() {
         <MapLegend />
         {!isPending && <MapControls mapRef={mapRef} />}
 
-        <main
-          inert={(mobile && panelOpen) || undefined}
-          aria-hidden={(mobile && panelOpen) || undefined}
-          aria-label={copy.app.mapAria}
-          className="absolute inset-0 z-0"
-        >
+        <main aria-label={copy.app.mapAria} className="absolute inset-0 z-0">
           {/* Satu loader di MapShell sampai framing siap — jangan defer + SoftLoading ganda. */}
           <Suspense fallback={<MapSoftLoading />}>
             <MapShell
