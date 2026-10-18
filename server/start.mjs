@@ -41,7 +41,7 @@ const SECURITY = {
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Content-Security-Policy':
-    "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' https://cloud.umami.is; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.cartocdn.com; font-src 'self' data:; connect-src 'self' https://*.cartocdn.com https://unpkg.com https://cloud.umami.is; worker-src 'self' blob: https://unpkg.com",
+    "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.cartocdn.com https://*.goatcounter.com; font-src 'self' data:; connect-src 'self' https://*.cartocdn.com https://unpkg.com https://*.goatcounter.com; worker-src 'self' blob: https://unpkg.com",
 }
 
 async function sendFile(res, filename, method, cacheControl) {

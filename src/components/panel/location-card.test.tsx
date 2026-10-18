@@ -80,33 +80,34 @@ describe('LocationCard', () => {
     })
   })
 
-  it('shows nearby card with clear empty and search when active and no hotspots', () => {
+  it('shows default zero count when active and no hotspots', () => {
     useMapStore.setState({
       location: { status: 'active', coords: { lon: 114.2, lat: -2.9 } },
     })
     renderCard()
 
-    expect(screen.getByText(copy.location.nearbyNoHotspots)).toBeTruthy()
-    expect(screen.queryByText(copy.panel.limitationNote)).toBeNull()
-    expect(screen.getByText(copy.panel.coverageNote)).toBeTruthy()
+    expect(screen.getByText('0')).toBeTruthy()
+    expect(screen.getByText(copy.location.hotspotUnitLine)).toBeTruthy()
+    expect(screen.queryByText(copy.location.nearbyNoHotspots)).toBeNull()
+    expect(screen.queryByText(copy.panel.coverageNote)).toBeNull()
     expect(
-      screen.getByRole('button', { name: copy.location.searchManual }),
-    ).toBeTruthy()
-    expect(screen.queryByText(copy.location.nearbyRadiusNote)).toBeNull()
+      screen.queryByRole('button', { name: copy.location.searchManual }),
+    ).toBeNull()
   })
 
-  it('shows far-from-coverage fallback when no region is near', () => {
+  it('shows default zero count when far from coverage', () => {
     useMapStore.setState({
       // Di daratan Indonesia longgar tapi jauh dari pusat kab uji
       location: { status: 'active', coords: { lon: 95.3, lat: 5.5 } },
     })
     renderCard()
 
-    expect(screen.getByText(copy.location.nearbyFar)).toBeTruthy()
-    expect(screen.queryByText(copy.panel.limitationNote)).toBeNull()
+    expect(screen.getByText('0')).toBeTruthy()
+    expect(screen.getByText(copy.location.hotspotUnitLine)).toBeTruthy()
+    expect(screen.queryByText(copy.location.nearbyFar)).toBeNull()
     expect(
-      screen.getByRole('button', { name: copy.location.searchManual }),
-    ).toBeTruthy()
+      screen.queryByRole('button', { name: copy.location.searchManual }),
+    ).toBeNull()
   })
 
   it('shows denied state with retry and search', () => {

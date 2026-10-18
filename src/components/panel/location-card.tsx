@@ -261,9 +261,6 @@ function ActiveNearbyCard({
       })
     : null
 
-  const farFromCoverage =
-    nearby.hotspotCount === 0 && !nearby.userRegionCode && !nearby.nearest
-
   const riskCategory: RiskCategory =
     nearby.hotspotCount >= 10
       ? 'sangat_tinggi'
@@ -308,55 +305,20 @@ function ActiveNearbyCard({
         />
       </CardHeader>
       <CardContent className="space-y-3">
-        {farFromCoverage ? (
-          <div className="space-y-3">
-            <p className="text-ink-2 text-xs leading-4">{copy.location.nearbyFar}</p>
-            <Button
-              type="button"
-              variant="soft"
-              size="sm"
-              className="h-8 px-3 text-xs leading-4 font-medium"
-              onClick={(e) => {
-                e.stopPropagation()
-                focusWilayahSearch()
-              }}
-            >
-              {copy.location.searchManual}
-            </Button>
+        <div className="space-y-1">
+          <p className="text-ink font-mono text-3xl leading-10 font-semibold tabular-nums">
+            {formatNumber(nearby.hotspotCount)}
+          </p>
+          <p className="text-ink text-sm leading-5">{copy.location.hotspotUnitLine}</p>
+        </div>
+        {nearestKm || locationText ? (
+          <div className="text-ink-2 space-y-1 text-xs leading-4">
+            {nearestKm ? <p>{copy.location.nearestDistance(nearestKm)}</p> : null}
+            {locationText ? (
+              <p className="text-ink-2 line-clamp-2">{locationText}</p>
+            ) : null}
           </div>
-        ) : nearby.hotspotCount === 0 ? (
-          <div className="space-y-3">
-            <p className="text-ink-2 text-xs leading-4">{copy.location.nearbyNoHotspots}</p>
-            <p className="text-ink-2 text-xs leading-4">{copy.panel.coverageNote}</p>
-            <Button
-              type="button"
-              variant="soft"
-              size="sm"
-              className="h-8 px-3 text-xs leading-4 font-medium"
-              onClick={(e) => {
-                e.stopPropagation()
-                focusWilayahSearch()
-              }}
-            >
-              {copy.location.searchManual}
-            </Button>
-          </div>
-        ) : (
-          <>
-            <div className="space-y-1">
-              <p className="text-ink font-mono text-3xl leading-10 font-semibold tabular-nums">
-                {formatNumber(nearby.hotspotCount)}
-              </p>
-              <p className="text-ink text-sm leading-5">{copy.location.hotspotUnitLine}</p>
-            </div>
-            <div className="text-ink-2 space-y-1 text-xs leading-4">
-              {nearestKm ? <p>{copy.location.nearestDistance(nearestKm)}</p> : null}
-              {locationText ? (
-                <p className="text-ink-2 line-clamp-2">{locationText}</p>
-              ) : null}
-            </div>
-          </>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   )

@@ -22,13 +22,13 @@ if (/^https?:\/\//i.test(dataUrl)) {
   }
 }
 
-const connectSrc = `'self' https://*.basemaps.cartocdn.com https://*.cartocdn.com https://unpkg.com https://cloud.umami.is${dataOrigin}`
+const connectSrc = `'self' https://*.basemaps.cartocdn.com https://*.cartocdn.com https://unpkg.com https://*.goatcounter.com${dataOrigin}`
 
 const headers = `/*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(self)
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' https://cloud.umami.is; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.basemaps.cartocdn.com https://*.cartocdn.com; font-src 'self' data:; connect-src ${connectSrc}; worker-src 'self' blob: https://unpkg.com; child-src 'self' blob:
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.basemaps.cartocdn.com https://*.cartocdn.com https://*.goatcounter.com; font-src 'self' data:; connect-src ${connectSrc}; worker-src 'self' blob: https://unpkg.com; child-src 'self' blob:
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
