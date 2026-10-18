@@ -25,6 +25,6 @@
   "vars": {
     "FE_ACCESS_MODE": "client",
     "PANTAU_API_ORIGIN": "https://api.pantaumala.live",
-    "PANTAU_CLIENT_SLUG": "pantau-mala",
+    "PANTAU_CLIENT_SLUG": "admin-52130233eec63993",
   },
 }
