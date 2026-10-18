@@ -172,7 +172,16 @@ hanya menghilangkan simbol, bukan mengubah lettering. Favicon, ikon Apple, gamba
 preview sosial, dan theme color mengikuti identitas logo yang sama. Warna logo
 adalah pengecualian khusus brand asset, bukan perubahan palet komponen FE.
 
-## 8. Indikator model dan konteks event
+## 8. Mobile GIS & Interaktivitas Peta
+
+Pada viewport mobile (<640px):
+- Kanvas peta selalu interaktif (`pointer-events` aktif, tidak menggunakan atribut `inert`).
+- Gestur sentuh multi-touch diaktifkan: 1-jari drag pan, 2-jari pinch-to-zoom, dan double-tap zoom.
+- Navigasi kamera dipagari dalam `INDONESIA_NAVIGATION_BOUNDS` (`[88, -16]` s.d. `[148, 12]`) dengan `minZoom` 3.2, memungkinkan eksplorasi seluruh pulau tanpa tersendat batas viewport sempit.
+- Panel bawah mengadopsi format bottom-sheet compact (maksimal 64dvh) dengan handle bar sentuh/tap untuk meminimalkan atau memperluas panel, sehingga area peta tetap dominan dan leluasa.
+- Kontrol peta (zoom +/− dan lokasi) tetap dapat diakses di kanan bawah secara adaptif di atas panel.
+
+## 9. Indikator model dan konteks event
 
 `TerrainIndicatorCard` adalah komponen reusable untuk indikator tanah dan elevasi Open-Meteo pada detail wilayah. Nilai selalu diberi label `Modelled`, menampilkan waktu valid dan waktu tarik, serta menjelaskan bahwa kelembapan tersebut bukan pengukuran langsung gambut dan tidak mengubah skor risiko.
 
