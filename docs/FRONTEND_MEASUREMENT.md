@@ -15,11 +15,13 @@ menyimpan shell offline agar kunjungan berikutnya tidak memakai ID lama.
 
 Fallback browser menggunakan meta `pantau-page-view` untuk event ID yang sama.
 BE melakukan deduplikasi dan melengkapi sesi browser jika tersedia, tanpa
-menambah page view baru. DNT/GPC tetap mematikan tracker/sesi browser, tetapi
-hitungan dokumen server tetap agregat. Untuk DNT/GPC, lokasi yang diteruskan hanya
-negara jaringan, bukan region/kota. Geo bukan GPS; browser hanya dilabel sesuai
-UA/Client Hints yang benar-benar dikirim. Brave yang menyamar sebagai Chrome
-tetap bisa tampil sebagai Chrome: jangan menebak atau menggunakan fingerprint.
+menambah page view baru. DNT/GPC mengaktifkan mode browser anonim: tidak ada
+sessionStorage, session ID, atau referrer yang dikirim, tetapi sinyal kesehatan
+tetap dapat diterima secara agregat agar browser privasi tidak kehilangan akses
+observabilitas. Untuk DNT/GPC, lokasi yang diteruskan hanya negara jaringan, bukan
+region/kota. Geo bukan GPS; browser hanya dilabel sesuai UA/Client Hints yang
+benar-benar dikirim. Brave yang menyamar sebagai Chrome tetap bisa tampil sebagai
+Chrome: jangan menebak atau menggunakan fingerprint.
 
 ## Kegagalan dan batasan
 

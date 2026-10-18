@@ -17,8 +17,10 @@ ditambahkan pada repo backend atas permintaan owner; perubahan FE tetap di
 - Secret API hanya di gateway server. Client ID tidak dikirim browser; tenant
   berasal dari principal bearer yang diverifikasi Go.
 - Tidak merekam query, fragment, GPS, raw IP, request body, pesan exception, atau
-  stack trace. Referrer hanya origin. Session ID acak per tab sekitar 30 menit,
-  menghormati DNT/GPC, bukan identitas orang/fingerprint.
+  stack trace. Referrer hanya origin. Session ID acak per tab sekitar 30 menit;
+  ketika DNT/GPC aktif, browser beralih ke mode anonim tanpa session ID,
+  sessionStorage, atau referrer. Event tetap first-party dan agregat, bukan
+  identitas orang atau fingerprint.
 - Negara/region/kota dibaca Worker dari metadata `request.cf`, bukan header geo
   browser. Lokal bisa kosong; lokasi jaringan bersifat perkiraan, bukan GPS.
 - Endpoint belum tersedia/menolak 4xx: tracker berhenti, tidak retry berulang.

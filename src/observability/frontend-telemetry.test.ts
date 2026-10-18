@@ -132,15 +132,22 @@ it('stops after an unsupported endpoint instead of causing repeated errors', asy
   expect(useTelemetryStatus.getState().status).toBe('rejected')
 })
 
-it('respects GPC and DNT without sending or storing a session', async () => {
+it('keeps GPC and DNT visits observable without storing a session', async () => {
   for (const privacy of [{ doNotTrack: '1' }, { globalPrivacyControl: true }]) {
     vi.stubGlobal('navigator', privacy)
-    startFrontendTelemetry()()
+    const stopPrivacy = startFrontendTelemetry()
+    await vi.advanceTimersByTimeAsync(1_000)
+    expect(fetch).toHaveBeenCalledTimes(1)
+    const payload = JSON.parse(String(vi.mocked(fetch).mock.calls[0][1]?.body))
+    expect(payload.events[0]).toMatchObject({
+      session_id: '',
+      referrer: '',
+    })
+    expect(sessionStorage.length).toBe(0)
+    expect(useTelemetryStatus.getState().status).toBe('accepted')
+    stopPrivacy()
+    vi.mocked(fetch).mockClear()
   }
-  await vi.advanceTimersByTimeAsync(20_000)
-  expect(fetch).not.toHaveBeenCalled()
-  expect(sessionStorage.length).toBe(0)
-  expect(useTelemetryStatus.getState().status).toBe('privacy')
 })
 
 it('shares the server event ID so the fallback cannot double-count a page view', async () => {

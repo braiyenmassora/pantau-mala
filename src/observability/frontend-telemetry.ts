@@ -76,20 +76,22 @@ function pagePath() {
   return path.length <= 256 && /^\/(?!\/)[a-zA-Z0-9/_.-]*$/.test(path) ? path : '/'
 }
 
-export function startFrontendTelemetry() {
-  if (
+function hasPrivacySignal() {
+  if (typeof navigator === 'undefined') return false
+  return (
     navigator.doNotTrack === '1' ||
-    (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl
-  ) {
-    useTelemetryStatus.setState({ status: 'privacy' })
-    return () => {}
-  }
+    (navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl === true
+  )
+}
+
+export function startFrontendTelemetry() {
+  const privacyMode = hasPrivacySignal()
   if (typeof crypto.getRandomValues !== 'function') {
     useTelemetryStatus.setState({ status: 'unsupported' })
     return () => {}
   }
-  useTelemetryStatus.setState({ status: 'idle' })
-  let currentSession = sessionId()
+  useTelemetryStatus.setState({ status: privacyMode ? 'privacy' : 'idle' })
+  let currentSession = privacyMode ? '' : sessionId()
   let sessionExpires = Date.now() + SESSION_MS
   const pending: { event: Event; attempts: number }[] = []
   let timer: number | undefined
@@ -178,7 +180,7 @@ export function startFrontendTelemetry() {
     }
     if (budget >= 60) return
     budget++
-    if (Date.now() >= sessionExpires) {
+    if (!privacyMode && Date.now() >= sessionExpires) {
       currentSession = sessionId()
       sessionExpires = Date.now() + SESSION_MS
     }
@@ -213,7 +215,7 @@ export function startFrontendTelemetry() {
   const initialView = window.setTimeout(
     () =>
       track(
-        { type: 'page_view', referrer: referrerOrigin() },
+        { type: 'page_view', referrer: privacyMode ? '' : referrerOrigin() },
         edgeID && /^[0-9a-f-]{36}$/.test(edgeID) ? edgeID : randomId(),
       ),
     0,

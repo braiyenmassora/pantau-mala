@@ -4,7 +4,7 @@ import { useTelemetryStatus, type TelemetryStatus } from './telemetry-status'
 
 const labels: Record<TelemetryStatus, string> = {
   idle: 'Menunggu akses client',
-  privacy: 'Tidak diukur · preferensi privasi',
+  privacy: 'Aktif anonim · preferensi privasi',
   unsupported: 'Tidak diukur · browser belum mendukung',
   queued: 'Menunggu pengiriman',
   sending: 'Mengirim secara async',
@@ -25,7 +25,7 @@ export function TelemetryIndicator() {
       </summary>
       <p className="mt-1">
         {status === 'privacy'
-          ? 'DNT/GPC aktif: sesi dan error browser tidak dikirim. Gateway tetap dapat menghitung dokumen secara agregat tanpa cookie atau ID sesi.'
+          ? 'DNT/GPC aktif: diagnostik dikirim secara anonim tanpa cookie, sessionStorage, ID sesi, atau referrer. Gateway hanya menerima sinyal agregat untuk kesehatan aplikasi.'
           : 'Pengukuran bersifat best-effort. Pemblokir atau gangguan jaringan dapat mengurangi cakupan. HTTP 202 berarti masuk antrean, bukan bukti data sudah tersimpan.'}{' '}
         Akses peta tidak bergantung pada telemetry.
       </p>
