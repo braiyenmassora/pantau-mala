@@ -2,7 +2,6 @@ import { describe, it, expect } from 'vitest'
 import {
   summarySchema,
   historySchema,
-  earthquakesSchema,
   forecastSchema,
   dischargeSchema,
   sourceStatusSchema,
@@ -33,25 +32,6 @@ describe('extended Go source contracts', () => {
         data: [{ tanggal: '2026-10-12', titik_panas: 0, skor: null }],
       }).data[0].skor,
     ).toBeNull()
-  })
-  it('preserves source labels and BMKG event properties', () => {
-    const value = earthquakesSchema.parse({
-      ...envelope,
-      data: [
-        {
-          waktu: envelope.diambil,
-          pusat: [114, -2],
-          magnitudo: 4,
-          kedalaman_km: 10,
-          wilayah: 'Synthetic region',
-          potensi: 'Synthetic text',
-          dirasakan: 'Synthetic text',
-          shakemap: '',
-        },
-      ],
-    })
-    expect(value.data[0].pusat).toEqual([114, -2])
-    expect(value.keterangan).toBe(envelope.keterangan)
   })
   it('requires actual village code and forecast fields in response', () => {
     expect(

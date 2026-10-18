@@ -43,7 +43,7 @@ export function EmptyState({
         )}
         <p className="text-ink-2 mt-2 text-xs leading-4">{description}</p>
         {actions ? (
-          <div className="mt-3 flex flex-wrap gap-2">{actions}</div>
+          <div className="mt-2 flex flex-wrap gap-2">{actions}</div>
         ) : (
           action && (
             <Button variant="soft" size="sm" className="mt-2" onClick={action.onClick}>

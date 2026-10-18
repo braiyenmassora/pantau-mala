@@ -10,12 +10,14 @@ import { MapControls } from '@/components/map/map-controls'
 import { MapLegend } from '@/components/map/map-legend'
 import { PanelFooter } from '@/components/panel/panel-footer'
 import { SummaryPanel } from '@/components/panel/summary-panel'
+import { WilayahUrlSync } from '@/components/wilayah-url-sync'
 import type { MapRef } from '@/components/ui/map'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { copy } from '@/copy/id'
 import { useRegions } from '@/data/queries'
 import { filterRegions } from '@/lib/filter-regions'
 import { restoreFocusTrigger } from '@/lib/focus-return'
+import { locationFromCoords } from '@/lib/geolocation'
 import { BREAKPOINT, isMobileWidth } from '@/lib/layout'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
@@ -54,6 +56,8 @@ export default function App() {
   const select = useMapStore((s) => s.select)
   const setLocation = useMapStore((s) => s.setLocation)
   const locationStatus = useMapStore((s) => s.location.status)
+  const wilayahNotFound = useMapStore((s) => s.wilayahNotFound)
+  const setWilayahNotFound = useMapStore((s) => s.setWilayahNotFound)
 
   useEffect(() => {
     let cancelled = false
@@ -63,10 +67,9 @@ export default function App() {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           if (cancelled) return
-          setLocation({
-            status: 'active',
-            coords: { lat: position.coords.latitude, lon: position.coords.longitude },
-          })
+          setLocation(
+            locationFromCoords(position.coords.latitude, position.coords.longitude),
+          )
         },
         () => {},
         { enableHighAccuracy: false, timeout: 10_000, maximumAge: 300_000 },
@@ -100,6 +103,14 @@ export default function App() {
         return
       }
       // Bertingkat: detail wilayah → panel provinsi → beranda (search tersedia).
+      if (wilayahNotFound) {
+        setWilayahNotFound(false)
+        if (window.location.pathname !== '/') {
+          window.history.pushState(null, '', '/')
+        }
+        restoreFocusTrigger()
+        return
+      }
       if (selectedCode) {
         select(null)
         restoreFocusTrigger()
@@ -117,7 +128,16 @@ export default function App() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [locationStatus, selectedCode, province, query, select, setLocation])
+  }, [
+    locationStatus,
+    wilayahNotFound,
+    selectedCode,
+    province,
+    query,
+    select,
+    setLocation,
+    setWilayahNotFound,
+  ])
 
   const filtered = useMemo(
     () => (data ? filterRegions(data, { province, selectedCategories, query }) : []),
@@ -133,6 +153,7 @@ export default function App() {
   return (
     <TooltipProvider>
       <div className="bg-map-bg text-ink relative h-dvh w-dvw overflow-hidden">
+        <WilayahUrlSync />
         <StatusAnnouncer />
 
         <aside

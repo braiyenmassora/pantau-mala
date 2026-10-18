@@ -96,32 +96,16 @@ describe('EmptyState', () => {
     ).toBeTruthy()
   })
 
-  it('location denied', () => {
+  it('renders without action when none provided', () => {
     render(
       <EmptyState
         icon={MapPinOff}
-        title={copy.empty.locationDenied.title}
-        description={copy.empty.locationDenied.description}
+        title={copy.location.outsideTitle}
+        description={copy.location.deniedBody}
       />,
     )
-    expect(screen.getByText(copy.empty.locationDenied.title)).toBeTruthy()
+    expect(screen.getByText(copy.location.outsideTitle)).toBeTruthy()
     expect(screen.queryByRole('button')).toBeNull()
-  })
-
-  it('location error with retry', async () => {
-    const onClick = vi.fn()
-    render(
-      <EmptyState
-        icon={MapPinOff}
-        title={copy.empty.locationError.title}
-        description={copy.empty.locationError.description}
-        action={{ label: copy.empty.locationError.action, onClick }}
-      />,
-    )
-    await userEvent.click(
-      screen.getByRole('button', { name: copy.empty.locationError.action }),
-    )
-    expect(onClick).toHaveBeenCalledOnce()
   })
 
   it('action variant is bordered surface CTA', () => {

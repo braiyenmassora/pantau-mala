@@ -16,7 +16,7 @@ import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 
-/** Semua kategori risiko yang dihitung ke total "Semua". */
+/** Chip filter risiko (nol titik hanya di Semua, bukan chip). */
 const CATEGORY_BASE: RiskCategory[] = ['sangat_tinggi', 'sedang', 'rendah']
 
 /** Di bawah ini: chip horizontal sulit dibaca → menu Risiko (~4 chip ≈ 720px). */
@@ -47,6 +47,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
   const counts = useMemo(() => {
     const next: Record<RiskCategory, number> = {
       tidak_tersedia: 0,
+      tanpa_titik: 0,
       sangat_tinggi: 0,
       sedang: 0,
       rendah: 0,
@@ -57,8 +58,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
 
   const allPressed = selectedCategories.size === 0
   const allCount = preCategory.length
-  const categorySum =
-    counts.sangat_tinggi + counts.sedang + counts.rendah + counts.tidak_tersedia
+  const categorySum = counts.sangat_tinggi + counts.sedang + counts.rendah
 
   const { left, availWidth } = useMapChrome(panelOpen)
   const riskMenu = availWidth < RISK_MENU_MAX_AVAIL
@@ -124,14 +124,15 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
             const count = counts[category]
             const pressed = selectedCategories.has(category)
             const isZero = count === 0
+            const chipTitle = copy.filter.categoryTitle(formatNumber(count), meta.label)
 
             return (
               <Chip
                 key={category}
                 pressed={pressed}
                 disabled={isZero}
-                title={copy.filter.categoryTitle(formatNumber(count), meta.label)}
-                aria-label={copy.filter.categoryTitle(formatNumber(count), meta.label)}
+                title={chipTitle}
+                aria-label={chipTitle}
                 onClick={() => toggleCategory(category)}
                 className={cn(
                   'shrink-0',

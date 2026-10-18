@@ -24,6 +24,7 @@ vi.mock('@/components/ui/map', () => ({
     },
     isLoaded: true,
   }),
+  MapGeoJSON: () => null,
   MapMarker: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="hotspot-marker">{children}</div>
   ),

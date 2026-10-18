@@ -22,14 +22,15 @@ describe('halo visibility', () => {
     expect(HALO_MIN_TITIK).toBe(5)
   })
 
-  it('Rendah with 8 hotspots → circle, no pulse', () => {
+  it('Rendah with 8 hotspots → circle + pulse', () => {
     expect(shouldShowHalo(8)).toBe(true)
-    expect(showHaloPulse('rendah')).toBe(false)
+    expect(showHaloPulse('rendah')).toBe(true)
   })
 
-  it('Sedang/Sangat tinggi pulse even when circle floor not met', () => {
+  it('all risk pins pulse, including without circle floor', () => {
     expect(shouldShowHalo(3)).toBe(false)
     expect(showHaloPulse('sedang')).toBe(true)
     expect(showHaloPulse('sangat_tinggi')).toBe(true)
+    expect(showHaloPulse('tanpa_titik')).toBe(true)
   })
 })

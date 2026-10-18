@@ -3,14 +3,19 @@ import Fuse from 'fuse.js'
 import type { Region, RiskCategory } from '@/data/types'
 import { compareRegionsByRisk, effectiveRiskCategory } from '@/lib/risk-rule'
 
-/** Pin peta: sedang + sangat tinggi (rendah tidak di peta). */
+/** Pin peta nasional: sedang + sangat tinggi. */
 export const MAP_RISK_CATEGORIES = new Set<RiskCategory>(['sangat_tinggi', 'sedang'])
 
-/** Daftar & chip filter: termasuk Rendah bila ada di data. */
+/**
+ * Daftar filter Semua: risiko + belum dinilai + nol titik (paling bawah).
+ * Chip UI hanya sangat_tinggi / sedang / rendah — tanpa_titik tidak punya chip.
+ */
 export const LIST_RISK_CATEGORIES = new Set<RiskCategory>([
   'sangat_tinggi',
   'sedang',
   'rendah',
+  'tidak_tersedia',
+  'tanpa_titik',
 ])
 
 export type RegionFilterState = {

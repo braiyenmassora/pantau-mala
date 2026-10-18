@@ -8,11 +8,12 @@ import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import type { Region, RiskCategory } from '@/data/types'
 import { rememberFocusTrigger } from '@/lib/focus-return'
-import { formatNumber } from '@/lib/format'
-import { showHaloPulse } from '@/lib/halo'
+import { formatDateDotTime, formatNumber } from '@/lib/format'
 import { getMapPadding, PLACE_ZOOM } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
-import { PIN_ACTIVE_BOX_SHADOW, RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
+import { hasHotspotDetections, hotspotPinAria } from '@/lib/hotspot-status'
+import { pinPulseStyle } from '@/lib/map-beat'
+import { PIN_ACTIVE_BOX_SHADOW, RISK_CATEGORIES } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -22,32 +23,44 @@ type RegionPinProps = {
   region: Region
 }
 
-const ACTIVE_PIN: Record<Exclude<RiskCategory, 'rendah'>, string> = {
+const ACTIVE_PIN: Record<
+  Exclude<RiskCategory, 'rendah' | 'tanpa_titik'>,
+  string
+> = {
   sangat_tinggi: 'scale-110',
   sedang: 'scale-110',
   tidak_tersedia: '',
 }
 
-/** 10px risk-low map dot (not RiskMarker). */
-const LowMapDot = forwardRef<
+/** Titik kecil: hijau hanya bila ada deteksi + risiko rendah; abu bila nol titik. */
+const SmallMapDot = forwardRef<
   HTMLButtonElement,
   {
     active: boolean
     label: string
+    /** Nol titik: netral, bukan hijau aman. */
+    neutral?: boolean
+    beatCategory: RiskCategory
+    beatColor: string
   } & ButtonHTMLAttributes<HTMLButtonElement>
->(function LowMapDot({ active, label, className, style, ...props }, ref) {
+>(function SmallMapDot(
+  { active, label, neutral, beatCategory, beatColor, className, style, ...props },
+  ref,
+) {
   return (
     <button
       ref={ref}
       type="button"
       className={cn(
-        'marker--interactive border-surface bg-risk-low shadow-map relative size-2.5 rounded-full border-2',
+        'marker--interactive marker--pulse border-surface shadow-map relative size-2.5 rounded-full border-2',
+        neutral ? 'bg-ink-3' : 'bg-risk-low',
         focusRing,
         active && 'scale-[1.2]',
         className,
       )}
       style={{
         ...(active ? { boxShadow: PIN_ACTIVE_BOX_SHADOW } : undefined),
+        ...pinPulseStyle(beatCategory, beatColor),
         ...style,
       }}
       aria-label={label}
@@ -70,13 +83,17 @@ export function RegionPin({ region }: RegionPinProps) {
   const style = RISK_CATEGORIES[hotspotRisk]
   const selected = selectedCode === region.code
   const active = selected || hoveredCode === region.code
-  const isLow = hotspotRisk === 'rendah'
-  const pulse =
-    !reducedMotion && !isLow && showHaloPulse(hotspotRisk, region.hotspots_24h)
-  const pulseClass =
-    hotspotRisk === 'sangat_tinggi' ? 'animate-halo-high' : 'animate-halo-mid'
+  const noDetections = !hasHotspotDetections(region.hotspots_24h)
+  const isLow = !noDetections && hotspotRisk === 'rendah'
+  const useSmallDot = noDetections || isLow
   const hotspotLabel = formatNumber(region.hotspots_24h)
-  const label = copy.map.pinAria(region.name, style.label, hotspotLabel)
+  const label = hotspotPinAria(
+    region.name,
+    region.hotspots_24h,
+    style.label,
+    hotspotLabel,
+  )
+  const pulseStyle = reducedMotion ? undefined : pinPulseStyle(hotspotRisk, style.dot)
 
   const onSelect = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -108,40 +125,47 @@ export function RegionPin({ region }: RegionPinProps) {
           active ? 'z-20' : 'z-10',
         )}
       >
-        {pulse && (
-          <span
-            aria-hidden
-            className={cn(
-              'pointer-events-none absolute top-1/2 left-1/2 size-7 -translate-x-1/2 -translate-y-1/2 rounded-full border-2',
-              pulseClass,
-            )}
-            style={{ borderColor: withAlpha(style.dot, 0.55) }}
-          />
-        )}
-
         {selected ? <DetectionFlag region={region} /> : null}
 
         {!selected && hoveredCode === region.code ? (
           <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
             <MapInfoCard
               title={region.name}
-              subtitle={copy.map.regionMetaProvince(region.province)}
-              meta={copy.map.regionPinDetails(hotspotLabel, style.label)}
+              meta={
+                noDetections
+                  ? copy.status.noDetections
+                  : copy.map.regionMetaHotspots(formatNumber(region.hotspots_24h))
+              }
+              updatedAt={
+                region.last_detection?.time
+                  ? formatDateDotTime(region.last_detection.time, region.time_zone)
+                  : undefined
+              }
             />
           </div>
         ) : null}
 
-        {isLow ? (
-          <LowMapDot active={active} label={label} onClick={onSelect} />
+        {useSmallDot ? (
+          <SmallMapDot
+            active={active}
+            label={label}
+            neutral={noDetections}
+            beatCategory={hotspotRisk}
+            beatColor={style.dot}
+            onClick={onSelect}
+          />
         ) : (
           <button
             type="button"
             className={cn(
-              'marker--interactive relative origin-center rounded-full',
+              'marker--interactive marker--pulse relative origin-center rounded-full',
               focusRing,
               active && ACTIVE_PIN[hotspotRisk as 'sangat_tinggi' | 'sedang'],
             )}
-            style={active ? { boxShadow: PIN_ACTIVE_BOX_SHADOW } : undefined}
+            style={{
+              ...(active ? { boxShadow: PIN_ACTIVE_BOX_SHADOW } : undefined),
+              ...pulseStyle,
+            }}
             aria-label={label}
             onClick={onSelect}
           >

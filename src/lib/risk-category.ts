@@ -25,10 +25,18 @@ export const TEMP_HALO_HEX = '#FFFFFF'
 /** Line / border hex — mirrors `--color-line`. */
 export const LINE_HEX = '#E8EAED'
 
-/** Warna risiko — hex MapLibre / SVG. */
+/** Warna risiko / status — hex MapLibre / SVG. */
 export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
   tidak_tersedia: {
     label: 'Belum dinilai',
+    dot: '#80868B',
+    tint: '#F1F3F4',
+    text: '#5F6368',
+    badgeClass: 'bg-surface-muted text-ink-2',
+    dotClass: 'bg-ink-3',
+  },
+  tanpa_titik: {
+    label: 'Tidak ada titik panas terdeteksi',
     dot: '#80868B',
     tint: '#F1F3F4',
     text: '#5F6368',

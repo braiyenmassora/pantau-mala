@@ -1,7 +1,8 @@
 /** @vitest-environment jsdom */
+import { useSession } from '@/auth/session'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { cleanup, render, screen, within } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/prefers-reduced-motion', () => ({
   usePrefersReducedMotion: () => true,
@@ -29,7 +30,11 @@ const pulangPisau: Region = {
     wind_kmh: 12,
     dry_days: 9,
   },
-  air_quality: { pm25: 62, category: 'tidak_sehat' },
+  air_quality: {
+    pm25: 62,
+    category: 'tidak_sehat',
+    source: 'CAMS',
+  },
   last_detection: {
     time: '2026-10-09T13:55:00+07:00',
     satellite: 'MODIS Aqua',
@@ -43,11 +48,17 @@ const pulangPisau: Region = {
   score: 82,
   quality: 'ok',
   computed_at: '2026-10-09T14:05:00+07:00',
+  air_updated_at: '2026-10-09T14:00:00+07:00',
 }
 
 function renderDetail(region: Region) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
+  })
+  client.setQueryData(['meta', '00000000-0000-4000-8000-000000000001', 0], {
+    updated_at: new Date().toISOString(),
+    status: { firms: 'ok', weather: 'ok', air: 'ok' },
+    pulled_at: { firms: null, weather: null },
   })
   return render(
     <QueryClientProvider client={client}>
@@ -60,6 +71,20 @@ function renderDetail(region: Region) {
 
 describe('RegionDetailPanel', () => {
   afterEach(cleanup)
+
+  beforeEach(() => {
+    useSession.setState({
+      status: 'authenticated',
+      token: 'pms_synthetic-test-only',
+      principal: {
+        client_id: '00000000-0000-4000-8000-000000000001',
+        client_slug: 'fixture',
+        username: 'fixture',
+        role: 'reader',
+      },
+      generation: 0,
+    })
+  })
 
   it('moves focus to the region title on open', () => {
     renderDetail(pulangPisau)
@@ -131,5 +156,39 @@ describe('RegionDetailPanel', () => {
         name: copy.detail.riskTooltip,
       }),
     ).toBeTruthy()
+  })
+
+  it('omits last satellite detection and air advice copy', () => {
+    renderDetail(pulangPisau)
+    expect(screen.queryByText(copy.detail.lastDetection)).toBeNull()
+    expect(screen.queryByText(/MODIS Aqua/)).toBeNull()
+    expect(screen.queryByText(copy.detail.airAdvice.tidak_sehat)).toBeNull()
+  })
+
+  it('keeps air quality in the conditions card with matching metric scale', () => {
+    renderDetail(pulangPisau)
+    expect(screen.getByLabelText(copy.detail.conditions)).toBeTruthy()
+    expect(screen.getByText('Tidak sehat')).toBeTruthy()
+    expect(screen.getByText(copy.detail.airPm25)).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: copy.detail.weatherSourceNote }),
+    ).toBeTruthy()
+    // Hanya angka titik panas yang display 3xl — PM2.5 ikut skala metrik biasa.
+    expect(document.querySelectorAll('.text-3xl.font-mono')).toHaveLength(1)
+    expect(screen.queryByLabelText(copy.detail.airQuality)).toBeNull()
+  })
+
+  it('shows full official refs with differ note and empty Posko', () => {
+    renderDetail(pulangPisau)
+    expect(screen.getByTestId('official-refs-card')).toBeTruthy()
+    expect(screen.getByText(copy.official.differNote)).toBeTruthy()
+    expect(screen.queryByText(copy.official.poskoTitle)).toBeNull()
+    expect(screen.getByText(copy.official.poskoEmptyName)).toBeTruthy()
+    expect(screen.getByText(copy.official.poskoEmpty)).toBeTruthy()
+  })
+
+  it('does not show a share button on region detail', () => {
+    renderDetail(pulangPisau)
+    expect(screen.queryByRole('button', { name: copy.share.button })).toBeNull()
   })
 })

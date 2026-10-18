@@ -108,4 +108,18 @@ describe('aggregateByProvince', () => {
     )
     expect(rows[0].trend_7d).toEqual([3, 3, 3, 5, 7, 9, 11])
   })
+
+  it('skips zero-hotspot provinces (no tanpa_titik chip / pin)', () => {
+    const rows = aggregateByProvince(
+      [
+        region({
+          province: 'Jambi',
+          hotspots_24h: 0,
+          risk_category: 'rendah',
+        }),
+      ],
+      provinces,
+    )
+    expect(rows).toHaveLength(0)
+  })
 })

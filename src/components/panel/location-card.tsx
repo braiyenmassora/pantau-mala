@@ -1,7 +1,7 @@
 import { LocateFixed } from 'lucide-react'
 import { useMemo, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
 
-import { Badge, Button, InfoTooltip, ProgressBar } from '@/components/common'
+import { Button, HotspotStatusBadge, InfoTooltip, ProgressBar } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { copy } from '@/copy/id'
@@ -9,7 +9,11 @@ import { useHotspots, useNearbyHotspots } from '@/data/queries'
 import type { Region, RiskCategory } from '@/data/types'
 import { rememberFocusTrigger } from '@/lib/focus-return'
 import { formatNumber } from '@/lib/format'
-import { resolveUserCoords } from '@/lib/geolocation'
+import {
+  focusWilayahSearch,
+  locationFromCoords,
+  resolveUserCoords,
+} from '@/lib/geolocation'
 import { computeNearby, computeNearbyFromApi } from '@/lib/nearby'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -31,7 +35,38 @@ function Shell({ children, trailing }: { children: ReactNode; trailing?: ReactNo
   )
 }
 
-// ponytail: dekat kamu = satu kartu hasil sederhana.
+function StateActions({
+  onRetry,
+  retryLabel,
+}: {
+  onRetry: (el: HTMLElement) => void
+  retryLabel: string
+}) {
+  return (
+    <div className="flex flex-col gap-2 min-[380px]:flex-row min-[380px]:flex-wrap">
+      <Button
+        type="button"
+        variant="soft"
+        size="sm"
+        className="h-8 w-full shrink-0 px-3 text-xs leading-4 font-medium min-[380px]:w-auto"
+        onClick={(e) => onRetry(e.currentTarget)}
+      >
+        {retryLabel}
+      </Button>
+      <Button
+        type="button"
+        variant="secondary"
+        size="sm"
+        className="h-8 w-full shrink-0 px-3 text-xs leading-4 font-medium shadow-none min-[380px]:w-auto"
+        onClick={() => focusWilayahSearch()}
+      >
+        {copy.location.searchManual}
+      </Button>
+    </div>
+  )
+}
+
+// ponytail: dekat kamu = satu kartu hasil sederhana, pola ringkasan wilayah.
 export function LocationCard({ regions }: LocationCardProps) {
   const location = useMapStore((s) => s.location)
   const setLocation = useMapStore((s) => s.setLocation)
@@ -64,12 +99,9 @@ export function LocationCard({ regions }: LocationCardProps) {
           if (perm.state === 'granted') {
             void resolveUserCoords().then((res) => {
               if (res.ok) {
-                setLocation({
-                  status: 'active',
-                  coords: { lon: res.lon, lat: res.lat },
-                })
+                setLocation(locationFromCoords(res.lat, res.lon))
               } else {
-                setLocation({ status: 'requesting' })
+                setLocation({ status: res.reason })
               }
             })
             return
@@ -82,22 +114,20 @@ export function LocationCard({ regions }: LocationCardProps) {
     }
   }
 
+  function retryPrompt(target?: HTMLElement) {
+    if (target) rememberFocusTrigger(target)
+    setLocation({ status: 'requesting' })
+  }
+
   if (location.status === 'denied') {
     return (
       <Shell>
-        <div className="flex flex-col gap-3 text-left min-[380px]:flex-row min-[380px]:items-center min-[380px]:justify-between">
-          <p className="text-ink-2 min-w-0 flex-1 text-sm leading-5">
-            {copy.location.deniedBody}
-          </p>
-          <Button
-            type="button"
-            variant="soft"
-            size="sm"
-            className="h-8 w-full shrink-0 px-3 text-xs leading-4 font-medium min-[380px]:w-auto"
-            onClick={(e) => requestLocation(e.currentTarget)}
-          >
-            {copy.location.useLocation}
-          </Button>
+        <div className="space-y-3 text-left">
+          <p className="text-ink-2 text-xs leading-4">{copy.location.deniedBody}</p>
+          <StateActions
+            onRetry={requestLocation}
+            retryLabel={copy.location.useLocation}
+          />
         </div>
       </Shell>
     )
@@ -106,19 +136,37 @@ export function LocationCard({ regions }: LocationCardProps) {
   if (location.status === 'error') {
     return (
       <Shell>
-        <div className="flex flex-col gap-3 text-left min-[380px]:flex-row min-[380px]:items-center min-[380px]:justify-between">
-          <p className="text-ink-2 min-w-0 flex-1 text-sm leading-5">
-            {copy.empty.locationError.description}
+        <div className="space-y-3 text-left">
+          <p className="text-ink-2 text-xs leading-4">{copy.location.errorBody}</p>
+          <StateActions onRetry={retryPrompt} retryLabel={copy.location.tryAgain} />
+        </div>
+      </Shell>
+    )
+  }
+
+  if (location.status === 'timeout') {
+    return (
+      <Shell>
+        <div className="space-y-3 text-left">
+          <p className="text-ink-2 text-xs leading-4">{copy.location.timeoutBody}</p>
+          <StateActions onRetry={retryPrompt} retryLabel={copy.location.tryAgain} />
+        </div>
+      </Shell>
+    )
+  }
+
+  if (location.status === 'outside') {
+    return (
+      <Shell>
+        <div className="space-y-3 text-left">
+          <p className="text-ink text-sm leading-5 font-semibold">
+            {copy.location.outsideTitle}
           </p>
-          <Button
-            type="button"
-            variant="soft"
-            size="sm"
-            className="h-8 w-full shrink-0 px-3 text-xs leading-4 font-medium min-[380px]:w-auto"
-            onClick={() => setLocation({ status: 'requesting' })}
-          >
-            {copy.empty.locationError.action}
-          </Button>
+          <p className="text-ink-2 text-xs leading-4">{copy.location.outsideBody}</p>
+          <StateActions
+            onRetry={requestLocation}
+            retryLabel={copy.location.tryAgain}
+          />
         </div>
       </Shell>
     )
@@ -130,7 +178,7 @@ export function LocationCard({ regions }: LocationCardProps) {
         {location.status === 'requesting' ? (
           <div className="space-y-2 text-left" aria-busy="true">
             <ProgressBar />
-            <p className="text-ink-2 text-sm leading-5">{copy.location.loading}</p>
+            <p className="text-ink-2 text-xs leading-4">{copy.location.loading}</p>
           </div>
         ) : (
           <div className="flex flex-col gap-3 text-left min-[380px]:flex-row min-[380px]:items-center min-[380px]:justify-between">
@@ -205,8 +253,7 @@ function ActiveNearbyCard({
     : null
   const titleRegion = userRegion ?? nearestRegion
 
-  const locationText = nearestRegion?.name ?? titleRegion?.name ?? 'lokasimu'
-  const countLabel = copy.location.hotspotCount(formatNumber(nearby.hotspotCount))
+  const locationText = nearestRegion?.name ?? titleRegion?.name ?? null
   const nearestKm = nearby.nearest
     ? formatNumber(nearby.nearest.distanceKm, {
         minimumFractionDigits: 1,
@@ -214,12 +261,15 @@ function ActiveNearbyCard({
       })
     : null
 
+  const farFromCoverage =
+    nearby.hotspotCount === 0 && !nearby.userRegionCode && !nearby.nearest
+
   const riskCategory: RiskCategory =
     nearby.hotspotCount >= 10
       ? 'sangat_tinggi'
       : nearby.hotspotCount >= 1
         ? 'sedang'
-        : 'rendah'
+        : 'tidak_tersedia'
 
   return (
     <Card
@@ -252,25 +302,59 @@ function ActiveNearbyCard({
           <CardTitle>{copy.location.nearbyLabel}</CardTitle>
           <InfoTooltip content={copy.location.riskNearbyTip} />
         </div>
-        <Badge variant="category" category={riskCategory} />
+        <HotspotStatusBadge
+          hotspots={nearby.hotspotCount}
+          riskCategory={riskCategory}
+        />
       </CardHeader>
       <CardContent className="space-y-3">
-        {nearby.hotspotCount === 0 ? (
-          <p className="text-ink-2 text-sm leading-5">{copy.location.nearbyNoHotspots}</p>
+        {farFromCoverage ? (
+          <div className="space-y-3">
+            <p className="text-ink-2 text-xs leading-4">{copy.location.nearbyFar}</p>
+            <Button
+              type="button"
+              variant="soft"
+              size="sm"
+              className="h-8 px-3 text-xs leading-4 font-medium"
+              onClick={(e) => {
+                e.stopPropagation()
+                focusWilayahSearch()
+              }}
+            >
+              {copy.location.searchManual}
+            </Button>
+          </div>
+        ) : nearby.hotspotCount === 0 ? (
+          <div className="space-y-3">
+            <p className="text-ink-2 text-xs leading-4">{copy.location.nearbyNoHotspots}</p>
+            <p className="text-ink-2 text-xs leading-4">{copy.panel.coverageNote}</p>
+            <Button
+              type="button"
+              variant="soft"
+              size="sm"
+              className="h-8 px-3 text-xs leading-4 font-medium"
+              onClick={(e) => {
+                e.stopPropagation()
+                focusWilayahSearch()
+              }}
+            >
+              {copy.location.searchManual}
+            </Button>
+          </div>
         ) : (
           <>
-            <div className="space-y-2">
-              <p className="text-ink text-sm leading-5 font-semibold">{countLabel}</p>
-              <p className="text-ink-2 text-xs leading-4">
-                {copy.location.nearbyRadiusNote}
+            <div className="space-y-1">
+              <p className="text-ink font-mono text-3xl leading-10 font-semibold tabular-nums">
+                {formatNumber(nearby.hotspotCount)}
               </p>
+              <p className="text-ink text-sm leading-5">{copy.location.hotspotUnitLine}</p>
             </div>
-            {nearestKm ? (
-              <div className="text-ink-2 space-y-1 text-xs leading-4">
-                <p>{copy.location.nearestDistance(nearestKm)}</p>
-                <p className="text-ink line-clamp-2">{locationText}</p>
-              </div>
-            ) : null}
+            <div className="text-ink-2 space-y-1 text-xs leading-4">
+              {nearestKm ? <p>{copy.location.nearestDistance(nearestKm)}</p> : null}
+              {locationText ? (
+                <p className="text-ink-2 line-clamp-2">{locationText}</p>
+              ) : null}
+            </div>
           </>
         )}
       </CardContent>

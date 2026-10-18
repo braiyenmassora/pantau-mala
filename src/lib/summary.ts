@@ -12,6 +12,7 @@ export function computeSummary(list: Region[]): RegionSummary {
 
   const countByCategory: Record<RiskCategory, number> = {
     tidak_tersedia: 0,
+    tanpa_titik: 0,
     sangat_tinggi: 0,
     sedang: 0,
     rendah: 0,

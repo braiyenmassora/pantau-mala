@@ -39,14 +39,15 @@ export function IndonesiaMapFraming({ panelOpen, onReady }: IndonesiaMapFramingP
     fitZoomRef.current = fitIndonesia(map, panelOpenRef.current, 0)
     prevPanelRef.current = panelOpenRef.current
 
-    // Tunggu idle agar tile tidak "segi empat" saat overlay dilepas.
+    // Boot overlay menutupi tile; jangan tunggu idle lama (terasa kaku).
+    // idle cepat ATAU 500ms — mana dulu.
     const finish = () => {
       if (readyRef.current) return
       readyRef.current = true
       onReadyRef.current?.()
     }
-    map.on('idle', finish)
-    const safety = window.setTimeout(finish, 4000)
+    map.once('idle', finish)
+    const safety = window.setTimeout(finish, 500)
     return () => {
       map.off('idle', finish)
       window.clearTimeout(safety)

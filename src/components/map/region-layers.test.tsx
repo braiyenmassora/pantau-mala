@@ -126,7 +126,7 @@ describe('RegionLayers', () => {
     expect(pulseMid).toBeTruthy()
     expect(pulseMid.style.getPropertyValue('--beat')).toBe('1.8s')
 
-    // Rendah is static without pulse
+    // Nol titik: pin kecil tanpa riak (bukan accent)
     const btnLow = screen.getByRole('button', { name: 'Kab. Aman' })
     expect(btnLow.querySelector('.marker--pulse')).toBeNull()
   })

@@ -53,11 +53,11 @@ export function ProvinceSearchRow({
   return (
     <ListRow
       leading={
-        effectiveRisk !== 'tidak_tersedia' ? (
+        hotspotCount > 0 ? (
           <RiskMarker kategori={effectiveRisk} />
         ) : (
           <span
-            className="bg-brand-soft text-brand rounded-ctl flex size-10 items-center justify-center"
+            className="bg-surface-muted text-ink-3 rounded-ctl flex size-10 items-center justify-center"
             aria-hidden
           >
             <MapIcon className="size-4" strokeWidth={2} />

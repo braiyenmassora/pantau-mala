@@ -7,13 +7,16 @@ import type {
 
 import { useMap } from '@/components/ui/map'
 import { useProvinceBoundaries } from '@/data/province-boundaries'
-import { useRegionCatalog } from '@/data/queries'
+import { useMeta, useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { MAP_COLORS } from '@/lib/map-colors'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { normalizeProvinceName } from '@/lib/province-boundaries'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
-import { worstRiskCategory } from '@/lib/risk-rule'
+import {
+  sumValidHotspots,
+  worstRiskCategory,
+} from '@/lib/risk-rule'
 import { useMapStore } from '@/store/map'
 
 const SOURCE_ID = 'province-choropleth-source'
@@ -21,7 +24,7 @@ const FILL_LAYER = 'province-choropleth-fill'
 const BOUNDARY_LINE_LAYER = 'province-choropleth-line'
 const BASEMAP_BOUNDARY_LAYER = 'boundary_state'
 
-/** Soft fill — pola lutuk/personal: opacity rendah, di bawah water/batas CARTO. */
+/** fillMode: 0=tanpa isian, 1=ada titik, 2=nol titik terkonfirmasi (abu). */
 function buildFillPaint(
   selectedId: string | null,
 ): NonNullable<FillLayerSpecification['paint']> {
@@ -52,10 +55,14 @@ function buildFillPaint(
           'case',
           ['boolean', ['feature-state', 'hover'], false],
           0.16,
-          // Kosong = transparan; hijau hanya bila ada titik rendah (bukan sedang/tinggi).
-          ['>', ['coalesce', ['feature-state', 'hotspots'], 0], 0],
-          0.12,
-          0,
+          [
+            'case',
+            ['==', ['coalesce', ['feature-state', 'fillMode'], 0], 1],
+            0.12,
+            ['==', ['coalesce', ['feature-state', 'fillMode'], 0], 2],
+            0.1,
+            0,
+          ],
         ],
     'fill-antialias': true,
     'fill-outline-color': 'transparent',
@@ -97,6 +104,7 @@ type ProvinceChoroplethLayerProps = {
 export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProps) {
   const { map, isLoaded } = useMap()
   const { data: catalog } = useRegionCatalog()
+  const { data: meta } = useMeta()
   const { data: boundaries, isError } = useProvinceBoundaries()
   const province = useMapStore((state) => state.province)
   const setProvince = useMapStore((state) => state.setProvince)
@@ -108,6 +116,9 @@ export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProp
     catalogRef.current = catalog
     setProvinceRef.current = setProvince
   }, [catalog, setProvince])
+
+  // FIRMS bermasalah/usang: jangan tampilkan abu "nol titik" sebagai konfirmasi kosong.
+  const firmsReliable = meta?.status.firms === 'ok'
 
   const provinceMetrics = useMemo(() => {
     if (!boundaries) return []
@@ -122,12 +133,21 @@ export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProp
     return boundaries.geometry.features.map((feature) => {
       const provinceName = feature.properties.province_name
       const list = byProvince.get(normalizeProvinceName(provinceName)) ?? []
-      const hotspots = list.reduce((sum, r) => sum + r.hotspots_24h, 0)
-      // Warna dari risiko terburuk kab/kota — tanpa sedang/tinggi → hijau (rendah).
+      const hotspots = sumValidHotspots(list)
       const risk = worstRiskCategory(list)
-      return { id: feature.id, hotspots, riskColor: RISK_CATEGORIES[risk].dot }
+      let fillMode = 0
+      if (list.length > 0 && hotspots != null) {
+        if (hotspots > 0) fillMode = 1
+        else if (firmsReliable && risk === 'tanpa_titik') fillMode = 2
+      }
+      return {
+        id: feature.id,
+        hotspots: hotspots ?? -1,
+        riskColor: RISK_CATEGORIES[risk].dot,
+        fillMode,
+      }
     })
-  }, [boundaries, regions])
+  }, [boundaries, regions, firmsReliable])
 
   const selectedId = useMemo(
     () =>
@@ -226,8 +246,11 @@ export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProp
 
   useEffect(() => {
     if (!map || !isLoaded || !map.getSource(SOURCE_ID)) return
-    for (const { id, hotspots, riskColor } of provinceMetrics) {
-      map.setFeatureState({ source: SOURCE_ID, id }, { hotspots, riskColor })
+    for (const { id, hotspots, riskColor, fillMode } of provinceMetrics) {
+      map.setFeatureState(
+        { source: SOURCE_ID, id },
+        { hotspots, riskColor, fillMode },
+      )
     }
   }, [map, isLoaded, provinceMetrics])
 

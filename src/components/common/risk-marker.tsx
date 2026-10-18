@@ -11,6 +11,7 @@ type RiskMarkerProps = {
 
 const FILL: Record<RiskCategory, string> = {
   tidak_tersedia: 'bg-ink-3',
+  tanpa_titik: 'bg-ink-3',
   sangat_tinggi: 'bg-risk-high',
   sedang: 'bg-risk-mid',
   rendah: 'bg-risk-low',

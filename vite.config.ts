@@ -12,28 +12,39 @@ export default defineConfig(({ mode }) => {
   const env = { ...loadEnv(mode, rootDir, ''), ...process.env }
   const gateway = createClientGateway(env)
   return {
+    // Deep link /wilayah/... harus ke index.html (bukan dianggap file).
+    appType: 'spa',
     plugins: [
       react(),
       tailwindcss(),
       {
         name: 'server-client-access',
         configureServer(server) {
+          // try/catch wajib: AbortSignal.timeout di gateway jadi unhandled rejection → Node mati.
           server.middlewares.use(async (req, res, next) => {
             if (env.FE_ACCESS_MODE !== 'client') return next()
-            const headers = new Headers()
-            for (const [key, value] of Object.entries(req.headers)) {
-              if (typeof value === 'string') headers.set(key, value)
+            try {
+              const headers = new Headers()
+              for (const [key, value] of Object.entries(req.headers)) {
+                if (typeof value === 'string') headers.set(key, value)
+              }
+              const response = await gateway(
+                new Request(`http://${req.headers.host}${req.url}`, {
+                  method: req.method,
+                  headers,
+                }),
+              )
+              if (!response) return next()
+              res.statusCode = response.status
+              response.headers.forEach((value, key) => res.setHeader(key, value))
+              res.end(Buffer.from(await response.arrayBuffer()))
+            } catch {
+              if (!res.headersSent) {
+                res.statusCode = 503
+                res.setHeader('Content-Type', 'application/json')
+                res.end(JSON.stringify({ error: 'Data service unavailable' }))
+              }
             }
-            const response = await gateway(
-              new Request(`http://${req.headers.host}${req.url}`, {
-                method: req.method,
-                headers,
-              }),
-            )
-            if (!response) return next()
-            res.statusCode = response.status
-            response.headers.forEach((value, key) => res.setHeader(key, value))
-            res.end(Buffer.from(await response.arrayBuffer()))
           })
         },
       },

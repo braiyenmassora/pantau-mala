@@ -1,12 +1,12 @@
-import type { CSSProperties } from 'react'
 import { useEffect, useMemo } from 'react'
 
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
-import { formatNumber } from '@/lib/format'
-import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { formatDateDotTime, formatNumber } from '@/lib/format'
+import { hasHotspotDetections, hotspotDotColor } from '@/lib/hotspot-status'
+import { pinPulseStyle } from '@/lib/map-beat'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -20,7 +20,7 @@ type RegionLayersProps = {
   regions: Region[]
 }
 
-// ponytail: penanda kabupaten DOM via MarkerContent (portal ke maplibre), denyut 1.4s/2.4s.
+/** Penanda kabupaten — riak soft dari tepi untuk semua kategori. */
 export function RegionLayers({ regions }: RegionLayersProps) {
   const { map } = useMap()
   const province = useMapStore((s) => s.province)
@@ -31,10 +31,8 @@ export function RegionLayers({ regions }: RegionLayersProps) {
   const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
 
-  // Hanya tampil saat satu provinsi dipilih dan belum masuk detail kabupaten
   const isProvinceView = province !== 'Semua' && !selectedCode
 
-  // Bersihkan layer maplibre lama jika ada
   useEffect(() => {
     if (!map) return
     try {
@@ -67,18 +65,10 @@ export function RegionLayers({ regions }: RegionLayersProps) {
         }
 
         const risk = effectiveRiskCategory(r)
-        const isHigh = risk === 'sangat_tinggi'
-        const isMid = risk === 'sedang'
+        const hasDetections = hasHotspotDetections(r.hotspots_24h)
+        const isAccent = hasDetections && (risk === 'sangat_tinggi' || risk === 'sedang')
         const isHovered = hoveredCode === r.code
-        const dot = RISK_CATEGORIES[risk].dot
-
-        const pulseStyle: CSSProperties | undefined =
-          isHigh || isMid
-            ? ({
-                '--risk-color': dot,
-                '--beat': isHigh ? '0.75s' : '1.8s',
-              } as CSSProperties)
-            : undefined
+        const dot = hotspotDotColor(r)
 
         return (
           <MapMarker
@@ -106,11 +96,14 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                 <span
                   className={cn(
                     'border-surface rounded-full',
-                    isHigh || isMid
+                    isAccent
                       ? 'marker--pulse size-4 border-2'
                       : 'size-2.5 border-[1.5px]',
                   )}
-                  style={{ backgroundColor: dot, ...pulseStyle }}
+                  style={{
+                    backgroundColor: dot,
+                    ...(isAccent ? pinPulseStyle(risk, dot) : undefined),
+                  }}
                   aria-hidden
                 />
               </button>
@@ -119,8 +112,16 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                 <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
                   <MapInfoCard
                     title={r.name}
-                    subtitle={RISK_CATEGORIES[risk].label}
-                    meta={copy.map.regionMetaHotspots(formatNumber(r.hotspots_24h))}
+                    meta={
+                      hasDetections
+                        ? copy.map.regionMetaHotspots(formatNumber(r.hotspots_24h))
+                        : copy.status.noDetections
+                    }
+                    updatedAt={
+                      r.last_detection?.time
+                        ? formatDateDotTime(r.last_detection.time, r.time_zone)
+                        : undefined
+                    }
                   />
                 </div>
               ) : null}

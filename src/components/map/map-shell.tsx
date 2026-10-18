@@ -12,7 +12,6 @@ import {
 import { Button, EmptyState } from '@/components/common'
 import type { Map as MapLibreMap } from 'maplibre-gl'
 
-import { EarthquakeLayer } from '@/components/map/earthquake-layer'
 import { HotspotHeatmapLayer } from '@/components/map/hotspot-heatmap-layer'
 import { IndonesiaMapFraming } from '@/components/map/indonesia-map-framing'
 import { ProvinceChoroplethLayer } from '@/components/map/province-choropleth-layer'
@@ -249,9 +248,9 @@ function MapBasemapListener({ onBasemapError }: { onBasemapError: () => void }) 
 /** Hides a broken layer; does not unmount the rest of the map. */
 export class LayerErrorBoundary extends Component<
   { name: string; children: ReactNode; onError?: () => void },
-  { hasError: boolean }
+  { hasError: boolean; retry: number }
 > {
-  state = { hasError: false }
+  state = { hasError: false, retry: 0 }
 
   static getDerivedStateFromError() {
     return { hasError: true }
@@ -262,6 +261,12 @@ export class LayerErrorBoundary extends Component<
       console.error(`[LayerErrorBoundary:${this.props.name}]`, error, info.componentStack)
     }
     this.props.onError?.()
+    // Satu kali pulih otomatis — heatmap/layer sering gagal sementara saat style HMR.
+    if (this.state.retry < 1) {
+      window.setTimeout(() => {
+        this.setState((s) => ({ hasError: false, retry: s.retry + 1 }))
+      }, 0)
+    }
   }
 
   render() {
@@ -359,9 +364,6 @@ export function MapShell({
         </LayerErrorBoundary>
         <LayerErrorBoundary name="SelectedHotspotsLayer" onError={markLayerFailed}>
           <SelectedHotspotsLayer regions={regions} />
-        </LayerErrorBoundary>
-        <LayerErrorBoundary name="EarthquakeLayer" onError={markLayerFailed}>
-          <EarthquakeLayer />
         </LayerErrorBoundary>
         <LayerErrorBoundary name="UserLocationLayer" onError={markLayerFailed}>
           <UserLocationLayer />

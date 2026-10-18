@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react'
 
+import { Card, CardContent } from '@/components/ui/card'
 import { copy } from '@/copy/id'
-import type { ConfidenceLevel } from '@/data/types'
-import { chromeSurface } from '@/lib/chrome'
 import { cn } from '@/lib/utils'
 
 export type MapInfoCardProps = {
@@ -10,7 +9,7 @@ export type MapInfoCardProps = {
   title?: string
   /** Baris sekunder di bawah judul */
   subtitle?: string
-  /** Baris tersier */
+  /** Baris tersier — biasanya jumlah titik panas */
   meta?: string
   /**
    * Baris tambahan berurutan ke bawah — teks panjang tidak di-trim,
@@ -21,13 +20,12 @@ export type MapInfoCardProps = {
   district?: string
   /** Nama kabupaten/kota untuk titik panas individual */
   regency?: string
-  /** Waktu deteksi titik panas, mis. "14.30 WIB" */
-  detectedTime?: string
-  /** Nama satelit/sensor dari API (tampil apa adanya). */
-  satellite?: string
-  /** Tingkat keyakinan deteksi satelit. */
-  confidence?: ConfidenceLevel
-  /** Konten tambahan (cuaca flag terpilih, dll.) */
+  /**
+   * Waktu pembaruan/deteksi — pola "09 Okt 2026 · 14:05 WIB"
+   * (pakai formatDateDotTime).
+   */
+  updatedAt?: string
+  /** Konten tambahan */
   children?: ReactNode
   className?: string
   /** Sembunyikan panah jika diposisikan via popup bawaan */
@@ -49,6 +47,21 @@ function InfoLine({ children, strong }: { children: ReactNode; strong?: boolean 
   )
 }
 
+/** Tanggal · jam — titik di tengah sebagai pemisah visual. */
+function UpdatedAtLine({ value }: { value: string }) {
+  const parts = value.split(' · ')
+  if (parts.length !== 2) {
+    return <InfoLine>{value}</InfoLine>
+  }
+  return (
+    <p className="text-ink-2 flex items-center gap-1.5 text-left text-xs leading-4">
+      <span>{parts[0]}</span>
+      <span className="bg-ink-3 size-1 shrink-0 rounded-full" aria-hidden />
+      <span>{parts[1]}</span>
+    </p>
+  )
+}
+
 function push(out: string[], value: string | undefined) {
   if (value) out.push(value)
 }
@@ -58,7 +71,7 @@ function nonEmpty(value: string | undefined): string | undefined {
   return t ? t : undefined
 }
 
-// ponytail: flag pin — baris vertikal, teks panjang wrap bukan ellipsis.
+/** Tip pin peta: lokasi · jumlah titik · tanggal · jam (tanpa satelit). */
 export function MapInfoCard({
   title,
   subtitle,
@@ -66,17 +79,14 @@ export function MapInfoCard({
   lines,
   district,
   regency,
-  detectedTime,
-  satellite,
-  confidence,
+  updatedAt,
   children,
   className,
   hideArrow = false,
 }: MapInfoCardProps) {
   const districtName = nonEmpty(district)
   const regencyName = nonEmpty(regency)
-  const timeValue = nonEmpty(detectedTime)
-  const satelliteName = nonEmpty(satellite)
+  const updated = nonEmpty(updatedAt)
 
   const formattedDistrict = districtName
     ? districtName.toLowerCase().startsWith('kecamatan')
@@ -91,21 +101,6 @@ export function MapInfoCard({
       : `Kabupaten ${regencyName}`
     : undefined
 
-  const formattedTime = timeValue
-    ? timeValue.toLowerCase().startsWith('terdeteksi')
-      ? timeValue
-      : `Terdeteksi ${timeValue}`
-    : undefined
-
-  const formattedSatellite = satelliteName
-    ? `${copy.map.satellite}: ${satelliteName}`
-    : undefined
-
-  const formattedConfidence =
-    confidence && copy.detail.confidence[confidence]
-      ? `${copy.map.detectionConfidence}: ${copy.detail.confidence[confidence]}`
-      : undefined
-
   let heading: string | undefined
   const body: string[] = []
 
@@ -117,31 +112,31 @@ export function MapInfoCard({
   } else {
     heading = formattedDistrict ?? formattedRegency
     if (formattedDistrict) push(body, formattedRegency)
-    push(body, formattedTime)
-    push(body, formattedSatellite)
-    push(body, formattedConfidence)
+    push(body, meta)
     for (const line of lines ?? []) push(body, line)
-    if (!heading && body.length > 0) heading = copy.map.hotspotUntitled
+    if (!heading && (body.length > 0 || updated)) heading = copy.map.hotspotUntitled
   }
 
   return (
-    <div
+    <Card
       className={cn(
-        chromeSurface,
-        'relative z-30 w-max max-w-[min(280px,70vw)] px-4 py-3',
+        'relative z-30 w-max max-w-[min(280px,70vw)] shadow-chrome',
         className,
       )}
     >
-      {heading || body.length > 0 ? (
-        <div className="flex min-w-0 flex-col gap-1 text-left">
-          {heading ? <InfoLine strong>{heading}</InfoLine> : null}
-          {body.map((line, i) => (
-            <InfoLine key={`${i}-${line}`}>{line}</InfoLine>
-          ))}
-        </div>
-      ) : null}
+      <CardContent className="space-y-1 pt-3">
+        {heading || body.length > 0 || updated ? (
+          <div className="flex min-w-0 flex-col gap-1 text-left">
+            {heading ? <InfoLine strong>{heading}</InfoLine> : null}
+            {body.map((line, i) => (
+              <InfoLine key={`${i}-${line}`}>{line}</InfoLine>
+            ))}
+            {updated ? <UpdatedAtLine value={updated} /> : null}
+          </div>
+        ) : null}
 
-      {children}
+        {children}
+      </CardContent>
 
       {!hideArrow && (
         <div
@@ -149,6 +144,6 @@ export function MapInfoCard({
           aria-hidden
         />
       )}
-    </div>
+    </Card>
   )
 }

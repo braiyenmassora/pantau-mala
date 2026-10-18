@@ -43,6 +43,23 @@ const region: Region = {
   actions: [],
 }
 
+function renderCard(regions: Region[] = [region]) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  client.setQueryData(['hotspots', '00000000-0000-4000-8000-000000000001', 0], {
+    type: 'FeatureCollection',
+    features: [],
+  })
+  return render(
+    wrap(
+      <QueryClientProvider client={client}>
+        <LocationCard regions={regions} />
+      </QueryClientProvider>,
+    ),
+  )
+}
+
 describe('LocationCard', () => {
   afterEach(() => cleanup())
 
@@ -63,65 +80,70 @@ describe('LocationCard', () => {
     })
   })
 
-  it('shows nearby card with inline empty when active and no hotspots', () => {
+  it('shows nearby card with clear empty and search when active and no hotspots', () => {
     useMapStore.setState({
       location: { status: 'active', coords: { lon: 114.2, lat: -2.9 } },
     })
-    const client = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
-    })
-    client.setQueryData(['hotspots', '00000000-0000-4000-8000-000000000001', 0], {
-      type: 'FeatureCollection',
-      features: [],
-    })
-
-    render(
-      wrap(
-        <QueryClientProvider client={client}>
-          <LocationCard regions={[region]} />
-        </QueryClientProvider>,
-      ),
-    )
+    renderCard()
 
     expect(screen.getByText(copy.location.nearbyNoHotspots)).toBeTruthy()
+    expect(screen.queryByText(copy.panel.limitationNote)).toBeNull()
+    expect(screen.getByText(copy.panel.coverageNote)).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: copy.location.searchManual }),
+    ).toBeTruthy()
     expect(screen.queryByText(copy.location.nearbyRadiusNote)).toBeNull()
-    expect(screen.queryByRole('button', { name: 'Lihat detail' })).toBeNull()
-    expect(screen.queryByRole('button', { name: 'Matikan lokasi' })).toBeNull()
   })
 
-  it('shows denied empty state', () => {
+  it('shows far-from-coverage fallback when no region is near', () => {
+    useMapStore.setState({
+      // Di daratan Indonesia longgar tapi jauh dari pusat kab uji
+      location: { status: 'active', coords: { lon: 95.3, lat: 5.5 } },
+    })
+    renderCard()
+
+    expect(screen.getByText(copy.location.nearbyFar)).toBeTruthy()
+    expect(screen.queryByText(copy.panel.limitationNote)).toBeNull()
+    expect(
+      screen.getByRole('button', { name: copy.location.searchManual }),
+    ).toBeTruthy()
+  })
+
+  it('shows denied state with retry and search', () => {
     useMapStore.setState({ location: { status: 'denied' } })
-    const client = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
-    })
-    render(
-      wrap(
-        <QueryClientProvider client={client}>
-          <LocationCard regions={[region]} />
-        </QueryClientProvider>,
-      ),
-    )
-    expect(
-      screen.getByText('Izinkan lokasi untuk melihat titik panas di sekitarmu'),
-    ).toBeTruthy()
+    renderCard()
+    expect(screen.getByText(copy.location.deniedBody)).toBeTruthy()
     expect(screen.getByRole('button', { name: copy.location.useLocation })).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: copy.location.searchManual }),
+    ).toBeTruthy()
   })
 
-  it('shows error empty with coba lagi', () => {
+  it('shows error empty with coba lagi and search', () => {
     useMapStore.setState({ location: { status: 'error' } })
-    const client = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
-    })
-    render(
-      wrap(
-        <QueryClientProvider client={client}>
-          <LocationCard regions={[region]} />
-        </QueryClientProvider>,
-      ),
-    )
-    expect(screen.getByText(copy.empty.locationError.description)).toBeTruthy()
+    renderCard()
+    expect(screen.getByText(copy.location.errorBody)).toBeTruthy()
+    expect(screen.getByRole('button', { name: copy.location.tryAgain })).toBeTruthy()
     expect(
-      screen.getByRole('button', { name: copy.empty.locationError.action }),
+      screen.getByRole('button', { name: copy.location.searchManual }),
     ).toBeTruthy()
+  })
+
+  it('shows timeout with coba lagi and search', () => {
+    useMapStore.setState({ location: { status: 'timeout' } })
+    renderCard()
+    expect(screen.getByText(copy.location.timeoutBody)).toBeTruthy()
+    expect(screen.getByRole('button', { name: copy.location.tryAgain })).toBeTruthy()
+  })
+
+  it('shows outside-Indonesia warning without nearby counts', () => {
+    useMapStore.setState({
+      location: { status: 'outside', coords: { lon: 139.7, lat: 35.7 } },
+    })
+    renderCard()
+    expect(screen.getByText(copy.location.outsideTitle)).toBeTruthy()
+    expect(screen.getByText(copy.location.outsideBody)).toBeTruthy()
+    expect(screen.queryByText(copy.location.nearbyNoHotspots)).toBeNull()
+    expect(screen.queryByText(/titik panas dalam 25 km/)).toBeNull()
   })
 })

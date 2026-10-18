@@ -54,19 +54,27 @@ const sample: Region[] = [
     name: 'Kab. Kubu Raya',
     province: 'Kalimantan Barat',
     risk_category: 'rendah',
+    hotspots_24h: 2,
+    weather_danger: { class: 'aman', fwi: 2, source: 'BMKG' },
+  }),
+  stub({
+    code: '61.99',
+    name: 'Kab. Kosong',
+    province: 'Kalimantan Barat',
+    risk_category: 'rendah',
     hotspots_24h: 0,
     weather_danger: { class: 'aman', fwi: 2, source: 'BMKG' },
   }),
 ]
 
 describe('filterRegions', () => {
-  it('sorts by kategori then titik panas; includes rendah', () => {
+  it('sorts by kategori then titik panas; tanpa_titik last', () => {
     const result = filterRegions(sample, {
       province: 'Semua',
       selectedCategories: new Set(),
       query: '',
     })
-    expect(result.map((r) => r.code)).toEqual(['62.11', '64.02', '61.12'])
+    expect(result.map((r) => r.code)).toEqual(['62.11', '64.02', '61.12', '61.99'])
   })
 
   it('filters by province', () => {
@@ -88,13 +96,45 @@ describe('filterRegions', () => {
     expect(result.map((r) => r.code)).toEqual(['64.02'])
   })
 
-  it('keeps rendah when that chip is selected', () => {
+  it('rendah chip only includes regions with detections, never zero', () => {
     const result = filterRegions(sample, {
       province: 'Semua',
       selectedCategories: new Set(['rendah']),
       query: '',
     })
     expect(result.map((r) => r.code)).toEqual(['61.12'])
+    expect(result.every((r) => r.hotspots_24h > 0)).toBe(true)
+  })
+
+  it('Semua includes zero-detection regions at the end', () => {
+    const result = filterRegions(sample, {
+      province: 'Semua',
+      selectedCategories: new Set(),
+      query: '',
+    })
+    expect(result.at(-1)?.code).toBe('61.99')
+    expect(result.at(-1)?.hotspots_24h).toBe(0)
+  })
+
+  it('rendah chip excludes null/undefined hotspot counts', () => {
+    const mixed = [
+      ...sample,
+      stub({
+        code: '99.01',
+        name: 'Kab. Null',
+        province: 'Tes',
+        risk_category: 'rendah',
+        // @ts-expect-error — data gagal
+        hotspots_24h: null,
+      }),
+    ]
+    const result = filterRegions(mixed, {
+      province: 'Semua',
+      selectedCategories: new Set(['rendah']),
+      query: '',
+    })
+    expect(result.map((r) => r.code)).toEqual(['61.12'])
+    expect(result.every((r) => r.hotspots_24h > 0)).toBe(true)
   })
 
   it('searches names with Fuse.js', () => {
@@ -160,7 +200,7 @@ describe('filterRegions', () => {
       selectedCategories: new Set(),
       query: '',
     })
-    // 11 → sangat tinggi, 4 → sedang, 0 → rendah (tetap masuk daftar)
+    // 11 → sangat tinggi, 4 → sedang, 0 → tanpa_titik (paling bawah)
     expect(result.map((r) => r.code)).toEqual(['35.17', '35.01', '35.99'])
   })
 })

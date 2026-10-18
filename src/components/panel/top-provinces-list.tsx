@@ -20,7 +20,8 @@ type TopProvincesListProps = {
 function provinceSparkClass(risk: RiskCategory): string {
   if (risk === 'sangat_tinggi') return 'text-risk-high'
   if (risk === 'sedang') return 'text-risk-mid'
-  return 'text-risk-low'
+  if (risk === 'rendah') return 'text-risk-low'
+  return 'text-ink-3'
 }
 
 /** Baris: titik 8px · nama · sparkline brand · angka mono. */

@@ -1,3 +1,8 @@
+import { INDONESIA_BOUNDS } from '@/lib/indonesia-view'
+
+/** Padding derajat di luar bbox peta — GPS di perbatasan tetap dianggap dalam Indonesia. */
+export const INDONESIA_LOCATION_PAD_DEG = 1
+
 /** Dev-only override from `?lokasi=lat,lon`. Never used in production builds. */
 export function parseDevLocation(): { lat: number; lon: number } | null {
   if (!import.meta.env.DEV) return null
@@ -11,8 +16,40 @@ export function parseDevLocation(): { lat: number; lon: number } | null {
   return { lat, lon }
 }
 
+export type GeoFailReason = 'denied' | 'error' | 'timeout'
+
 export type GeoResult =
-  { ok: true; lat: number; lon: number } | { ok: false; reason: 'denied' | 'error' }
+  | { ok: true; lat: number; lon: number }
+  | { ok: false; reason: GeoFailReason }
+
+export type ResolvedLocation =
+  | { status: 'active'; coords: { lat: number; lon: number } }
+  | { status: 'outside'; coords: { lat: number; lon: number } }
+
+/** Bbox Indonesia + padding longgar untuk cek lokasi pengguna. */
+export function isWithinIndonesiaLoose(
+  lat: number,
+  lon: number,
+  padDeg: number = INDONESIA_LOCATION_PAD_DEG,
+): boolean {
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false
+  const [[minLon, minLat], [maxLon, maxLat]] = INDONESIA_BOUNDS
+  return (
+    lon >= minLon - padDeg &&
+    lon <= maxLon + padDeg &&
+    lat >= minLat - padDeg &&
+    lat <= maxLat + padDeg
+  )
+}
+
+/** Status setelah koordinat didapat — luar Indonesia tidak menghitung “dekat kamu”. */
+export function locationFromCoords(lat: number, lon: number): ResolvedLocation {
+  const coords = { lat, lon }
+  if (!isWithinIndonesiaLoose(lat, lon)) {
+    return { status: 'outside', coords }
+  }
+  return { status: 'active', coords }
+}
 
 /** Resolve user coords: DEV query wins, else browser geolocation (10s timeout). */
 export function resolveUserCoords(): Promise<GeoResult> {
@@ -31,12 +68,26 @@ export function resolveUserCoords(): Promise<GeoResult> {
           lat: pos.coords.latitude,
           lon: pos.coords.longitude,
         }),
-      (err) =>
-        resolve({
-          ok: false,
-          reason: err.code === err.PERMISSION_DENIED ? 'denied' : 'error',
-        }),
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) {
+          resolve({ ok: false, reason: 'denied' })
+          return
+        }
+        if (err.code === err.TIMEOUT) {
+          resolve({ ok: false, reason: 'timeout' })
+          return
+        }
+        resolve({ ok: false, reason: 'error' })
+      },
       { enableHighAccuracy: false, timeout: 10_000, maximumAge: 300_000 },
     )
   })
+}
+
+/** Fokus ke kolom cari kabupaten/kota di panel. */
+export function focusWilayahSearch(): void {
+  const input = document.querySelector<HTMLInputElement>(
+    'input[aria-label="Cari kabupaten/kota"]',
+  )
+  input?.focus()
 }

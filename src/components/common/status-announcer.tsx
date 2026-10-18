@@ -35,6 +35,8 @@ export function StatusAnnouncer() {
 
     if (location.status === 'active') {
       parts.push(copy.location.yourLocation)
+    } else if (location.status === 'outside') {
+      parts.push(copy.location.outsideTitle)
     }
 
     return parts.join('. ')

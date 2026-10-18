@@ -104,7 +104,7 @@
   }
 }
 
-/* Penanda berdenyut — riak lebih kencang & radius lebih luas di peta */
+/* Penanda berdenyut — riak soft dari tepi pin (aura terlihat seperti screenshot provinsi). */
 .marker--pulse {
   position: relative;
   overflow: visible;
@@ -115,7 +115,7 @@
   inset: -4px;
   border-radius: 50%;
   border: 2px solid var(--risk-color, var(--color-risk-high));
-  animation: soft-pulse var(--beat, 0.75s) ease-out infinite;
+  animation: soft-pulse var(--beat, 0.75s) var(--ease-out-soft, ease-out) infinite;
   pointer-events: none;
 }
 /* Ring statis di legenda — jangan animasikan */
@@ -145,37 +145,6 @@
   }
 }
 
-/* Episentrum gempa — riak + ikon berdenyut ringan */
-.marker--quake {
-  position: relative;
-  overflow: visible;
-}
-.marker--quake::after {
-  content: '';
-  position: absolute;
-  inset: -5px;
-  border-radius: 50%;
-  border: 2px solid var(--color-risk-mid);
-  animation: soft-pulse 1.6s ease-out infinite;
-  pointer-events: none;
-}
-.marker--quake-icon {
-  animation: quake-nudge 1.4s var(--ease-out-soft, ease-out) infinite;
-}
-
-@keyframes quake-nudge {
-  0%,
-  100% {
-    transform: scale(1) translateY(0);
-  }
-  40% {
-    transform: scale(1.12) translateY(-0.5px);
-  }
-  60% {
-    transform: scale(0.96) translateY(0);
-  }
-}
-
 /* Hover pin peta — sedikit “pop”; ::before = hit area ~44px (visual tetap kecil) */
 .marker--interactive {
   position: relative;
@@ -201,10 +170,6 @@
     animation: none;
     transform: scale(1.6);
     opacity: 0.35;
-  }
-  .marker--quake::after,
-  .marker--quake-icon {
-    animation: none;
   }
   .marker--interactive,
   .marker--interactive:hover,
@@ -238,9 +203,6 @@
 }
 .panel-icon-locate {
   animation: locate-ping 2.2s var(--ease-out-soft, ease-out) infinite;
-}
-.panel-icon-quake {
-  animation: quake-nudge 1.4s var(--ease-out-soft, ease-out) infinite;
 }
 
 @keyframes sun-glow {
@@ -318,8 +280,7 @@
   .panel-icon-trend-up,
   .panel-icon-trend-down,
   .panel-icon-check,
-  .panel-icon-locate,
-  .panel-icon-quake {
+  .panel-icon-locate {
     animation: none;
   }
 }

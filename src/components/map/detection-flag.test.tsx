@@ -3,6 +3,7 @@ import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { DetectionFlag } from '@/components/map/detection-flag'
+import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
 
 const merauke: Region = {
@@ -38,18 +39,18 @@ const merauke: Region = {
 describe('DetectionFlag', () => {
   afterEach(cleanup)
 
-  it('shows name, province, temp and air above the pin', () => {
+  it('shows location, count and updated time without satellite', () => {
     const { container } = render(<DetectionFlag region={merauke} />)
-    const card = container.querySelector('.rounded-ctl')
-    expect(card?.className).toContain('border-line')
-    expect(card?.className).toContain('bg-surface')
-    expect(card?.className).toContain('shadow-chrome')
+    const card = container.querySelector('[data-slot="card"]')
+    expect(card?.className).toContain('rounded-card')
 
     expect(screen.getByText('Kab. Merauke')).toBeTruthy()
-    expect(screen.getByText('Provinsi Papua Selatan')).toBeTruthy()
-    expect(screen.getByText('30°C')).toBeTruthy()
-    expect(screen.getByText('Baik')).toBeTruthy()
-    expect(screen.queryByText(/Oktober 2026/)).toBeNull()
-    expect(screen.queryByText('Sota')).toBeNull()
+    expect(screen.getByText(/2 titik panas/)).toBeTruthy()
+    expect(screen.queryByText(/Provinsi/)).toBeNull()
+    expect(screen.queryByText(/MODIS/)).toBeNull()
+    expect(screen.queryByText(copy.map.popupDisclaimer)).toBeNull()
+    // WIT: 2026-10-09T20:52Z → 09 Okt 2026 · 05:52 WIT
+    expect(screen.getByText(/Okt 2026/)).toBeTruthy()
+    expect(screen.getByText(/WIT/)).toBeTruthy()
   })
 })

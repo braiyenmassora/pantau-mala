@@ -51,6 +51,7 @@ export function aggregateByProvince(
 
   const out: ProvinceAggregate[] = []
   for (const p of provinces) {
+    if (!byName.has(p.name)) continue
     const hotspots_24h = byName.get(p.name) ?? 0
     if (hotspots_24h <= 0) continue
     out.push({

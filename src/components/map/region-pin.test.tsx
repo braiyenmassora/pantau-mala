@@ -134,18 +134,31 @@ describe('RegionPin', () => {
     )
   })
 
-  it('rendah map pin is a 10px risk-low dot (not RiskMarker circle)', () => {
+  it('rendah with detections stays a 10px risk-low dot', () => {
     renderPin({
       code: '62.13',
       name: 'Kab. Rendah',
       weather_danger: { class: 'aman', fwi: 2, source: 'BMKG' },
       risk_category: 'rendah',
-      hotspots_24h: 0,
+      hotspots_24h: 1,
     })
-    const pin = pinButton('Kab. Rendah, risiko Rendah, 0 titik panas')
+    const pin = pinButton('Kab. Rendah, risiko Rendah, 1 titik panas')
     expect(pin.querySelector('svg')).toBeNull()
     expect(pin.classList.contains('size-2.5')).toBe(true)
     expect(pin.classList.contains('bg-risk-low')).toBe(true)
+  })
+
+  it('zero-point pin is neutral gray, not risk-low green', () => {
+    renderPin({
+      code: '62.14',
+      name: 'Kab. Kosong',
+      weather_danger: { class: 'aman', fwi: 2, source: 'BMKG' },
+      risk_category: 'rendah',
+      hotspots_24h: 0,
+    })
+    const pin = pinButton(copy.map.pinAriaNoDetections('Kab. Kosong'))
+    expect(pin.classList.contains('bg-ink-3')).toBe(true)
+    expect(pin.classList.contains('bg-risk-low')).toBe(false)
   })
 
   it('hover shows MapInfoCard; swapped for DetectionFlag when selected', async () => {
@@ -154,23 +167,18 @@ describe('RegionPin', () => {
     const pin = pinButton()
     await user.hover(pin)
     expect(screen.getByText('Kab. Pulang Pisau')).toBeTruthy()
-    expect(
-      screen.getByText(copy.map.regionMetaProvince('Kalimantan Tengah')),
-    ).toBeTruthy()
-    expect(
-      screen.getByText(copy.map.regionPinDetails('23', 'Sangat tinggi')),
-    ).toBeTruthy()
+    expect(screen.getByText(copy.map.regionMetaHotspots('23'))).toBeTruthy()
+    expect(screen.queryByText(copy.map.regionMetaProvince('Kalimantan Tengah'))).toBeNull()
+    expect(screen.queryByText('Sangat tinggi')).toBeNull()
+    expect(screen.queryByText(/MODIS|Satelit/i)).toBeNull()
+    expect(screen.queryByText(copy.map.popupDisclaimer)).toBeNull()
 
     await user.click(pin)
-    expect(
-      screen.queryByText(copy.map.regionPinDetails('23', 'Sangat tinggi')),
-    ).toBeNull()
-    expect(
-      screen.getByText(copy.map.regionMetaProvince('Kalimantan Tengah')),
-    ).toBeTruthy()
+    expect(screen.getByText(copy.map.regionMetaHotspots('23'))).toBeTruthy()
+    expect(screen.queryByText('Sangat tinggi')).toBeNull()
   })
 
-  it('rendah pin hover shows MapInfoCard pattern', async () => {
+  it('zero-point pin hover shows neutral status, not Risiko Rendah', async () => {
     const user = userEvent.setup()
     renderPin({
       code: '62.13',
@@ -179,9 +187,11 @@ describe('RegionPin', () => {
       risk_category: 'rendah',
       hotspots_24h: 0,
     })
-    await user.hover(pinButton('Kab. Rendah, risiko Rendah, 0 titik panas'))
+    await user.hover(pinButton(copy.map.pinAriaNoDetections('Kab. Rendah')))
     expect(screen.getByText('Kab. Rendah')).toBeTruthy()
-    expect(screen.getByText(copy.map.regionPinDetails('0', 'Rendah'))).toBeTruthy()
+    expect(screen.getByText(copy.status.noDetections)).toBeTruthy()
+    expect(screen.queryByText(copy.map.regionPinDetails('0', 'Rendah'))).toBeNull()
+    expect(screen.queryByText('Rendah')).toBeNull()
   })
 
   it('shows detection flag with hotspots after click', async () => {
@@ -189,10 +199,9 @@ describe('RegionPin', () => {
     renderPin()
     expect(screen.queryByText('NASA-MODIS')).toBeNull()
     await user.click(pinButton())
-    expect(
-      screen.getByText(copy.map.regionMetaProvince('Kalimantan Tengah')),
-    ).toBeTruthy()
-    expect(screen.queryByText('NASA-MODIS')).toBeNull()
+    expect(screen.getByText(copy.map.regionMetaHotspots('23'))).toBeTruthy()
+    expect(screen.queryByText(copy.map.regionMetaProvince('Kalimantan Tengah'))).toBeNull()
+    expect(screen.queryByText(/MODIS|Satelit/i)).toBeNull()
     expect(screen.queryByLabelText(new RegExp(copy.detail.airQuality))).toBeNull()
   })
 })

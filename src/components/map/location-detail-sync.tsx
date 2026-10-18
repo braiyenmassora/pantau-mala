@@ -14,10 +14,12 @@ export function LocationDetailSync({ mapRef }: LocationDetailSyncProps) {
   const location = useMapStore((s) => s.location)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const syncedKey = useRef<string | null>(null)
-  const isLocationActive = location.status === 'active' && !!location.coords
+  const hasCoords =
+    (location.status === 'active' || location.status === 'outside') &&
+    !!location.coords
 
   useEffect(() => {
-    if (!isLocationActive || !location.coords) {
+    if (!hasCoords || !location.coords) {
       syncedKey.current = null
       return
     }
@@ -31,7 +33,7 @@ export function LocationDetailSync({ mapRef }: LocationDetailSyncProps) {
       padding: getMapPadding(panelOpen),
       duration: 600,
     })
-  }, [isLocationActive, location.coords, mapRef, panelOpen])
+  }, [hasCoords, location.coords, mapRef, panelOpen])
 
   return null
 }

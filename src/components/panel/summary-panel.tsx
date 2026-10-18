@@ -12,10 +12,15 @@ import {
 import type { RefObject } from 'react'
 import { useMemo } from 'react'
 
-import { Badge, EmptyState, InfoTooltip, Skeleton } from '@/components/common'
+import {
+  EmptyState,
+  HotspotStatusBadge,
+  InfoTooltip,
+  Skeleton,
+} from '@/components/common'
 import { Brand } from '@/components/common/brand'
 import { focusRing } from '@/components/common/focus-ring'
-import { LatestEarthquakeCard } from '@/components/panel/latest-earthquake-card'
+import { DataFreshnessBanner } from '@/components/panel/data-freshness-banner'
 import { LocationCard } from '@/components/panel/location-card'
 import { NoHotspotDetail } from '@/components/panel/no-hotspot-detail'
 import { RegionDetailPanel } from '@/components/panel/region-detail-panel'
@@ -29,6 +34,7 @@ import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { filterRegions } from '@/lib/filter-regions'
 import { formatNumber } from '@/lib/format'
+import { focusWilayahSearch } from '@/lib/geolocation'
 import { hotspotTrend, type TrendDirection } from '@/lib/hotspot-trend'
 import { fitIndonesia } from '@/lib/indonesia-view'
 import { aggregateByProvince } from '@/lib/province-aggregates'
@@ -67,6 +73,8 @@ export function SummaryPanel({
   const query = useMapStore((s) => s.query)
   const selectedCode = useMapStore((s) => s.selectedCode)
   const selectedCategories = useMapStore((s) => s.selectedCategories)
+  const wilayahNotFound = useMapStore((s) => s.wilayahNotFound)
+  const setWilayahNotFound = useMapStore((s) => s.setWilayahNotFound)
   const panelOpen = useUiStore((s) => s.panelOpen)
 
   const { data: daftar, isPending: daftarPending } = useRegionCatalog()
@@ -142,9 +150,11 @@ export function SummaryPanel({
     const offline = typeof navigator !== 'undefined' && navigator.onLine === false
     const fail = offline ? copy.empty.offline : copy.empty.loadFail
     return (
-      <div className="p-4">
+      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
         <EmptyState
           icon={CloudOff}
+          variant="action"
+          className="border-risk-mid/40 bg-risk-mid-tint text-risk-mid-text"
           title={fail.title}
           description={fail.description}
           action={onRetry ? { label: fail.action, onClick: onRetry } : undefined}
@@ -161,6 +171,35 @@ export function SummaryPanel({
     return <NoHotspotDetail kab={selectedCatalog} />
   }
 
+  if (wilayahNotFound) {
+    return (
+      <div className="flex flex-col gap-6 p-4">
+        <header className="space-y-3">
+          <Brand compact />
+          <h1 className="text-ink truncate text-xl leading-8 font-semibold">
+            {copy.panel.indonesiaToday}
+          </h1>
+        </header>
+        <EmptyState
+          icon={Search}
+          variant="action"
+          title={copy.empty.wilayahNotFound.title}
+          description={copy.empty.wilayahNotFound.description}
+          action={{
+            label: copy.empty.wilayahNotFound.action,
+            onClick: () => {
+              setWilayahNotFound(false)
+              if (window.location.pathname !== '/') {
+                window.history.pushState(null, '', '/')
+              }
+              focusWilayahSearch()
+            },
+          }}
+        />
+      </div>
+    )
+  }
+
   const wilayahLabel = province === 'Semua' ? copy.common.indonesia : province
   const filtering = selectedCategories.size > 0
   const clearCategories = useMapStore.getState().clearCategories
@@ -170,8 +209,8 @@ export function SummaryPanel({
   // Filter kosong jangan menelan mode cari — tanpa SearchBox query bisa “stuck”.
   if (filtering && filtered.length === 0 && !searching) {
     return (
-      <div className="space-y-6 p-4">
-        <header className="space-y-2">
+      <div className="flex flex-col gap-6 p-4">
+        <header className="space-y-3">
           <Brand compact />
           <h1 className="text-ink truncate text-xl leading-8 font-semibold">
             {copy.panel.indonesiaToday}
@@ -195,16 +234,21 @@ export function SummaryPanel({
 
   if (noHotspots && !filtering && !searching) {
     return (
-      <div className="space-y-6 p-4">
-        <header className="space-y-2">
+      <div className="flex flex-col gap-6 p-4">
+        <header className="space-y-3">
           <Brand compact />
-          <div className="flex min-w-0 items-center gap-1">
-            <h1 className="text-ink truncate text-xl leading-8 font-semibold">
-              {copy.panel.indonesiaToday}
-            </h1>
-            <InfoTooltip content={copy.panel.titleTip} className="-my-4" />
+          <div className="space-y-1">
+            <div className="flex min-w-0 items-center gap-1">
+              <h1 className="text-ink truncate text-xl leading-8 font-semibold">
+                {copy.panel.indonesiaToday}
+              </h1>
+              <InfoTooltip content={copy.panel.titleTip} className="-my-4" />
+            </div>
+            <p className="text-ink-2 text-xs leading-4">{copy.panel.limitationNote}</p>
+            <p className="text-ink-2 text-xs leading-4">{copy.panel.coverageNote}</p>
           </div>
         </header>
+        <DataFreshnessBanner />
         <EmptyState
           icon={ShieldCheck}
           title={copy.empty.noHotspots.title}
@@ -215,15 +259,17 @@ export function SummaryPanel({
   }
 
   // Beranda nasional + hasil cari: SearchBox tetap di sticky yang sama (hindari remount → fokus stuck).
+  // Spacing DS: gutter 16 · sticky→konten 24 (pb-3+pt-3) · antar section 24 · dalam section 12.
   if (nationalView || searching) {
     return (
       <div className="flex flex-col">
-        <div className="bg-surface sticky top-0 z-10 space-y-3 px-4 pt-4 pb-3">
+        <div className="bg-surface sticky top-0 z-10 space-y-3 px-4 pt-3 pb-2">
           <Brand compact />
           <SearchBox mapRef={mapRef} />
         </div>
 
-        <div className="flex flex-col gap-6 px-4 pt-2 pb-6">
+        <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
+          <DataFreshnessBanner />
           {searching ? (
             <section className="space-y-3">
               <h2 className="text-ink text-sm leading-5 font-semibold">
@@ -247,53 +293,53 @@ export function SummaryPanel({
             </section>
           ) : (
             <>
-              <header>
+              <header className="space-y-1">
                 <div className="flex min-w-0 items-center gap-1">
                   <h1 className="text-ink min-w-0 text-xl leading-8 font-semibold break-words">
                     {copy.panel.indonesiaToday}
                   </h1>
                   <InfoTooltip content={copy.panel.titleTip} className="-my-4" />
                 </div>
+                <p className="text-ink-2 text-xs leading-4">
+                  {copy.panel.limitationNote}
+                </p>
               </header>
 
-              <div className="flex flex-col gap-4">
-                <LocationCard regions={regions} />
-                <LatestEarthquakeCard />
+              <LocationCard regions={regions} />
 
-                <section className="space-y-3">
-                  <h2 className="text-ink text-sm leading-5 font-semibold">
-                    {copy.panel.topRisk}
-                  </h2>
-                  {daftarPending && !daftar ? (
-                    <div className="flex flex-col gap-2">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Skeleton key={i} className="rounded-ctl h-12 w-full" />
-                      ))}
-                    </div>
-                  ) : topProvinces.length === 0 ? (
-                    <div className="text-ink-2 flex items-center gap-2 py-2 text-sm leading-5">
-                      <Check className="text-ink-2 size-4" strokeWidth={2} aria-hidden />
-                      <span>{copy.search.noHotspots}</span>
-                    </div>
-                  ) : (
-                    <TopProvincesList
-                      items={topProvinces.flatMap((agg) => {
-                        const prov = daftar?.provinces.find((p) => p.name === agg.name)
-                        return prov
-                          ? [
-                              {
-                                province: prov,
-                                hotspots_24h: agg.hotspots_24h,
-                                risk_category: agg.risk_category,
-                                trend_7d: agg.trend_7d,
-                              },
-                            ]
-                          : []
-                      })}
-                    />
-                  )}
-                </section>
-              </div>
+              <section className="space-y-3">
+                <h2 className="text-ink text-sm leading-5 font-semibold">
+                  {copy.panel.topRisk}
+                </h2>
+                {daftarPending && !daftar ? (
+                  <div className="flex flex-col gap-1">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Skeleton key={i} className="rounded-ctl h-12 w-full" />
+                    ))}
+                  </div>
+                ) : topProvinces.length === 0 ? (
+                  <div className="text-ink-2 flex items-center gap-2 py-3 text-sm leading-5">
+                    <Check className="text-ink-2 size-4" strokeWidth={2} aria-hidden />
+                    <span>{copy.search.noHotspots}</span>
+                  </div>
+                ) : (
+                  <TopProvincesList
+                    items={topProvinces.flatMap((agg) => {
+                      const prov = daftar?.provinces.find((p) => p.name === agg.name)
+                      return prov
+                        ? [
+                            {
+                              province: prov,
+                              hotspots_24h: agg.hotspots_24h,
+                              risk_category: agg.risk_category,
+                              trend_7d: agg.trend_7d,
+                            },
+                          ]
+                        : []
+                    })}
+                  />
+                )}
+              </section>
             </>
           )}
         </div>
@@ -324,7 +370,9 @@ export function SummaryPanel({
         </button>
       </div>
 
-      <div className="flex flex-col gap-6 px-4 pt-2 pb-6">
+      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
+        <DataFreshnessBanner />
+
         <Card aria-label={province}>
           <CardHeader>
             <div className="flex min-w-0 items-center gap-1">
@@ -333,13 +381,13 @@ export function SummaryPanel({
               </h1>
               <InfoTooltip content={copy.detail.riskTooltip} />
             </div>
-            <Badge
-              variant="category"
-              category={provinceStats?.risk_category ?? 'rendah'}
+            <HotspotStatusBadge
+              hotspots={provinceStats?.count_24h ?? 0}
+              riskCategory={provinceStats?.risk_category ?? 'tidak_tersedia'}
             />
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="space-y-2">
+            <div className="space-y-1">
               <p className="text-ink font-mono text-3xl leading-10 font-semibold tabular-nums">
                 {formatNumber(provinceStats?.count_24h ?? 0)}
               </p>
@@ -359,6 +407,9 @@ export function SummaryPanel({
                 {trendLabel} {copy.detail.trendVsPrevious}
               </span>
             </p>
+            {(provinceStats?.count_24h ?? 0) === 0 ? (
+              <p className="text-ink-2 text-xs leading-4">{copy.panel.coverageNote}</p>
+            ) : null}
           </CardContent>
         </Card>
 
@@ -367,7 +418,7 @@ export function SummaryPanel({
             {copy.panel.topKab}
           </h2>
           {provinceTopRegencies.length === 0 ? (
-            <div className="text-ink-2 flex items-center gap-2 py-2 text-sm leading-5">
+            <div className="text-ink-2 flex items-center gap-2 py-3 text-sm leading-5">
               <Check className="size-4" strokeWidth={2} aria-hidden />
               <span>{copy.search.noHotspots}</span>
             </div>
@@ -390,26 +441,23 @@ function SummarySkeleton({ nationalView }: { nationalView: boolean }) {
   const rowCount = nationalView ? 5 : 10
   return (
     <div className="flex flex-col" aria-busy aria-label={copy.common.loading}>
-      <div className="bg-surface sticky top-0 z-10 space-y-3 px-4 pt-4 pb-3">
+      <div className="bg-surface sticky top-0 z-10 space-y-3 px-4 pt-3 pb-2">
         <Skeleton className="rounded-ctl h-7 w-28" />
         <Skeleton className="rounded-ctl h-12 w-full" />
       </div>
-      <div className="flex flex-col gap-6 px-4 pt-2 pb-6">
-        <div className="space-y-2">
+      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
+        <div className="space-y-1">
           <Skeleton className="rounded-ctl h-8 w-3/4" />
           <Skeleton className="rounded-ctl h-4 w-1/2" />
         </div>
-        {nationalView ? (
-          <>
-            <Skeleton className="rounded-ctl h-24 w-full" />
-            <Skeleton className="rounded-ctl h-24 w-full" />
-          </>
-        ) : null}
-        <div className="space-y-2">
-          <Skeleton className="rounded-ctl h-4 w-1/3" />
-          {Array.from({ length: rowCount }).map((_, i) => (
-            <Skeleton key={i} className="rounded-ctl h-12 w-full" />
-          ))}
+        {nationalView ? <Skeleton className="rounded-ctl h-24 w-full" /> : null}
+        <div className="space-y-3">
+          <Skeleton className="rounded-ctl h-5 w-1/3" />
+          <div className="flex flex-col gap-1">
+            {Array.from({ length: rowCount }).map((_, i) => (
+              <Skeleton key={i} className="rounded-ctl h-12 w-full" />
+            ))}
+          </div>
         </div>
       </div>
     </div>

@@ -112,7 +112,9 @@ export function createClientGateway(env, fetcher = fetch) {
         return reply(data.status === 429 ? 429 : data.status >= 500 ? 502 : data.status, {
           error: 'Data unavailable',
         })
-      return new Response(data.body, {
+      // Baca body di dalam try: AbortSignal.timeout bisa putus saat stream masih jalan.
+      const body = await data.arrayBuffer()
+      return new Response(body, {
         status: data.status,
         headers: {
           'Content-Type': 'application/json',

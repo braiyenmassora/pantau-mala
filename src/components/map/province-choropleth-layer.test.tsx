@@ -94,6 +94,12 @@ vi.mock('@/data/queries', () => ({
       regencies: [],
     },
   }),
+  useMeta: () => ({
+    data: {
+      updated_at: '2026-10-18T00:00:00Z',
+      status: { firms: 'ok', weather: 'ok', air: 'ok' },
+    },
+  }),
 }))
 
 const regions: Region[] = [
@@ -203,7 +209,11 @@ describe('ProvinceChoroplethLayer', () => {
 
     expect(setFeatureState).toHaveBeenCalledWith(
       { source: 'province-choropleth-source', id: '2388616' },
-      expect.objectContaining({ hotspots: 12, riskColor: '#D93025' }),
+      expect.objectContaining({
+        hotspots: 12,
+        riskColor: '#D93025',
+        fillMode: 1,
+      }),
     )
   })
 
@@ -223,7 +233,60 @@ describe('ProvinceChoroplethLayer', () => {
 
     expect(setFeatureState).toHaveBeenCalledWith(
       { source: 'province-choropleth-source', id: '2388616' },
-      expect.objectContaining({ hotspots: 20, riskColor: '#188038' }),
+      expect.objectContaining({
+        hotspots: 20,
+        riskColor: '#188038',
+        fillMode: 1,
+      }),
+    )
+  })
+
+  it('marks zero-hotspot provinces gray (fillMode 2) when FIRMS ok', () => {
+    getSource.mockReturnValue({})
+    getLayer.mockReturnValue({})
+
+    const zeroOnly: Region[] = [
+      {
+        ...regions[0]!,
+        risk_category: 'rendah',
+        hotspots_24h: 0,
+      },
+    ]
+
+    render(<ProvinceChoroplethLayer regions={zeroOnly} />)
+
+    expect(setFeatureState).toHaveBeenCalledWith(
+      { source: 'province-choropleth-source', id: '2388616' },
+      expect.objectContaining({
+        hotspots: 0,
+        riskColor: '#80868B',
+        fillMode: 2,
+      }),
+    )
+  })
+
+  it('does not confirm empty fill when hotspot counts are missing', () => {
+    getSource.mockReturnValue({})
+    getLayer.mockReturnValue({})
+
+    const missing: Region[] = [
+      {
+        ...regions[0]!,
+        risk_category: 'tidak_tersedia',
+        // @ts-expect-error — simulasi data gagal/null di luar schema ketat
+        hotspots_24h: null,
+      },
+    ]
+
+    render(<ProvinceChoroplethLayer regions={missing} />)
+
+    expect(setFeatureState).toHaveBeenCalledWith(
+      { source: 'province-choropleth-source', id: '2388616' },
+      expect.objectContaining({
+        hotspots: -1,
+        riskColor: '#80868B',
+        fillMode: 0,
+      }),
     )
   })
 })

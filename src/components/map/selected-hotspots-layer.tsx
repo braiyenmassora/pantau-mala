@@ -4,13 +4,15 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FeatureCollection, Polygon } from 'geojson'
 import type { GeoJSONSource } from 'maplibre-gl'
 
+import { BeatWaveRadius } from '@/components/map/beat-wave-radius'
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
-import { formatDateTime } from '@/lib/format'
+import { formatDateDotTime } from '@/lib/format'
 import { getMapPadding } from '@/lib/indonesia-view'
+import { pinPulseStyle, riskBeatMs } from '@/lib/map-beat'
 import { MAP_COLORS } from '@/lib/map-colors'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
@@ -181,52 +183,74 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
     }
   }, [map])
 
-  if (!selectedRegion || regionHotspots.length === 0 || regionHotspots.length > 64)
-    return null
-
-  const risk = effectiveRiskCategory(selectedRegion)
+  const risk = selectedRegion
+    ? effectiveRiskCategory(selectedRegion)
+    : 'tidak_tersedia'
   const style = RISK_CATEGORIES[risk]
+
+  if (!selectedRegion) return null
+
+  const showMarkers =
+    regionHotspots.length > 0 && regionHotspots.length <= 64
+  const pulseStyle = pinPulseStyle(risk, style.dot)
 
   return (
     <>
-      {regionHotspots.map((f, i) => {
-        const [lon, lat] = f.geometry.coordinates
-        const stamp = formatDateTime(f.properties.time, selectedRegion.time_zone)
-        const label = `Titik panas ${stamp}`
+      {focus ? (
+        <BeatWaveRadius
+          id="selected-region-radius"
+          center={focus.center}
+          radiusKm={focus.radiusKm}
+          color={style.dot}
+          periodMs={riskBeatMs(risk)}
+          fillOpacity={0.06}
+        />
+      ) : null}
 
-        return (
-          <MapMarker
-            key={`${f.properties.time}-${lon}-${lat}-${i}`}
-            longitude={lon}
-            latitude={lat}
-            anchor="center"
-          >
-            <MarkerContent className="relative flex items-center justify-center overflow-visible">
-              {hovered === i ? (
-                <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
-                  <MapInfoCard
-                    title={copy.extra.detections}
-                    lines={[selectedRegion.name, `Terdeteksi ${stamp}`]}
+      {showMarkers
+        ? regionHotspots.map((f, i) => {
+            const [lon, lat] = f.geometry.coordinates
+            const stamp = formatDateDotTime(
+              f.properties.time,
+              selectedRegion.time_zone,
+            )
+            const label = `Titik panas ${stamp}`
+
+            return (
+              <MapMarker
+                key={`${f.properties.time}-${lon}-${lat}-${i}`}
+                longitude={lon}
+                latitude={lat}
+                anchor="center"
+              >
+                <MarkerContent className="relative flex items-center justify-center overflow-visible">
+                  {hovered === i ? (
+                    <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
+                      <MapInfoCard
+                        title={selectedRegion.name}
+                        meta={copy.map.regionMetaHotspots('1')}
+                        updatedAt={stamp}
+                      />
+                    </div>
+                  ) : null}
+                  <span
+                    tabIndex={0}
+                    role="img"
+                    aria-label={label}
+                    className={cn(
+                      'marker--interactive marker--pulse border-surface relative size-2.5 cursor-pointer rounded-full border-2 shadow-sm',
+                    )}
+                    style={{ backgroundColor: style.dot, ...pulseStyle }}
+                    onMouseEnter={() => setHovered(i)}
+                    onMouseLeave={() => setHovered(null)}
+                    onFocus={() => setHovered(i)}
+                    onBlur={() => setHovered(null)}
                   />
-                </div>
-              ) : null}
-              <span
-                tabIndex={0}
-                role="img"
-                aria-label={label}
-                className={cn(
-                  'marker--interactive border-surface relative size-2.5 cursor-pointer rounded-full border-2 shadow-sm',
-                )}
-                style={{ backgroundColor: style.dot }}
-                onMouseEnter={() => setHovered(i)}
-                onMouseLeave={() => setHovered(null)}
-                onFocus={() => setHovered(i)}
-                onBlur={() => setHovered(null)}
-              />
-            </MarkerContent>
-          </MapMarker>
-        )
-      })}
+                </MarkerContent>
+              </MapMarker>
+            )
+          })
+        : null}
     </>
   )
 }

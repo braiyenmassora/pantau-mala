@@ -8,7 +8,7 @@ type ChipProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode
 }
 
-/** Chip filter: tinggi 44px, radius card (12), tipografi body 14/20. */
+/** Chip filter: permukaan Card (radius 12) + tinggi 44; pad compact seperti sebelumnya. */
 export function Chip({ pressed, className, children, ...props }: ChipProps) {
   return (
     <button

@@ -6,7 +6,7 @@ import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import { chromeSurface } from '@/lib/chrome'
 import { restoreFocusTrigger } from '@/lib/focus-return'
-import { resolveUserCoords } from '@/lib/geolocation'
+import { locationFromCoords, resolveUserCoords } from '@/lib/geolocation'
 import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
 import { useMapChrome } from '@/lib/layout'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
@@ -58,7 +58,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
       aria-labelledby="location-prompt-title"
       className={cn(
         chromeSurface,
-        'rounded-card absolute top-[68px] z-50 w-[min(360px,calc(100vw-2rem))] p-4',
+        'absolute top-[68px] z-50 w-[min(360px,calc(100vw-2rem))] p-4',
         'ease-out-soft transition-[left] duration-300',
         panelOpen && 'max-sm:hidden',
       )}
@@ -88,10 +88,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
               onClick={() => {
                 void resolveUserCoords().then((result) => {
                   if (result.ok) {
-                    setLocation({
-                      status: 'active',
-                      coords: { lon: result.lon, lat: result.lat },
-                    })
+                    setLocation(locationFromCoords(result.lat, result.lon))
                     flyToUser(result.lon, result.lat)
                     return
                   }

@@ -14,6 +14,16 @@ vi.mock('@/components/ui/map', () => ({
   MarkerContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
 
+vi.mock('@/data/queries', () => ({
+  useMeta: () => ({
+    data: {
+      updated_at: '2026-10-18T01:00:00.000Z',
+      pulled_at: { firms: '2026-10-18T01:00:00.000Z', weather: null },
+      status: { firms: 'ok', weather: 'ok', air: 'ok' },
+    },
+  }),
+}))
+
 describe('ProvincePin', () => {
   afterEach(cleanup)
 
@@ -66,5 +76,38 @@ describe('ProvincePin', () => {
     const pin = screen.getByRole('button', { name: 'Banten' })
     expect(pin.className).toContain('marker--pulse')
     expect(pin.style.getPropertyValue('--beat')).toBe('1.8s')
+  })
+
+  it('keeps rendah and tanpa titik as small dots without pulse', () => {
+    const { rerender } = render(
+      <ProvincePin
+        aggregate={{
+          name: 'DI Yogyakarta',
+          center: [110, -8],
+          bbox: [109, -9, 111, -7],
+          hotspots_24h: 1,
+          risk_category: 'rendah',
+          trend_7d: [0, 0, 0, 0, 0, 0, 1],
+        }}
+      />,
+    )
+    let pin = screen.getByRole('button', { name: 'DI Yogyakarta' })
+    expect(pin.className).not.toContain('marker--pulse')
+    expect(pin.className).toContain('size-2.5')
+
+    rerender(
+      <ProvincePin
+        aggregate={{
+          name: 'DKI Jakarta',
+          center: [107, -6],
+          bbox: [106, -7, 108, -5],
+          hotspots_24h: 0,
+          risk_category: 'rendah',
+          trend_7d: [0, 0, 0, 0, 0, 0, 0],
+        }}
+      />,
+    )
+    pin = screen.getByRole('button', { name: 'DKI Jakarta' })
+    expect(pin.className).not.toContain('marker--pulse')
   })
 })

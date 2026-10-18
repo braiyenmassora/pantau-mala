@@ -8,10 +8,11 @@ import type {
 
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapPopup, useMap } from '@/components/ui/map'
+import { copy } from '@/copy/id'
 import { useHotspots } from '@/data/queries'
-import type { ConfidenceLevel, Region, TimeZoneId } from '@/data/types'
+import type { Region, TimeZoneId } from '@/data/types'
 import { filterHotspotsForMap } from '@/lib/filter-hotspots-for-map'
-import { formatDateTime } from '@/lib/format'
+import { formatDateDotTime } from '@/lib/format'
 import { MAP_COLORS } from '@/lib/map-colors'
 import {
   HEATMAP_HIGH_HEX,
@@ -26,7 +27,8 @@ const SOURCE_ID = 'fy-hotspot-heatmap'
 const LAYER_ID = 'fy-hotspot-heatmap-layer'
 const POINTS_LAYER_ID = 'fy-hotspot-points-layer'
 
-export const HEATMAP_MIN_ZOOM = 7
+/** Di bawah zoom ini heatmap di-hide. 5.5 agar fit provinsi (sering ~6–7) tetap terlihat. */
+export const HEATMAP_MIN_ZOOM = 5.5
 
 type HotspotHeatmapLayerProps = {
   regions: Region[]
@@ -37,15 +39,8 @@ type ActiveHotspot = {
   latitude: number
   district?: string
   regency?: string
-  detectedTime?: string
-  satellite?: string
-  confidence?: ConfidenceLevel
+  updatedAt?: string
   pinned: boolean
-}
-
-function readConfidence(value: unknown): ConfidenceLevel | undefined {
-  if (value === 'rendah' || value === 'sedang' || value === 'tinggi') return value
-  return undefined
 }
 
 function readOptionalString(value: unknown): string | undefined {
@@ -54,19 +49,29 @@ function readOptionalString(value: unknown): string | undefined {
   return t ? t : undefined
 }
 
-/** Deteksi dari timestamp UTC → jam zona wilayah (bukan zona browser). */
-function formatDetectedTime(
+/** Deteksi dari timestamp UTC → "09 Okt 2026 · 14:05 WIB". */
+function formatUpdatedAt(
   rawTime: string | undefined,
   zone: TimeZoneId,
 ): string | undefined {
   if (!rawTime) return undefined
   if (Number.isNaN(Date.parse(rawTime))) return undefined
-  return formatDateTime(rawTime, zone)
+  return formatDateDotTime(rawTime, zone)
 }
 
 const HEATMAP_PAINT = {
-  'heatmap-weight': 1,
-  'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 7, 8, 11, 24],
+  'heatmap-weight': ['get', 'weight'],
+  'heatmap-radius': [
+    'interpolate',
+    ['linear'],
+    ['zoom'],
+    HEATMAP_MIN_ZOOM,
+    10,
+    8,
+    16,
+    11,
+    24,
+  ],
   'heatmap-color': [
     'interpolate',
     ['linear'],
@@ -80,10 +85,63 @@ const HEATMAP_PAINT = {
     1,
     HEATMAP_HIGH_HEX,
   ],
-  'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 7, 0.75, 10, 0.75, 12, 0],
+  'heatmap-opacity': [
+    'interpolate',
+    ['linear'],
+    ['zoom'],
+    HEATMAP_MIN_ZOOM,
+    0.7,
+    10,
+    0.75,
+    12,
+    0,
+  ],
 } satisfies NonNullable<HeatmapLayerSpecification['paint']>
 
-// ponytail: heatmap + titik; setup sekali, data di-setData — jangan removeLayer tiap render.
+function ensureHeatmapLayers(map: NonNullable<ReturnType<typeof useMap>['map']>) {
+  if (!map.getSource(SOURCE_ID)) {
+    map.addSource(SOURCE_ID, {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+    })
+  }
+
+  if (!map.getLayer(LAYER_ID)) {
+    map.addLayer({
+      id: LAYER_ID,
+      type: 'heatmap',
+      source: SOURCE_ID,
+      minzoom: HEATMAP_MIN_ZOOM,
+      paint: HEATMAP_PAINT,
+    })
+  } else {
+    map.setPaintProperty(LAYER_ID, 'heatmap-color', HEATMAP_PAINT['heatmap-color'])
+    map.setPaintProperty(LAYER_ID, 'heatmap-opacity', HEATMAP_PAINT['heatmap-opacity'])
+    map.setPaintProperty(LAYER_ID, 'heatmap-radius', HEATMAP_PAINT['heatmap-radius'])
+    map.setPaintProperty(LAYER_ID, 'heatmap-weight', HEATMAP_PAINT['heatmap-weight'])
+    map.setLayerZoomRange(LAYER_ID, HEATMAP_MIN_ZOOM, 24)
+  }
+
+  if (!map.getLayer(POINTS_LAYER_ID)) {
+    map.addLayer({
+      id: POINTS_LAYER_ID,
+      type: 'circle',
+      source: SOURCE_ID,
+      minzoom: 10,
+      paint: {
+        'circle-radius': 3.5,
+        'circle-color': HEATMAP_HIGH_HEX,
+        'circle-stroke-width': 1,
+        'circle-stroke-color': MAP_COLORS.surface,
+        'circle-opacity': ['interpolate', ['linear'], ['zoom'], 10, 0.5, 12, 1],
+      },
+    })
+  } else {
+    map.setPaintProperty(POINTS_LAYER_ID, 'circle-color', HEATMAP_HIGH_HEX)
+  }
+}
+
+// ponytail: heatmap + titik; pastikan source ada sebelum setData; pulihkan setelah style.load.
 export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   const { map, isLoaded } = useMap()
   const province = useMapStore((s) => s.province)
@@ -98,6 +156,14 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   const panelOpenRef = useRef(panelOpen)
   const setPanelOpenRef = useRef(setPanelOpen)
   const selectedCodeRef = useRef(selectedCode)
+  const collectionRef = useRef(
+    filterHotspotsForMap(data, regions, province, selectedCode),
+  )
+
+  const collection = useMemo(
+    () => filterHotspotsForMap(data, regions, province, selectedCode),
+    [data, regions, province, selectedCode],
+  )
 
   useEffect(() => {
     regionsRef.current = regions
@@ -105,67 +171,29 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
     panelOpenRef.current = panelOpen
     setPanelOpenRef.current = setPanelOpen
     selectedCodeRef.current = selectedCode
-  }, [regions, select, panelOpen, setPanelOpen, selectedCode])
+    collectionRef.current = collection
+  }, [regions, select, panelOpen, setPanelOpen, selectedCode, collection])
 
-  // Detail kab: tip DOM di SelectedHotspotsLayer — jangan dobel dengan popup heatmap.
-  if (selectedCode && activeHotspot) setActiveHotspot(null)
+  const tipHotspot = selectedCode ? null : activeHotspot
 
-  useEffect(() => {
-    if (!map || !isLoaded || !map.getLayer?.(POINTS_LAYER_ID)) return
-    map.setLayoutProperty(
-      POINTS_LAYER_ID,
-      'visibility',
-      selectedCode ? 'none' : 'visible',
-    )
-  }, [map, isLoaded, selectedCode])
-
-  const collection = useMemo(
-    () => filterHotspotsForMap(data, regions, province, selectedCode),
-    [data, regions, province, selectedCode],
-  )
-
-  // Setup layer + handler sekali
   useEffect(() => {
     if (!map || !isLoaded) return
 
-    if (!map.getSource(SOURCE_ID)) {
-      map.addSource(SOURCE_ID, {
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] },
-      })
-    }
-
-    if (!map.getLayer(LAYER_ID)) {
-      map.addLayer({
-        id: LAYER_ID,
-        type: 'heatmap',
-        source: SOURCE_ID,
-        minzoom: HEATMAP_MIN_ZOOM,
-        paint: HEATMAP_PAINT,
-      })
-    } else {
-      map.setPaintProperty(LAYER_ID, 'heatmap-color', HEATMAP_PAINT['heatmap-color'])
-      map.setPaintProperty(LAYER_ID, 'heatmap-opacity', HEATMAP_PAINT['heatmap-opacity'])
-      map.setPaintProperty(LAYER_ID, 'heatmap-radius', HEATMAP_PAINT['heatmap-radius'])
-      map.setPaintProperty(LAYER_ID, 'heatmap-weight', HEATMAP_PAINT['heatmap-weight'])
-    }
-
-    if (!map.getLayer(POINTS_LAYER_ID)) {
-      map.addLayer({
-        id: POINTS_LAYER_ID,
-        type: 'circle',
-        source: SOURCE_ID,
-        minzoom: 10,
-        paint: {
-          'circle-radius': 3.5,
-          'circle-color': HEATMAP_HIGH_HEX,
-          'circle-stroke-width': 1,
-          'circle-stroke-color': MAP_COLORS.surface,
-          'circle-opacity': ['interpolate', ['linear'], ['zoom'], 10, 0.5, 12, 1],
-        },
-      })
-    } else {
-      map.setPaintProperty(POINTS_LAYER_ID, 'circle-color', HEATMAP_HIGH_HEX)
+    const syncData = () => {
+      try {
+        ensureHeatmapLayers(map)
+        const source = map.getSource(SOURCE_ID) as GeoJSONSource | undefined
+        source?.setData(collectionRef.current)
+        if (map.getLayer(POINTS_LAYER_ID)) {
+          map.setLayoutProperty(
+            POINTS_LAYER_ID,
+            'visibility',
+            selectedCodeRef.current ? 'none' : 'visible',
+          )
+        }
+      } catch {
+        // style swap mid-flight
+      }
     }
 
     const readHotspot = (e: MapLayerMouseEvent) => {
@@ -174,7 +202,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       const coords = feature.geometry.coordinates as [number, number]
       const props = (feature.properties ?? {}) as Record<string, unknown>
       const reg = regionsRef.current.find((r) => r.code === props.region_code)
-      const timeStr = formatDetectedTime(
+      const updatedAt = formatUpdatedAt(
         typeof props.time === 'string' ? props.time : undefined,
         reg?.time_zone ?? 'WIB',
       )
@@ -187,9 +215,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
           readOptionalString(props.kabupaten) ??
           readOptionalString(props.regency) ??
           readOptionalString(reg?.name),
-        detectedTime: timeStr,
-        satellite: readOptionalString(props.satellite),
-        confidence: readConfidence(props.confidence),
+        updatedAt,
       }
     }
 
@@ -205,7 +231,6 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
 
     const onPointClick = (e: MapLayerMouseEvent) => {
       if (selectedCodeRef.current) return
-      // Klik titik/heatmap merah → buka detail kabupaten bila ada region_code
       if (openRegionFromEvent(e)) {
         setActiveHotspot(null)
         return
@@ -245,7 +270,10 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       }
     }
 
+    syncData()
+
     if (typeof map.on === 'function') {
+      map.on('style.load', syncData)
       map.on('click', POINTS_LAYER_ID, onPointClick)
       map.on('click', LAYER_ID, onHeatmapClick)
       map.on('mouseenter', POINTS_LAYER_ID, onPointEnter)
@@ -256,6 +284,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
     return () => {
       try {
         if (typeof map.off === 'function') {
+          map.off('style.load', syncData)
           map.off('click', POINTS_LAYER_ID, onPointClick)
           map.off('click', LAYER_ID, onHeatmapClick)
           map.off('mouseenter', POINTS_LAYER_ID, onPointEnter)
@@ -271,29 +300,40 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
     }
   }, [map, isLoaded])
 
-  // Hanya setData — tidak recreate layer
+  // Sync data + visibility tanpa recreate layer
   useEffect(() => {
     if (!map || !isLoaded) return
-    const source = map.getSource(SOURCE_ID) as GeoJSONSource | undefined
-    source?.setData(collection)
-  }, [map, isLoaded, collection])
+    try {
+      ensureHeatmapLayers(map)
+      const source = map.getSource(SOURCE_ID) as GeoJSONSource | undefined
+      source?.setData(collection)
+      if (map.getLayer(POINTS_LAYER_ID)) {
+        map.setLayoutProperty(
+          POINTS_LAYER_ID,
+          'visibility',
+          selectedCode ? 'none' : 'visible',
+        )
+      }
+    } catch {
+      // style swap
+    }
+  }, [map, isLoaded, collection, selectedCode])
 
   return (
     <>
-      {activeHotspot && (
+      {tipHotspot && (
         <MapPopup
-          longitude={activeHotspot.longitude}
-          latitude={activeHotspot.latitude}
+          longitude={tipHotspot.longitude}
+          latitude={tipHotspot.latitude}
           anchor="bottom"
           offset={14}
           onClose={() => setActiveHotspot(null)}
         >
           <MapInfoCard
-            district={activeHotspot.district}
-            regency={activeHotspot.regency}
-            detectedTime={activeHotspot.detectedTime}
-            satellite={activeHotspot.satellite}
-            confidence={activeHotspot.confidence}
+            district={tipHotspot.district}
+            regency={tipHotspot.regency}
+            meta={copy.map.regionMetaHotspots('1')}
+            updatedAt={tipHotspot.updatedAt}
           />
         </MapPopup>
       )}

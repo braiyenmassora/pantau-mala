@@ -16,23 +16,6 @@ export const summarySchema = z.object({
 export const historySchema = z.object({
   data: z.array(z.object({ tanggal: z.string(), titik_panas: number, skor: nullable })),
 })
-export const earthquakesSchema = z.object({
-  data: z.array(
-    z.object({
-      waktu: z.string(),
-      pusat: lonLat,
-      magnitudo: number,
-      kedalaman_km: number,
-      wilayah: z.string(),
-      potensi: z.string(),
-      dirasakan: z.string(),
-      shakemap: z.string(),
-    }),
-  ),
-  sumber: z.string(),
-  keterangan: z.string(),
-  diambil: z.string(),
-})
 export const forecastSchema = z.object({
   data: z.object({
     kode_desa: z.string(),

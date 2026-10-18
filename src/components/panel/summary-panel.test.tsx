@@ -56,8 +56,9 @@ function wrap(ui: ReactNode) {
     defaultOptions: { queries: { retry: false } },
   })
   client.setQueryData(['meta', '00000000-0000-4000-8000-000000000001', 0], {
-    updated_at: '2026-10-12T00:00:00Z',
+    updated_at: new Date().toISOString(),
     status: { firms: 'ok', weather: 'ok', air: 'ok' },
+    pulled_at: { firms: null, weather: null },
   })
   client.setQueryData(['region-catalog', '00000000-0000-4000-8000-000000000001', 0], {
     provinces: [],
@@ -147,7 +148,7 @@ describe('SummaryPanel states', () => {
     expect(screen.getByText(copy.empty.noHotspots.description('Indonesia'))).toBeTruthy()
   })
 
-  it('keeps disclaimer in title tip only, not under the heading', () => {
+  it('shows satellite note under the main panel title', () => {
     const withHotspots = { ...region, hotspots_24h: 12 }
     wrap(
       <SummaryPanel
@@ -158,7 +159,9 @@ describe('SummaryPanel states', () => {
         isError={false}
       />,
     )
-    expect(screen.queryByTestId('panel-limitation-note')).toBeNull()
+    expect(screen.getByText(copy.panel.limitationNote)).toBeTruthy()
+    expect(copy.panel.limitationNote).toMatch(/titik panas satelit/i)
+    expect(screen.queryByText(copy.panel.coverageNote)).toBeNull()
     expect(screen.getByText(copy.panel.indonesiaToday)).toBeTruthy()
     expect(screen.getByRole('button', { name: copy.panel.titleTip })).toBeTruthy()
   })

@@ -6,6 +6,7 @@ import { MapAttributionLinks } from '@/components/map/map-attribution'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import { useHotspots, useMeta, useRegions } from '@/data/queries'
+import { getDataFreshness } from '@/lib/data-freshness'
 import { rememberFocusTrigger } from '@/lib/focus-return'
 import { formatRelativeAge } from '@/lib/format'
 import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
@@ -35,9 +36,21 @@ export function MapControls({ mapRef }: MapControlsProps) {
   const { data: regions } = useRegions()
   const { data: hotspots } = useHotspots()
   const { data: meta } = useMeta()
-  const updatedIso = meta?.updated_at ?? meta?.pulled_at.firms ?? meta?.pulled_at.weather
+  const freshness = getDataFreshness(meta)
+  const updatedIso =
+    freshness.updatedAt ?? meta?.pulled_at.firms ?? meta?.pulled_at.weather
   const relative = updatedIso ? formatRelativeAge(updatedIso) : null
-  const active = location.status === 'active' && location.coords
+  const stampLabel = relative
+    ? freshness.problemSources.length > 0
+      ? copy.updatedAt.problemStamp(relative)
+      : freshness.stale
+        ? copy.updatedAt.staleStamp(relative)
+        : copy.footer.dataUpdated(relative)
+    : null
+  const hasCoords =
+    (location.status === 'active' || location.status === 'outside') &&
+    !!location.coords
+  const inIndonesia = location.status === 'active' && !!location.coords
 
   return (
     <div
@@ -51,18 +64,18 @@ export function MapControls({ mapRef }: MapControlsProps) {
       <div className="border-line bg-surface divide-line rounded-ctl shadow-chrome flex flex-col divide-y overflow-hidden border backdrop-blur-sm">
         <button
           type="button"
-          className={cn(btnClass, active && 'bg-brand-soft text-brand', focusRing)}
-          aria-label={active ? copy.map.recenter : copy.map.useMyLocation}
-          aria-pressed={Boolean(active)}
+          className={cn(btnClass, hasCoords && 'bg-brand-soft text-brand', focusRing)}
+          aria-label={hasCoords ? copy.map.recenter : copy.map.useMyLocation}
+          aria-pressed={Boolean(hasCoords)}
           onClick={(e) => {
-            if (active) {
+            if (hasCoords) {
               mapRef.current?.flyTo({
                 center: [location.coords!.lon, location.coords!.lat],
                 zoom: LOCATION_ZOOM,
                 padding: getMapPadding(panelOpen),
                 duration: reducedMotion ? 0 : 600,
               })
-              if (regions && hotspots) {
+              if (inIndonesia && regions && hotspots) {
                 const code = resolveUserRegionCode(
                   location.coords!,
                   regions,
@@ -72,6 +85,8 @@ export function MapControls({ mapRef }: MapControlsProps) {
                   select(code)
                   setPanelOpen(true)
                 }
+              } else {
+                setPanelOpen(true)
               }
               return
             }
@@ -101,9 +116,18 @@ export function MapControls({ mapRef }: MapControlsProps) {
       </div>
 
       <div className="flex max-w-48 flex-col items-end gap-1 text-right">
-        {relative ? (
-          <p data-testid="map-updated-stamp" className="text-ink-2 text-xs leading-4">
-            {copy.footer.dataUpdated(relative)}
+        {stampLabel ? (
+          <p
+            data-testid="map-updated-stamp"
+            role={freshness.warn ? 'alert' : 'status'}
+            className={cn(
+              'text-xs leading-4',
+              freshness.warn
+                ? 'bg-risk-mid-tint text-risk-mid-text rounded-ctl px-2 py-1 font-medium'
+                : 'text-ink-2',
+            )}
+          >
+            {stampLabel}
           </p>
         ) : null}
         <MapAttributionLinks />

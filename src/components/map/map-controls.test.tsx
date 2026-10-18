@@ -12,16 +12,12 @@ vi.mock('@/lib/prefers-reduced-motion', () => ({
   usePrefersReducedMotion: () => true,
 }))
 
+const useMeta = vi.fn()
+
 vi.mock('@/data/queries', () => ({
   useRegions: () => ({ data: [] }),
   useHotspots: () => ({ data: null }),
-  useMeta: () => ({
-    data: {
-      updated_at: new Date(Date.now() - 28 * 60_000).toISOString(),
-      status: { firms: 'ok', weather: 'ok', air: 'ok' },
-      pulled_at: { firms: null, weather: null },
-    },
-  }),
+  useMeta: () => useMeta(),
 }))
 
 function wrap(ui: ReactNode) {
@@ -32,9 +28,19 @@ function wrap(ui: ReactNode) {
 }
 
 describe('MapControls', () => {
-  afterEach(cleanup)
+  afterEach(() => {
+    cleanup()
+    useMeta.mockReset()
+  })
 
   it('shows zoom, relative update stamp, and basemap attribution', () => {
+    useMeta.mockReturnValue({
+      data: {
+        updated_at: new Date(Date.now() - 28 * 60_000).toISOString(),
+        status: { firms: 'ok', weather: 'ok', air: 'ok' },
+        pulled_at: { firms: null, weather: null },
+      },
+    })
     wrap(<MapControls mapRef={createRef<MapRef | null>()} />)
 
     expect(screen.getByRole('button', { name: copy.map.zoomIn })).toBeTruthy()
@@ -45,5 +51,19 @@ describe('MapControls', () => {
     const attrib = screen.getByTestId('map-basemap-attribution')
     expect(attrib.textContent).toMatch(/© CARTO/)
     expect(attrib.textContent).toMatch(/© OpenStreetMap/)
+  })
+
+  it('shows a visible stale stamp when meta is old', () => {
+    useMeta.mockReturnValue({
+      data: {
+        updated_at: new Date(Date.now() - 5 * 60 * 60_000).toISOString(),
+        status: { firms: 'ok', weather: 'ok', air: 'ok' },
+        pulled_at: { firms: null, weather: null },
+      },
+    })
+    wrap(<MapControls mapRef={createRef<MapRef | null>()} />)
+    const stamp = screen.getByTestId('map-updated-stamp')
+    expect(stamp.getAttribute('role')).toBe('alert')
+    expect(stamp.textContent).toMatch(/^Data mungkin usang · /)
   })
 })

@@ -1,4 +1,4 @@
-export { Badge } from '@/components/common/badge'
+export { Badge, HotspotStatusBadge } from '@/components/common/badge'
 export { Button } from '@/components/common/button'
 export { Chip } from '@/components/common/chip'
 export { EmptyState } from '@/components/common/empty-state'

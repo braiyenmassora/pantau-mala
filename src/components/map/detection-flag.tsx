@@ -1,8 +1,8 @@
-import { Cloud, CloudFog, CloudRain, CloudSun } from 'lucide-react'
-
 import { MapInfoCard } from '@/components/map/map-info-card'
-import { buildDetectionFlag, type WeatherIconKind } from '@/lib/detection-flag'
+import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
+import { formatDateDotTime, formatNumber } from '@/lib/format'
+import { hasHotspotDetections } from '@/lib/hotspot-status'
 import { cn } from '@/lib/utils'
 
 type DetectionFlagProps = {
@@ -10,27 +10,12 @@ type DetectionFlagProps = {
   className?: string
 }
 
-const WEATHER_ICON: Record<WeatherIconKind, typeof CloudSun> = {
-  sun: CloudSun,
-  cloud: Cloud,
-  rain: CloudRain,
-  fog: CloudFog,
-}
-
-/** Sama keluarga motion panel detail (water-ripple / wind-drift). */
-const WEATHER_ANIM: Record<WeatherIconKind, string> = {
-  sun: 'animate-wind-drift',
-  cloud: 'animate-wind-drift',
-  rain: 'animate-water-ripple',
-  fog: 'animate-wind-drift',
-}
-
-/**
- * Callout pin terpilih — pola sama MapInfoCard; `mb-8` menjauh dari halo.
- */
+/** Callout pin terpilih — lokasi, jumlah titik, waktu update. */
 export function DetectionFlag({ region, className }: DetectionFlagProps) {
-  const content = buildDetectionFlag(region)
-  const WeatherIcon = WEATHER_ICON[content.weatherKind]
+  const hasDetections = hasHotspotDetections(region.hotspots_24h)
+  const updatedAt = region.last_detection?.time
+    ? formatDateDotTime(region.last_detection.time, region.time_zone)
+    : undefined
 
   return (
     <div
@@ -40,32 +25,15 @@ export function DetectionFlag({ region, className }: DetectionFlagProps) {
         className,
       )}
     >
-      <MapInfoCard title={content.title} subtitle={content.subtitle}>
-        <div className="border-line mt-2 flex items-center gap-3 border-t pt-2">
-          <span
-            className="text-ink-2 flex min-w-0 items-center gap-1 text-xs leading-4"
-            title={region.weather.condition}
-          >
-            <WeatherIcon
-              className={cn('size-3.5 shrink-0', WEATHER_ANIM[content.weatherKind])}
-              strokeWidth={2}
-              aria-hidden
-            />
-            <span className="truncate tabular-nums">{content.tempLabel ?? '—'}</span>
-          </span>
-          <span
-            className="text-ink-2 flex min-w-0 items-center gap-1 text-xs leading-4"
-            title={content.airLabel}
-          >
-            <CloudFog
-              className="animate-wind-drift size-3.5 shrink-0"
-              strokeWidth={2}
-              aria-hidden
-            />
-            <span className="truncate">{content.airLabel}</span>
-          </span>
-        </div>
-      </MapInfoCard>
+      <MapInfoCard
+        title={region.name}
+        meta={
+          hasDetections
+            ? copy.map.regionMetaHotspots(formatNumber(region.hotspots_24h))
+            : copy.status.noDetections
+        }
+        updatedAt={updatedAt}
+      />
     </div>
   )
 }

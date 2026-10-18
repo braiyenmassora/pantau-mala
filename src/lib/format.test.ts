@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   chartScaleMax,
+  formatDateDotTime,
   formatDateTime,
   formatNumber,
   formatRelativeAge,
@@ -51,6 +52,12 @@ describe('formatDateTime', () => {
   it('formats WIB (+7) from offset ISO', () => {
     expect(formatDateTime('2026-10-09T14:05:00+07:00', 'WIB')).toBe(
       '09 Okt 2026, 14:05 WIB',
+    )
+  })
+
+  it('formats tip pin as date · clock zone', () => {
+    expect(formatDateDotTime('2026-10-09T14:05:00+07:00', 'WIB')).toBe(
+      '09 Okt 2026 · 14:05 WIB',
     )
   })
 

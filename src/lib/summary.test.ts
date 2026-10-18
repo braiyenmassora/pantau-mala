@@ -42,6 +42,7 @@ describe('computeSummary', () => {
     expect(summary.todayTotal).toBe(23)
     expect(summary.countByCategory).toEqual({
       tidak_tersedia: 0,
+      tanpa_titik: 0,
       sangat_tinggi: 1,
       sedang: 1,
       rendah: 0,

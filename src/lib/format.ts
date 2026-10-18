@@ -26,7 +26,7 @@ export function formatNumber(
   n: number | null,
   options?: Intl.NumberFormatOptions,
 ): string {
-  return n == null ? '—' : new Intl.NumberFormat('id-ID', options).format(n)
+  return n == null ? '-' : new Intl.NumberFormat('id-ID', options).format(n)
 }
 
 /** Relatif untuk badge meta; clock = sekarang. Contoh: "46 menit yang lalu". */
@@ -66,13 +66,34 @@ function toZonedParts(iso: string, zone: TimeZoneId) {
 
 /** Example: "09 Okt 2026, 14:05 WIB" — clock follows region time zone. */
 export function formatDateTime(iso: string, zone: TimeZoneId): string {
+  const parts = formatDateTimeParts(iso, zone)
+  if (!parts) return iso
+  return `${parts.date}, ${parts.clock} ${parts.zone}`
+}
+
+/** Tip pin peta: tanggal + jam terpisah → "09 Okt 2026 · 14:05 WIB". */
+export function formatDateTimeParts(
+  iso: string,
+  zone: TimeZoneId,
+): { date: string; clock: string; zone: TimeZoneId } | null {
   const p = toZonedParts(iso, zone)
-  if (!p) return iso
+  if (!p) return null
   const dd = String(p.day).padStart(2, '0')
   const mon = SHORT_MONTHS[p.month]
   const hh = String(p.hour).padStart(2, '0')
   const mm = String(p.minute).padStart(2, '0')
-  return `${dd} ${mon} ${p.year}, ${hh}:${mm} ${zone}`
+  return {
+    date: `${dd} ${mon} ${p.year}`,
+    clock: `${hh}:${mm}`,
+    zone,
+  }
+}
+
+/** Satu string tip: "09 Okt 2026 · 14:05 WIB". */
+export function formatDateDotTime(iso: string, zone: TimeZoneId): string {
+  const parts = formatDateTimeParts(iso, zone)
+  if (!parts) return iso
+  return `${parts.date} · ${parts.clock} ${parts.zone}`
 }
 
 /** Skala Y genap agar tick tengah = max/2 (hindari label 11/6/0). */

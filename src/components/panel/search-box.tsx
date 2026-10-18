@@ -40,7 +40,7 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
     <div
       className={cn(
         chromeSurface,
-        'rounded-card group flex h-12 items-center gap-3 px-3',
+        'group flex h-12 items-center gap-3 px-3',
         'ease-out-soft transition-[border-color,box-shadow] duration-150',
         'focus-within:border-brand',
       )}

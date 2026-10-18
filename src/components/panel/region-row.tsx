@@ -8,6 +8,7 @@ import { rememberFocusTrigger } from '@/lib/focus-return'
 import { formatNumber } from '@/lib/format'
 import { getMapPadding, PLACE_ZOOM } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
+import { hasHotspotDetections } from '@/lib/hotspot-status'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
@@ -30,6 +31,7 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
   const reducedMotion = usePrefersReducedMotion()
   const active = hoveredCode === region.code || selectedCode === region.code
   const risk = effectiveRiskCategory(region)
+  const hasDetections = hasHotspotDetections(region.hotspots_24h)
   const meta = RISK_CATEGORIES[risk]
   const trend = region.trend_7d
 
@@ -69,11 +71,13 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
           width={48}
           height={18}
           className={
-            risk === 'sangat_tinggi'
-              ? 'text-risk-high'
-              : risk === 'sedang'
-                ? 'text-risk-mid'
-                : 'text-risk-low'
+            !hasDetections
+              ? 'text-ink-3'
+              : risk === 'sangat_tinggi'
+                ? 'text-risk-high'
+                : risk === 'sedang'
+                  ? 'text-risk-mid'
+                  : 'text-risk-low'
           }
           ariaLabel={`Tren 7 hari ${region.name}`}
         />

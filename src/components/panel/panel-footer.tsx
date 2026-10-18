@@ -6,26 +6,31 @@ import { cn } from '@/lib/utils'
 const SOURCE_ICON: Record<(typeof copy.footer.sources)[number]['id'], string> = {
   firms: '/sources/nasa-firms.png',
   weather: '/sources/open-meteo.png',
-  bmkg: '/sources/bmkg.png',
 }
 
-/** Footer panel: tautan sumber data. Umur data + atribusi basemap di pojok peta. */
+/** Footer panel: tautan sumber data. Rujukan resmi hanya di detail wilayah. */
 export function PanelFooter() {
   return (
-    <footer className="border-line bg-surface shrink-0 space-y-2 border-t px-4 py-3">
-      <ul
-        className="flex flex-wrap items-center gap-x-3 gap-y-1"
+    <footer className="border-line bg-surface shrink-0 space-y-3 border-t px-4 py-3">
+      <p
+        className="text-ink-2 flex flex-wrap items-center gap-x-1 gap-y-1 text-xs leading-4"
         data-testid="panel-data-sources"
       >
-        {copy.footer.sources.map((source) => (
-          <li key={source.href}>
+        <span className="font-medium">{copy.footer.dataSourcesLabel}:</span>
+        {copy.footer.sources.map((source, index) => (
+          <span key={source.href} className="inline-flex items-center gap-1">
+            {index > 0 ? (
+              <span className="text-ink-3" aria-hidden>
+                ·
+              </span>
+            ) : null}
             <a
               href={source.href}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={copy.footer.openInNewTab(source.name)}
               className={cn(
-                'text-ink-2 hover:text-brand inline-flex min-h-6 items-center gap-2 py-1 text-xs leading-4 font-medium no-underline transition-colors duration-150',
+                'hover:text-brand inline-flex min-h-11 items-center gap-1.5 py-1 font-medium no-underline transition-colors duration-150',
                 focusRing,
                 'rounded-ctl',
               )}
@@ -40,9 +45,9 @@ export function PanelFooter() {
               />
               {source.name}
             </a>
-          </li>
+          </span>
         ))}
-      </ul>
+      </p>
       <SessionControl />
     </footer>
   )

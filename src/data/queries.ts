@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { expireSession, useSession } from '@/auth/session'
 import { decodeRegions, decodeHotspots, decodeMeta, decodeCatalog } from './go-contract'
-import { earthquakesSchema, nearbyHotspotsSchema } from './extended-contract'
+import { nearbyHotspotsSchema } from './extended-contract'
 
 const STALE_MS = 5 * 60 * 1000
 
@@ -87,17 +87,6 @@ export function useRegionCatalog() {
     (signal) => getData('/region-catalog', decodeCatalog, signal),
     true,
   )
-}
-
-export function useEarthquakes(kind: 'latest' | 'felt' | 'm5' = 'latest') {
-  const session = useSession()
-  return useQuery({
-    queryKey: ['earthquakes', kind, session.principal?.client_id, session.generation],
-    enabled: session.status === 'authenticated',
-    queryFn: ({ signal }) =>
-      getData(`/earthquakes?kind=${kind}`, (raw) => earthquakesSchema.parse(raw), signal),
-    staleTime: STALE_MS,
-  })
 }
 
 export function useNearbyHotspots(
