@@ -105,14 +105,14 @@ export const copy = {
   },
 
   panel: {
-    indonesiaToday: 'Pantauan titik panas',
-    provinceToday: (province: string) => `Pantauan titik panas · ${province}`,
+    indonesiaToday: 'Pantauan Titik Panas',
+    provinceToday: (province: string) => `Pantauan Titik Panas · ${province}`,
     subtitle: 'Deteksi satelit NASA FIRMS · 24 jam terakhir',
     /** Tooltip ⓘ di judul beranda: apa yang ditampilkan di halaman ini. */
     titleTip:
       'Menampilkan sebaran titik panas satelit di Indonesia selama 24 jam terakhir.',
     /** Satu baris di bawah judul beranda panel. */
-    limitationNote: 'Titik panas satelit, belum konfirmasi kebakaran.',
+    limitationNote: 'Titik panas terdeteksi satelit, belum tentu kebakaran.',
     /** Orbit satelit: hanya saat nol titik terdeteksi. */
     coverageNote:
       'Satelit tidak memantau terus-menerus. Nol titik belum tentu berarti tidak ada api.',

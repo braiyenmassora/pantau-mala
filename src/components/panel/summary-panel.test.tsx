@@ -160,7 +160,7 @@ describe('SummaryPanel states', () => {
       />,
     )
     expect(screen.getByText(copy.panel.limitationNote)).toBeTruthy()
-    expect(copy.panel.limitationNote).toMatch(/titik panas satelit/i)
+    expect(copy.panel.limitationNote).toMatch(/titik panas terdeteksi satelit/i)
     expect(screen.queryByText(copy.panel.coverageNote)).toBeNull()
     expect(screen.getByText(copy.panel.indonesiaToday)).toBeTruthy()
     expect(screen.getByRole('button', { name: copy.panel.titleTip })).toBeTruthy()
