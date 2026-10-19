@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import { useEffect, useRef, type ReactNode, type RefObject } from 'react'
 
-import { Badge, InfoTooltip, Sparkline, TrendChart } from '@/components/common'
+import { Badge, InfoTooltip, TrendChart } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
@@ -152,38 +152,38 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
 
   return (
     <div key={region.code} className="flex flex-col">
-      <div className="flex justify-end px-2 pt-2">
-        <button
-          type="button"
-          onClick={handleBack}
-          aria-label={copy.panel.closeDetail}
-          className={cn(
-            'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex size-8 shrink-0 items-center justify-center transition-colors',
-            focusRing,
-          )}
-        >
-          <X className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
-        </button>
-      </div>
-
-      <div className="flex flex-col gap-4 px-4 pt-0 pb-4">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center gap-1">
-              <h2
-                ref={titleRef}
-                tabIndex={-1}
-                className="text-ink truncate text-xl leading-7 font-semibold outline-none"
-                title={region.name}
-              >
-                {region.name}
-              </h2>
-              <InfoTooltip content={copy.panel.limitationNote} />
+      <div className="flex flex-col gap-3 px-4 pt-3 pb-4">
+        <section className="px-1 pb-2">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 pt-1">
+              <div className="flex items-center gap-1">
+                <h2
+                  ref={titleRef}
+                  tabIndex={-1}
+                  className="text-ink truncate text-xl leading-7 font-semibold outline-none"
+                  title={region.name}
+                >
+                  {region.name}
+                </h2>
+                <InfoTooltip content={copy.panel.limitationNote} />
+              </div>
+              <p className="text-ink-2 text-xs leading-5">Provinsi {region.province}</p>
             </div>
-            <p className="text-ink-2 text-xs leading-5">Provinsi {region.province}</p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={handleBack}
+              aria-label={copy.panel.closeDetail}
+              className={cn(
+                'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex size-8 shrink-0 items-center justify-center transition-colors',
+                focusRing,
+              )}
+            >
+              <X className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
+            </button>
+          </div>
+
+          <div className="mt-5 flex items-end justify-between gap-3">
+            <div className="min-w-0">
               <div className="flex items-baseline gap-2">
                 <span className="text-ink font-mono text-3xl font-semibold tabular-nums">
                   {formatNumber(region.hotspots_24h)}
@@ -191,41 +191,39 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
                 <span className="text-ink-2 text-xs leading-5">titik panas · 24 jam</span>
                 <InfoTooltip content="Lokasi yang terdeteksi satelit NASA FIRMS memiliki panas permukaan tinggi dalam 24 jam terakhir." />
               </div>
-              <div className="flex shrink-0 items-center gap-1">
-                <Badge variant="category" category={region.risk_category} />
-                <InfoTooltip content="Tingkat risiko dihitung dari jumlah titik panas 24 jam terakhir di wilayah ini. Ambang diambil dari risk_thresholds." />
-              </div>
             </div>
-
-            <div className="text-ink-2 flex items-center gap-2 text-sm leading-5">
-              <TrendIcon
-                className={cn('size-4 shrink-0', colorClass)}
-                strokeWidth={2}
-                aria-hidden
-              />
-              <span className="text-ink font-medium">{trendLabel}</span>
-              <Sparkline
-                data={region.trend_7d}
-                height={16}
-                width={48}
-                className="opacity-40"
-              />
-              <InfoTooltip content="Perbandingan jumlah titik panas selama 7 hari terakhir." />
+            <div className="flex shrink-0 items-center gap-1">
+              <Badge variant="category" category={region.risk_category} />
+              <InfoTooltip content="Tingkat risiko dihitung dari jumlah titik panas 24 jam terakhir di wilayah ini. Ambang diambil dari risk_thresholds." />
             </div>
+          </div>
 
-            <TrendChart values={region.trend_7d} timeZone={region.time_zone} />
+          <div className="text-ink-2 mt-3 flex items-center gap-2 text-sm leading-5">
+            <TrendIcon
+              className={cn('size-4 shrink-0', colorClass)}
+              strokeWidth={2}
+              aria-hidden
+            />
+            <span className="text-ink font-medium">{trendLabel}</span>
+            <InfoTooltip content="Perbandingan jumlah titik panas selama 7 hari terakhir." />
+          </div>
 
-            {stamp ? (
-              <p className="text-ink-2 text-xs leading-5">Diperbarui {stamp}</p>
-            ) : null}
-          </CardContent>
-        </Card>
+          <TrendChart
+            values={region.trend_7d}
+            timeZone={region.time_zone}
+            className="mt-4"
+          />
 
-        <RegionTerrainCard center={region.center} timeZone={region.time_zone} />
+          {stamp ? (
+            <p className="text-ink-3 mt-3 text-xs leading-5">Diperbarui {stamp}</p>
+          ) : null}
+        </section>
 
         <CitizenReports regionCode={region.code} />
 
-        <Card>
+        <RegionTerrainCard center={region.center} timeZone={region.time_zone} />
+
+        <Card className="bg-surface-muted border-0">
           <CardHeader>
             <CardTitle>Kondisi saat ini</CardTitle>
           </CardHeader>
@@ -276,11 +274,11 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Yang bisa kamu lakukan</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <section className="border-line border-t px-1 pt-4">
+          <h3 className="font-heading text-ink text-sm leading-5 font-semibold">
+            Yang bisa kamu lakukan
+          </h3>
+          <div className="mt-3">
             <ul className="space-y-3">
               {actions.map((act, i) => (
                 <li key={i} className="flex items-start gap-2">
@@ -295,8 +293,8 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
                 </li>
               ))}
             </ul>
-          </CardContent>
-        </Card>
+          </div>
+        </section>
       </div>
     </div>
   )

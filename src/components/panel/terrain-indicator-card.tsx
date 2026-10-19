@@ -15,7 +15,9 @@ type TerrainIndicatorCardProps = {
 }
 
 function percent(value: number | null | undefined): string {
-  return value == null ? '—' : `${formatNumber(value * 100, { maximumFractionDigits: 1 })}%`
+  return value == null
+    ? '—'
+    : `${formatNumber(value * 100, { maximumFractionDigits: 1 })}%`
 }
 
 export function TerrainIndicatorCard({ data, timeZone }: TerrainIndicatorCardProps) {
@@ -23,10 +25,16 @@ export function TerrainIndicatorCard({ data, timeZone }: TerrainIndicatorCardPro
   const validAt = indicator.provenans.waktu_valid ?? indicator.waktu_model
   const now = useCurrentTime()
   const expires = indicator.provenans.berlaku_hingga
-  const stale = indicator.provenans.status === 'stale' || (expires != null && Date.parse(expires) <= now)
+  const stale =
+    indicator.provenans.status === 'stale' ||
+    (expires != null && Date.parse(expires) <= now)
 
   return (
-    <Card role="region" aria-label={copy.extra.terrainRegionLabel}>
+    <Card
+      role="region"
+      aria-label={copy.extra.terrainRegionLabel}
+      className="bg-surface-muted border-0"
+    >
       <CardHeader>
         <CardTitle>{copy.extra.terrainTitle}</CardTitle>
         <p className="text-ink-2 text-xs leading-5">
@@ -34,8 +42,12 @@ export function TerrainIndicatorCard({ data, timeZone }: TerrainIndicatorCardPro
         </p>
       </CardHeader>
       <CardContent className="space-y-3">
-        {stale ? <p className="text-ink-2 text-xs leading-5">{copy.extra.terrainStale}</p> : null}
-        {indicator.provenans.status === 'unavailable' ? <p className="text-ink-2 text-xs leading-5">{copy.extra.terrainUnavailable}</p> : null}
+        {stale ? (
+          <p className="text-ink-2 text-xs leading-5">{copy.extra.terrainStale}</p>
+        ) : null}
+        {indicator.provenans.status === 'unavailable' ? (
+          <p className="text-ink-2 text-xs leading-5">{copy.extra.terrainUnavailable}</p>
+        ) : null}
         <div className="grid grid-cols-3 gap-3">
           <div className="min-w-0">
             <div className="text-ink-2 flex items-center gap-1 text-xs">
@@ -79,15 +91,39 @@ export function TerrainIndicatorCard({ data, timeZone }: TerrainIndicatorCardPro
   )
 }
 
-export function RegionTerrainCard({ center, timeZone }: { center: readonly [number, number]; timeZone: TimeZoneId }) {
+export function RegionTerrainCard({
+  center,
+  timeZone,
+}: {
+  center: readonly [number, number]
+  timeZone: TimeZoneId
+}) {
   const soil = useSoilMoisture(center[1], center[0])
   if (soil.data) return <TerrainIndicatorCard data={soil.data} timeZone={timeZone} />
   return (
-    <Card role="region" aria-label={copy.extra.terrainRegionLabel} aria-busy={soil.isFetching}>
-      <CardHeader><CardTitle>{copy.extra.terrainTitle}</CardTitle></CardHeader>
+    <Card
+      role="region"
+      aria-label={copy.extra.terrainRegionLabel}
+      aria-busy={soil.isFetching}
+      className="bg-surface-muted border-0"
+    >
+      <CardHeader>
+        <CardTitle>{copy.extra.terrainTitle}</CardTitle>
+      </CardHeader>
       <CardContent className="space-y-2">
-        <p className="text-ink-2 text-xs leading-5">{soil.isFetching ? copy.extra.terrainLoading : copy.extra.terrainUnavailable}</p>
-        {soil.isError ? <button type="button" onClick={() => void soil.refetch()} className={`text-brand rounded-ctl min-h-9 px-2 text-xs font-medium ${focusRing}`} disabled={soil.isFetching}>{copy.common.retry}</button> : null}
+        <p className="text-ink-2 text-xs leading-5">
+          {soil.isFetching ? copy.extra.terrainLoading : copy.extra.terrainUnavailable}
+        </p>
+        {soil.isError ? (
+          <button
+            type="button"
+            onClick={() => void soil.refetch()}
+            className={`text-brand rounded-ctl min-h-9 px-2 text-xs font-medium ${focusRing}`}
+            disabled={soil.isFetching}
+          >
+            {copy.common.retry}
+          </button>
+        ) : null}
       </CardContent>
     </Card>
   )

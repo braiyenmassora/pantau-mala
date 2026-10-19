@@ -21,9 +21,12 @@ const PLOT_TOP = 12
 const PLOT_BOTTOM = 104
 
 function linePath(points: readonly { x: number; y: number }[]) {
-  return points
-    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`)
-    .join(' ')
+  if (points.length === 0) return ''
+  return points.slice(1).reduce((path, point, index) => {
+    const previous = points[index]
+    const midpoint = (previous.x + point.x) / 2
+    return `${path} C ${midpoint} ${previous.y}, ${midpoint} ${point.y}, ${point.x} ${point.y}`
+  }, `M ${points[0].x} ${points[0].y}`)
 }
 
 export function TrendChart({
@@ -71,7 +74,7 @@ export function TrendChart({
 
   return (
     <section
-      className={cn('rounded-card bg-surface-muted p-3', className)}
+      className={cn('rounded-card bg-brand-soft/40 p-4', className)}
       aria-labelledby={`${titleId}-title`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -81,9 +84,7 @@ export function TrendChart({
           </h3>
           <p className="text-ink-2 mt-1 text-xs">{description}</p>
         </div>
-        <span className="bg-brand-soft text-brand rounded-ctl shrink-0 px-2 py-1 text-xs font-medium">
-          7 hari
-        </span>
+        <span className="text-brand shrink-0 text-xs font-medium">7 hari</span>
       </div>
 
       <div className="mt-3">
@@ -95,7 +96,7 @@ export function TrendChart({
         >
           <defs>
             <linearGradient id={`${titleId}-fill`} x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="var(--color-brand)" stopOpacity="0.2" />
+              <stop offset="0%" stopColor="var(--color-brand)" stopOpacity="0.14" />
               <stop offset="100%" stopColor="var(--color-brand)" stopOpacity="0" />
             </linearGradient>
           </defs>
@@ -110,7 +111,9 @@ export function TrendChart({
                   y1={y}
                   y2={y}
                   stroke="var(--color-line)"
-                  strokeDasharray="2 4"
+                  strokeDasharray="1 7"
+                  strokeLinecap="round"
+                  strokeOpacity="0.7"
                   vectorEffect="non-scaling-stroke"
                 />
                 <text
@@ -132,7 +135,7 @@ export function TrendChart({
             stroke="var(--color-brand)"
             strokeLinecap="round"
             strokeLinejoin="round"
-            strokeWidth="2.5"
+            strokeWidth="2"
             vectorEffect="non-scaling-stroke"
           />
           {points.map((point, index) => (
@@ -140,10 +143,14 @@ export function TrendChart({
               key={`${dates[index]}-${safeValues[index]}`}
               cx={point.x}
               cy={point.y}
-              r={index === points.length - 1 ? 4 : 3}
-              fill="var(--color-surface)"
+              r={index === points.length - 1 ? 4 : 2.5}
+              fill={
+                index === points.length - 1
+                  ? 'var(--color-brand)'
+                  : 'var(--color-surface)'
+              }
               stroke="var(--color-brand)"
-              strokeWidth="2"
+              strokeWidth={index === points.length - 1 ? 1.5 : 1.75}
               vectorEffect="non-scaling-stroke"
             >
               <title>{`${dates[index]}: ${formatNumber(safeValues[index])} titik panas`}</title>
@@ -151,14 +158,14 @@ export function TrendChart({
           ))}
         </svg>
 
-        <div className="text-ink-2 mt-[-4px] flex justify-between pr-1 pl-9 text-xs">
-          {dates.map((date) => (
-            <span key={date}>{date}</span>
-          ))}
+        <div className="text-ink-2 mt-[-4px] grid grid-cols-3 pr-1 pl-9 text-xs">
+          <span>{dates[0]}</span>
+          <span className="text-center">{dates[Math.floor((dates.length - 1) / 2)]}</span>
+          <span className="text-right">{dates.at(-1)}</span>
         </div>
       </div>
 
-      <div className="border-line mt-3 grid grid-cols-3 border-t pt-2">
+      <div className="divide-line mt-4 grid grid-cols-3 divide-x">
         <TrendStat label={copy.extra.trendLatest} value={latest} />
         <TrendStat label={copy.extra.trendPeak} value={peak} />
         <TrendStat label={copy.extra.trendAverage} value={average} />

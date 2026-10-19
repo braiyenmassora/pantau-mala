@@ -60,12 +60,17 @@ export function CitizenReports({ regionCode }: { regionCode: string }) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Laporan warga</CardTitle>
-        <p className="text-ink-2 text-xs leading-5">
-          Pengamatan warga, bukan verifikasi resmi.
-        </p>
+    <Card className="border-brand/20 bg-brand-soft/30">
+      <CardHeader className="flex-row items-start gap-3">
+        <span className="bg-surface text-brand flex size-8 shrink-0 items-center justify-center rounded-full shadow-sm">
+          <MessageSquare className="size-4" strokeWidth={1.8} aria-hidden />
+        </span>
+        <div className="min-w-0">
+          <CardTitle>Laporan warga</CardTitle>
+          <p className="text-ink-2 mt-1 text-xs leading-5">
+            Bagikan kondisi yang kamu lihat di sekitar titik ini.
+          </p>
+        </div>
       </CardHeader>
       <CardContent>
         {reports.isLoading ? <p className="text-ink-2 text-sm">Memuat laporan…</p> : null}
@@ -119,14 +124,15 @@ export function CitizenReports({ regionCode }: { regionCode: string }) {
             Belum ada titik panas aktif yang dapat dilaporkan di wilayah ini.
           </p>
         ) : null}
-        <button
-          type="button"
+        <Button
+          variant="soft"
+          size="md"
           disabled={!target}
           onClick={() => setOpen((value) => !value)}
-          className="text-brand mt-4 text-sm font-semibold underline underline-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-4 w-full"
         >
           {open ? 'Tutup formulir' : 'Kirim laporan'}
-        </button>
+        </Button>
         {open ? (
           <form onSubmit={submit} className="border-line mt-3 space-y-3 border-t pt-4">
             <p className="text-ink-2 text-xs">
