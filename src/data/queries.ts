@@ -71,11 +71,12 @@ function useClientQuery<T>(
   name: string,
   load: (signal: AbortSignal) => Promise<T>,
   catalog = false,
+  requested = true,
 ) {
   const session = useSession()
   return useQuery({
     queryKey: [name, session.principal?.client_id, session.generation],
-    enabled: session.status === 'authenticated',
+    enabled: requested && session.status === 'authenticated',
     queryFn: ({ signal }) => load(signal),
     staleTime: STALE_MS,
     refetchInterval: catalog ? false : STALE_MS,
@@ -147,9 +148,12 @@ export function useRegions() {
   return useClientQuery('regions', allRegions)
 }
 
-export function useHotspots() {
-  return useClientQuery('hotspots', (signal) =>
-    getData('/hotspots.geojson', decodeHotspots, signal),
+export function useHotspots(requested = true) {
+  return useClientQuery(
+    'hotspots',
+    (signal) => getData('/hotspots.geojson', decodeHotspots, signal),
+    false,
+    requested,
   )
 }
 

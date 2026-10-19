@@ -64,12 +64,12 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         'mobile-filter-bar z-30 flex-wrap items-center gap-2',
         'ease-out-soft transition-[left] duration-300',
         panelOpen
-          ? 'fixed top-(--floating-control-offset) right-(--floating-control-offset) sm:left-(--map-overlay-inset) sm:flex'
+          ? 'mobile-filter-bar-panel-open fixed top-(--floating-control-offset) right-(--floating-control-offset) max-sm:hidden sm:left-(--map-overlay-inset) sm:flex'
           : 'fixed top-(--floating-control-offset) right-(--floating-control-offset) left-(--floating-control-offset) flex',
       )}
       {...mapOverlayGestureProps}
     >
-      <ProvincePicker regions={regions} className="max-sm:max-w-40" />
+      <ProvincePicker regions={regions} className="mobile-province-picker" />
 
       <Chip
         pressed={allPressed}
@@ -78,6 +78,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         aria-label={copy.filter.allStatusesTitle(formatNumber(allCount))}
         onClick={clearCategories}
         className={cn(
+          'mobile-risk-chip',
           allCount === 0 && 'pointer-events-none cursor-not-allowed opacity-40',
         )}
       >
@@ -100,7 +101,10 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
             title={copy.filter.categoryTitle(formatNumber(count), meta.label)}
             aria-label={copy.filter.categoryTitle(formatNumber(count), meta.label)}
             onClick={() => toggleCategory(category)}
-            className={cn(isZero && 'pointer-events-none cursor-not-allowed opacity-40')}
+            className={cn(
+              'mobile-risk-chip',
+              isZero && 'pointer-events-none cursor-not-allowed opacity-40',
+            )}
           >
             <span
               className="size-2 shrink-0 rounded-full"
@@ -108,7 +112,11 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
               aria-hidden
             />
             <span>
-              {meta.label} · <span className="tabular-nums">{formatNumber(count)}</span>
+              <span className="max-sm:hidden">{meta.label}</span>
+              <span className="sm:hidden">
+                {category === 'sangat_tinggi' ? 'Tinggi' : meta.label}
+              </span>{' '}
+              · <span className="tabular-nums">{formatNumber(count)}</span>
             </span>
           </Chip>
         )

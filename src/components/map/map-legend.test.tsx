@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { MapLegend } from '@/components/map/map-legend'
@@ -22,5 +22,15 @@ describe('MapLegend', () => {
 
     expect(document.querySelector('.marker--pulse')).toBeNull()
     expect(document.querySelector('.marker--pulse-static')).toBeNull()
+  })
+
+  it('exposes the compact mobile legend as a toggle', () => {
+    render(<MapLegend />)
+
+    const trigger = screen.getByRole('button', { name: 'Tampilkan legenda peta' })
+    expect(trigger.getAttribute('aria-expanded')).toBe('false')
+    fireEvent.click(trigger)
+    expect(trigger.getAttribute('aria-expanded')).toBe('true')
+    expect(trigger.getAttribute('aria-label')).toBe('Sembunyikan legenda peta')
   })
 })

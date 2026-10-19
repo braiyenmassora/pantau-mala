@@ -28,7 +28,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
   const reducedMotion = usePrefersReducedMotion()
   const { data: regions } = useRegions()
-  const { data: hotspots } = useHotspots()
+  const { data: hotspots } = useHotspots(location.status === 'active')
   const { data: meta } = useMeta()
   const [nowMs, setNowMs] = useState(() => Date.now())
   const active = location.status === 'active' && location.coords
@@ -48,7 +48,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
       data-testid="map-controls"
       className={cn(
         'map-controls absolute right-(--floating-control-offset) bottom-(--floating-control-offset) z-30 flex flex-col items-end gap-2',
-        panelOpen && 'mobile-map-controls-panel-open',
+        panelOpen && 'mobile-map-controls-panel-open max-sm:hidden',
       )}
       {...mapOverlayGestureProps}
     >
@@ -95,6 +95,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
         <button
           type="button"
           className={cn(
+            'mobile-zoom-control',
             'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-10 shrink-0 items-center justify-center',
             'transition-[background-color,color] duration-150 ease-in-out',
             focusRing,
@@ -107,6 +108,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
         <button
           type="button"
           className={cn(
+            'mobile-zoom-control',
             'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-10 shrink-0 items-center justify-center',
             'transition-[background-color,color] duration-150 ease-in-out',
             focusRing,

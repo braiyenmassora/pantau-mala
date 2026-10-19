@@ -106,7 +106,9 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   const select = useMapStore((s) => s.select)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
-  const { data } = useHotspots()
+  // Overview nasional dibentuk dari agregat wilayah; GeoJSON 3,7 MB baru dibutuhkan
+  // ketika pengguna mempersempit peta ke provinsi atau kabupaten/kota.
+  const { data } = useHotspots(province !== 'Semua' || Boolean(selectedCode))
   const [activeHotspot, setActiveHotspot] = useState<ActiveHotspot | null>(null)
   const regionsRef = useRef(regions)
   const selectRef = useRef(select)

@@ -107,6 +107,57 @@ try {
     console.log(`layout ok: ${w}x${h}`)
   }
 
+  for (const { w, h } of [
+    { w: 390, h: 844 },
+    { w: 430, h: 932 },
+  ]) {
+    await page.setViewportSize({ width: w, height: h })
+    await page.goto(BASE, { waitUntil: 'networkidle' })
+    await wait(500)
+
+    const mobile = await page.evaluate(() => {
+      const filter = document.querySelector('.mobile-filter-bar')
+      const bounds = filter?.getBoundingClientRect()
+      const touchTargets = [...(filter?.querySelectorAll('button') ?? [])].map(
+        (button) => button.getBoundingClientRect().height,
+      )
+      return {
+        overflow: document.documentElement.scrollWidth - window.innerWidth,
+        filterLeft: bounds?.left ?? -1,
+        filterRight: bounds?.right ?? window.innerWidth + 1,
+        smallestTouchTarget: Math.min(...touchTargets),
+      }
+    })
+    if (mobile.overflow !== 0) throw new Error(`${w}x${h}: horizontal overflow`)
+    if (mobile.filterLeft < 0 || mobile.filterRight > w)
+      throw new Error(`${w}x${h}: filter dock clipped`)
+    if (mobile.smallestTouchTarget < 44)
+      throw new Error(`${w}x${h}: filter touch target below 44px`)
+
+    await page.getByRole('button', { name: 'Tampilkan legenda peta' }).click()
+    const legendRight = await page
+      .locator('#mobile-map-legend-items')
+      .evaluate((el) => el.getBoundingClientRect().right)
+    if (legendRight > w) throw new Error(`${w}x${h}: legend clipped`)
+    await page.getByRole('button', { name: 'Sembunyikan legenda peta' }).click()
+
+    await page.getByRole('button', { name: 'Tampilkan panel' }).click()
+    await wait(350)
+    const chromeHidden = await page.evaluate(() => ({
+      filter: getComputedStyle(document.querySelector('.mobile-filter-bar')).display,
+      controls: getComputedStyle(document.querySelector('[data-testid="map-controls"]'))
+        .display,
+      handle: document.querySelector('.mobile-panel-handle')?.getBoundingClientRect()
+        .height,
+    }))
+    if (chromeHidden.filter !== 'none' || chromeHidden.controls !== 'none')
+      throw new Error(`${w}x${h}: map chrome remains above open sheet`)
+    if ((chromeHidden.handle ?? 0) < 44)
+      throw new Error(`${w}x${h}: sheet handle touch target below 44px`)
+
+    console.log(`mobile layout ok: ${w}x${h}`)
+  }
+
   // Long name truncation smoke (title present on row)
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto(BASE, { waitUntil: 'networkidle' })

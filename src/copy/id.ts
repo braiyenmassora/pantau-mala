@@ -99,14 +99,19 @@ export const copy = {
     terrainValid: 'Valid',
     terrainFetched: 'Diambil',
     terrainLoading: 'Memuat indikator tanah dari Open-Meteo…',
-    terrainUnavailable: 'Indikator tanah belum tersedia. Data titik panas tetap dapat digunakan.',
-    terrainStale: 'Data model sudah melewati waktu valid. Nilai terakhir ditampilkan untuk referensi.',
-    terrainGrid: 'Volume air dalam tanah (% v/v), pada grid model terdekat pusat wilayah; bukan rata-rata seluruh wilayah.',
+    terrainUnavailable:
+      'Indikator tanah belum tersedia. Data titik panas tetap dapat digunakan.',
+    terrainStale:
+      'Data model sudah melewati waktu valid. Nilai terakhir ditampilkan untuk referensi.',
+    terrainGrid:
+      'Volume air dalam tanah (% v/v), pada grid model terdekat pusat wilayah; bukan rata-rata seluruh wilayah.',
     contextTitle: 'Konteks event NASA',
     contextLabel: 'Konteks event eksternal NASA EONET',
-    contextDescription: 'Katalog NASA EONET di area Indonesia. Terpisah dari deteksi FIRMS dan bukan konfirmasi lapangan.',
+    contextDescription:
+      'Katalog NASA EONET di area Indonesia. Terpisah dari deteksi FIRMS dan bukan konfirmasi lapangan.',
     contextLoading: 'Memuat katalog NASA EONET…',
-    contextUnavailable: 'Katalog NASA EONET belum dapat dimuat. Ini tidak berarti tidak ada event.',
+    contextUnavailable:
+      'Katalog NASA EONET belum dapat dimuat. Ini tidak berarti tidak ada event.',
     contextEmpty: 'Tidak ada event terbuka pada respons NASA EONET untuk area ini.',
     contextCount: (count: string) => `${count} event pada respons · Maks. 20`,
     contextShow: 'Lihat konteks event NASA',
@@ -376,6 +381,7 @@ export const copy = {
     panelAria: 'Panel informasi',
     hidePanel: 'Sembunyikan panel',
     showPanel: 'Tampilkan panel',
+    summaryPanel: 'Ringkasan',
     mapAria: 'Peta titik panas Indonesia',
     updateLabel: 'Pembaruan aplikasi',
   },
@@ -386,6 +392,9 @@ export const copy = {
   },
 
   legend: {
+    menu: 'Legenda',
+    showMenu: 'Tampilkan legenda peta',
+    hideMenu: 'Sembunyikan legenda peta',
     /** Strip kartu kiri bawah peta — teks pendek agar mudah dibaca. */
     riskTitle: 'Radar provinsi',
     riskHint: 'Data 24 jam; merah cepat, oranye sedang',

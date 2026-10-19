@@ -71,6 +71,46 @@ describe('Cloudflare Worker routing', () => {
     expect(env.ASSETS.fetch).not.toHaveBeenCalled()
   })
 
+  it('revalidates auth while reusing a short-lived public data response', async () => {
+    const stored = new Map<string, Response>()
+    const edgeCache = {
+      match: vi.fn(async (key: Request) => stored.get(key.url)?.clone()),
+      put: vi.fn(async (key: Request, value: Response) => {
+        stored.set(key.url, value.clone())
+      }),
+    }
+    const upstreamPaths: string[] = []
+    const fetcher = vi.fn(async (input: RequestInfo | URL) => {
+      const path = new URL(input instanceof Request ? input.url : input.toString())
+        .pathname
+      upstreamPaths.push(path)
+      return path === '/auth/me'
+        ? Response.json({ data: principal })
+        : Response.json({ data: [{ code: 'fixture' }] })
+    })
+
+    const first = await handleRequest(
+      request('/api/v1/regions?limit=10'),
+      environment(),
+      fetcher,
+      undefined,
+      edgeCache,
+    )
+    const second = await handleRequest(
+      request('/api/v1/regions?limit=10'),
+      environment(),
+      fetcher,
+      undefined,
+      edgeCache,
+    )
+
+    expect(first.status).toBe(200)
+    expect(second.status).toBe(200)
+    expect(upstreamPaths.filter((path) => path === '/auth/me')).toHaveLength(2)
+    expect(upstreamPaths.filter((path) => path === '/api/v1/regions')).toHaveLength(1)
+    expect(edgeCache.put).toHaveBeenCalledOnce()
+  })
+
   it('identifies the gateway when the visitor sends no user agent without inventing an IP', async () => {
     const fetcher = vi.fn().mockResolvedValue(Response.json({ data: principal }))
     const response = await handleRequest(

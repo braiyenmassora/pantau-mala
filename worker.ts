@@ -13,11 +13,72 @@ interface ExecutionContext {
   waitUntil(promise: Promise<unknown>): void
 }
 
+interface EdgeCache {
+  match(request: Request): Promise<Response | undefined>
+  put(request: Request, response: Response): Promise<void>
+}
+
+const EDGE_CACHE_TTL = [
+  { pattern: /^\/api\/v1\/region-catalog$/, seconds: 60 * 60 },
+  { pattern: /^\/api\/v1\/regions(?:\/|$)/, seconds: 60 },
+  { pattern: /^\/api\/v1\/hotspots(?:\.geojson)?$/, seconds: 30 },
+  { pattern: /^\/api\/v1\/(?:data-status|earthquakes)$/, seconds: 30 },
+] as const
+
+function runtimeEdgeCache(): EdgeCache | undefined {
+  return (
+    globalThis as unknown as {
+      caches?: { default?: EdgeCache }
+    }
+  ).caches?.default
+}
+
+/** Cache only public read models. Gateway auth still runs before every data lookup. */
+export function createEdgeDataFetcher(
+  clientSlug: string,
+  fetcher: typeof fetch,
+  executionContext?: ExecutionContext,
+  edgeCache = runtimeEdgeCache(),
+): typeof fetch {
+  if (!edgeCache) return fetcher
+
+  return (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = new URL(input instanceof Request ? input.url : input.toString())
+    const method = init?.method ?? (input instanceof Request ? input.method : 'GET')
+    const policy = EDGE_CACHE_TTL.find(({ pattern }) => pattern.test(url.pathname))
+    if (method !== 'GET' || !policy) return fetcher(input, init)
+
+    const cacheKey = new Request(
+      `https://pantau-edge-cache.invalid/${encodeURIComponent(clientSlug)}${url.pathname}${url.search}`,
+    )
+    const cached = await edgeCache.match(cacheKey)
+    if (cached) return cached
+
+    const response = await fetcher(input, init)
+    if (!response.ok) return response
+
+    const headers = new Headers(response.headers)
+    headers.set('Cache-Control', `public, max-age=${policy.seconds}`)
+    const write = edgeCache.put(
+      cacheKey,
+      new Response(response.clone().body, {
+        status: response.status,
+        statusText: response.statusText,
+        headers,
+      }),
+    )
+    if (executionContext) executionContext.waitUntil(write)
+    else await write
+    return response
+  }) as typeof fetch
+}
+
 export async function handleRequest(
   request: Request,
   env: Env,
   fetcher = fetch,
   executionContext?: ExecutionContext,
+  edgeCache = runtimeEdgeCache(),
 ): Promise<Response> {
   const pathname = new URL(request.url).pathname
   const reserved =
@@ -88,7 +149,7 @@ export async function handleRequest(
         PANTAU_CLIENT_SLUG: env.PANTAU_CLIENT_SLUG,
         PANTAU_API_KEY: env.PANTAU_API_KEY,
       },
-      fetcher,
+      createEdgeDataFetcher(env.PANTAU_CLIENT_SLUG, fetcher, executionContext, edgeCache),
     )
     const cf = (
       request as Request & {

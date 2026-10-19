@@ -42,7 +42,7 @@ export function LocationCard({ regions }: LocationCardProps) {
     isLocationActive ? location.coords!.lat : null,
     isLocationActive ? location.coords!.lon : null,
   )
-  const { data: hotspots } = useHotspots()
+  const { data: hotspots } = useHotspots(isLocationActive)
 
   const nearby = useMemo(() => {
     if (!isLocationActive || !location.coords) return null

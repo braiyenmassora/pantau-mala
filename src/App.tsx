@@ -123,6 +123,7 @@ export default function App() {
             'mobile-panel absolute z-40 flex w-[calc(100vw-32px)] flex-col overflow-hidden sm:w-(--map-panel-width)',
             'top-(--floating-control-offset) bottom-(--floating-control-offset) left-(--floating-control-offset)',
             'rounded-panel border-line bg-surface-muted shadow-map border',
+            selectedCode && 'mobile-panel-detail',
             easePanel,
             'transition-[transform,opacity]',
             panelOpen
@@ -157,7 +158,9 @@ export default function App() {
               }}
             />
           </div>
-          <PanelFooter />
+          <div className="max-sm:hidden">
+            <PanelFooter />
+          </div>
         </aside>
 
         <button
@@ -198,6 +201,9 @@ export default function App() {
               <ChevronUp className="size-4 sm:hidden" strokeWidth={1.75} aria-hidden />
             </>
           )}
+          <span className="mobile-panel-toggle-label sm:hidden">
+            {copy.app.summaryPanel}
+          </span>
         </button>
 
         {data ? <FilterBar panelOpen={panelOpen} regions={data} /> : null}

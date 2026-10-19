@@ -197,19 +197,24 @@
   .mobile-panel {
     inset: auto 0 0;
     width: 100%;
-    height: min(64dvh, 620px);
-    max-height: min(64dvh, 620px);
+    height: min(72dvh, 680px);
+    max-height: min(72dvh, 680px);
     border-right: 0;
     border-bottom: 0;
     border-left: 0;
-    border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+    border-radius: 20px 20px 0 0;
     padding-bottom: env(safe-area-inset-bottom);
-    box-shadow: 0 -8px 24px -12px rgb(15 23 42 / 0.28);
+    box-shadow: 0 -16px 40px -20px rgb(15 23 42 / 0.38);
+  }
+
+  .mobile-panel.mobile-panel-detail {
+    height: min(90dvh, 860px);
+    max-height: min(90dvh, 860px);
   }
 
   .mobile-panel-handle {
     display: flex;
-    min-height: 36px;
+    min-height: 44px;
     width: 100%;
     align-items: center;
     justify-content: center;
@@ -236,12 +241,15 @@
 
   .mobile-panel-toggle {
     top: auto;
-    right: var(--floating-control-offset);
+    right: auto;
     bottom: calc(var(--floating-control-offset) + env(safe-area-inset-bottom));
-    left: auto;
-    width: 40px;
-    height: 40px;
-    transform: none;
+    left: 50%;
+    width: auto;
+    min-width: 120px;
+    height: 44px;
+    gap: 8px;
+    padding-inline: 16px;
+    transform: translateX(-50%);
     border: 1px solid var(--color-line);
     border-radius: 999px;
     box-shadow: var(--shadow-map);
@@ -252,36 +260,51 @@
   }
 
   .mobile-panel-toggle-open {
-    bottom: calc(min(64dvh, 620px) + 8px + env(safe-area-inset-bottom));
+    bottom: calc(min(72dvh, 680px) + 8px + env(safe-area-inset-bottom));
+  }
+
+  .mobile-panel-toggle-label {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
   }
 
   .mobile-filter-bar {
     top: calc(var(--floating-control-offset) + env(safe-area-inset-top));
     right: var(--floating-control-offset);
     left: var(--floating-control-offset);
-    flex-wrap: nowrap;
-    gap: 6px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
     max-width: calc(100vw - (var(--floating-control-offset) * 2));
-    overflow-x: auto;
-    padding-bottom: 2px;
-    scrollbar-width: none;
+    padding: 8px;
+    border: 1px solid rgb(226 232 240 / 0.9);
+    border-radius: 16px;
+    background: rgb(255 255 255 / 0.92);
+    box-shadow: 0 12px 28px -18px rgb(15 23 42 / 0.45);
+    backdrop-filter: blur(12px);
   }
 
-  .mobile-filter-bar::-webkit-scrollbar,
-  .map-legend::-webkit-scrollbar {
+  .mobile-filter-bar.mobile-filter-bar-panel-open {
     display: none;
   }
 
-  .mobile-filter-bar > * {
-    flex: 0 0 auto;
+  .mobile-province-picker {
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: none;
+    justify-content: space-between;
+  }
+
+  .mobile-risk-chip {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+    padding-inline: 6px;
   }
 
   .mobile-filter-bar button {
-    min-height: 40px;
-  }
-
-  .map-controls.mobile-map-controls-panel-open {
-    bottom: calc(min(64dvh, 620px) + 56px + env(safe-area-inset-bottom));
+    min-height: 44px;
   }
 
   .map-controls {
@@ -289,19 +312,44 @@
     bottom: calc(var(--floating-control-offset) + env(safe-area-inset-bottom));
   }
 
-  .map-legend {
-    right: calc(var(--map-controls-clearance) - 16px);
-    bottom: calc(var(--floating-control-offset) + env(safe-area-inset-bottom));
-    left: var(--floating-control-offset);
-    flex-wrap: nowrap;
-    max-width: calc(100vw - var(--map-controls-clearance));
-    overflow-x: auto;
-    padding-bottom: 2px;
-    scrollbar-width: none;
+  .mobile-zoom-control {
+    display: none;
   }
 
-  .map-legend > * {
-    flex: 0 0 auto;
+  [data-testid='map-updated-stamp'] {
+    position: fixed;
+    top: calc(var(--floating-control-offset) + env(safe-area-inset-top) + 122px);
+    right: var(--floating-control-offset);
+  }
+
+  .map-legend {
+    right: auto;
+    bottom: calc(var(--floating-control-offset) + env(safe-area-inset-bottom));
+    left: var(--floating-control-offset);
+    display: block;
+    max-width: none;
+  }
+
+  .map-legend.mobile-map-legend-panel-open {
+    display: none;
+  }
+
+  .mobile-legend-trigger {
+    display: flex;
+  }
+
+  .map-legend-items {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 0;
+    display: none;
+    width: min(340px, calc(100vw - 32px));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .map-legend-items.mobile-legend-open {
+    display: grid;
   }
 
   .map-legend [data-legend-hint] {
