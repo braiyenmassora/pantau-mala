@@ -19,7 +19,7 @@ const PHOTO_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 const sightingLabel = {
   asap: 'Melihat asap',
   api_terlihat: 'Melihat api',
-  tidak_yakin: 'Belum yakin',
+  tidak_yakin: 'Lainnya / belum yakin',
   sudah_padam: 'Sudah padam',
 } as const
 

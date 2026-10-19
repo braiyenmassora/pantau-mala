@@ -51,6 +51,7 @@ describe('CitizenReports', () => {
 
     expect(screen.getByLabelText(/Nama tampilan/)).toBeTruthy()
     expect(screen.getByLabelText(/Apa yang terlihat/)).toBeTruthy()
+    expect(screen.getByRole('option', { name: 'Lainnya / belum yakin' })).toBeTruthy()
     expect(screen.getByLabelText(/Catatan/)).toBeTruthy()
     expect(screen.getByText('Pilih foto dari perangkat')).toBeTruthy()
     expect(screen.queryByText(/Choose File/i)).toBeNull()
