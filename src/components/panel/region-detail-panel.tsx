@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
 import { RegionTerrainCard } from '@/components/panel/terrain-indicator-card'
+import { CitizenReports } from '@/components/panel/citizen-reports'
 
 type RegionDetailPanelProps = {
   region: Region
@@ -221,6 +222,8 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
         </Card>
 
         <RegionTerrainCard center={region.center} timeZone={region.time_zone} />
+
+        <CitizenReports regionCode={region.code} />
 
         <Card>
           <CardHeader>
