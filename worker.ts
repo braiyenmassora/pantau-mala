@@ -20,7 +20,7 @@ interface EdgeCache {
 
 const EDGE_CACHE_TTL = [
   { pattern: /^\/api\/v1\/region-catalog$/, seconds: 60 * 60 },
-  { pattern: /^\/api\/v1\/regions(?:\/|$)/, seconds: 60 },
+  { pattern: /^\/api\/v1\/regions(?:\/|$)/, seconds: 5 * 60 },
   { pattern: /^\/api\/v1\/hotspots(?:\.geojson)?$/, seconds: 30 },
   { pattern: /^\/api\/v1\/(?:data-status|earthquakes)$/, seconds: 30 },
 ] as const
