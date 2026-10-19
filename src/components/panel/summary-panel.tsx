@@ -20,6 +20,8 @@ import {
 } from '@/components/common'
 import { Brand } from '@/components/common/brand'
 import { focusRing } from '@/components/common/focus-ring'
+import { CitizenReportComposePanel } from '@/components/panel/citizen-report-compose-panel'
+import { CitizenReportDetailPanel } from '@/components/panel/citizen-report-detail-panel'
 import { DataFreshnessBanner } from '@/components/panel/data-freshness-banner'
 import { LocationCard } from '@/components/panel/location-card'
 import { NoHotspotDetail } from '@/components/panel/no-hotspot-detail'
@@ -76,6 +78,8 @@ export function SummaryPanel({
   const wilayahNotFound = useMapStore((s) => s.wilayahNotFound)
   const setWilayahNotFound = useMapStore((s) => s.setWilayahNotFound)
   const panelOpen = useUiStore((s) => s.panelOpen)
+  const selectedReportId = useUiStore((s) => s.selectedReportId)
+  const reportTarget = useUiStore((s) => s.reportTarget)
 
   const { data: daftar, isPending: daftarPending } = useRegionCatalog()
 
@@ -160,6 +164,19 @@ export function SummaryPanel({
           action={onRetry ? { label: fail.action, onClick: onRetry } : undefined}
         />
       </div>
+    )
+  }
+
+  if (selectedReportId) {
+    return <CitizenReportDetailPanel key={selectedReportId} reportId={selectedReportId} />
+  }
+
+  if (reportTarget) {
+    return (
+      <CitizenReportComposePanel
+        key={`${reportTarget.lat},${reportTarget.lon}`}
+        target={reportTarget}
+      />
     )
   }
 

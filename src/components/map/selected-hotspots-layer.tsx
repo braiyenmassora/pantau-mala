@@ -1,6 +1,6 @@
 import circle from '@turf/circle'
 import distance from '@turf/distance'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import type { FeatureCollection, Polygon } from 'geojson'
 import type { GeoJSONSource } from 'maplibre-gl'
 
@@ -8,8 +8,15 @@ import { BeatWaveRadius } from '@/components/map/beat-wave-radius'
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { copy } from '@/copy/id'
+import {
+  countAt,
+  ensureDemoReports,
+  getHotspotReportsSnapshot,
+  subscribeHotspotReports,
+} from '@/data/hotspot-reports'
 import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
+import { rememberFocusTrigger } from '@/lib/focus-return'
 import { formatDateDotTime } from '@/lib/format'
 import { getMapPadding } from '@/lib/indonesia-view'
 import { pinPulseStyle, riskBeatMs } from '@/lib/map-beat'
@@ -35,6 +42,13 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
   const { data } = useHotspots()
   const lastFitCode = useRef<string | null>(null)
   const [hovered, setHovered] = useState<number | null>(null)
+  const setReportTarget = useUiStore((s) => s.setReportTarget)
+  const setPanelOpen = useUiStore((s) => s.setPanelOpen)
+  const reportsSnap = useSyncExternalStore(
+    subscribeHotspotReports,
+    getHotspotReportsSnapshot,
+  )
+  void reportsSnap
 
   const selectedRegion = useMemo(
     () => regions.find((r) => r.code === selectedCode),
@@ -45,6 +59,14 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
     if (!selectedCode || !data) return []
     return data.features.filter((f) => f.properties.region_code === selectedCode)
   }, [selectedCode, data])
+
+  // Seed dummy laporan biar badge kelihatan tanpa submit dulu
+  useEffect(() => {
+    for (const f of regionHotspots) {
+      const [lon, lat] = f.geometry.coordinates
+      ensureDemoReports(lat, lon, f.properties.region_code)
+    }
+  }, [regionHotspots])
 
   const focus = useMemo(() => {
     if (!selectedRegion) return null
@@ -208,7 +230,22 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
         ? regionHotspots.map((f, i) => {
             const [lon, lat] = f.geometry.coordinates
             const stamp = formatDateDotTime(f.properties.time, selectedRegion.time_zone)
-            const label = `Titik panas ${stamp}`
+            const reportCount = countAt(lat, lon)
+            const label =
+              reportCount > 0
+                ? `Titik panas ${stamp}, ${copy.report.badge(String(reportCount))}`
+                : `Titik panas ${stamp}`
+
+            const openReport = (el: HTMLElement) => {
+              rememberFocusTrigger(el)
+              setReportTarget({
+                lat,
+                lon,
+                region_code: f.properties.region_code,
+                hotspot_time: f.properties.time,
+              })
+              setPanelOpen(true)
+            }
 
             return (
               <MapMarker
@@ -222,23 +259,35 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                     <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
                       <MapInfoCard
                         title={selectedRegion.name}
-                        meta={copy.map.regionMetaHotspots('1')}
+                        meta={
+                          reportCount > 0
+                            ? `${copy.map.regionMetaHotspots('1')} · ${copy.report.badge(String(reportCount))}`
+                            : copy.map.regionMetaHotspots('1')
+                        }
                         updatedAt={stamp}
                       />
                     </div>
                   ) : null}
-                  <span
-                    tabIndex={0}
-                    role="img"
-                    aria-label={label}
+                  {reportCount > 0 ? (
+                    <span
+                      className="bg-brand text-surface absolute -top-3 -right-3 z-20 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] leading-none font-semibold shadow-sm"
+                      aria-hidden
+                    >
+                      {reportCount}
+                    </span>
+                  ) : null}
+                  <button
+                    type="button"
+                    aria-label={`${label}. ${copy.report.openAria}`}
                     className={cn(
-                      'marker--interactive marker--pulse border-surface relative size-2.5 cursor-pointer rounded-full border-2 shadow-sm',
+                      'marker--interactive marker--pulse border-surface relative size-4 cursor-pointer rounded-full border-2 shadow-md',
                     )}
                     style={{ backgroundColor: style.dot, ...pulseStyle }}
                     onMouseEnter={() => setHovered(i)}
                     onMouseLeave={() => setHovered(null)}
                     onFocus={() => setHovered(i)}
                     onBlur={() => setHovered(null)}
+                    onClick={(e) => openReport(e.currentTarget)}
                   />
                 </MarkerContent>
               </MapMarker>

@@ -10,19 +10,34 @@ import {
   Wind,
   X,
 } from 'lucide-react'
-import { useEffect, useRef, type ReactNode, type RefObject } from 'react'
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useSyncExternalStore,
+  type ReactNode,
+  type RefObject,
+} from 'react'
 
-import { HotspotStatusBadge, InfoTooltip, TrendChart } from '@/components/common'
+import { Button, HotspotStatusBadge, InfoTooltip, TrendChart } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { AirCategoryPill } from '@/components/panel/air-quality-card'
 import { airPm25Value } from '@/lib/air-card'
+import { CitizenReportReview } from '@/components/panel/citizen-report-review'
 import { DataFreshnessBanner } from '@/components/panel/data-freshness-banner'
 import { OfficialRefsCard } from '@/components/panel/official-refs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
+import {
+  ensureDemoReports,
+  getHotspotReportsSnapshot,
+  listReportsForRegion,
+  subscribeHotspotReports,
+} from '@/data/hotspot-reports'
+import { useHotspots } from '@/data/queries'
 import type { Region, RiskCategory } from '@/data/types'
-import { restoreFocusTrigger } from '@/lib/focus-return'
+import { rememberFocusTrigger, restoreFocusTrigger } from '@/lib/focus-return'
 import { formatNumber } from '@/lib/format'
 import { hotspotTrend, type TrendDirection } from '@/lib/hotspot-trend'
 import { fitIndonesia } from '@/lib/indonesia-view'
@@ -175,6 +190,101 @@ function ConditionsCard({ region }: { region: Region }) {
   )
 }
 
+function CitizenReportsCard({ region }: { region: Region }) {
+  const setReportTarget = useUiStore((s) => s.setReportTarget)
+  const setSelectedReportId = useUiStore((s) => s.setSelectedReportId)
+  const setPanelOpen = useUiStore((s) => s.setPanelOpen)
+  const { data } = useHotspots()
+  const reportsSnap = useSyncExternalStore(
+    subscribeHotspotReports,
+    getHotspotReportsSnapshot,
+  )
+  void reportsSnap
+
+  const hotspots = useMemo(() => {
+    if (!data) return []
+    return data.features.filter((f) => f.properties.region_code === region.code)
+  }, [data, region.code])
+
+  useEffect(() => {
+    for (const f of hotspots) {
+      const [lon, lat] = f.geometry.coordinates
+      ensureDemoReports(lat, lon, f.properties.region_code)
+    }
+  }, [hotspots])
+
+  const regionReports = useMemo(
+    () => listReportsForRegion(region.code),
+    [region.code, reportsSnap],
+  )
+  const latest = regionReports.slice(0, 6)
+
+  const openDetail = (el: HTMLElement, id: string) => {
+    rememberFocusTrigger(el)
+    setSelectedReportId(id)
+    setPanelOpen(true)
+  }
+
+  const openComposer = (el: HTMLElement) => {
+    const f = hotspots[0]
+    if (!f) return
+    const [lon, lat] = f.geometry.coordinates
+    rememberFocusTrigger(el)
+    setReportTarget({
+      lat,
+      lon,
+      region_code: f.properties.region_code,
+      hotspot_time: f.properties.time,
+    })
+    setPanelOpen(true)
+  }
+
+  return (
+    <Card aria-label={copy.report.panelTitle}>
+      <CardHeader>
+        <CardTitle>{copy.report.panelTitle}</CardTitle>
+        {regionReports.length > 0 ? (
+          <span className="text-ink text-xs leading-4 font-semibold tabular-nums">
+            {copy.report.badge(String(regionReports.length))}
+          </span>
+        ) : null}
+      </CardHeader>
+      <CardContent className="space-y-3">
+        <p className="text-ink-2 text-xs leading-4">{copy.report.panelHint}</p>
+        {hotspots.length === 0 ? (
+          <p className="text-ink-2 text-sm leading-5">{copy.report.panelEmptyHotspots}</p>
+        ) : latest.length === 0 ? (
+          <p className="text-ink-2 text-sm leading-5">{copy.report.panelEmpty}</p>
+        ) : (
+          <ul className="-mx-1" aria-label={copy.report.panelLatest}>
+            {latest.map((r, i) => (
+              <li
+                key={r.id}
+                className={cn(i > 0 && 'border-line border-t')}
+              >
+                <CitizenReportReview
+                  report={r}
+                  variant="compact"
+                  onSelect={(el) => openDetail(el, r.id)}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+        {hotspots.length > 0 ? (
+          <Button
+            variant="soft"
+            className="w-full shadow-none"
+            onClick={(e) => openComposer(e.currentTarget)}
+          >
+            {copy.report.panelOpen}
+          </Button>
+        ) : null}
+      </CardContent>
+    </Card>
+  )
+}
+
 /** Detail wilayah — hierarki: hero angka → meta → tren → deteksi; kartu lain seragam. */
 export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
   const titleRef = useRef<HTMLHeadingElement>(null)
@@ -273,6 +383,8 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
             />
           </CardContent>
         </Card>
+
+        <CitizenReportsCard region={region} />
 
         <ConditionsCard region={region} />
 
