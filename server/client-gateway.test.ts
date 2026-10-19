@@ -94,7 +94,7 @@ it('fails closed on missing secrets and insecure external origin', () => {
     createClientGateway({ ...env, PANTAU_API_ORIGIN: 'http://external.example' }),
   ).toThrow()
 })
-it('forwards telemetry POST without bearer or client id', async () => {
+it('forwards telemetry POST with server key only (not browser identity)', async () => {
   const fetcher = vi.fn().mockResolvedValue(new Response(null, { status: 202 }))
   const gateway = createClientGateway(env, fetcher)
   const body = JSON.stringify({
@@ -121,7 +121,9 @@ it('forwards telemetry POST without bearer or client id', async () => {
   )
   expect(response!.status).toBe(202)
   expect(String(fetcher.mock.calls[0][0])).toBe('http://127.0.0.1:8080/api/v1/telemetry')
-  expect(fetcher.mock.calls[0][1].headers.Authorization).toBeUndefined()
+  expect(fetcher.mock.calls[0][1].headers.Authorization).toBe(
+    'Bearer ' + env.PANTAU_API_KEY,
+  )
   expect(fetcher.mock.calls[0][1].headers.Prefer).toBe('respond-async')
   expect(fetcher.mock.calls[0][1].headers['X-Pantau-Telemetry-Transport']).toBe(
     'fetch-keepalive',
@@ -138,4 +140,19 @@ it('rejects browser identity on telemetry', async () => {
       }),
     ))!.status,
   ).toBe(400)
+})
+it('masks upstream telemetry 401 as 502', async () => {
+  const gateway = createClientGateway(
+    env,
+    vi.fn().mockResolvedValue(new Response('nope', { status: 401 })),
+  )
+  const response = await gateway(
+    new Request('http://localhost/api/v1/telemetry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}',
+    }),
+  )
+  expect(response!.status).toBe(502)
+  expect(await response!.text()).not.toContain('nope')
 })

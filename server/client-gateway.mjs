@@ -88,13 +88,14 @@ export function createClientGateway(env, fetcher = fetch) {
       if (!queryNames.has(key))
         return reply(400, { error: 'Unsupported query parameter' })
     try {
-      // Telemetry browser: anonim ke collector — tanpa Bearer / client id.
+      // Telemetry: browser tanpa token; gateway pasang key server (sama data routes).
       if (isTelemetry) {
         const prefer = request.headers.get('prefer')
         const transport = request.headers.get('x-pantau-telemetry-transport')
         const headers = {
           Accept: 'application/json',
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         }
         if (prefer) headers.Prefer = prefer
         if (transport) headers['X-Pantau-Telemetry-Transport'] = transport
@@ -105,14 +106,26 @@ export function createClientGateway(env, fetcher = fetch) {
           redirect: 'manual',
           signal: AbortSignal.timeout(20000),
         })
-        return new Response(upstreamRes.body, {
-          status: upstreamRes.status,
-          headers: {
-            'Content-Type': upstreamRes.headers.get('Content-Type') || 'application/json',
-            'Cache-Control': 'no-store',
-            'X-Content-Type-Options': 'nosniff',
-          },
-        })
+        // Jangan bocorkan detail upstream; 202 = antrean, selain itu status generik.
+        if (upstreamRes.status === 202) {
+          return new Response(null, {
+            status: 202,
+            headers: {
+              'Cache-Control': 'no-store',
+              'X-Content-Type-Options': 'nosniff',
+            },
+          })
+        }
+        return reply(
+          upstreamRes.status === 429
+            ? 429
+            : upstreamRes.status >= 500
+              ? 502
+              : upstreamRes.status === 401 || upstreamRes.status === 403
+                ? 502
+                : upstreamRes.status,
+          { error: 'Telemetry unavailable' },
+        )
       }
       // Key tetap dari env. /auth/me hanya untuk session bootstrap (bukan tiap data request).
       if (url.pathname === '/frontend/session') {
