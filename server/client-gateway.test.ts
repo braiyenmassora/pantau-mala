@@ -20,7 +20,8 @@ it('preserves backend lifecycle headers and exposes only the contract revision i
     Sunset: 'Mon, 16 Nov 2026 00:00:00 GMT',
     Link: '</api-guide#contract-updates>; rel="deprecation"',
   }
-  const fetcher = vi.fn()
+  const fetcher = vi
+    .fn()
     .mockResolvedValueOnce(Response.json({ data: principal }, { headers: lifecycle }))
     .mockResolvedValueOnce(Response.json({ data: principal }))
     .mockResolvedValueOnce(Response.json({ data: [] }, { headers: lifecycle }))
@@ -30,7 +31,8 @@ it('preserves backend lifecycle headers and exposes only the contract revision i
   expect(body.contract_revision).toBe(lifecycle['X-Pantau-Contract-Revision'])
   expect(JSON.stringify(body)).not.toContain(env.PANTAU_API_KEY)
   const response = await gateway(new Request('http://localhost/api/v1/summary'))
-  for (const [name, value] of Object.entries(lifecycle)) expect(response!.headers.get(name)).toBe(value)
+  for (const [name, value] of Object.entries(lifecycle))
+    expect(response!.headers.get(name)).toBe(value)
 })
 it('only server forwards key; session returns fixed reader identity without token', async () => {
   const fetcher = vi.fn().mockResolvedValue(Response.json({ data: principal }))
@@ -147,6 +149,59 @@ it('refuses management, writes, supplied identity, unknown routes and cross-orig
     )
   }
   expect(fetcher).not.toHaveBeenCalled()
+})
+it.each([
+  ['/api/v1/hotspot-reports/photo', { content_type: 'image/jpeg', content_length: 128 }],
+  [
+    '/api/v1/hotspot-reports',
+    {
+      lat: -2.1,
+      lon: 113.5,
+      sighting: 'asap',
+      author_name: 'Sari',
+      photo_url: 'https://media.example/report.jpg',
+    },
+  ],
+])('forwards the allowed report write %s as bounded JSON', async (path, body) => {
+  const fetcher = vi
+    .fn()
+    .mockResolvedValueOnce(Response.json({ data: principal }))
+    .mockResolvedValueOnce(Response.json({ data: body }, { status: 201 }))
+  const response = await createClientGateway(
+    env,
+    fetcher,
+  )(
+    new Request('http://localhost' + path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  )
+  expect(response!.status).toBe(201)
+  expect(String(fetcher.mock.calls[1][0])).toBe('http://127.0.0.1:8080' + path)
+  expect(fetcher.mock.calls[1][1].method).toBe('POST')
+  expect(fetcher.mock.calls[1][1].headers['Content-Type']).toBe('application/json')
+  expect(await new Response(fetcher.mock.calls[1][1].body).json()).toEqual(body)
+})
+it('rejects invalid or oversized report writes before contacting the backend', async () => {
+  const gateway = createClientGateway(env, vi.fn())
+  expect(
+    (await gateway(
+      new Request('http://localhost/api/v1/hotspot-reports', {
+        method: 'POST',
+        body: '{}',
+      }),
+    ))!.status,
+  ).toBe(415)
+  expect(
+    (await gateway(
+      new Request('http://localhost/api/v1/hotspot-reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: 'x'.repeat(9 * 1024) }),
+      }),
+    ))!.status,
+  ).toBe(413)
 })
 it('requires the explicit async telemetry contract and forwards its body server-side', async () => {
   const fetcher = vi

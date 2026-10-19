@@ -38,7 +38,7 @@ export function createClientGateway(env, fetcher = fetch) {
     return response
   }
   const allowed =
-    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages|indicators\/soil-moisture|external-events\/nasa-eonet|providers\/(registry|provenance)|hotspot-reports(?:\/[0-9a-fA-F-]+|\/counts)?|telemetry)$/
+    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages|indicators\/soil-moisture|external-events\/nasa-eonet|providers\/(registry|provenance)|hotspot-reports(?:\/[0-9a-fA-F-]+|\/counts|\/photo)?|telemetry)$/
   function upstreamHeaders(request, metadata) {
     const headers = {
       Authorization: `Bearer ${token}`,
@@ -106,9 +106,21 @@ export function createClientGateway(env, fetcher = fetch) {
           error:
             'Kontrak telemetry async wajib: Prefer: respond-async dan X-Pantau-Telemetry-Transport: fetch-keepalive',
         })
-    } else if (request.method !== 'GET') {
+    } else if (
+      request.method !== 'GET' &&
+      !(
+        ['/api/v1/hotspot-reports', '/api/v1/hotspot-reports/photo'].includes(
+          url.pathname,
+        ) && request.method === 'POST'
+      )
+    ) {
       return reply(405, { error: 'Read-only frontend' })
     }
+    if (
+      request.method === 'POST' &&
+      request.headers.get('content-type')?.split(';')[0].trim() !== 'application/json'
+    )
+      return reply(415, { error: 'Report requires application/json' })
     if (request.headers.has('authorization') || request.headers.has('x-client-id'))
       return reply(400, { error: 'Client identity is server configured' })
     if (request.headers.get('origin') && request.headers.get('origin') !== url.origin)
@@ -149,6 +161,7 @@ export function createClientGateway(env, fetcher = fetch) {
     const headers = upstreamHeaders(request, metadata)
     try {
       let telemetryBody
+      let reportBody
       if (url.pathname === '/api/v1/telemetry') {
         if (url.search)
           return reply(400, { error: 'Telemetry does not accept query parameters' })
@@ -160,8 +173,22 @@ export function createClientGateway(env, fetcher = fetch) {
         headers.Origin = url.origin
         if (metadata.viewSource === 'edge') headers['X-Pantau-Telemetry-Source'] = 'edge'
       }
+      if (
+        request.method === 'POST' &&
+        url.pathname.startsWith('/api/v1/hotspot-reports')
+      ) {
+        if (url.search)
+          return reply(400, { error: 'Report writes do not accept query parameters' })
+        try {
+          reportBody = await readBoundedBody(request, 8 * 1024)
+        } catch {
+          return reply(413, { error: 'Report payload exceeds 8 KiB' })
+        }
+      }
       // Validate fixed identity for every request, including revocation and client disablement.
-      const identity = await upstream('/auth/me', headers, { timeoutMs: metadata.timeoutMs })
+      const identity = await upstream('/auth/me', headers, {
+        timeoutMs: metadata.timeoutMs,
+      })
       if (!identity.ok)
         return reply(identity.status === 429 ? 429 : 503, {
           error: 'Client access unavailable',
@@ -175,18 +202,21 @@ export function createClientGateway(env, fetcher = fetch) {
       )
         return reply(503, { error: 'Client access configuration mismatch' })
       if (url.pathname === '/frontend/session')
-        return withLifecycle(reply(200, {
-          mode: 'client',
-          contract_revision: identity.headers.get('X-Pantau-Contract-Revision'),
-          principal: {
-            client_id: principal.client_id,
-            client_slug: principal.client_slug,
-            username: '',
-            role: 'reader',
-            kind: 'key',
-            scope: 'data:read',
-          },
-        }), identity)
+        return withLifecycle(
+          reply(200, {
+            mode: 'client',
+            contract_revision: identity.headers.get('X-Pantau-Contract-Revision'),
+            principal: {
+              client_id: principal.client_id,
+              client_slug: principal.client_slug,
+              username: '',
+              role: 'reader',
+              kind: 'key',
+              scope: 'data:read',
+            },
+          }),
+          identity,
+        )
       if (url.pathname === '/api/v1/telemetry') {
         const data = await upstream(
           url.pathname,
@@ -216,24 +246,41 @@ export function createClientGateway(env, fetcher = fetch) {
         }
         const preference = data.headers.get('preference-applied')
         if (preference) responseHeaders['Preference-Applied'] = preference
-        return withLifecycle(Response.json(
-          { data: { accepted: true } },
-          { status: 202, headers: responseHeaders },
-        ), data)
+        return withLifecycle(
+          Response.json(
+            { data: { accepted: true } },
+            { status: 202, headers: responseHeaders },
+          ),
+          data,
+        )
       }
-      const data = await upstream(url.pathname + url.search, headers)
+      const data = await upstream(
+        url.pathname + url.search,
+        request.method === 'POST'
+          ? { ...headers, 'Content-Type': 'application/json' }
+          : headers,
+        request.method === 'POST'
+          ? { method: 'POST', body: reportBody, timeoutMs: metadata.timeoutMs }
+          : { timeoutMs: metadata.timeoutMs },
+      )
       if (!data.ok)
-        return withLifecycle(reply(data.status === 429 ? 429 : data.status >= 500 ? 502 : data.status, {
-          error: 'Data unavailable',
-        }), data)
-      return withLifecycle(new Response(data.body, {
-        status: data.status,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-store',
-          'X-Content-Type-Options': 'nosniff',
-        },
-      }), data)
+        return withLifecycle(
+          reply(data.status === 429 ? 429 : data.status >= 500 ? 502 : data.status, {
+            error: 'Data unavailable',
+          }),
+          data,
+        )
+      return withLifecycle(
+        new Response(data.body, {
+          status: data.status,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+            'X-Content-Type-Options': 'nosniff',
+          },
+        }),
+        data,
+      )
     } catch {
       return reply(503, { error: 'Data service unavailable' })
     }
@@ -251,7 +298,10 @@ function safeGeoHeader(value, max) {
 }
 
 async function readTelemetryBody(request) {
-  const limit = 16 * 1024
+  return readBoundedBody(request, 16 * 1024)
+}
+
+async function readBoundedBody(request, limit) {
   if (Number(request.headers.get('content-length')) > limit)
     throw new RangeError('payload')
   if (!request.body) return new Uint8Array()

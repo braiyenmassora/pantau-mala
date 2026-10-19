@@ -20,6 +20,7 @@ export async function getData<T>(
   path: string,
   parse: (data: unknown) => T,
   signal?: AbortSignal,
+  init?: RequestInit,
 ): Promise<T> {
   const { token, generation, accessMode } = useSession.getState()
   if (!token && accessMode !== 'client') throw new Error('Sesi diperlukan.')
@@ -29,7 +30,11 @@ export async function getData<T>(
       'FE dan API Go memerlukan proxy origin yang sama dengan base /api/v1.',
     )
   const res = await fetch(configured + path, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    ...init,
+    headers: {
+      ...(init?.headers ?? {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     credentials: 'same-origin',
     cache: 'no-store',
     signal: requestSignal(signal, 20000),
@@ -118,7 +123,13 @@ export function useNasaEonet(
 ) {
   const session = useSession()
   return useQuery({
-    queryKey: ['nasa-eonet', status, limit, session.principal?.client_id, session.generation],
+    queryKey: [
+      'nasa-eonet',
+      status,
+      limit,
+      session.principal?.client_id,
+      session.generation,
+    ],
     enabled: requested && session.status === 'authenticated',
     queryFn: ({ signal }) =>
       getData(

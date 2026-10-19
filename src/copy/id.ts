@@ -252,6 +252,8 @@ export const copy = {
       'Kelas Fire Weather Index dari model cuaca. Gambaran saja; tidak mengatur warna pin di peta.',
     fwiUnit: 'FWI',
     flagDate: 'Deteksi',
+    reportNamePlaceholder: 'Nama tampilan',
+    reportDescriptionPlaceholder: 'Apa yang kamu lihat?',
     updatedAt: (when: string) => `Diperbarui ${when}`,
     trendUp: 'Naik',
     trendDown: 'Turun',
