@@ -15,8 +15,7 @@ export function LocationDetailSync({ mapRef }: LocationDetailSyncProps) {
   const panelOpen = useUiStore((s) => s.panelOpen)
   const syncedKey = useRef<string | null>(null)
   const hasCoords =
-    (location.status === 'active' || location.status === 'outside') &&
-    !!location.coords
+    (location.status === 'active' || location.status === 'outside') && !!location.coords
 
   useEffect(() => {
     if (!hasCoords || !location.coords) {

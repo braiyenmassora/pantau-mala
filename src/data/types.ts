@@ -6,11 +6,7 @@ export type TimeZoneId = 'WIB' | 'WITA' | 'WIT'
 
 /** `tanpa_titik` = FE saja (nol deteksi); bukan nilai API. */
 export type RiskCategory =
-  | 'rendah'
-  | 'sedang'
-  | 'sangat_tinggi'
-  | 'tidak_tersedia'
-  | 'tanpa_titik'
+  'rendah' | 'sedang' | 'sangat_tinggi' | 'tidak_tersedia' | 'tanpa_titik'
 
 export type WeatherDangerClass = 'aman' | 'waspada' | 'bahaya' | 'ekstrem'
 

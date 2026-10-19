@@ -1,11 +1,7 @@
 import { OutboundLink } from '@/components/common/outbound-link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { copy } from '@/copy/id'
-import {
-  OFFICIAL_REFS,
-  POSKO_KARHUTLA,
-  type OfficialRefId,
-} from '@/data/official-refs'
+import { OFFICIAL_REFS, POSKO_KARHUTLA, type OfficialRefId } from '@/data/official-refs'
 import { cn } from '@/lib/utils'
 
 function refCopy(id: OfficialRefId) {

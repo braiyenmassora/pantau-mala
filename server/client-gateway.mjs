@@ -47,7 +47,9 @@ export function createClientGateway(env, fetcher = fetch) {
       url.pathname !== '/frontend/session'
     )
       return null
-    if (request.method !== 'GET') return reply(405, { error: 'Read-only frontend' })
+    const isTelemetry = url.pathname === '/api/v1/telemetry'
+    if (isTelemetry ? request.method !== 'POST' : request.method !== 'GET')
+      return reply(405, { error: 'Read-only frontend' })
     if (request.headers.has('authorization') || request.headers.has('x-client-id'))
       return reply(400, { error: 'Client identity is server configured' })
     if (request.headers.get('origin') && request.headers.get('origin') !== url.origin)
@@ -56,8 +58,14 @@ export function createClientGateway(env, fetcher = fetch) {
       return reply(403, { error: 'Origin denied' })
     if (url.pathname.startsWith('/auth/'))
       return reply(403, { error: 'Management is available in the Go console' })
-    if (url.pathname !== '/frontend/session' && !allowed.test(url.pathname))
+    if (
+      url.pathname !== '/frontend/session' &&
+      !isTelemetry &&
+      !allowed.test(url.pathname)
+    )
       return reply(404, { error: 'Unknown data route' })
+    if (isTelemetry && url.search)
+      return reply(400, { error: 'Unsupported query parameter' })
     const queryNames = new Set([
       'limit',
       'offset',
@@ -80,6 +88,32 @@ export function createClientGateway(env, fetcher = fetch) {
       if (!queryNames.has(key))
         return reply(400, { error: 'Unsupported query parameter' })
     try {
+      // Telemetry browser: anonim ke collector — tanpa Bearer / client id.
+      if (isTelemetry) {
+        const prefer = request.headers.get('prefer')
+        const transport = request.headers.get('x-pantau-telemetry-transport')
+        const headers = {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        }
+        if (prefer) headers.Prefer = prefer
+        if (transport) headers['X-Pantau-Telemetry-Transport'] = transport
+        const upstreamRes = await fetcher(new URL('/api/v1/telemetry', origin), {
+          method: 'POST',
+          headers,
+          body: await request.arrayBuffer(),
+          redirect: 'manual',
+          signal: AbortSignal.timeout(20000),
+        })
+        return new Response(upstreamRes.body, {
+          status: upstreamRes.status,
+          headers: {
+            'Content-Type': upstreamRes.headers.get('Content-Type') || 'application/json',
+            'Cache-Control': 'no-store',
+            'X-Content-Type-Options': 'nosniff',
+          },
+        })
+      }
       // Key tetap dari env. /auth/me hanya untuk session bootstrap (bukan tiap data request).
       if (url.pathname === '/frontend/session') {
         const identity = await upstream('/auth/me')

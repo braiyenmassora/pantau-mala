@@ -68,9 +68,7 @@ describe('AirCategoryPill', () => {
   })
 
   it('hides pill when air is missing', () => {
-    render(
-      <AirCategoryPill region={baseRegion({ pm25: null, category: 'missing' })} />,
-    )
+    render(<AirCategoryPill region={baseRegion({ pm25: null, category: 'missing' })} />)
     expect(screen.queryByText('Baik')).toBeNull()
   })
 })

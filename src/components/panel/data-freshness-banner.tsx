@@ -55,9 +55,7 @@ export function DataFreshnessBanner({
   const freshness = getDataFreshness(data)
   if (!freshness.warn) return null
 
-  const relative = freshness.updatedAt
-    ? formatRelativeAge(freshness.updatedAt)
-    : null
+  const relative = freshness.updatedAt ? formatRelativeAge(freshness.updatedAt) : null
 
   if (!freshness.updatedAt) {
     return (
@@ -81,10 +79,7 @@ export function DataFreshnessBanner({
     <EmptyState
       icon={AlertTriangle}
       variant="action"
-      className={cn(
-        'border-risk-mid/40 bg-risk-mid-tint text-risk-mid-text',
-        className,
-      )}
+      className={cn('border-risk-mid/40 bg-risk-mid-tint text-risk-mid-text', className)}
       title={copy.empty.dataStale.title}
       description={copy.empty.dataStale.description(relative!)}
     />

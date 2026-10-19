@@ -163,10 +163,7 @@ export function LocationCard({ regions }: LocationCardProps) {
             {copy.location.outsideTitle}
           </p>
           <p className="text-ink-2 text-xs leading-4">{copy.location.outsideBody}</p>
-          <StateActions
-            onRetry={requestLocation}
-            retryLabel={copy.location.tryAgain}
-          />
+          <StateActions onRetry={requestLocation} retryLabel={copy.location.tryAgain} />
         </div>
       </Shell>
     )
@@ -299,10 +296,7 @@ function ActiveNearbyCard({
           <CardTitle>{copy.location.nearbyLabel}</CardTitle>
           <InfoTooltip content={copy.location.riskNearbyTip} />
         </div>
-        <HotspotStatusBadge
-          hotspots={nearby.hotspotCount}
-          riskCategory={riskCategory}
-        />
+        <HotspotStatusBadge hotspots={nearby.hotspotCount} riskCategory={riskCategory} />
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="space-y-1">

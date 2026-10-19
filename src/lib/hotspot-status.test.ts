@@ -19,15 +19,15 @@ describe('hotspot status', () => {
   })
 
   it('uses neutral gray for zero-point dots, not low-risk green', () => {
-    expect(
-      hotspotDotColor({ risk_category: 'rendah', hotspots_24h: 0 }),
-    ).toBe(RISK_CATEGORIES.tanpa_titik.dot)
-    expect(
-      hotspotDotColor({ risk_category: 'sedang', hotspots_24h: 3 }),
-    ).toBe(RISK_CATEGORIES.sedang.dot)
-    expect(
-      hotspotDotColor({ risk_category: 'rendah', hotspots_24h: null }),
-    ).toBe(RISK_CATEGORIES.tidak_tersedia.dot)
+    expect(hotspotDotColor({ risk_category: 'rendah', hotspots_24h: 0 })).toBe(
+      RISK_CATEGORIES.tanpa_titik.dot,
+    )
+    expect(hotspotDotColor({ risk_category: 'sedang', hotspots_24h: 3 })).toBe(
+      RISK_CATEGORIES.sedang.dot,
+    )
+    expect(hotspotDotColor({ risk_category: 'rendah', hotspots_24h: null })).toBe(
+      RISK_CATEGORIES.tidak_tersedia.dot,
+    )
   })
 
   it('labels zero points without Risiko Rendah', () => {

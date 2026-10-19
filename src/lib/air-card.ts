@@ -29,9 +29,7 @@ export function airSourceLabel(source?: string | null): string {
   return trimmed || copy.detail.airSourceFallback
 }
 
-export function airAdviceFor(
-  category: AirQualityCategory,
-): string | null {
+export function airAdviceFor(category: AirQualityCategory): string | null {
   if (category in copy.detail.airAdvice) {
     return copy.detail.airAdvice[category as AirAdviceCategory]
   }

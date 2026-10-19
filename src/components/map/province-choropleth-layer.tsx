@@ -13,10 +13,7 @@ import { MAP_COLORS } from '@/lib/map-colors'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { normalizeProvinceName } from '@/lib/province-boundaries'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
-import {
-  sumValidHotspots,
-  worstRiskCategory,
-} from '@/lib/risk-rule'
+import { sumValidHotspots, worstRiskCategory } from '@/lib/risk-rule'
 import { useMapStore } from '@/store/map'
 
 const SOURCE_ID = 'province-choropleth-source'
@@ -247,10 +244,7 @@ export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProp
   useEffect(() => {
     if (!map || !isLoaded || !map.getSource(SOURCE_ID)) return
     for (const { id, hotspots, riskColor, fillMode } of provinceMetrics) {
-      map.setFeatureState(
-        { source: SOURCE_ID, id },
-        { hotspots, riskColor, fillMode },
-      )
+      map.setFeatureState({ source: SOURCE_ID, id }, { hotspots, riskColor, fillMode })
     }
   }, [map, isLoaded, provinceMetrics])
 

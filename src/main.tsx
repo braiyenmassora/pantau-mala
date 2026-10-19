@@ -13,7 +13,10 @@ import '@fontsource/ibm-plex-mono/latin-500.css'
 import '@fontsource/ibm-plex-mono/latin-600.css'
 
 import './index.css'
+import { startTelemetry } from '@/lib/telemetry'
 import App from './App.tsx'
+
+startTelemetry()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

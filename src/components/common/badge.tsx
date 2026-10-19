@@ -21,10 +21,7 @@ export function Badge(props: BadgeProps) {
     const { className, children, variant, ...rest } = props
     void variant
     return (
-      <span
-        className={cn(badgeBase, 'bg-surface-muted text-ink-2', className)}
-        {...rest}
-      >
+      <span className={cn(badgeBase, 'bg-surface-muted text-ink-2', className)} {...rest}>
         {children}
       </span>
     )

@@ -4,13 +4,7 @@ import type { RiskCategory } from '@/data/types'
 
 /** off → requesting (pra-izin) → active | outside | denied | error | timeout */
 export type LocationStatus =
-  | 'off'
-  | 'requesting'
-  | 'active'
-  | 'outside'
-  | 'denied'
-  | 'error'
-  | 'timeout'
+  'off' | 'requesting' | 'active' | 'outside' | 'denied' | 'error' | 'timeout'
 
 export type UserLocation = {
   status: LocationStatus
@@ -68,7 +62,11 @@ export const useMapStore = create<MapState>((set) => ({
   toggleCategory: (category) =>
     set((s) => {
       if (s.selectedCategories.has(category)) {
-        return { selectedCategories: new Set(), selectedCode: null, wilayahNotFound: false }
+        return {
+          selectedCategories: new Set(),
+          selectedCode: null,
+          wilayahNotFound: false,
+        }
       }
       return {
         selectedCategories: new Set([category]),

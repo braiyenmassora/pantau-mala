@@ -120,7 +120,7 @@ export function MapInfoCard({
   return (
     <Card
       className={cn(
-        'relative z-30 w-max max-w-[min(280px,70vw)] shadow-chrome',
+        'shadow-chrome relative z-30 w-max max-w-[min(280px,70vw)]',
         className,
       )}
     >

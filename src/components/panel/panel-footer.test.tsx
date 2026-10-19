@@ -9,6 +9,11 @@ vi.mock('@/auth/session-control', () => ({
   SessionControl: () => null,
 }))
 
+vi.mock('@/lib/telemetry', () => ({
+  isPrivacyMode: () => false,
+  useTelemetryStatus: () => 'accepted' as const,
+}))
+
 describe('PanelFooter', () => {
   afterEach(cleanup)
 
@@ -18,9 +23,7 @@ describe('PanelFooter', () => {
     expect(screen.queryByTestId('panel-updated-stamp')).toBeNull()
     expect(screen.queryByText(/Diperbarui/)).toBeNull()
     const dataSources = screen.getByTestId('panel-data-sources')
-    expect(
-      within(dataSources).getByText(`${copy.footer.dataSourcesLabel}:`),
-    ).toBeTruthy()
+    expect(within(dataSources).getByText(`${copy.footer.dataSourcesLabel}:`)).toBeTruthy()
     expect(within(dataSources).getByRole('link', { name: /NASA FIRMS/ })).toBeTruthy()
     expect(within(dataSources).getByRole('link', { name: /Open-Meteo/ })).toBeTruthy()
     expect(within(dataSources).queryByRole('link', { name: /BMKG/ })).toBeNull()
@@ -34,5 +37,12 @@ describe('PanelFooter', () => {
     render(<PanelFooter />)
     expect(screen.queryByTestId('official-refs-compact')).toBeNull()
     expect(screen.queryByText(copy.footer.officialLabel)).toBeNull()
+  })
+
+  it('shows telemetry status line', () => {
+    render(<PanelFooter />)
+    expect(screen.getByTestId('telemetry-status').textContent).toBe(
+      copy.telemetry.labels.accepted,
+    )
   })
 })

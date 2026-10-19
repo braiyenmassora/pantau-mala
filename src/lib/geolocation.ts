@@ -19,8 +19,7 @@ export function parseDevLocation(): { lat: number; lon: number } | null {
 export type GeoFailReason = 'denied' | 'error' | 'timeout'
 
 export type GeoResult =
-  | { ok: true; lat: number; lon: number }
-  | { ok: false; reason: GeoFailReason }
+  { ok: true; lat: number; lon: number } | { ok: false; reason: GeoFailReason }
 
 export type ResolvedLocation =
   | { status: 'active'; coords: { lat: number; lon: number } }

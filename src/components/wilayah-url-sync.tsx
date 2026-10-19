@@ -2,11 +2,7 @@ import { useEffect, useRef } from 'react'
 
 import { useRegionCatalog, useRegions } from '@/data/queries'
 import { applyHomeMeta, applyWilayahMeta } from '@/lib/page-meta'
-import {
-  buildWilayahPath,
-  parseWilayahPath,
-  slugifyWilayah,
-} from '@/lib/wilayah-path'
+import { buildWilayahPath, parseWilayahPath, slugifyWilayah } from '@/lib/wilayah-path'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
 

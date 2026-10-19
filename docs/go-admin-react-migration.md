@@ -39,10 +39,10 @@ repo-go/
 
 Go tetap serve API; untuk UI ada dua pola (pilih satu di Fase 0):
 
-| Pola | Cara | Cocok jika |
-| --- | --- | --- |
-| **A. Vite dev + Go API** | FE `:5174`, API `:8080`, proxy `/api` `/auth` | Dev cepat |
-| **B. Go embed dist** | `embed` folder `web/dist`, SPA fallback | Produksi sederhana |
+| Pola                     | Cara                                          | Cocok jika         |
+| ------------------------ | --------------------------------------------- | ------------------ |
+| **A. Vite dev + Go API** | FE `:5174`, API `:8080`, proxy `/api` `/auth` | Dev cepat          |
+| **B. Go embed dist**     | `embed` folder `web/dist`, SPA fallback       | Produksi sederhana |
 
 Rekomendasi: **A saat migrasi**, **B saat ship**.
 
@@ -112,12 +112,12 @@ Bangun hanya yang admin butuh. Ikuti resep di `design-system.md` §5.
 
 ### Urutan komponen
 
-1. `focusRing` helper  
-2. `Button` (primary / secondary / soft / ghost)  
-3. `Input` + label + error text (error = ink, bukan risk-high)  
-4. `Card` (+ Header / Title / Content)  
-5. `Badge` (meta + risk kalau perlu)  
-6. `EmptyState`  
+1. `focusRing` helper
+2. `Button` (primary / secondary / soft / ghost)
+3. `Input` + label + error text (error = ink, bukan risk-high)
+4. `Card` (+ Header / Title / Content)
+5. `Badge` (meta + risk kalau perlu)
+6. `EmptyState`
 7. `PageShell` (sidebar/topnav sederhana — **bukan** panel peta)
 
 ### Aturan
@@ -148,7 +148,7 @@ Admin **bukan** mode client-key. Pakai session/account ke Go.
 
 ### Strategi login sementara (lebih aman)
 
-- **Opsi 3a:** Login tetap HTML Go; setelah login, redirect ke React app yang baca cookie session yang sama.  
+- **Opsi 3a:** Login tetap HTML Go; setelah login, redirect ke React app yang baca cookie session yang sama.
 - **Opsi 3b:** Login React penuh (lebih rapi, lebih banyak kerja).
 
 Mulai dengan **3a** jika cookie session sudah ada — migrasi lebih mulus.
@@ -186,12 +186,12 @@ Untuk **setiap** halaman HTML:
 
 ### Prioritas
 
-| Prioritas | Contoh |
-| --- | --- |
-| P0 | Dashboard, login/session |
-| P1 | List + detail sederhana (read) |
-| P2 | Create/edit form |
-| P3 | Dangerous ops (revoke key, delete user) — konfirmasi UI jelas |
+| Prioritas | Contoh                                                        |
+| --------- | ------------------------------------------------------------- |
+| P0        | Dashboard, login/session                                      |
+| P1        | List + detail sederhana (read)                                |
+| P2        | Create/edit form                                              |
+| P3        | Dangerous ops (revoke key, delete user) — konfirmasi UI jelas |
 
 **Jangan** parallel 5 halaman sekaligus.
 
@@ -221,12 +221,12 @@ Untuk **setiap** halaman HTML:
 
 ## Apa yang di-reuse dari repo client (pantau-mala)
 
-| Reuse | Jangan reuse |
-| --- | --- |
-| `docs/design-system.md` (tokens + resep) | `MapShell`, layers, heatmap |
-| Pola Button / Card / Badge / EmptyState | `client-gateway.mjs` read-only |
-| focusRing, tipografi, spacing | Asumsi full-viewport map |
-| IBM Plex | `FE_ACCESS_MODE=client` untuk admin write |
+| Reuse                                    | Jangan reuse                              |
+| ---------------------------------------- | ----------------------------------------- |
+| `docs/design-system.md` (tokens + resep) | `MapShell`, layers, heatmap               |
+| Pola Button / Card / Badge / EmptyState  | `client-gateway.mjs` read-only            |
+| focusRing, tipografi, spacing            | Asumsi full-viewport map                  |
+| IBM Plex                                 | `FE_ACCESS_MODE=client` untuk admin write |
 
 Boleh **menyalin file komponen** lalu hapus dependensi map — lebih aman **tulis ulang tipis** dari resep di design-system (lebih sedikit coupling).
 
@@ -234,28 +234,28 @@ Boleh **menyalin file komponen** lalu hapus dependensi map — lebih aman **tuli
 
 ## Risiko & cara hindari
 
-| Risiko | Mitigasi |
-| --- | --- |
-| CORS / cookie tidak kepakai | Same-origin proxy atau embed dist di Go |
-| Agen terus edit HTML | Rule Fase + “no new HTML features” |
-| API hanya HTML form | Tambah JSON endpoint sebelum page React |
-| Big-bang rewrite | Satu route per PR |
-| Brand dipakai untuk status error | Destructive = ink; risk = data saja |
-| Campur admin ke repo map client | Admin di repo Go / `web/`, bukan di pantau-mala FE |
+| Risiko                           | Mitigasi                                           |
+| -------------------------------- | -------------------------------------------------- |
+| CORS / cookie tidak kepakai      | Same-origin proxy atau embed dist di Go            |
+| Agen terus edit HTML             | Rule Fase + “no new HTML features”                 |
+| API hanya HTML form              | Tambah JSON endpoint sebelum page React            |
+| Big-bang rewrite                 | Satu route per PR                                  |
+| Brand dipakai untuk status error | Destructive = ink; risk = data saja                |
+| Campur admin ke repo map client  | Admin di repo Go / `web/`, bukan di pantau-mala FE |
 
 ---
 
 ## Timeline kasar (1 orang)
 
-| Fase | Estimasi |
-| --- | --- |
-| 0 Inventaris | 0.5 hari |
-| 1 Scaffold + tokens | 0.5 hari |
-| 2 Komponen minimal | 1 hari |
-| 3 Auth | 1 hari |
-| 4 Dashboard cutover | 0.5–1 hari |
-| 5 Per halaman | 0.5–2 hari / halaman |
-| 6 Produksi | 0.5 hari |
+| Fase                | Estimasi             |
+| ------------------- | -------------------- |
+| 0 Inventaris        | 0.5 hari             |
+| 1 Scaffold + tokens | 0.5 hari             |
+| 2 Komponen minimal  | 1 hari               |
+| 3 Auth              | 1 hari               |
+| 4 Dashboard cutover | 0.5–1 hari           |
+| 5 Per halaman       | 0.5–2 hari / halaman |
+| 6 Produksi          | 0.5 hari             |
 
 ---
 

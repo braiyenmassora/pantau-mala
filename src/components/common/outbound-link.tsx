@@ -28,9 +28,7 @@ export function OutboundLink({
   return (
     <a
       href={href}
-      {...(external
-        ? { target: '_blank', rel: 'noopener noreferrer' }
-        : {})}
+      {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
       aria-label={ariaLabel}
       className={cn(
         'text-brand inline-flex min-h-11 items-center gap-2 py-2 text-sm leading-5 font-medium underline-offset-2 hover:underline',

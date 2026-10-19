@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 
 import { copy } from '@/copy/id'
+import { reportTelemetryError } from '@/lib/telemetry'
 
 type Props = { children: ReactNode }
 type State = { hasError: boolean }
@@ -15,6 +16,7 @@ export class AppErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     console.error('[AppErrorBoundary]', error, info.componentStack)
+    reportTelemetryError('render')
   }
 
   render() {

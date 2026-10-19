@@ -133,8 +133,7 @@ export const copy = {
   },
   detail: {
     actions: 'Yang bisa kamu lakukan',
-    actionFireContact:
-      'Jika melihat asap atau api, hubungi 112 atau BPBD setempat.',
+    actionFireContact: 'Jika melihat asap atau api, hubungi 112 atau BPBD setempat.',
     actionCheckLater:
       'Cek lagi nanti. Data satelit biasanya diperbarui tiap beberapa jam.',
     conditions: 'Kondisi saat ini',
@@ -146,8 +145,7 @@ export const copy = {
     unavailable: 'Belum tersedia',
     airQuality: 'Kualitas udara',
     airHint: 'Penjelasan kualitas udara',
-    airTooltip: (source: string) =>
-      `Data kualitas udara diperoleh dari ${source}.`,
+    airTooltip: (source: string) => `Data kualitas udara diperoleh dari ${source}.`,
     airPm25: 'PM2.5',
     airPm25Unit: 'µg/m³',
     airCategoryLabel: 'Kategori',
@@ -175,13 +173,11 @@ export const copy = {
     hotspotUnitLine: 'titik panas · 24 jam',
     hotspots24hReason: (n: string) => `${n} titik panas (24 jam)`,
     trendVsPrevious: 'dibanding kemarin',
-    weatherSourceNote:
-      'Data cuaca dan kualitas udara diperoleh dari Open-Meteo.',
+    weatherSourceNote: 'Data cuaca dan kualitas udara diperoleh dari Open-Meteo.',
     weatherMissingTip: 'Nilai cuaca belum tersedia untuk wilayah ini.',
     weatherDanger: 'Indeks cuaca kebakaran',
     weatherDangerHint: 'Penjelasan indeks cuaca kebakaran',
-    weatherDangerTooltip:
-      'Indeks cuaca kebakaran diperoleh dari Open-Meteo.',
+    weatherDangerTooltip: 'Indeks cuaca kebakaran diperoleh dari Open-Meteo.',
     fwiUnit: 'FWI',
     lastDetection: 'Deteksi satelit terakhir',
     trendUp: 'Naik',
@@ -218,8 +214,7 @@ export const copy = {
     nearestDistance: (km: string) => `Terdekat ${km} km`,
     riskTitle: 'Dekat kamu',
     riskSubtitle: 'Izinkan lokasi untuk melihat titik panas di sekitarmu.',
-    riskNearbyTip:
-      'Data titik panas dalam 25 km diperoleh dari satelit NASA FIRMS.',
+    riskNearbyTip: 'Data titik panas dalam 25 km diperoleh dari satelit NASA FIRMS.',
     useLocation: 'Izinkan lokasi',
     tryAgain: 'Coba lagi',
     searchManual: 'Cari kabupaten/kota',
@@ -246,8 +241,7 @@ export const copy = {
     zoomOut: 'Perkecil',
     pinAria: (nama: string, risiko: string, n: string) =>
       `${nama}, risiko ${risiko}, ${n} titik panas`,
-    pinAriaNoDetections: (nama: string) =>
-      `${nama}, tidak ada titik panas terdeteksi`,
+    pinAriaNoDetections: (nama: string) => `${nama}, tidak ada titik panas terdeteksi`,
     regionPinDetails: (n: string, risiko: string) =>
       `${n} titik panas · Risiko ${risiko}`,
     regionMetaProvince: (provinsi: string) => `Provinsi ${provinsi}`,
@@ -309,6 +303,19 @@ export const copy = {
     provinceTitle: (nama: string) => `Provinsi ${nama}`,
     withHotspots: (n: string) => `${n} wilayah dengan titik panas`,
     noHotspots: 'Tidak ada titik panas satelit dalam 24 jam terakhir.',
+  },
+  telemetry: {
+    labels: {
+      privacy: 'Aktif anonim · preferensi privasi',
+      queued: 'Menunggu pengiriman',
+      sending: 'Mengirim secara async',
+      accepted: 'Batch diterima collector',
+      retrying: 'Pengiriman tertunda · akan mencoba lagi',
+      unavailable: 'Pengiriman belum tersedia',
+      rejected: 'Pengiriman ditolak · periksa integrasi',
+    },
+    privacyNote:
+      'DNT/GPC aktif: diagnostik dikirim secara anonim tanpa cookie, sessionStorage, ID sesi, atau referrer. Gateway hanya menerima sinyal agregat untuk kesehatan aplikasi.',
   },
   footer: {
     /** Label di atas tautan sumber data yang dipakai panel. */
@@ -389,8 +396,7 @@ export const copy = {
     homeTitle: 'pantaumala · Pantauan titik panas satelit Indonesia',
     homeDescription:
       'Peta titik panas satelit per kabupaten/kota. Bukan konfirmasi kebakaran atau peringatan resmi.',
-    wilayahTitle: (name: string) =>
-      `${name} · pantauan titik panas satelit · pantaumala`,
+    wilayahTitle: (name: string) => `${name} · pantauan titik panas satelit · pantaumala`,
     wilayahDescription: (name: string) =>
       `Pantauan titik panas satelit di ${name}. Bukan konfirmasi kebakaran atau peringatan resmi.`,
   },

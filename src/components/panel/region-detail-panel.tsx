@@ -112,9 +112,7 @@ function ConditionCell({
 
 function ConditionsCard({ region }: { region: Region }) {
   const humidity =
-    region.weather.humidity != null
-      ? `${formatNumber(region.weather.humidity)}%`
-      : null
+    region.weather.humidity != null ? `${formatNumber(region.weather.humidity)}%` : null
   const wind =
     region.weather.wind_kmh != null
       ? `${formatNumber(region.weather.wind_kmh)} ${copy.detail.windUnit}`

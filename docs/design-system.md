@@ -22,26 +22,26 @@ Gunakan nilai di bawah apa adanya. Jangan menebak warna, spacing, atau tipografi
 
 UI monitoring GIS light-mode: permukaan putih mengambang di atas latar netral, tipografi padat terbaca, brand hijau hanya untuk aksi — bukan untuk data risiko.
 
-| # | Prinsip | Aturan konkret |
-| --- | --- | --- |
-| 1 | Map / canvas first, chrome soft | Surface `#ffffff`, border 1px `#e8eaed`, shadow soft `0 1px 2px rgba(0,0,0,0.06)` |
-| 2 | Brand ≠ data | Brand `#137333` = CTA, fokus, seleksi, lokasi. Risiko pakai palet risk-* |
-| 3 | Densitas terbaca | Body 14/20 · label/meta 12/16 · display angka 32/40 mono. Minimum 12px |
-| 4 | Touch target | Kontrol utama 44×44 (`h-11` / `size-11`) |
-| 5 | Light only | `color-scheme: light`. Jangan invent dark mode dari dokumen ini |
-| 6 | Motion lembut | 150–300ms, easing `cubic-bezier(0.2, 0.7, 0.2, 1)`; hormati `prefers-reduced-motion` |
+| #   | Prinsip                         | Aturan konkret                                                                       |
+| --- | ------------------------------- | ------------------------------------------------------------------------------------ |
+| 1   | Map / canvas first, chrome soft | Surface `#ffffff`, border 1px `#e8eaed`, shadow soft `0 1px 2px rgba(0,0,0,0.06)`    |
+| 2   | Brand ≠ data                    | Brand `#137333` = CTA, fokus, seleksi, lokasi. Risiko pakai palet risk-*             |
+| 3   | Densitas terbaca                | Body 14/20 · label/meta 12/16 · display angka 32/40 mono. Minimum 12px               |
+| 4   | Touch target                    | Kontrol utama 44×44 (`h-11` / `size-11`)                                             |
+| 5   | Light only                      | `color-scheme: light`. Jangan invent dark mode dari dokumen ini                      |
+| 6   | Motion lembut                   | 150–300ms, easing `cubic-bezier(0.2, 0.7, 0.2, 1)`; hormati `prefers-reduced-motion` |
 
 ### Hierarki tipografi
 
-| Level | Ukuran | Weight | Warna | Contoh |
-| --- | --- | --- | --- | --- |
-| Display angka | 32 / 40 | 600 mono | `#1f2328` | Count, magnitudo |
-| Judul halaman | 24 / 32 | 600 | `#1f2328` | Judul beranda panel |
-| Judul section / entity | 14 / 20 | 600 | `#1f2328` | Nama wilayah di kartu |
-| Body / list | 14 / 20 | 500 | `#1f2328` | Nama baris daftar |
-| Label kartu | 12 / 16 | 500 | `#5f6368` | Judul kecil di atas nilai |
-| Meta / caption | 12 / 16 | 400–500 | `#5f6368` | Waktu, catatan, legend |
-| Placeholder | 14 / 20 | 400 | `#757575` | Search, select kosong |
+| Level                  | Ukuran  | Weight   | Warna     | Contoh                    |
+| ---------------------- | ------- | -------- | --------- | ------------------------- |
+| Display angka          | 32 / 40 | 600 mono | `#1f2328` | Count, magnitudo          |
+| Judul halaman          | 24 / 32 | 600      | `#1f2328` | Judul beranda panel       |
+| Judul section / entity | 14 / 20 | 600      | `#1f2328` | Nama wilayah di kartu     |
+| Body / list            | 14 / 20 | 500      | `#1f2328` | Nama baris daftar         |
+| Label kartu            | 12 / 16 | 500      | `#5f6368` | Judul kecil di atas nilai |
+| Meta / caption         | 12 / 16 | 400–500  | `#5f6368` | Waktu, catatan, legend    |
+| Placeholder            | 14 / 20 | 400      | `#757575` | Search, select kosong     |
 
 ---
 
@@ -222,16 +222,16 @@ Jika tidak memakai Tailwind v4, salin variabel yang sama ke `:root { … }` dan 
 
 ### Utility Tailwind yang diharapkan (setelah `@theme`)
 
-| Token | Contoh class |
-| --- | --- |
-| `--color-brand` | `bg-brand` `text-brand` `ring-brand` `border-brand` |
-| `--color-ink` / `-2` / `-3` | `text-ink` `text-ink-2` `text-ink-3` |
-| `--color-surface` / `-muted` | `bg-surface` `bg-surface-muted` |
-| `--color-line` | `border-line` |
-| `--color-map-bg` | `bg-map-bg` |
-| `--radius-ctl` / `card` / `panel` | `rounded-ctl` `rounded-card` `rounded-panel` |
-| `--shadow-chrome` / `map` | `shadow-chrome` `shadow-map` |
-| `--ease-out-soft` | `ease-out-soft` |
+| Token                             | Contoh class                                        |
+| --------------------------------- | --------------------------------------------------- |
+| `--color-brand`                   | `bg-brand` `text-brand` `ring-brand` `border-brand` |
+| `--color-ink` / `-2` / `-3`       | `text-ink` `text-ink-2` `text-ink-3`                |
+| `--color-surface` / `-muted`      | `bg-surface` `bg-surface-muted`                     |
+| `--color-line`                    | `border-line`                                       |
+| `--color-map-bg`                  | `bg-map-bg`                                         |
+| `--radius-ctl` / `card` / `panel` | `rounded-ctl` `rounded-card` `rounded-panel`        |
+| `--shadow-chrome` / `map`         | `shadow-chrome` `shadow-map`                        |
+| `--ease-out-soft`                 | `ease-out-soft`                                     |
 
 Tanpa Tailwind: pakai `var(--…)` langsung.
 
@@ -241,105 +241,105 @@ Tanpa Tailwind: pakai `var(--…)` langsung.
 
 ### Warna
 
-| Token | Value | Fungsi |
-| --- | --- | --- |
-| `--color-ink` | `#1f2328` | Teks utama |
-| `--color-ink-2` | `#5f6368` | Teks sekunder / meta |
-| `--color-ink-3` | `#757575` | Placeholder / ikon muted |
-| `--color-line` | `#e8eaed` | Border, divider, track progress |
-| `--color-surface` | `#ffffff` | Kartu, panel, chrome |
-| `--color-surface-muted` | `#f8f9fa` | Hover, empty info, tile soft |
-| `--color-map-bg` | `#e8eaed` | Latar app / di luar surface |
-| `--color-scrollbar` | `#dadce0` | Thumb scrollbar tipis |
-| `--color-chart` | `#5f6368` | Grafik netral (bukan risiko) |
-| `--color-chart-soft` | `#dadce0` | Soft chart |
-| `--color-brand` | `#137333` | CTA, fokus, seleksi, lokasi |
-| `--color-brand-soft` | `#e6f4ea` | Fill soft brand |
-| `--color-brand-mala` | `#d93025` | Aksen nama (sama hue risk-high) |
-| `--color-focus` | `#137333` | Alias fokus (= brand) |
-| `--color-location` | `#137333` | Lokasi user (= brand) |
-| `--color-location-tint` | `#e6f4ea` | Tint lokasi |
-| `--color-risk-high` | `#d93025` | Risiko sangat tinggi |
-| `--color-risk-high-tint` | `#fce8e6` | Badge / tint high |
-| `--color-risk-high-text` | `#c5221f` | Teks badge high |
-| `--color-risk-mid` | `#f29900` | Risiko sedang / aksen gempa |
-| `--color-risk-mid-tint` | `#fef7e0` | Badge tint mid |
-| `--color-risk-mid-text` | `#854800` | Teks badge mid |
-| `--color-risk-low` | `#188038` | Risiko rendah |
-| `--color-risk-low-tint` | `#e6f4ea` | Badge tint low |
-| `--color-risk-low-text` | `#137333` | Teks badge low |
-| `--color-risk-na` | `#80868b` | Belum dinilai (dot) |
-| `--color-risk-na-tint` | `#f1f3f4` | Belum dinilai (bg) |
-| `--color-risk-na-text` | `#5f6368` | Belum dinilai (teks) |
-| `--color-heat-low` | `#ffe08a` | Heatmap jarang |
-| `--color-heat-mid` | `#f29900` | Heatmap sedang |
-| `--color-heat-high` | `#d93025` | Heatmap padat |
+| Token                    | Value     | Fungsi                          |
+| ------------------------ | --------- | ------------------------------- |
+| `--color-ink`            | `#1f2328` | Teks utama                      |
+| `--color-ink-2`          | `#5f6368` | Teks sekunder / meta            |
+| `--color-ink-3`          | `#757575` | Placeholder / ikon muted        |
+| `--color-line`           | `#e8eaed` | Border, divider, track progress |
+| `--color-surface`        | `#ffffff` | Kartu, panel, chrome            |
+| `--color-surface-muted`  | `#f8f9fa` | Hover, empty info, tile soft    |
+| `--color-map-bg`         | `#e8eaed` | Latar app / di luar surface     |
+| `--color-scrollbar`      | `#dadce0` | Thumb scrollbar tipis           |
+| `--color-chart`          | `#5f6368` | Grafik netral (bukan risiko)    |
+| `--color-chart-soft`     | `#dadce0` | Soft chart                      |
+| `--color-brand`          | `#137333` | CTA, fokus, seleksi, lokasi     |
+| `--color-brand-soft`     | `#e6f4ea` | Fill soft brand                 |
+| `--color-brand-mala`     | `#d93025` | Aksen nama (sama hue risk-high) |
+| `--color-focus`          | `#137333` | Alias fokus (= brand)           |
+| `--color-location`       | `#137333` | Lokasi user (= brand)           |
+| `--color-location-tint`  | `#e6f4ea` | Tint lokasi                     |
+| `--color-risk-high`      | `#d93025` | Risiko sangat tinggi            |
+| `--color-risk-high-tint` | `#fce8e6` | Badge / tint high               |
+| `--color-risk-high-text` | `#c5221f` | Teks badge high                 |
+| `--color-risk-mid`       | `#f29900` | Risiko sedang / aksen gempa     |
+| `--color-risk-mid-tint`  | `#fef7e0` | Badge tint mid                  |
+| `--color-risk-mid-text`  | `#854800` | Teks badge mid                  |
+| `--color-risk-low`       | `#188038` | Risiko rendah                   |
+| `--color-risk-low-tint`  | `#e6f4ea` | Badge tint low                  |
+| `--color-risk-low-text`  | `#137333` | Teks badge low                  |
+| `--color-risk-na`        | `#80868b` | Belum dinilai (dot)             |
+| `--color-risk-na-tint`   | `#f1f3f4` | Belum dinilai (bg)              |
+| `--color-risk-na-text`   | `#5f6368` | Belum dinilai (teks)            |
+| `--color-heat-low`       | `#ffe08a` | Heatmap jarang                  |
+| `--color-heat-mid`       | `#f29900` | Heatmap sedang                  |
+| `--color-heat-high`      | `#d93025` | Heatmap padat                   |
 
 **Aturan:** error form / destructive UI memakai **ink** (`#1f2328`), bukan risk-high. Risiko data ≠ error UI.
 
 ### Tipografi
 
-| Token | Size | Line-height |
-| --- | --- | --- |
-| `--text-xs` | 12px | 16px |
-| `--text-sm` / `--text-base` / `--text-paragraph` | 14px | 20px |
-| `--text-lg` | 16px | 24px |
-| `--text-xl` | 24px | 32px |
-| `--text-3xl` | 32px | 40px |
-| `--font-sans` | IBM Plex Sans, system-ui, sans-serif | |
-| `--font-mono` | IBM Plex Mono, ui-monospace, monospace | |
+| Token                                            | Size                                   | Line-height |
+| ------------------------------------------------ | -------------------------------------- | ----------- |
+| `--text-xs`                                      | 12px                                   | 16px        |
+| `--text-sm` / `--text-base` / `--text-paragraph` | 14px                                   | 20px        |
+| `--text-lg`                                      | 16px                                   | 24px        |
+| `--text-xl`                                      | 24px                                   | 32px        |
+| `--text-3xl`                                     | 32px                                   | 40px        |
+| `--font-sans`                                    | IBM Plex Sans, system-ui, sans-serif   |             |
+| `--font-mono`                                    | IBM Plex Mono, ui-monospace, monospace |             |
 
 Weight yang dipakai: **400** body, **500** label/list, **600** judul/button/angka.
 
 ### Spacing
 
-| Token | px |
-| --- | --- |
-| `--space-1` | 4 |
-| `--space-2` | 8 |
-| `--space-3` | 12 |
-| `--space-4` | 16 |
-| `--space-6` | 24 |
-| `--space-8` | 32 |
-| `--space-10` | 40 |
-| `--space-12` | 48 |
-| `--space-16` | 64 |
+| Token        | px  |
+| ------------ | --- |
+| `--space-1`  | 4   |
+| `--space-2`  | 8   |
+| `--space-3`  | 12  |
+| `--space-4`  | 16  |
+| `--space-6`  | 24  |
+| `--space-8`  | 32  |
+| `--space-10` | 40  |
+| `--space-12` | 48  |
+| `--space-16` | 64  |
 
 Pola umum: padding kartu **16**, gap konten **16**, gap section **24**, gutter mengambang **16**.
 
 ### Radius & shadow
 
-| Token | Value | Pakai untuk |
-| --- | --- | --- |
-| `--radius-ctl` | 8px | Badge, tip/chrome mengambang, tombol ikon, popover |
-| `--radius-card` | 12px | Kartu, chip filter, tombol app, search |
-| `--radius-panel` | 12px | Shell panel / login card |
-| `--shadow-chrome` | `0 1px 2px rgba(0,0,0,0.06)` | Panel, chip, kontrol peta, tip |
-| `--shadow-map` | `0 2px 6px rgba(0,0,0,0.08)` | Elevasi lebih kuat / pin |
-| `--shadow-pin-active` | `0 2px 8px rgba(31,35,40,0.2)` | Pin aktif |
-| Kartu panel konten | **tanpa shadow** | Hanya border |
+| Token                 | Value                          | Pakai untuk                                        |
+| --------------------- | ------------------------------ | -------------------------------------------------- |
+| `--radius-ctl`        | 8px                            | Badge, tip/chrome mengambang, tombol ikon, popover |
+| `--radius-card`       | 12px                           | Kartu, chip filter, tombol app, search             |
+| `--radius-panel`      | 12px                           | Shell panel / login card                           |
+| `--shadow-chrome`     | `0 1px 2px rgba(0,0,0,0.06)`   | Panel, chip, kontrol peta, tip                     |
+| `--shadow-map`        | `0 2px 6px rgba(0,0,0,0.08)`   | Elevasi lebih kuat / pin                           |
+| `--shadow-pin-active` | `0 2px 8px rgba(31,35,40,0.2)` | Pin aktif                                          |
+| Kartu panel konten    | **tanpa shadow**               | Hanya border                                       |
 
 ### Motion
 
-| Token | Value |
-| --- | --- |
-| `--duration-fast` | 150ms |
-| `--duration-base` | 220ms |
-| `--duration-slow` | 300ms |
+| Token             | Value                            |
+| ----------------- | -------------------------------- |
+| `--duration-fast` | 150ms                            |
+| `--duration-base` | 220ms                            |
+| `--duration-slow` | 300ms                            |
 | `--ease-out-soft` | `cubic-bezier(0.2, 0.7, 0.2, 1)` |
-| Map flyTo (JS) | 600ms; `0` jika reduced-motion |
+| Map flyTo (JS)    | 600ms; `0` jika reduced-motion   |
 
 ### Layout GIS (opsional)
 
-| Token / konstanta | Value |
-| --- | --- |
-| Gutter / floating offset | 16px |
-| Lebar panel | 400px |
-| Tepi panel (gutter+width) | 416px |
-| Overlay inset (panel terbuka, desktop) | 432px |
-| Clearance kontrol kanan | 88px |
-| Tinggi kontrol | 40 / **44** / 48 |
-| Map min width (tablet + panel) | 280px |
+| Token / konstanta                      | Value            |
+| -------------------------------------- | ---------------- |
+| Gutter / floating offset               | 16px             |
+| Lebar panel                            | 400px            |
+| Tepi panel (gutter+width)              | 416px            |
+| Overlay inset (panel terbuka, desktop) | 432px            |
+| Clearance kontrol kanan                | 88px             |
+| Tinggi kontrol                         | 40 / **44** / 48 |
+| Map min width (tablet + panel)         | 280px            |
 
 ```ts
 // Portable layout constants (mirror tokens di atas)
@@ -435,21 +435,21 @@ export const chromeSurface =
 
 ### Button (produk)
 
-| Spec | Nilai |
-| --- | --- |
-| Tinggi | 44px (`h-11 min-h-11`) |
-| Radius | 12px (`rounded-card`) |
-| Type | 14/20 · weight 600 |
-| Gap ikon | 8px (`gap-2`) |
+| Spec     | Nilai                          |
+| -------- | ------------------------------ |
+| Tinggi   | 44px (`h-11 min-h-11`)         |
+| Radius   | 12px (`rounded-card`)          |
+| Type     | 14/20 · weight 600             |
+| Gap ikon | 8px (`gap-2`)                  |
 | Transisi | 150ms colors/opacity/transform |
 
-| Variant | Classes |
-| --- | --- |
-| primary | `bg-brand text-surface hover:opacity-95 active:translate-y-px` |
-| secondary | `border border-line bg-surface text-ink hover:bg-surface-muted` |
-| soft | `border border-brand/20 bg-brand-soft text-brand hover:bg-brand-soft/80` |
-| ghost | `bg-transparent text-ink-2 hover:bg-surface-muted hover:text-ink` |
-| disabled/loading | `opacity-50 cursor-not-allowed` + spinner 16px |
+| Variant          | Classes                                                                  |
+| ---------------- | ------------------------------------------------------------------------ |
+| primary          | `bg-brand text-surface hover:opacity-95 active:translate-y-px`           |
+| secondary        | `border border-line bg-surface text-ink hover:bg-surface-muted`          |
+| soft             | `border border-brand/20 bg-brand-soft text-brand hover:bg-brand-soft/80` |
+| ghost            | `bg-transparent text-ink-2 hover:bg-surface-muted hover:text-ink`        |
+| disabled/loading | `opacity-50 cursor-not-allowed` + spinner 16px                           |
 
 Padding: `sm` → `px-3`; `md` → `px-4`.
 
@@ -478,13 +478,13 @@ inline-flex h-6 shrink-0 items-center rounded-ctl px-2
 text-xs leading-4 font-semibold
 ```
 
-| Variant | Classes |
-| --- | --- |
-| meta | `bg-surface text-ink-2 shadow-sm` |
-| risk high | `bg-risk-high-tint text-risk-high-text` |
-| risk mid | `bg-risk-mid-tint text-risk-mid-text` |
-| risk low | `bg-risk-low-tint text-risk-low-text` |
-| risk na | `bg-surface-muted text-ink-2` (atau `bg-risk-na-tint text-risk-na-text`) |
+| Variant   | Classes                                                                  |
+| --------- | ------------------------------------------------------------------------ |
+| meta      | `bg-surface text-ink-2 shadow-sm`                                        |
+| risk high | `bg-risk-high-tint text-risk-high-text`                                  |
+| risk mid  | `bg-risk-mid-tint text-risk-mid-text`                                    |
+| risk low  | `bg-risk-low-tint text-risk-low-text`                                    |
+| risk na   | `bg-surface-muted text-ink-2` (atau `bg-risk-na-tint text-risk-na-text`) |
 
 Selalu tampilkan **label teks**, bukan warna saja.
 
@@ -561,12 +561,12 @@ Icon:      size-4 strokeWidth 2
 
 ### Progress / skeleton / loading
 
-| Elemen | Spec |
-| --- | --- |
-| Progress track | `h-1 w-full rounded-full bg-line` |
-| Progress bar | `bg-brand` sepertiga lebar, animasi indeterminate 1.5s |
-| Skeleton | `rounded-card bg-surface-muted animate-pulse` |
-| Boot overlay | fullscreen `bg-map-bg`, spinner brand 32px, caption `text-xs text-ink-2` |
+| Elemen         | Spec                                                                     |
+| -------------- | ------------------------------------------------------------------------ |
+| Progress track | `h-1 w-full rounded-full bg-line`                                        |
+| Progress bar   | `bg-brand` sepertiga lebar, animasi indeterminate 1.5s                   |
+| Skeleton       | `rounded-card bg-surface-muted animate-pulse`                            |
+| Boot overlay   | fullscreen `bg-map-bg`, spinner brand 32px, caption `text-xs text-ink-2` |
 
 ### Tooltip
 
@@ -605,24 +605,24 @@ Stack antar-kartu / section: **gap 24px**; antar-elemen dalam kartu: **gap 12–
 
 Dua keluarga radius:
 
-| Keluarga | Radius | Shadow | Contoh |
-| --- | --- | --- | --- |
-| Panel content card | 12 | tidak | Metrik, detail, empty |
-| Floating chrome | 8 | chrome soft | Tip pin, popover, kontrol |
+| Keluarga           | Radius | Shadow      | Contoh                    |
+| ------------------ | ------ | ----------- | ------------------------- |
+| Panel content card | 12     | tidak       | Metrik, detail, empty     |
+| Floating chrome    | 8      | chrome soft | Tip pin, popover, kontrol |
 
 ---
 
 ## 7. Ikon & aset
 
-| Aturan | Nilai |
-| --- | --- |
-| Library contoh | Lucide (outlined) |
-| Stroke default | **2** |
-| Stroke kompak | **1.75** (info, tab tipis, filter) |
-| Ukuran umum | 14 (`size-3.5`) · 16 (`size-4`) · 32 (`size-8` spinner/empty) |
-| Ikon dekoratif | `aria-hidden` |
-| Ikon-only | wajib `aria-label` |
-| Gap ikon–teks | 8px (`gap-2`) |
+| Aturan         | Nilai                                                         |
+| -------------- | ------------------------------------------------------------- |
+| Library contoh | Lucide (outlined)                                             |
+| Stroke default | **2**                                                         |
+| Stroke kompak  | **1.75** (info, tab tipis, filter)                            |
+| Ukuran umum    | 14 (`size-3.5`) · 16 (`size-4`) · 32 (`size-8` spinner/empty) |
+| Ikon dekoratif | `aria-hidden`                                                 |
+| Ikon-only      | wajib `aria-label`                                            |
+| Gap ikon–teks  | 8px (`gap-2`)                                                 |
 
 Brand (jika meniru identitas yang sama): simbol mata + wordmark; compact symbol 28px / wordmark tinggi 20px.
 
@@ -630,16 +630,16 @@ Brand (jika meniru identitas yang sama): simbol mata + wordmark; compact symbol 
 
 ## 8. Interaction & state
 
-| State | Perilaku |
-| --- | --- |
-| Hover baris / ghost | `bg-surface-muted` |
-| Hover primary | `opacity-95` |
-| Active primary | `translate-y-px` |
-| Pressed chip / locate | `bg-brand-soft` + `text-brand` |
-| Disabled | `opacity-50` (filter kosong `opacity-40`) |
-| Focus | ring brand 2px + offset 2px |
-| Loading | spinner / progress / skeleton |
-| Reduced motion | matikan animasi & set duration map ke 0 |
+| State                 | Perilaku                                  |
+| --------------------- | ----------------------------------------- |
+| Hover baris / ghost   | `bg-surface-muted`                        |
+| Hover primary         | `opacity-95`                              |
+| Active primary        | `translate-y-px`                          |
+| Pressed chip / locate | `bg-brand-soft` + `text-brand`            |
+| Disabled              | `opacity-50` (filter kosong `opacity-40`) |
+| Focus                 | ring brand 2px + offset 2px               |
+| Loading               | spinner / progress / skeleton             |
+| Reduced motion        | matikan animasi & set duration map ke 0   |
 
 Z-index panduan: map `0` · sticky `10` · chrome peta `30` · panel `40` · dialog/popover `50` · boot `100`.
 
@@ -647,11 +647,11 @@ Z-index panduan: map `0` · sticky `10` · chrome peta `30` · panel `40` · dia
 
 ## 9. Responsive
 
-| Viewport | Lebar | Perilaku tipikal |
-| --- | --- | --- |
-| Mobile | `< 640` | Panel hampir full (`100vw - 32`); chrome peta disembunyikan saat panel terbuka; map `inert` |
-| Tablet | `640–1023` | Panel max 400 tapi sisakan map ≥ 280; overlay left di-clamp |
-| Desktop | `≥ 1024` | Overlay left = 432 saat panel terbuka |
+| Viewport | Lebar      | Perilaku tipikal                                                                            |
+| -------- | ---------- | ------------------------------------------------------------------------------------------- |
+| Mobile   | `< 640`    | Panel hampir full (`100vw - 32`); chrome peta disembunyikan saat panel terbuka; map `inert` |
+| Tablet   | `640–1023` | Panel max 400 tapi sisakan map ≥ 280; overlay left di-clamp                                 |
+| Desktop  | `≥ 1024`   | Overlay left = 432 saat panel terbuka                                                       |
 
 Breakpoint internal opsional (bukan token global): `360px` (grid 2 kolom), `380px` (CTA sejajar di kartu), `720px` avail-width (chip → menu).
 
@@ -688,12 +688,12 @@ Breakpoint internal opsional (bukan token global): `360px` (grid 2 kolom), `380p
 
 ### Anti-pattern
 
-- Purple gradient / glass berat / dark mode spekulatif  
-- Shadow di setiap kartu panel  
-- Hardcode `#137333` di className UI  
-- Type &lt; 12px  
-- Touch target kecil untuk kontrol peta utama  
-- Warna brand untuk encoding severity data  
+- Purple gradient / glass berat / dark mode spekulatif
+- Shadow di setiap kartu panel
+- Hardcode `#137333` di className UI
+- Type &lt; 12px
+- Touch target kecil untuk kontrol peta utama
+- Warna brand untuk encoding severity data
 
 ---
 
@@ -724,16 +724,32 @@ Breakpoints        640 / 1024
 
 ```css
 @keyframes indeterminate {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
 }
 @keyframes view-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 @keyframes halo-pulse {
-  0% { transform: scale(0.85); opacity: 0.58; }
-  100% { transform: scale(1.52); opacity: 0; }
+  0% {
+    transform: scale(0.85);
+    opacity: 0.58;
+  }
+  100% {
+    transform: scale(1.52);
+    opacity: 0;
+  }
 }
 
 .animate-indeterminate {

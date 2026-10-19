@@ -89,9 +89,7 @@ describe('LocationCard', () => {
     expect(screen.getByText('0')).toBeTruthy()
     expect(screen.getByText(copy.location.hotspotUnitLine)).toBeTruthy()
     expect(screen.queryByText(copy.panel.coverageNote)).toBeNull()
-    expect(
-      screen.queryByRole('button', { name: copy.location.searchManual }),
-    ).toBeNull()
+    expect(screen.queryByRole('button', { name: copy.location.searchManual })).toBeNull()
   })
 
   it('shows default zero count when far from coverage', () => {
@@ -103,9 +101,7 @@ describe('LocationCard', () => {
 
     expect(screen.getByText('0')).toBeTruthy()
     expect(screen.getByText(copy.location.hotspotUnitLine)).toBeTruthy()
-    expect(
-      screen.queryByRole('button', { name: copy.location.searchManual }),
-    ).toBeNull()
+    expect(screen.queryByRole('button', { name: copy.location.searchManual })).toBeNull()
   })
 
   it('shows denied state with retry and search', () => {
@@ -113,9 +109,7 @@ describe('LocationCard', () => {
     renderCard()
     expect(screen.getByText(copy.location.deniedBody)).toBeTruthy()
     expect(screen.getByRole('button', { name: copy.location.useLocation })).toBeTruthy()
-    expect(
-      screen.getByRole('button', { name: copy.location.searchManual }),
-    ).toBeTruthy()
+    expect(screen.getByRole('button', { name: copy.location.searchManual })).toBeTruthy()
   })
 
   it('shows error empty with coba lagi and search', () => {
@@ -123,9 +117,7 @@ describe('LocationCard', () => {
     renderCard()
     expect(screen.getByText(copy.location.errorBody)).toBeTruthy()
     expect(screen.getByRole('button', { name: copy.location.tryAgain })).toBeTruthy()
-    expect(
-      screen.getByRole('button', { name: copy.location.searchManual }),
-    ).toBeTruthy()
+    expect(screen.getByRole('button', { name: copy.location.searchManual })).toBeTruthy()
   })
 
   it('shows timeout with coba lagi and search', () => {

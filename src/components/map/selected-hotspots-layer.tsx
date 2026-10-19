@@ -183,15 +183,12 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
     }
   }, [map])
 
-  const risk = selectedRegion
-    ? effectiveRiskCategory(selectedRegion)
-    : 'tidak_tersedia'
+  const risk = selectedRegion ? effectiveRiskCategory(selectedRegion) : 'tidak_tersedia'
   const style = RISK_CATEGORIES[risk]
 
   if (!selectedRegion) return null
 
-  const showMarkers =
-    regionHotspots.length > 0 && regionHotspots.length <= 64
+  const showMarkers = regionHotspots.length > 0 && regionHotspots.length <= 64
   const pulseStyle = pinPulseStyle(risk, style.dot)
 
   return (
@@ -210,10 +207,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
       {showMarkers
         ? regionHotspots.map((f, i) => {
             const [lon, lat] = f.geometry.coordinates
-            const stamp = formatDateDotTime(
-              f.properties.time,
-              selectedRegion.time_zone,
-            )
+            const stamp = formatDateDotTime(f.properties.time, selectedRegion.time_zone)
             const label = `Titik panas ${stamp}`
 
             return (

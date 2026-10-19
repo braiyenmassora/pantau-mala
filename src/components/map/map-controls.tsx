@@ -46,8 +46,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
       : copy.footer.dataUpdated(relative)
     : null
   const hasCoords =
-    (location.status === 'active' || location.status === 'outside') &&
-    !!location.coords
+    (location.status === 'active' || location.status === 'outside') && !!location.coords
   const inIndonesia = location.status === 'active' && !!location.coords
 
   return (

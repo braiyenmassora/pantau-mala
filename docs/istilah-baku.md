@@ -2,22 +2,22 @@
 
 Satu istilah untuk satu konsep. Pakai ini di copy UI, tip, share, dan meta. Sumber teks: `src/copy/id.ts` dan `RISK_CATEGORIES` di `src/lib/risk-category.ts`.
 
-| Istilah | Arti | Jangan bilang / jangan samakan dengan |
-| --- | --- | --- |
-| **Titik panas** | Deteksi panas satelit NASA FIRMS | Api, kebakaran aktif, konfirmasi kebakaran |
-| **Terdeteksi** | Satelit mencatat sinyal panas (bukan “tidak ada kejadian”) | “Tidak ada api”, “aman”, “bersih” |
-| **Risiko** | Kategori dari jumlah titik panas 24 jam di wilayah (hanya bila ada titik) | Kualitas udara, FWI, peringatan resmi, nol titik |
-| **Tidak ada titik panas terdeteksi** (`tanpa_titik`) | Status FE bila hitungan 24 jam = **0** valid. Label yang sama di **badge**, **pin/hover**, dan **legenda** (titik abu). Hanya di filter **Semua**, urutan paling bawah | “Tanpa titik”, Risiko Rendah, hijau, “aman”; chip filter sendiri (tidak ada) |
-| **Belum dinilai** (`tidak_tersedia`) | Hitungan null/undefined/gagal dimuat, atau agregat tanpa data | Nol titik terkonfirmasi; jangan isi choropleth abu |
-| **Keyakinan** / **keyakinan deteksi** | Seberapa yakin satelit bahwa lokasi itu panas | Tingkat bahaya atau risiko kebakaran |
-| **Estimasi** | Nilai model (udara, cuaca), bukan pengukuran stasiun | “Resmi”, “stasiun”, “pasti” |
-| **Kualitas udara** | Estimasi PM2.5 / kategori model | Badge risiko titik panas; label “Sedang” tanpa penanda di luar kartu udara |
-| **Wilayah** | Kabupaten/kota (unit pantauan utama) | Provinsi (agregat), desa |
-| **Provinsi** | Agregat kab/kota; badge = risiko/status terburuk di dalamnya | Satu kab/kota |
-| **Dekat kamu** | Titik panas dalam radius 25 km dari lokasi pengguna | Pantauan nasional penuh |
-| **Sumber resmi** | Portal BMKG, BNPB, SiPongi+, Darurat 112 (kartu detail wilayah) | Sumber data satelit FIRMS di footer |
-| **Data usang / terlambat** | Pembaruan sumber terlambat atau gagal | “Data terbaru”, “real-time”; jangan tampilkan abu nol titik sebagai konfirmasi kosong |
-| **Orbit / cakupan satelit** | Satelit tidak memantau terus-menerus | Hanya tampil saat **nol** titik terdeteksi |
+| Istilah                                              | Arti                                                                                                                                                                   | Jangan bilang / jangan samakan dengan                                                 |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Titik panas**                                      | Deteksi panas satelit NASA FIRMS                                                                                                                                       | Api, kebakaran aktif, konfirmasi kebakaran                                            |
+| **Terdeteksi**                                       | Satelit mencatat sinyal panas (bukan “tidak ada kejadian”)                                                                                                             | “Tidak ada api”, “aman”, “bersih”                                                     |
+| **Risiko**                                           | Kategori dari jumlah titik panas 24 jam di wilayah (hanya bila ada titik)                                                                                              | Kualitas udara, FWI, peringatan resmi, nol titik                                      |
+| **Tidak ada titik panas terdeteksi** (`tanpa_titik`) | Status FE bila hitungan 24 jam = **0** valid. Label yang sama di **badge**, **pin/hover**, dan **legenda** (titik abu). Hanya di filter **Semua**, urutan paling bawah | “Tanpa titik”, Risiko Rendah, hijau, “aman”; chip filter sendiri (tidak ada)          |
+| **Belum dinilai** (`tidak_tersedia`)                 | Hitungan null/undefined/gagal dimuat, atau agregat tanpa data                                                                                                          | Nol titik terkonfirmasi; jangan isi choropleth abu                                    |
+| **Keyakinan** / **keyakinan deteksi**                | Seberapa yakin satelit bahwa lokasi itu panas                                                                                                                          | Tingkat bahaya atau risiko kebakaran                                                  |
+| **Estimasi**                                         | Nilai model (udara, cuaca), bukan pengukuran stasiun                                                                                                                   | “Resmi”, “stasiun”, “pasti”                                                           |
+| **Kualitas udara**                                   | Estimasi PM2.5 / kategori model                                                                                                                                        | Badge risiko titik panas; label “Sedang” tanpa penanda di luar kartu udara            |
+| **Wilayah**                                          | Kabupaten/kota (unit pantauan utama)                                                                                                                                   | Provinsi (agregat), desa                                                              |
+| **Provinsi**                                         | Agregat kab/kota; badge = risiko/status terburuk di dalamnya                                                                                                           | Satu kab/kota                                                                         |
+| **Dekat kamu**                                       | Titik panas dalam radius 25 km dari lokasi pengguna                                                                                                                    | Pantauan nasional penuh                                                               |
+| **Sumber resmi**                                     | Portal BMKG, BNPB, SiPongi+, Darurat 112 (kartu detail wilayah)                                                                                                        | Sumber data satelit FIRMS di footer                                                   |
+| **Data usang / terlambat**                           | Pembaruan sumber terlambat atau gagal                                                                                                                                  | “Data terbaru”, “real-time”; jangan tampilkan abu nol titik sebagai konfirmasi kosong |
+| **Orbit / cakupan satelit**                          | Satelit tidak memantau terus-menerus                                                                                                                                   | Hanya tampil saat **nol** titik terdeteksi                                            |
 
 ## Legenda peta (Tingkat risiko)
 

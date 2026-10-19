@@ -2,10 +2,7 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 
-import {
-  OfficialRefsCard,
-  OfficialRefsCompact,
-} from '@/components/panel/official-refs'
+import { OfficialRefsCard, OfficialRefsCompact } from '@/components/panel/official-refs'
 import { copy } from '@/copy/id'
 
 describe('OfficialRefsCompact', () => {
@@ -25,9 +22,7 @@ describe('OfficialRefsCompact', () => {
     const sipongi = screen.getByRole('link', {
       name: copy.official.openExternal(copy.official.refs.sipongi.name),
     })
-    expect(sipongi.getAttribute('href')).toBe(
-      'https://sipongi.gakkum.kehutanan.go.id/',
-    )
+    expect(sipongi.getAttribute('href')).toBe('https://sipongi.gakkum.kehutanan.go.id/')
     expect(sipongi.getAttribute('href')).not.toMatch(/menlhk/)
 
     const emergency = screen.getByRole('link', {
