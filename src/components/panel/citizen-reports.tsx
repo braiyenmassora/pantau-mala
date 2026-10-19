@@ -1,6 +1,7 @@
-import { MessageSquare } from 'lucide-react'
-import { useState, type FormEvent } from 'react'
+import { CheckCircle2, ImagePlus, MessageSquare, X } from 'lucide-react'
+import { useId, useRef, useState, type FormEvent } from 'react'
 import { Button } from '@/components/common/button'
+import { focusRing } from '@/components/common/focus-ring'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { copy } from '@/copy/id'
 import {
@@ -10,6 +11,10 @@ import {
 } from '@/data/hotspot-reports'
 import { useHotspots } from '@/data/queries'
 import { formatRelativeAge } from '@/lib/format'
+import { cn } from '@/lib/utils'
+
+const MAX_PHOTO_BYTES = 2 * 1024 * 1024
+const PHOTO_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 
 const sightingLabel = {
   asap: 'Melihat asap',
@@ -19,6 +24,8 @@ const sightingLabel = {
 } as const
 
 export function CitizenReports({ regionCode }: { regionCode: string }) {
+  const fieldId = useId()
+  const fileRef = useRef<HTMLInputElement>(null)
   const reports = useRegionHotspotReports(regionCode)
   const hotspots = useHotspots()
   const create = useCreateHotspotReport()
@@ -26,6 +33,7 @@ export function CitizenReports({ regionCode }: { regionCode: string }) {
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [photo, setPhoto] = useState<File | null>(null)
+  const [photoError, setPhotoError] = useState('')
   const [sighting, setSighting] = useState<HotspotSighting>('asap')
   const target = hotspots.data?.features
     .filter((feature) => feature.properties.region_code === regionCode)
@@ -35,7 +43,7 @@ export function CitizenReports({ regionCode }: { regionCode: string }) {
     )[0]
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (!photo || !target) return
+    if (!photo || !target || !name.trim()) return
     const [lon, lat] = target.geometry.coordinates
     create.mutate(
       {
@@ -44,8 +52,8 @@ export function CitizenReports({ regionCode }: { regionCode: string }) {
         region_code: regionCode,
         hotspot_time: target.properties.time,
         sighting,
-        author_name: name,
-        description: description || undefined,
+        author_name: name.trim(),
+        description: description.trim() || undefined,
         file: photo,
       },
       {
@@ -53,6 +61,8 @@ export function CitizenReports({ regionCode }: { regionCode: string }) {
           setName('')
           setDescription('')
           setPhoto(null)
+          setPhotoError('')
+          if (fileRef.current) fileRef.current.value = ''
           setOpen(false)
         },
       },
@@ -124,66 +134,235 @@ export function CitizenReports({ regionCode }: { regionCode: string }) {
             Belum ada titik panas aktif yang dapat dilaporkan di wilayah ini.
           </p>
         ) : null}
-        <Button
-          variant="soft"
-          size="md"
-          disabled={!target}
-          onClick={() => setOpen((value) => !value)}
-          className="mt-4 w-full"
-        >
-          {open ? 'Tutup formulir' : 'Kirim laporan'}
-        </Button>
+        {create.isSuccess && !open ? (
+          <p
+            role="status"
+            className="text-risk-low bg-surface rounded-ctl mt-3 flex items-center gap-2 px-3 py-2 text-sm"
+          >
+            <CheckCircle2 className="size-4 shrink-0" aria-hidden />
+            Laporan berhasil dikirim.
+          </p>
+        ) : null}
+        {!open ? (
+          <Button
+            variant="soft"
+            size="md"
+            disabled={!target}
+            onClick={() => {
+              create.reset()
+              setOpen(true)
+            }}
+            className="mt-4 w-full"
+          >
+            Kirim laporan
+          </Button>
+        ) : null}
         {open ? (
-          <form onSubmit={submit} className="border-line mt-3 space-y-3 border-t pt-4">
-            <p className="text-ink-2 text-xs">
-              Unggah JPEG, PNG, atau WebP maksimal 2 MiB.
-            </p>
-            <input
-              required
-              maxLength={80}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={copy.detail.reportNamePlaceholder}
-              className="border-line rounded-ctl w-full border px-3 py-2 text-sm"
-            />
-            <select
-              value={sighting}
-              onChange={(e) => setSighting(e.target.value as HotspotSighting)}
-              className="border-line rounded-ctl w-full border px-3 py-2 text-sm"
-            >
-              {Object.entries(sightingLabel).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-            <textarea
-              maxLength={500}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder={copy.detail.reportDescriptionPlaceholder}
-              className="border-line rounded-ctl w-full border px-3 py-2 text-sm"
-            />
-            <input
-              required
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
-              className="text-ink-2 w-full text-xs"
-            />
+          <form
+            onSubmit={submit}
+            className="border-line bg-surface rounded-card mt-3 space-y-4 border p-3"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-ink text-sm font-semibold">Detail laporan</h3>
+                <p className="text-ink-2 mt-1 text-xs leading-4">
+                  Foto dan nama tampilan wajib diisi.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className={cn(
+                  'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex h-9 items-center gap-1 px-2 text-xs font-medium',
+                  focusRing,
+                )}
+              >
+                <X className="size-4" aria-hidden />
+                Tutup
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor={`${fieldId}-name`}
+                className="text-ink text-xs font-semibold"
+              >
+                Nama tampilan <span className="text-risk-high">*</span>
+              </label>
+              <input
+                id={`${fieldId}-name`}
+                required
+                maxLength={80}
+                autoComplete="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={copy.detail.reportNamePlaceholder}
+                className={cn(
+                  'border-line bg-surface rounded-ctl h-11 w-full border px-3 text-sm',
+                  'placeholder:text-ink-3',
+                  focusRing,
+                )}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor={`${fieldId}-sighting`}
+                className="text-ink text-xs font-semibold"
+              >
+                Apa yang terlihat? <span className="text-risk-high">*</span>
+              </label>
+              <select
+                id={`${fieldId}-sighting`}
+                value={sighting}
+                onChange={(e) => setSighting(e.target.value as HotspotSighting)}
+                className={cn(
+                  'border-line bg-surface rounded-ctl h-11 w-full border px-3 text-sm',
+                  focusRing,
+                )}
+              >
+                {Object.entries(sightingLabel).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <label
+                  htmlFor={`${fieldId}-description`}
+                  className="text-ink text-xs font-semibold"
+                >
+                  Catatan <span className="text-ink-3 font-normal">(opsional)</span>
+                </label>
+                <span className="text-ink-3 text-xs tabular-nums">
+                  {description.length}/500
+                </span>
+              </div>
+              <textarea
+                id={`${fieldId}-description`}
+                maxLength={500}
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder={copy.detail.reportDescriptionPlaceholder}
+                className={cn(
+                  'border-line bg-surface rounded-ctl min-h-24 w-full resize-y border px-3 py-2 text-sm',
+                  'placeholder:text-ink-3',
+                  focusRing,
+                )}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-ink block text-xs font-semibold">
+                Bukti foto <span className="text-risk-high">*</span>
+              </span>
+              <input
+                ref={fileRef}
+                id={`${fieldId}-photo`}
+                required
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                aria-describedby={`${fieldId}-photo-help`}
+                onChange={(e) => {
+                  const next = e.target.files?.[0] ?? null
+                  if (next && !PHOTO_TYPES.has(next.type)) {
+                    setPhoto(null)
+                    setPhotoError('Format foto harus JPEG, PNG, atau WebP.')
+                    e.currentTarget.value = ''
+                    return
+                  }
+                  if (next && next.size > MAX_PHOTO_BYTES) {
+                    setPhoto(null)
+                    setPhotoError('Ukuran foto melebihi batas 2 MiB.')
+                    e.currentTarget.value = ''
+                    return
+                  }
+                  setPhoto(next)
+                  setPhotoError('')
+                }}
+                className="sr-only"
+              />
+              {photo ? (
+                <div className="border-brand/30 bg-brand-soft rounded-ctl flex min-h-16 items-center gap-3 border px-3 py-2">
+                  <span className="bg-surface text-brand rounded-ctl flex size-9 shrink-0 items-center justify-center">
+                    <CheckCircle2 className="size-4" aria-hidden />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-ink truncate text-sm font-medium">{photo.name}</p>
+                    <p className="text-ink-2 text-xs">
+                      {(photo.size / 1024 / 1024).toLocaleString('id-ID', {
+                        maximumFractionDigits: 1,
+                      })}{' '}
+                      MiB
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label={copy.detail.removeReportPhoto}
+                    onClick={() => {
+                      setPhoto(null)
+                      if (fileRef.current) fileRef.current.value = ''
+                    }}
+                    className={cn(
+                      'text-ink-2 hover:bg-surface rounded-ctl flex size-9 shrink-0 items-center justify-center',
+                      focusRing,
+                    )}
+                  >
+                    <X className="size-4" aria-hidden />
+                  </button>
+                </div>
+              ) : (
+                <label
+                  htmlFor={`${fieldId}-photo`}
+                  className={cn(
+                    'border-line hover:border-brand/40 hover:bg-brand-soft/40 rounded-ctl flex min-h-20 cursor-pointer items-center gap-3 border border-dashed px-3 py-3 transition-colors',
+                    focusRing,
+                  )}
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      fileRef.current?.click()
+                    }
+                  }}
+                >
+                  <span className="bg-brand-soft text-brand flex size-10 shrink-0 items-center justify-center rounded-full">
+                    <ImagePlus className="size-5" aria-hidden />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="text-ink block text-sm font-semibold">
+                      Pilih foto dari perangkat
+                    </span>
+                    <span
+                      id={`${fieldId}-photo-help`}
+                      className="text-ink-2 mt-1 block text-xs leading-4"
+                    >
+                      JPEG, PNG, atau WebP · Maksimal 2 MiB
+                    </span>
+                  </span>
+                </label>
+              )}
+              {photoError ? (
+                <p role="alert" className="text-risk-high text-xs">
+                  {photoError}
+                </p>
+              ) : null}
+            </div>
+
             {create.isError ? (
-              <p className="text-risk-high text-sm">
+              <p role="alert" className="text-risk-high text-sm">
                 Laporan belum dapat dikirim. Coba lagi.
               </p>
-            ) : null}
-            {create.isSuccess ? (
-              <p className="text-risk-low text-sm">Laporan terkirim.</p>
             ) : null}
             <Button
               type="submit"
               size="md"
               loading={create.isPending}
-              disabled={create.isPending || !photo || photo.size > 2 * 1024 * 1024}
+              disabled={create.isPending || !photo || !name.trim()}
               className="w-full"
             >
               {create.isPending ? 'Mengirim…' : 'Kirim laporan'}

@@ -117,6 +117,7 @@ export const copy = {
     contextShow: 'Lihat konteks event NASA',
     contextHide: 'Tutup konteks event NASA',
     contextStatus: 'Contextual · NASA EONET',
+    providers: 'Penyedia data',
 
     river: 'Debit sungai model',
     riverNote:
@@ -259,6 +260,7 @@ export const copy = {
     flagDate: 'Deteksi',
     reportNamePlaceholder: 'Nama tampilan',
     reportDescriptionPlaceholder: 'Apa yang kamu lihat?',
+    removeReportPhoto: 'Hapus foto terpilih',
     updatedAt: (when: string) => `Diperbarui ${when}`,
     trendUp: 'Naik',
     trendDown: 'Turun',

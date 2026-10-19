@@ -22,6 +22,7 @@ import { RegionRow } from '@/components/panel/region-row'
 import { SearchBox } from '@/components/panel/search-box'
 import { TopProvincesList } from '@/components/panel/top-provinces-list'
 import { NasaEonetCard } from '@/components/panel/nasa-eonet-card'
+import { SourceDataPanel } from '@/components/panel/source-data-panel'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
@@ -267,6 +268,7 @@ export function SummaryPanel({
           <LocationCard regions={regions} />
           <LatestEarthquakeCard />
           <NasaEonetCard />
+          <SourceDataPanel />
 
           <section className="space-y-3">
             <h2 className="text-ink text-sm font-semibold">

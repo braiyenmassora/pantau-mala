@@ -18,14 +18,14 @@ export const historySchema = z.object({
   data: z.array(z.object({ tanggal: z.string(), titik_panas: number, skor: nullable })),
 })
 export const earthquakeSchema = z.object({
-      waktu: timestamp,
-      pusat: lonLat,
-      magnitudo: number.min(0).max(10),
-      kedalaman_km: number.min(0).max(800),
-      wilayah: z.string(),
-      potensi: z.string(),
-      dirasakan: z.string(),
-      shakemap: z.string(),
+  waktu: timestamp,
+  pusat: lonLat,
+  magnitudo: number.min(0).max(10),
+  kedalaman_km: number.min(0).max(800),
+  wilayah: z.string(),
+  potensi: z.string(),
+  dirasakan: z.string(),
+  shakemap: z.string(),
 })
 export type Earthquake = z.infer<typeof earthquakeSchema>
 export const earthquakesSchema = z.object({
@@ -155,6 +155,23 @@ const provenanceSchema = z.object({
   catatan_kualitas: z.string().optional(),
 })
 
+export const providerRegistrySchema = z.object({
+  data: z.array(
+    z.object({
+      id: z.string().min(1),
+      provider: z.string().min(1),
+      endpoint: z.url(),
+      kind: z.enum(['observed', 'modelled', 'derived', 'contextual']),
+      attribution: z.string().min(1),
+      license: z.string().min(1),
+      raw_unit: z.string(),
+      normalized_unit: z.string(),
+      latest: z.unknown().nullable(),
+      status: z.enum(['ok', 'stale', 'unavailable']),
+    }),
+  ),
+})
+
 export const soilMoistureSchema = z.object({
   data: z.object({
     latitude: number.min(-90).max(90),
@@ -178,11 +195,31 @@ const lineCoordinates = z.array(lonLat).min(2)
 const polygonCoordinates = z.array(z.array(lonLat).min(4)).min(1)
 const geometrySchema = z.discriminatedUnion('tipe', [
   z.object({ waktu: timestamp, tipe: z.literal('Point'), koordinat: lonLat }),
-  z.object({ waktu: timestamp, tipe: z.literal('Polygon'), koordinat: polygonCoordinates }),
-  z.object({ waktu: timestamp, tipe: z.literal('LineString'), koordinat: lineCoordinates }),
-  z.object({ waktu: timestamp, tipe: z.literal('MultiPoint'), koordinat: z.array(lonLat).min(1) }),
-  z.object({ waktu: timestamp, tipe: z.literal('MultiLineString'), koordinat: z.array(lineCoordinates).min(1) }),
-  z.object({ waktu: timestamp, tipe: z.literal('MultiPolygon'), koordinat: z.array(polygonCoordinates).min(1) }),
+  z.object({
+    waktu: timestamp,
+    tipe: z.literal('Polygon'),
+    koordinat: polygonCoordinates,
+  }),
+  z.object({
+    waktu: timestamp,
+    tipe: z.literal('LineString'),
+    koordinat: lineCoordinates,
+  }),
+  z.object({
+    waktu: timestamp,
+    tipe: z.literal('MultiPoint'),
+    koordinat: z.array(lonLat).min(1),
+  }),
+  z.object({
+    waktu: timestamp,
+    tipe: z.literal('MultiLineString'),
+    koordinat: z.array(lineCoordinates).min(1),
+  }),
+  z.object({
+    waktu: timestamp,
+    tipe: z.literal('MultiPolygon'),
+    koordinat: z.array(polygonCoordinates).min(1),
+  }),
 ])
 
 export const nasaEonetEventSchema = z.object({
@@ -197,11 +234,17 @@ export const nasaEonetEventSchema = z.object({
 })
 
 export const nasaEonetCatalogSchema = z.object({
-  data: z.object({
-    events: z.array(nasaEonetEventSchema).max(100),
-    jumlah: z.number().int().min(0),
-    provenans: provenanceSchema.extend({ sifat_data: z.literal('contextual') }),
-  }).refine((value) => value.jumlah === value.events.length && new Set(value.events.map((event) => event.id)).size === value.events.length),
+  data: z
+    .object({
+      events: z.array(nasaEonetEventSchema).max(100),
+      jumlah: z.number().int().min(0),
+      provenans: provenanceSchema.extend({ sifat_data: z.literal('contextual') }),
+    })
+    .refine(
+      (value) =>
+        value.jumlah === value.events.length &&
+        new Set(value.events.map((event) => event.id)).size === value.events.length,
+    ),
   sumber: z.string(),
   keterangan: z.string(),
   diambil: timestamp,

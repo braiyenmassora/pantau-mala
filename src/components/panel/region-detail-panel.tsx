@@ -1,5 +1,8 @@
 import {
   Check,
+  Clock,
+  CloudFog,
+  CloudSun,
   Droplets,
   Gauge,
   Minus,
@@ -26,6 +29,7 @@ import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
 import { RegionTerrainCard } from '@/components/panel/terrain-indicator-card'
 import { CitizenReports } from '@/components/panel/citizen-reports'
+import { RegionHistoryPanel } from '@/components/panel/region-history-panel'
 
 type RegionDetailPanelProps = {
   region: Region
@@ -152,10 +156,10 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
 
   return (
     <div key={region.code} className="flex flex-col">
-      <div className="flex flex-col gap-3 px-4 pt-3 pb-4">
-        <section className="px-1 pb-2">
+      <div className="flex flex-col gap-3 px-4 pt-0 pb-4 sm:pt-3">
+        <section className="px-1 pb-1 sm:pb-2">
           <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0 pt-1">
+            <div className="min-w-0">
               <div className="flex items-center gap-1">
                 <h2
                   ref={titleRef}
@@ -217,6 +221,18 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
           {stamp ? (
             <p className="text-ink-3 mt-3 text-xs leading-5">Diperbarui {stamp}</p>
           ) : null}
+
+          {region.summary ? (
+            <p className="bg-surface-muted text-ink rounded-ctl mt-3 px-3 py-2 text-sm leading-5">
+              {region.summary}
+            </p>
+          ) : null}
+          <p className="text-ink-2 mt-2 text-xs leading-4">
+            {copy.detail.calibrationNote(
+              region.score == null ? null : formatNumber(region.score),
+              region.quality ?? null,
+            )}
+          </p>
         </section>
 
         <CitizenReports regionCode={region.code} />
@@ -229,6 +245,16 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
+              <ConditionCell
+                icon={<CloudSun strokeWidth={2} />}
+                label="Cuaca"
+                value={
+                  region.weather.temp_c != null
+                    ? `${formatNumber(region.weather.temp_c)}°C · ${region.weather.condition}`
+                    : region.weather.condition || '—'
+                }
+                isMissing={region.weather.temp_c == null}
+              />
               <ConditionCell
                 icon={<Droplets strokeWidth={2} />}
                 label="Kelembapan"
@@ -260,19 +286,89 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
                 isMissing={region.weather.dry_days == null}
               />
               <ConditionCell
+                icon={<CloudFog strokeWidth={2} />}
+                label="Kualitas udara"
+                value={copy.air[region.air_quality.category]}
+                isMissing={region.air_quality.category === 'missing'}
+                tooltip={copy.detail.airTooltip}
+              />
+              <ConditionCell
                 icon={<Gauge strokeWidth={2} />}
-                label="Kelas FWI"
+                label="PM2.5 / ISPU"
                 value={
-                  region.weather_danger
-                    ? `${copy.bahaya[region.weather_danger.class]} (${formatNumber(region.weather_danger.fwi)})`
+                  region.air_quality.pm25 != null
+                    ? `${formatNumber(region.air_quality.pm25)} µg/m³${region.air_quality.ispu != null ? ` · ${formatNumber(region.air_quality.ispu)}` : ''}`
                     : '—'
                 }
-                isMissing={!region.weather_danger}
-                tooltip="Fire Weather Index: ukuran seberapa mudah api menyala dan menyebar berdasarkan cuaca. Makin tinggi kelasnya, makin rawan."
+                isMissing={region.air_quality.pm25 == null}
+                tooltip="PM2.5 adalah estimasi konsentrasi partikel halus. Angka setelah pemisah adalah ISPU bila tersedia."
               />
+              {region.weather_danger ? (
+                <ConditionCell
+                  icon={<Gauge strokeWidth={2} />}
+                  label="Kelas FWI"
+                  value={`${copy.bahaya[region.weather_danger.class]} (${formatNumber(region.weather_danger.fwi)})`}
+                  tooltip={copy.detail.weatherDangerTooltip}
+                />
+              ) : null}
             </div>
           </CardContent>
         </Card>
+
+        {region.last_detection ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>Deteksi satelit terakhir</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-4">
+                <ConditionCell
+                  icon={<Clock strokeWidth={2} />}
+                  label="Waktu"
+                  value={formatDateTime(region.last_detection.time, region.time_zone)}
+                />
+                <ConditionCell
+                  icon={<Gauge strokeWidth={2} />}
+                  label="FRP"
+                  value={`${formatNumber(region.last_detection.frp_mw)} MW`}
+                  tooltip="Fire Radiative Power adalah intensitas energi panas yang terukur oleh sensor satelit."
+                />
+                <ConditionCell
+                  icon={<CloudSun strokeWidth={2} />}
+                  label="Satelit"
+                  value={region.last_detection.satellite}
+                />
+                <ConditionCell
+                  icon={<Check strokeWidth={2} />}
+                  label="Keyakinan"
+                  value={copy.detail.confidence[region.last_detection.confidence]}
+                />
+              </div>
+              <div className="border-line text-ink-3 mt-3 space-y-1 border-t pt-3 text-xs leading-4">
+                <p>
+                  Indikator dihitung:{' '}
+                  {region.computed_at
+                    ? formatDateTime(region.computed_at, region.time_zone)
+                    : 'belum tersedia'}
+                </p>
+                <p>
+                  Cuaca diperbarui:{' '}
+                  {region.weather_updated_at
+                    ? formatDateTime(region.weather_updated_at, region.time_zone)
+                    : 'belum tersedia'}
+                </p>
+                <p>
+                  Udara diperbarui:{' '}
+                  {region.air_updated_at
+                    ? formatDateTime(region.air_updated_at, region.time_zone)
+                    : 'belum tersedia'}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : null}
+
+        <RegionHistoryPanel code={region.code} />
 
         <section className="border-line border-t px-1 pt-4">
           <h3 className="font-heading text-ink text-sm leading-5 font-semibold">
