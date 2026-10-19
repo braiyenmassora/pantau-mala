@@ -9,14 +9,17 @@ const UUID_RE = /^[0-9a-f-]{36}$/i
 export type TelemetryStatus =
   'privacy' | 'queued' | 'sending' | 'accepted' | 'retrying' | 'unavailable' | 'rejected'
 
+export type TelemetryIssue = 'runtime_error' | 'unhandled_rejection' | 'api_error'
+
 export type TelemetryEvent = {
   id: string
   session_id: string
   type: 'page_view' | 'error'
   path: string
   referrer: string
-  /** Kode aman saja — bukan message/stack. */
-  code?: string
+  /** Allowlist BE — bukan message/stack. */
+  issue?: TelemetryIssue
+  status?: number
 }
 
 type StoredSession = { id: string; at: number }
@@ -105,7 +108,8 @@ export function telemetrySessionId(privacy: boolean): string {
 function buildEvent(
   type: TelemetryEvent['type'],
   privacy: boolean,
-  code?: string,
+  issue?: TelemetryIssue,
+  status?: number,
 ): TelemetryEvent {
   const event: TelemetryEvent = {
     id: type === 'page_view' ? pageViewEventId() : crypto.randomUUID(),
@@ -114,7 +118,8 @@ function buildEvent(
     path: telemetryPath(),
     referrer: privacy ? '' : document.referrer || '',
   }
-  if (code) event.code = code
+  if (issue) event.issue = issue
+  if (typeof status === 'number') event.status = status
   return event
 }
 
@@ -158,11 +163,14 @@ export async function sendTelemetry(events: TelemetryEvent[], privacy: boolean) 
   }
 }
 
-/** Error aplikasi — hanya kode aman, tanpa message/stack. */
-export function reportTelemetryError(code: string) {
+/** Error aplikasi — issue allowlist saja, tanpa message/stack. */
+export function reportTelemetryError(
+  issue: TelemetryIssue = 'runtime_error',
+  status?: number,
+) {
   try {
     const privacy = isPrivacyMode()
-    void sendTelemetry([buildEvent('error', privacy, code)], privacy)
+    void sendTelemetry([buildEvent('error', privacy, issue, status)], privacy)
   } catch {
     // jangan ubah error telemetry jadi error aplikasi
   }

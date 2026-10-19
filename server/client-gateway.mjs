@@ -88,7 +88,7 @@ export function createClientGateway(env, fetcher = fetch) {
       if (!queryNames.has(key))
         return reply(400, { error: 'Unsupported query parameter' })
     try {
-      // Telemetry: browser tanpa token; gateway pasang key server (sama data routes).
+      // Telemetry: body dari browser; UA/Origin/geo dari gateway (bukan field body).
       if (isTelemetry) {
         const prefer = request.headers.get('prefer')
         const transport = request.headers.get('x-pantau-telemetry-transport')
@@ -99,6 +99,25 @@ export function createClientGateway(env, fetcher = fetch) {
         }
         if (prefer) headers.Prefer = prefer
         if (transport) headers['X-Pantau-Telemetry-Transport'] = transport
+        const ua = request.headers.get('user-agent')
+        if (ua) headers['User-Agent'] = ua
+        const reqOrigin = request.headers.get('origin')
+        if (reqOrigin) headers.Origin = reqOrigin
+        const referer = request.headers.get('referer')
+        if (referer) headers.Referer = referer
+        // Geo hanya dari CF Worker (request.cf); buang header geo spoof dari browser.
+        const cf = request.cf
+        if (cf && typeof cf === 'object') {
+          const country = cf.country != null ? String(cf.country).trim() : ''
+          const region = String(cf.region || cf.regionCode || '').trim()
+          const city = cf.city != null ? String(cf.city).trim() : ''
+          if (country || region || city) {
+            headers['X-Pantau-Geo-Source'] = 'cloudflare'
+            if (country) headers['X-Pantau-Geo-Country'] = encodeURIComponent(country)
+            if (region) headers['X-Pantau-Geo-Region'] = encodeURIComponent(region)
+            if (city) headers['X-Pantau-Geo-City'] = encodeURIComponent(city)
+          }
+        }
         const upstreamRes = await fetcher(new URL('/api/v1/telemetry', origin), {
           method: 'POST',
           headers,

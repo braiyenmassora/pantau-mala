@@ -94,7 +94,7 @@ it('fails closed on missing secrets and insecure external origin', () => {
     createClientGateway({ ...env, PANTAU_API_ORIGIN: 'http://external.example' }),
   ).toThrow()
 })
-it('forwards telemetry POST with server key only (not browser identity)', async () => {
+it('forwards telemetry POST with server key, UA, origin, and CF geo', async () => {
   const fetcher = vi.fn().mockResolvedValue(new Response(null, { status: 202 }))
   const gateway = createClientGateway(env, fetcher)
   const body = JSON.stringify({
@@ -108,26 +108,35 @@ it('forwards telemetry POST with server key only (not browser identity)', async 
       },
     ],
   })
-  const response = await gateway(
-    new Request('http://localhost/api/v1/telemetry', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Prefer: 'respond-async',
-        'X-Pantau-Telemetry-Transport': 'fetch-keepalive',
-      },
-      body,
-    }),
-  )
+  const request = new Request('http://localhost/api/v1/telemetry', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Prefer: 'respond-async',
+      'X-Pantau-Telemetry-Transport': 'fetch-keepalive',
+      'User-Agent': 'Mozilla/5.0 (Test) Chrome/120.0.0.0',
+      Origin: 'http://localhost',
+      Referer: 'http://localhost/',
+      // spoof — harus diabaikan tanpa request.cf
+      'X-Pantau-Geo-Country': 'XX',
+    },
+    body,
+  })
+  Object.defineProperty(request, 'cf', {
+    value: { country: 'ID', region: 'DKI Jakarta', city: 'Jakarta' },
+  })
+  const response = await gateway(request)
   expect(response!.status).toBe(202)
   expect(String(fetcher.mock.calls[0][0])).toBe('http://127.0.0.1:8080/api/v1/telemetry')
-  expect(fetcher.mock.calls[0][1].headers.Authorization).toBe(
-    'Bearer ' + env.PANTAU_API_KEY,
-  )
-  expect(fetcher.mock.calls[0][1].headers.Prefer).toBe('respond-async')
-  expect(fetcher.mock.calls[0][1].headers['X-Pantau-Telemetry-Transport']).toBe(
-    'fetch-keepalive',
-  )
+  const upstreamHeaders = fetcher.mock.calls[0][1].headers
+  expect(upstreamHeaders.Authorization).toBe('Bearer ' + env.PANTAU_API_KEY)
+  expect(upstreamHeaders.Prefer).toBe('respond-async')
+  expect(upstreamHeaders['X-Pantau-Telemetry-Transport']).toBe('fetch-keepalive')
+  expect(upstreamHeaders['User-Agent']).toBe('Mozilla/5.0 (Test) Chrome/120.0.0.0')
+  expect(upstreamHeaders.Origin).toBe('http://localhost')
+  expect(upstreamHeaders['X-Pantau-Geo-Source']).toBe('cloudflare')
+  expect(upstreamHeaders['X-Pantau-Geo-Country']).toBe('ID')
+  expect(upstreamHeaders['X-Pantau-Geo-City']).toBe(encodeURIComponent('Jakarta'))
 })
 it('rejects browser identity on telemetry', async () => {
   const gateway = createClientGateway(env, vi.fn())
