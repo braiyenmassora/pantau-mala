@@ -1,6 +1,5 @@
 import { SessionControl } from '@/auth/session-control'
 import { focusRing } from '@/components/common/focus-ring'
-import { TelemetryStatus } from '@/components/common/telemetry-status'
 import { copy } from '@/copy/id'
 import { cn } from '@/lib/utils'
 
@@ -49,7 +48,6 @@ export function PanelFooter() {
           </span>
         ))}
       </p>
-      <TelemetryStatus />
       <SessionControl />
     </footer>
   )

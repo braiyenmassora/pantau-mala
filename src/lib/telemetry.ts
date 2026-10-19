@@ -1,5 +1,3 @@
-import { useSyncExternalStore } from 'react'
-
 export const TELEMETRY_SESSION_KEY = 'pantau-mala.telemetry-session'
 export const TELEMETRY_SESSION_MS = 30 * 60_000
 export const TELEMETRY_URL = '/api/v1/telemetry'
@@ -44,14 +42,6 @@ export function subscribeTelemetryStatus(fn: () => void): () => void {
   return () => {
     listeners.delete(fn)
   }
-}
-
-export function useTelemetryStatus(): TelemetryStatus {
-  return useSyncExternalStore(
-    subscribeTelemetryStatus,
-    getTelemetryStatus,
-    () => 'queued' as TelemetryStatus,
-  )
 }
 
 export function isPrivacyMode(

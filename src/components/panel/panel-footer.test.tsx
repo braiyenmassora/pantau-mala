@@ -9,11 +9,6 @@ vi.mock('@/auth/session-control', () => ({
   SessionControl: () => null,
 }))
 
-vi.mock('@/lib/telemetry', () => ({
-  isPrivacyMode: () => false,
-  useTelemetryStatus: () => 'accepted' as const,
-}))
-
 describe('PanelFooter', () => {
   afterEach(cleanup)
 
@@ -39,10 +34,4 @@ describe('PanelFooter', () => {
     expect(screen.queryByText(copy.footer.officialLabel)).toBeNull()
   })
 
-  it('shows telemetry status line', () => {
-    render(<PanelFooter />)
-    expect(screen.getByTestId('telemetry-status').textContent).toBe(
-      copy.telemetry.labels.accepted,
-    )
-  })
 })

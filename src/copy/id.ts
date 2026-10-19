@@ -304,19 +304,6 @@ export const copy = {
     withHotspots: (n: string) => `${n} wilayah dengan titik panas`,
     noHotspots: 'Tidak ada titik panas satelit dalam 24 jam terakhir.',
   },
-  telemetry: {
-    labels: {
-      privacy: 'Aktif anonim · preferensi privasi',
-      queued: 'Menunggu pengiriman',
-      sending: 'Mengirim secara async',
-      accepted: 'Batch diterima collector',
-      retrying: 'Pengiriman tertunda · akan mencoba lagi',
-      unavailable: 'Pengiriman belum tersedia',
-      rejected: 'Pengiriman ditolak · periksa integrasi',
-    },
-    privacyNote:
-      'DNT/GPC aktif: diagnostik dikirim secara anonim tanpa cookie, sessionStorage, ID sesi, atau referrer. Gateway hanya menerima sinyal agregat untuk kesehatan aplikasi.',
-  },
   footer: {
     /** Label di atas tautan sumber data yang dipakai panel. */
     dataSourcesLabel: 'Sumber data',
