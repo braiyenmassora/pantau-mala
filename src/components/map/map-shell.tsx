@@ -29,6 +29,7 @@ import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { copy } from '@/copy/id'
 import { getMapPadding, INDONESIA_CENTER } from '@/lib/indonesia-view'
+import { mapPixelRatio, prefersCompactMap } from '@/lib/map-performance'
 import { isBasemapStyleError, webGlSupported } from '@/lib/map-support'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui'
@@ -105,6 +106,7 @@ function PartialBanner() {
 
 function applyBasemapCleanups(map: MapLibreMap) {
   if (!map || typeof map.getLayer !== 'function') return
+  const compact = prefersCompactMap()
 
   // Keep useful Indonesian labels while removing visual clutter from service paths.
   const minorRoads = [
@@ -122,6 +124,26 @@ function applyBasemapCleanups(map: MapLibreMap) {
         map.setLayoutProperty(id, 'visibility', 'none')
       } catch {
         // layer not found or already styled
+      }
+    }
+  }
+
+  if (compact) {
+    // Keep geographic context, but skip details that are unreadable on a phone
+    // and expensive for MapLibre to relayout continuously during pinch zoom.
+    for (const layer of map.getStyle().layers ?? []) {
+      const id = layer.id
+      const hide =
+        id.startsWith('road_') ||
+        id.startsWith('roadname_') ||
+        id.startsWith('building') ||
+        id.startsWith('poi') ||
+        id.startsWith('housenumber')
+      if (!hide || !map.getLayer(id)) continue
+      try {
+        map.setLayoutProperty(id, 'visibility', 'none')
+      } catch {
+        // Layer may disappear while a style is being replaced.
       }
     }
   }
@@ -161,6 +183,7 @@ function applyBasemapCleanups(map: MapLibreMap) {
     'roadname_sec',
   ]
   for (const id of placeTextLayers) {
+    if (compact && id.startsWith('roadname_')) continue
     if (!map.getLayer(id)) continue
     try {
       map.setLayoutProperty(id, 'visibility', 'visible')
@@ -338,6 +361,8 @@ export function MapShell({
         scrollZoom
         touchPitch={false}
         touchZoomRotate
+        pixelRatio={mapPixelRatio()}
+        fadeDuration={0}
         loading={false}
       >
         <MapBasemapListener onBasemapError={markBasemapFailed} />

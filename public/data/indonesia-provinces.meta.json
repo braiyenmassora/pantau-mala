@@ -3,352 +3,352 @@
   "source": "OpenStreetMap contributors / Nominatim",
   "license": "ODbL-1.0",
   "license_url": "https://www.openstreetmap.org/copyright",
-  "generated_at": "2026-10-15T14:30:30.927Z",
-  "simplification_degrees": 0.0001,
-  "geometry": "/data/indonesia-provinces.geojson?v=2ad162aeb89449cf",
-  "geometry_sha256": "2ad162aeb89449cf2b014e16f6a8ad457588c20f42cd2f81d0dd89eb58876786",
+  "generated_at": "2026-10-20T07:23:43.828Z",
+  "simplification_degrees": 0.005,
+  "geometry": "/data/indonesia-provinces.geojson?v=f5bf238328bda4ad",
+  "geometry_sha256": "f5bf238328bda4adce971d6960fc3d787e3eec9a4e43a0cd75f46b14b72a3901",
   "provinces": [
     {
       "id": "2390836",
       "name": "Aceh",
       "osm_name": "Aceh",
       "osm_relation": "https://www.openstreetmap.org/relation/2390836",
-      "retrieved_at": "2026-10-15T14:29:16.266Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Aceh&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "4bff6240028e08e8e97ae66347f1b982eb14e8fb99e8cf460221fd7d47603535"
+      "retrieved_at": "2026-10-20T07:22:40.111Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Aceh&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "3ee09efe55f4ca6fd409c56540778d49454b39249a79ac38acb752ae7d5f83fe"
     },
     {
       "id": "2390843",
       "name": "Sumatera Utara",
       "osm_name": "Sumatera Utara",
       "osm_relation": "https://www.openstreetmap.org/relation/2390843",
-      "retrieved_at": "2026-10-15T14:29:18.116Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Sumatera+Utara&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "a787d28f8b1c7c5a390f7fad95dca55a4bb9f0a93d032788bbc957a7024872e1"
+      "retrieved_at": "2026-10-20T07:22:41.520Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Sumatera+Utara&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "f66c5184ad3fb1be535e6eb224f52c3c64f0c7ad71f26d6f222c9714980f238d"
     },
     {
       "id": "2390841",
       "name": "Sumatera Barat",
       "osm_name": "Sumatera Barat",
       "osm_relation": "https://www.openstreetmap.org/relation/2390841",
-      "retrieved_at": "2026-10-15T14:29:20.226Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Sumatera+Barat&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "fd88d0ccd600f057a049ce589d7fcf065f7faebe676445180c2ebac2a5185959"
+      "retrieved_at": "2026-10-20T07:22:43.297Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Sumatera+Barat&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "33a2fed1e3a2c7f2f874c867c4ccf6bd4574365c4edf6c41f5c9003fe300442a"
     },
     {
       "id": "2390840",
       "name": "Riau",
       "osm_name": "Riau",
       "osm_relation": "https://www.openstreetmap.org/relation/2390840",
-      "retrieved_at": "2026-10-15T14:29:21.958Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Riau&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "d4ef43b638c57288afb7ee8ea39966da2733584fb333ed44c390cffa164d0cf9"
+      "retrieved_at": "2026-10-20T07:22:45.167Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Riau&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "1b7ce70e1c369597658eb2ddbadc58233fa938e6a06d2dfe2a4e85ca92ef10bd"
     },
     {
       "id": "2390838",
       "name": "Jambi",
       "osm_name": "Jambi",
       "osm_relation": "https://www.openstreetmap.org/relation/2390838",
-      "retrieved_at": "2026-10-15T14:29:23.604Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Jambi&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "2a9a1b72be2a7df64d5b5f804b2417c06c675d900d6e4d7bb3e4c484a7dc8866"
+      "retrieved_at": "2026-10-20T07:22:46.936Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Jambi&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "88d24d4bd02c6a41fda80e6b71c73985e5fc23ea370bb471a84a4239ddaeb134"
     },
     {
       "id": "2390842",
       "name": "Sumatera Selatan",
       "osm_name": "Sumatera Selatan",
       "osm_relation": "https://www.openstreetmap.org/relation/2390842",
-      "retrieved_at": "2026-10-15T14:29:26.162Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Sumatera+Selatan&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "a5fb69fc39ef51d7f361cac0883f9ed2c7b543da9ce33396646356fa4a9e480a"
+      "retrieved_at": "2026-10-20T07:22:48.806Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Sumatera+Selatan&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "9a45d262b2d49aded9d43b2e525edb7ed40dd101bd0575f85934a6c33f706716"
     },
     {
       "id": "2390837",
       "name": "Bengkulu",
       "osm_name": "Bengkulu",
       "osm_relation": "https://www.openstreetmap.org/relation/2390837",
-      "retrieved_at": "2026-10-15T14:29:28.565Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Bengkulu&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "013c9be1714da41c2afbe8b33250d4547f3c5d2d9857f3c2ee22fb44a62045eb"
+      "retrieved_at": "2026-10-20T07:22:50.586Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Bengkulu&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "45db34cfc597f903ff868d33660b4caa139990f91e7c335969f15221a4fceab5"
     },
     {
       "id": "2390839",
       "name": "Lampung",
       "osm_name": "Lampung",
       "osm_relation": "https://www.openstreetmap.org/relation/2390839",
-      "retrieved_at": "2026-10-15T14:29:30.512Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Lampung&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "53ef2a3b2a54af2ffde106c6195a0a8ed9e6bfd1a9c107bd60eb1af0b3801675"
+      "retrieved_at": "2026-10-20T07:22:52.356Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Lampung&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "0bcd4b85bd5d6656ccd9103f2e8945d6f1fb2267b51c0c4a96fe92f635f896cd"
     },
     {
       "id": "3797243",
       "name": "Kepulauan Bangka Belitung",
       "osm_name": "Kepulauan Bangka Belitung",
       "osm_relation": "https://www.openstreetmap.org/relation/3797243",
-      "retrieved_at": "2026-10-15T14:29:31.947Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Kepulauan+Bangka+Belitung&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "c2be19bfd4a96da27ba45efed5271c294f9d0495c73bba92915d6476dea778ad"
+      "retrieved_at": "2026-10-20T07:22:54.235Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Kepulauan+Bangka+Belitung&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "1f28c664ef0ceea3d4a9346bbae5905c2234e8d7ff88fae3066468877ebd00c4"
     },
     {
       "id": "3797244",
       "name": "Kepulauan Riau",
       "osm_name": "Kepulauan Riau",
       "osm_relation": "https://www.openstreetmap.org/relation/3797244",
-      "retrieved_at": "2026-10-15T14:29:33.299Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Kepulauan+Riau&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "666adb0fbf9247d96284a2bd495932cf54da52fec6d770210e01834cac5b1240"
+      "retrieved_at": "2026-10-20T07:22:56.099Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Kepulauan+Riau&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "e94cf21beff0ef3f4e28ae4734d59efff9c06a2e5ad7295b25a7308a8713a620"
     },
     {
       "id": "6362934",
       "name": "DKI Jakarta",
       "osm_name": "Daerah Khusus Ibukota Jakarta",
       "osm_relation": "https://www.openstreetmap.org/relation/6362934",
-      "retrieved_at": "2026-10-15T14:29:35.283Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=DKI+Jakarta&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "10cb9972a9031b018e970efd418ad216d8f4a5abd66f64a28b3b1199bd05ca49"
+      "retrieved_at": "2026-10-20T07:22:57.459Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=DKI+Jakarta&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "a78010d70407f729ae8e2fe1af2f6a268083c62f757d510dd2275b4cbb10852d"
     },
     {
       "id": "2388361",
       "name": "Jawa Barat",
       "osm_name": "Jawa Barat",
       "osm_relation": "https://www.openstreetmap.org/relation/2388361",
-      "retrieved_at": "2026-10-15T14:29:37.648Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Jawa+Barat&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "97790e58371ec79030aadf6806d11207cd51f2fc356499846402dce934818d0c"
+      "retrieved_at": "2026-10-20T07:22:58.841Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Jawa+Barat&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "266a20f8560153d325c7dbb3d9916efd8788a736ba48fbdc06e6e9e5943954b3"
     },
     {
       "id": "2388357",
       "name": "Jawa Tengah",
       "osm_name": "Jawa Tengah",
       "osm_relation": "https://www.openstreetmap.org/relation/2388357",
-      "retrieved_at": "2026-10-15T14:29:39.969Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Jawa+Tengah&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "2672fa05a920cd684e012e1354d7410ed806fedf9d0730ad07da5f32b1a788b8"
+      "retrieved_at": "2026-10-20T07:23:00.689Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Jawa+Tengah&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "65d1d2e488623dabceca913a69f892b5b8a577fc6846cae75f06f2a10081a40b"
     },
     {
       "id": "5616105",
       "name": "Daerah Istimewa Yogyakarta",
       "osm_name": "Daerah Istimewa Yogyakarta",
       "osm_relation": "https://www.openstreetmap.org/relation/5616105",
-      "retrieved_at": "2026-10-15T14:29:41.579Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Daerah+Istimewa+Yogyakarta&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "8bcf09caa8e563c3a62375973c2b31bc6d9b1328e92058ab3236b7fdb733caae"
+      "retrieved_at": "2026-10-20T07:23:02.448Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Daerah+Istimewa+Yogyakarta&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "558c1249fca710bebd3bc7d16a7513f547528639c4008480b0d98618cfe3736a"
     },
     {
       "id": "3438227",
       "name": "Jawa Timur",
       "osm_name": "Jawa Timur",
       "osm_relation": "https://www.openstreetmap.org/relation/3438227",
-      "retrieved_at": "2026-10-15T14:29:43.625Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Jawa+Timur&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "9624f75b35a84f47e430bd04a16299babc113e18f50dc059ec00c44a35cc5849"
+      "retrieved_at": "2026-10-20T07:23:04.198Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Jawa+Timur&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "1d647670726cab0019ca78357263f73e87ca52ed7ec9970f7158c082987499a6"
     },
     {
       "id": "2388356",
       "name": "Banten",
       "osm_name": "Banten",
       "osm_relation": "https://www.openstreetmap.org/relation/2388356",
-      "retrieved_at": "2026-10-15T14:29:45.876Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Banten&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "84c4119957c352a7d0b55a67ebc542636fdfc62ea62f8f84b29c512739518705"
+      "retrieved_at": "2026-10-20T07:23:05.563Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Banten&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "5db4236d4b49f2420b620f772b9d620f9ddcaa41469f065793473ac29b6e2087"
     },
     {
       "id": "1615621",
       "name": "Bali",
       "osm_name": "Bali",
       "osm_relation": "https://www.openstreetmap.org/relation/1615621",
-      "retrieved_at": "2026-10-15T14:29:47.737Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Bali&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "d50a0422e71a4dde1543617e13be30035539d0f9c2f9ca03644d4ddeb1f6b022"
+      "retrieved_at": "2026-10-20T07:23:07.404Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Bali&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "01c9afa259de9cb049914b40c5d99c45d019ec78d8054dac31395ee652409f99"
     },
     {
       "id": "1615622",
       "name": "Nusa Tenggara Barat",
       "osm_name": "Nusa Tenggara Barat",
       "osm_relation": "https://www.openstreetmap.org/relation/1615622",
-      "retrieved_at": "2026-10-15T14:29:49.085Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Nusa+Tenggara+Barat&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "9ce23f0e39875975b3ba2efe90ba27d073e9324c20c7fb94563bb1ae51d9c90b"
+      "retrieved_at": "2026-10-20T07:23:09.170Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Nusa+Tenggara+Barat&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "5bb589db1cbee0288bb0cdca9c3cea071841325e12c0d5f746075a5d64174a24"
     },
     {
       "id": "2396778",
       "name": "Nusa Tenggara Timur",
       "osm_name": "Nusa Tenggara Timur",
       "osm_relation": "https://www.openstreetmap.org/relation/2396778",
-      "retrieved_at": "2026-10-15T14:29:50.854Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Nusa+Tenggara+Timur&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "700b4a5b6395d644bc17d8c37df3e668c7854020b8aa3ca8bb456d0432b3aecd"
+      "retrieved_at": "2026-10-20T07:23:10.930Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Nusa+Tenggara+Timur&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "a940dcddc962ae237b0b409f33404e2d33b6635d4b9d82bcbd47f07659dc9523"
     },
     {
       "id": "2388616",
       "name": "Kalimantan Barat",
       "osm_name": "Kalimantan Barat",
       "osm_relation": "https://www.openstreetmap.org/relation/2388616",
-      "retrieved_at": "2026-10-15T14:29:54.169Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Kalimantan+Barat&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "ad921294d7a1d1035e4d57a56074655752c39c291147419223a82bf30a7d9ba2"
+      "retrieved_at": "2026-10-20T07:23:12.788Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Kalimantan+Barat&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "7851bb80ac02d8a91c5564dddf6cf98a7bca56c8ea4df21d7702807b25e720c9"
     },
     {
       "id": "2388613",
       "name": "Kalimantan Tengah",
       "osm_name": "Kalimantan Tengah",
       "osm_relation": "https://www.openstreetmap.org/relation/2388613",
-      "retrieved_at": "2026-10-15T14:29:56.574Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Kalimantan+Tengah&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "5ab384f7124f140e946b908e1e079b2f22a5a3cbfe79dafbb1488f67a3ade380"
+      "retrieved_at": "2026-10-20T07:23:15.356Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Kalimantan+Tengah&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "662f7addc5e2b001a50f022b5ec489abcf9381ecd4fab8d68d81dd9c0f3da4ba"
     },
     {
       "id": "2388615",
       "name": "Kalimantan Selatan",
       "osm_name": "Kalimantan Selatan",
       "osm_relation": "https://www.openstreetmap.org/relation/2388615",
-      "retrieved_at": "2026-10-15T14:29:58.391Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Kalimantan+Selatan&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "e54963a3f29ccbdb4a9ff2ca75690593d174ab37438ee5f67c2b59e0766b769d"
+      "retrieved_at": "2026-10-20T07:23:17.221Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Kalimantan+Selatan&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "b4b967418d3ab948e267b8436236f8b8f17fd3a7ff392c19b0bde393ea6fcc8a"
     },
     {
       "id": "5449459",
       "name": "Kalimantan Timur",
       "osm_name": "Kalimantan Timur",
       "osm_relation": "https://www.openstreetmap.org/relation/5449459",
-      "retrieved_at": "2026-10-15T14:30:00.865Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Kalimantan+Timur&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "ba65000be6b7321b5ef216c0df6b5ea533192962805f62a0296b8596460d2ad0"
+      "retrieved_at": "2026-10-20T07:23:18.634Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Kalimantan+Timur&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "d3e274e6c439d86e6b39b6e411b10d38f783d87ea50d4bbe2fd13dfda9ef7aea"
     },
     {
       "id": "5449460",
       "name": "Kalimantan Utara",
       "osm_name": "Kalimantan Utara",
       "osm_relation": "https://www.openstreetmap.org/relation/5449460",
-      "retrieved_at": "2026-10-15T14:30:02.952Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Kalimantan+Utara&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "e62a4eae64a54cb41215ab47674041c35254a3847a2c207ea591762a29758e23"
+      "retrieved_at": "2026-10-20T07:23:20.039Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Kalimantan+Utara&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "19334c1ffeb34bb4d2dfffbf38e5f3725833f0ef1db4d7dc431820e276cf385c"
     },
     {
       "id": "2388666",
       "name": "Sulawesi Utara",
       "osm_name": "Sulawesi Utara",
       "osm_relation": "https://www.openstreetmap.org/relation/2388666",
-      "retrieved_at": "2026-10-15T14:30:04.823Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Sulawesi+Utara&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "bca57503a1fef05d3c012de9d695854664b94166624acbf2c6e38399ddbd0ffa"
+      "retrieved_at": "2026-10-20T07:23:21.797Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Sulawesi+Utara&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "5adef931a5c9a3c1172ed7c9e128e3f3ea60c8a062e3a622643fca0c9e98ac7b"
     },
     {
       "id": "2388664",
       "name": "Sulawesi Tengah",
       "osm_name": "Sulawesi Tengah",
       "osm_relation": "https://www.openstreetmap.org/relation/2388664",
-      "retrieved_at": "2026-10-15T14:30:07.283Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Sulawesi+Tengah&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "7575e04e65b01f4033ac92e45d2b2740217cb4b66340fcc4fead2c6c376cff98"
+      "retrieved_at": "2026-10-20T07:23:23.223Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Sulawesi+Tengah&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "872ab7efddbab29aef3abbbe6592160c717a637906e5fdc846aebab8807e27cc"
     },
     {
       "id": "2388667",
       "name": "Sulawesi Selatan",
       "osm_name": "Sulawesi Selatan",
       "osm_relation": "https://www.openstreetmap.org/relation/2388667",
-      "retrieved_at": "2026-10-15T14:30:09.077Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Sulawesi+Selatan&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "192226cff2c142c63f75a6f9e60598626ab4e71f7b6659a19ba5f05c53a05e16"
+      "retrieved_at": "2026-10-20T07:23:25.095Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Sulawesi+Selatan&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "2573e9e402edfd222cb3ea91d4a76e2d7af9e64195cf8564d577e24e5564028a"
     },
     {
       "id": "2388668",
       "name": "Sulawesi Tenggara",
       "osm_name": "Sulawesi Tenggara",
       "osm_relation": "https://www.openstreetmap.org/relation/2388668",
-      "retrieved_at": "2026-10-15T14:30:11.047Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Sulawesi+Tenggara&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "6216136b03546bf961e342050a87eff0f89fb9744ab26d580e3a776e500a9f60"
+      "retrieved_at": "2026-10-20T07:23:26.894Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Sulawesi+Tenggara&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "f42f35fd5bb027ef15d513bef81b9f9523eef8ae1bc4d321138d29021a11d339"
     },
     {
       "id": "2388665",
       "name": "Gorontalo",
       "osm_name": "Gorontalo",
       "osm_relation": "https://www.openstreetmap.org/relation/2388665",
-      "retrieved_at": "2026-10-15T14:30:13.084Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Gorontalo&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "759311339ddc75cbb75db35e114086729168e9c1a09620f22afb1fdb85737002"
+      "retrieved_at": "2026-10-20T07:23:28.648Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Gorontalo&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "e2198268a96cc6a7291eed83f7dbe1a6f44c61ca15b433d5b08561b6af9d62d7"
     },
     {
       "id": "2388669",
       "name": "Sulawesi Barat",
       "osm_name": "Sulawesi Barat",
       "osm_relation": "https://www.openstreetmap.org/relation/2388669",
-      "retrieved_at": "2026-10-15T14:30:15.304Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Sulawesi+Barat&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "a5b1a65075e6033976f761f36d209527efba1bd215c5f2636074a24a2a40fcc5"
+      "retrieved_at": "2026-10-20T07:23:30.035Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Sulawesi+Barat&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "e258417f3cb2ff25a207c00805a56f3930b3b0063e0c79ba4df187d0f381bc06"
     },
     {
       "id": "2396795",
       "name": "Maluku",
       "osm_name": "Maluku",
       "osm_relation": "https://www.openstreetmap.org/relation/2396795",
-      "retrieved_at": "2026-10-15T14:30:16.661Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Maluku&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "21ab891ed486ea8a5651c0697814d93583b2351ec00518253c1a2ba3b12d6f94"
+      "retrieved_at": "2026-10-20T07:23:31.802Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Maluku&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "ae1c88b75ebd632356749103c68a6996db9c718b9b93a60aa9fef777974bb505"
     },
     {
       "id": "2396796",
       "name": "Maluku Utara",
       "osm_name": "Maluku Utara",
       "osm_relation": "https://www.openstreetmap.org/relation/2396796",
-      "retrieved_at": "2026-10-15T14:30:18.033Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Maluku+Utara&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "de9c8a7fc25c70cc39abae66f5641e5b55cb41cb8b341ae5f1f039b4aa4edfce"
+      "retrieved_at": "2026-10-20T07:23:33.556Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Maluku+Utara&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "b05325d2f6ad398ef6342cf3033ff065429d4ba734fa5b7576997c70352da966"
     },
     {
       "id": "4521145",
       "name": "Papua Barat",
       "osm_name": "Papua Barat",
       "osm_relation": "https://www.openstreetmap.org/relation/4521145",
-      "retrieved_at": "2026-10-15T14:30:19.985Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Papua+Barat&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "8ddc1b9e65f58b7e5904dab34609287081d800fe6bb33df09a3ad1147ad0f62f"
+      "retrieved_at": "2026-10-20T07:23:34.970Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Papua+Barat&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "2d9b19daf4f94fe4a7fdf528507f5439ea8a59a6c6df27b6ee3cde4d896aa2e2"
     },
     {
       "id": "14905625",
       "name": "Papua Barat Daya",
       "osm_name": "Papua Barat Daya",
       "osm_relation": "https://www.openstreetmap.org/relation/14905625",
-      "retrieved_at": "2026-10-15T14:30:21.695Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Papua+Barat+Daya&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "1aa2b252595a0e44f98a0b19aebe4c4de97f8b970cf0b1c1f4775c7d046f0b6f"
+      "retrieved_at": "2026-10-20T07:23:36.835Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Papua+Barat+Daya&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "42a293700162c9838cf7901e6a0ae30179eacb2984c8d82ab58339dc7ec35be4"
     },
     {
       "id": "4521144",
       "name": "Papua",
       "osm_name": "Papua",
       "osm_relation": "https://www.openstreetmap.org/relation/4521144",
-      "retrieved_at": "2026-10-15T14:30:24.075Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Papua&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "19ec0bc9df70d528aed2302bc80d3ff2801c6e8708a319187486e8ebd2bb909b"
+      "retrieved_at": "2026-10-20T07:23:38.745Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Papua&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "726747f0b2fecb57630bdb5e6881bf950afb4c517848765557920377165582ad"
     },
     {
       "id": "14309177",
       "name": "Papua Selatan",
       "osm_name": "Papua Selatan",
       "osm_relation": "https://www.openstreetmap.org/relation/14309177",
-      "retrieved_at": "2026-10-15T14:30:26.000Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Papua+Selatan&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "ce8142487faabaaf7589af855260fabe64a729bb3400a46d8110f53b05a6af67"
+      "retrieved_at": "2026-10-20T07:23:40.636Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Papua+Selatan&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "403e175855b744cc69980f523b779ed3c003a498e6b371ffde4a2cd8e37d52e4"
     },
     {
       "id": "14309178",
       "name": "Papua Tengah",
       "osm_name": "Papua Tengah",
       "osm_relation": "https://www.openstreetmap.org/relation/14309178",
-      "retrieved_at": "2026-10-15T14:30:28.583Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Papua+Tengah&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "a3544a1bb307c098cd00bb6e5bb621b466ee88fda60ed714268f00c6d07d268e"
+      "retrieved_at": "2026-10-20T07:23:42.059Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Papua+Tengah&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "a30e732d2ea5e91c924564bc7a9696410440759ca2aecd29028337f2ed4a6089"
     },
     {
       "id": "14309176",
       "name": "Papua Pegunungan",
       "osm_name": "Papua Pegunungan",
       "osm_relation": "https://www.openstreetmap.org/relation/14309176",
-      "retrieved_at": "2026-10-15T14:30:30.897Z",
-      "query": "https://nominatim.openstreetmap.org/search?state=Papua+Pegunungan&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.0001&extratags=1&accept-language=id&limit=3",
-      "response_sha256": "f63ae6ba6751e8429a10bb3148c0ca266e226acbffdd9370bef1490102a27b08"
+      "retrieved_at": "2026-10-20T07:23:43.824Z",
+      "query": "https://nominatim.openstreetmap.org/search?state=Papua+Pegunungan&country=Indonesia&countrycodes=id&format=geojson&polygon_geojson=1&polygon_threshold=0.005&extratags=1&accept-language=id&limit=3",
+      "response_sha256": "fcfcffa6efc2293468409074ea5dddad7231028ab344c9b84ce599c1d11c219b"
     }
   ]
 }

@@ -136,7 +136,7 @@ describe('ProvinceRadarsLayer', () => {
     useMapStore.setState({ province: 'Semua', selectedCode: null })
   })
 
-  it('renders radar pulses only for active provinces at national zoom and hides when drilled in', () => {
+  it('renders static radar rings for active provinces and hides them when drilled in', () => {
     const sources = new Map<string, { setData: typeof setData }>()
     getSource.mockImplementation((id: string) => sources.get(id))
     addSource.mockImplementation((id: string) => {

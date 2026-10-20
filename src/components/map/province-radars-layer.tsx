@@ -7,7 +7,6 @@ import { useRegionCatalog } from '@/data/queries'
 import type { Region, RiskCategory } from '@/data/types'
 import { aggregateByProvince, provinceLabelAnchors } from '@/lib/province-aggregates'
 import { MAP_COLORS } from '@/lib/map-colors'
-import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
 import { useMapStore } from '@/store/map'
 
@@ -34,7 +33,6 @@ export function ProvinceRadarsLayer({ regions }: ProvinceRadarsLayerProps) {
   const selectedCode = useMapStore((s) => s.selectedCode)
   const setProvince = useMapStore((s) => s.setProvince)
   const setProvinceRef = useRef(setProvince)
-  const reducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     setProvinceRef.current = setProvince
@@ -187,46 +185,6 @@ export function ProvinceRadarsLayer({ regions }: ProvinceRadarsLayerProps) {
     const source = map.getSource(SOURCE_ID) as GeoJSONSource | undefined
     source?.setData(geojson)
   }, [map, isLoaded, geojson])
-
-  useEffect(() => {
-    if (!map || !isLoaded || reducedMotion || typeof requestAnimationFrame !== 'function')
-      return
-
-    let frame = 0
-    let lastFrame = 0
-    const animate = (time: number) => {
-      if (!document.hidden && time - lastFrame > 40) {
-        lastFrame = time
-        const highPhase = (time % 720) / 720
-        const midPhase = (time % 1500) / 1500
-
-        try {
-          if (map.getLayer(PULSE_LAYER_HIGH)) {
-            map.setPaintProperty(PULSE_LAYER_HIGH, 'circle-radius', 7 + highPhase * 20)
-            map.setPaintProperty(
-              PULSE_LAYER_HIGH,
-              'circle-stroke-opacity',
-              Math.max(0, 0.95 * (1 - highPhase)),
-            )
-          }
-          if (map.getLayer(PULSE_LAYER_MID)) {
-            map.setPaintProperty(PULSE_LAYER_MID, 'circle-radius', 6 + midPhase * 16)
-            map.setPaintProperty(
-              PULSE_LAYER_MID,
-              'circle-stroke-opacity',
-              Math.max(0, 0.8 * (1 - midPhase)),
-            )
-          }
-        } catch {
-          return
-        }
-      }
-      frame = requestAnimationFrame(animate)
-    }
-    frame = requestAnimationFrame(animate)
-
-    return () => cancelAnimationFrame(frame)
-  }, [map, isLoaded, reducedMotion, isNational])
 
   return null
 }

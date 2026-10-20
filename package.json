@@ -15,6 +15,7 @@
     "audit:parity": "node scripts/audit-hotspots-parity.mjs",
     "data:boundaries": "node scripts/sync-province-boundaries.mjs",
     "layout:check": "node scripts/layout-check.mjs",
+    "perf:map": "node scripts/check-map-performance.mjs",
     "a11y:check": "node scripts/a11y-check.mjs",
     "preview": "vite preview",
     "start": "node server/start.mjs"

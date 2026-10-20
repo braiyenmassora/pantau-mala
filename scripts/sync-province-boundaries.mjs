@@ -8,7 +8,9 @@ import { setTimeout as delay } from 'node:timers/promises'
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const cache = join(tmpdir(), 'pantau-mala-osm-boundaries')
 const endpoint = 'https://nominatim.openstreetmap.org/search'
-const threshold = '0.0001'
+// Province polygons are an overview interaction layer, not survey geometry.
+// ~500 m keeps coastlines recognizable while avoiding 100k+ WebGL vertices.
+const threshold = '0.005'
 const provinces = [
   ['Aceh'],
   ['Sumatera Utara'],

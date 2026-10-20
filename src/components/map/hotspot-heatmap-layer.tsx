@@ -12,7 +12,7 @@ import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { filterHotspotsForMap } from '@/lib/filter-hotspots-for-map'
 import { MAP_COLORS } from '@/lib/map-colors'
-import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
+import { prefersCompactMap } from '@/lib/map-performance'
 import {
   HEATMAP_LOW_HEX,
   HEATMAP_TRANSPARENT,
@@ -114,6 +114,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   const selectRef = useRef(select)
   const panelOpenRef = useRef(panelOpen)
   const setPanelOpenRef = useRef(setPanelOpen)
+  const compactMap = useMemo(() => prefersCompactMap(), [])
 
   useEffect(() => {
     regionsRef.current = regions
@@ -124,10 +125,11 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
 
   const collection = useMemo(() => {
     if (province === 'Semua' && !selectedCode) {
+      if (compactMap) return { type: 'FeatureCollection' as const, features: [] }
       return filterHotspotsForMap(undefined, regions, province, selectedCode)
     }
     return filterHotspotsForMap(data, regions, province, selectedCode)
-  }, [data, regions, province, selectedCode])
+  }, [compactMap, data, regions, province, selectedCode])
 
   // Setup layer + handler sekali
   useEffect(() => {
@@ -433,11 +435,6 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
     clusterSource?.setData(collection)
   }, [map, isLoaded, collection])
 
-  const reducedMotion = usePrefersReducedMotion()
-  const hasRadar = collection.features.some(
-    (feature) => feature.properties.risk_rank >= 2,
-  )
-
   useEffect(() => {
     if (!map || !isLoaded) return
     for (const layerId of [PULSE_LAYER_HIGH, PULSE_LAYER_MID]) {
@@ -454,52 +451,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         layerId === PULSE_LAYER_HIGH ? 0.7 : 0.55,
       )
     }
-    if (!hasRadar || reducedMotion || typeof requestAnimationFrame !== 'function') return
-
-    let frame = 0
-    let lastFrame = 0
-    const animateRadar = (time: number) => {
-      if (!document.hidden && time - lastFrame > 50) {
-        lastFrame = time
-        const highPhase = (time % 1000) / 1000
-        const midPhase = (time % 2000) / 2000
-        try {
-          if (map.getLayer(PULSE_LAYER_HIGH)) {
-            map.setPaintProperty(PULSE_LAYER_HIGH, 'circle-radius', [
-              'case',
-              ['has', 'point_count'],
-              11 + highPhase * 8,
-              3.5 + highPhase * 3.5,
-            ])
-            map.setPaintProperty(
-              PULSE_LAYER_HIGH,
-              'circle-stroke-opacity',
-              0.85 * (1 - highPhase),
-            )
-          }
-          if (map.getLayer(PULSE_LAYER_MID)) {
-            map.setPaintProperty(PULSE_LAYER_MID, 'circle-radius', [
-              'case',
-              ['has', 'point_count'],
-              11 + midPhase * 6,
-              3.5 + midPhase * 3,
-            ])
-            map.setPaintProperty(
-              PULSE_LAYER_MID,
-              'circle-stroke-opacity',
-              0.65 * (1 - midPhase),
-            )
-          }
-        } catch {
-          return
-        }
-      }
-      frame = requestAnimationFrame(animateRadar)
-    }
-    frame = requestAnimationFrame(animateRadar)
-
-    return () => cancelAnimationFrame(frame)
-  }, [map, isLoaded, reducedMotion, hasRadar])
+  }, [map, isLoaded])
 
   return (
     <>
