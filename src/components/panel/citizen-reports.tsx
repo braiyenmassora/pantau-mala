@@ -94,7 +94,7 @@ export function CitizenReports({
   const fieldId = useId()
   const fileRef = useRef<HTMLInputElement>(null)
   const regionalReports = useRegionHotspotReports(regionCode)
-  const hotspots = useHotspots()
+  const hotspots = useHotspots(true, { regionCode })
   const create = useCreateHotspotReport()
   const reportHotspot = useMapStore((state) => state.reportHotspot)
   const setReportHotspot = useMapStore((state) => state.setReportHotspot)

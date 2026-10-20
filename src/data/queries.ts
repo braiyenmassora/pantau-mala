@@ -72,10 +72,11 @@ function useClientQuery<T>(
   load: (signal: AbortSignal) => Promise<T>,
   catalog = false,
   requested = true,
+  keyParts: readonly unknown[] = [],
 ) {
   const session = useSession()
   return useQuery({
-    queryKey: [name, session.principal?.client_id, session.generation],
+    queryKey: [name, ...keyParts, session.principal?.client_id, session.generation],
     enabled: requested && session.status === 'authenticated',
     queryFn: ({ signal }) => load(signal),
     staleTime: STALE_MS,
@@ -148,12 +149,37 @@ export function useRegions() {
   return useClientQuery('regions', allRegions)
 }
 
-export function useHotspots(requested = true) {
+export type HotspotQueryFilter = {
+  regionCode?: string | null
+  bbox?: readonly [number, number, number, number] | null
+}
+
+export function hotspotQueryPath(filter: HotspotQueryFilter = {}) {
+  const params = new URLSearchParams()
+  const regionCode = filter.regionCode?.trim()
+  if (regionCode && /^\d{2}\.\d{2}$/.test(regionCode)) {
+    params.set('kode_wilayah', regionCode)
+  }
+  if (
+    filter.bbox?.length === 4 &&
+    filter.bbox.every(Number.isFinite) &&
+    filter.bbox[0] < filter.bbox[2] &&
+    filter.bbox[1] < filter.bbox[3]
+  ) {
+    params.set('bbox', filter.bbox.join(','))
+  }
+  const query = params.toString()
+  return `/hotspots.geojson${query ? `?${query}` : ''}`
+}
+
+export function useHotspots(requested = true, filter: HotspotQueryFilter = {}) {
+  const path = hotspotQueryPath(filter)
   return useClientQuery(
     'hotspots',
-    (signal) => getData('/hotspots.geojson', decodeHotspots, signal),
+    (signal) => getData(path, decodeHotspots, signal),
     false,
     requested,
+    path === '/hotspots.geojson' ? [] : [path],
   )
 }
 

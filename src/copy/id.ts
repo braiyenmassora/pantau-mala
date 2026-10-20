@@ -448,6 +448,31 @@ export const copy = {
         name: 'Open-Meteo',
         href: 'https://open-meteo.com/',
       },
+      {
+        id: 'bmkg' as const,
+        name: 'BMKG',
+        href: 'https://www.bmkg.go.id/',
+      },
+      {
+        id: 'cams' as const,
+        name: 'Copernicus CAMS',
+        href: 'https://atmosphere.copernicus.eu/',
+      },
+      {
+        id: 'glofas' as const,
+        name: 'Copernicus GloFAS',
+        href: 'https://global-flood.emergency.copernicus.eu/',
+      },
+      {
+        id: 'windy' as const,
+        name: 'Windy',
+        href: 'https://www.windy.com/',
+      },
+      {
+        id: 'eonet' as const,
+        name: 'NASA EONET',
+        href: 'https://eonet.gsfc.nasa.gov/',
+      },
     ],
     pulledAgo: (relatif: string) => `(${relatif})`,
     openInNewTab: (name: string) => `${name}, buka di tab baru`,

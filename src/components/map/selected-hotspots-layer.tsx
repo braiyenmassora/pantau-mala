@@ -32,7 +32,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
   const selectHotspot = useMapStore((s) => s.selectHotspot)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
-  const { data } = useHotspots(Boolean(selectedCode))
+  const { data } = useHotspots(Boolean(selectedCode), { regionCode: selectedCode })
   const lastFitCode = useRef<string | null>(null)
   const [hovered, setHovered] = useState<number | null>(null)
 

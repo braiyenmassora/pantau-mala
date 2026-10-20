@@ -8,7 +8,7 @@ import type {
 
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapPopup, useMap } from '@/components/ui/map'
-import { useHotspots } from '@/data/queries'
+import { useHotspots, useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { filterHotspotsForMap } from '@/lib/filter-hotspots-for-map'
 import { MAP_COLORS } from '@/lib/map-colors'
@@ -106,9 +106,17 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   const select = useMapStore((s) => s.select)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
+  const catalog = useRegionCatalog()
+  const provinceBbox = useMemo(
+    () => catalog.data?.provinces.find((item) => item.name === province)?.bbox,
+    [catalog.data?.provinces, province],
+  )
   // Overview nasional dibentuk dari agregat wilayah; GeoJSON 3,7 MB baru dibutuhkan
   // ketika pengguna mempersempit peta ke provinsi atau kabupaten/kota.
-  const { data } = useHotspots(province !== 'Semua' || Boolean(selectedCode))
+  const { data } = useHotspots(province !== 'Semua' || Boolean(selectedCode), {
+    regionCode: selectedCode,
+    bbox: selectedCode ? undefined : provinceBbox,
+  })
   const [activeHotspot, setActiveHotspot] = useState<ActiveHotspot | null>(null)
   const regionsRef = useRef(regions)
   const selectRef = useRef(select)

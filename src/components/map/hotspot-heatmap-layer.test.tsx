@@ -11,6 +11,7 @@ import type { Region } from '@/data/types'
 import { useMapStore } from '@/store/map'
 
 vi.mock('@/data/queries', () => ({
+  useRegionCatalog: () => ({ data: { provinces: [], regencies: [] } }),
   useHotspots: () => ({
     data: {
       type: 'FeatureCollection',

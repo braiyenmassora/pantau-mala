@@ -351,7 +351,7 @@ export function MapShell({
         )}
         center={INDONESIA_CENTER}
         zoom={4.5}
-        attributionControl={false}
+        attributionControl={{ compact: true }}
         boxZoom={false}
         cooperativeGestures={false}
         doubleClickZoom
