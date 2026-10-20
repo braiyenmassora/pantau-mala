@@ -11,6 +11,7 @@ import { RegionDetailPanel } from '@/components/panel/region-detail-panel'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
+import { useMapStore } from '@/store/map'
 
 const pulangPisau: Region = {
   code: '62.11',
@@ -59,7 +60,29 @@ function renderDetail(region: Region) {
 }
 
 describe('RegionDetailPanel', () => {
-  afterEach(cleanup)
+  afterEach(() => {
+    cleanup()
+    useMapStore.setState({ reportHotspot: null })
+  })
+
+  it('switches directly to reports after a hotspot is selected on the map', () => {
+    useMapStore.setState({
+      selectedCode: pulangPisau.code,
+      reportHotspot: {
+        lat: -2.75,
+        lon: 114.25,
+        time: '2026-10-19T12:00:00Z',
+        frpMw: 3.2,
+        satellite: 'VIIRS',
+      },
+    })
+
+    renderDetail(pulangPisau)
+
+    expect(
+      screen.getByRole('tab', { name: 'Laporan' }).getAttribute('aria-selected'),
+    ).toBe('true')
+  })
 
   it('moves focus to the region title on open', () => {
     renderDetail(pulangPisau)

@@ -136,9 +136,17 @@ function ConditionCell({
 // ponytail: detail = kartu konsisten + TrendChart 7 hari dari develop.
 export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
   const titleRef = useRef<HTMLHeadingElement>(null)
-  const [activeTab, setActiveTab] = useState<DetailTab>('ringkasan')
+  const initialReportHotspot = useMapStore.getState().reportHotspot
+  const initialReportKey = initialReportHotspot
+    ? `${initialReportHotspot.time}|${initialReportHotspot.lat}|${initialReportHotspot.lon}`
+    : ''
+  const [activeTab, setActiveTab] = useState<DetailTab>(() =>
+    initialReportKey ? 'laporan' : 'ringkasan',
+  )
+  const [handledReportKey, setHandledReportKey] = useState(initialReportKey)
   const select = useMapStore((s) => s.select)
   const province = useMapStore((s) => s.province)
+  const reportHotspot = useMapStore((s) => s.reportHotspot)
   const panelOpen = useUiStore((s) => s.panelOpen)
 
   const trend = hotspotTrend(region.trend_7d)
@@ -151,6 +159,14 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
           'Pantau perkembangan titik panas dan arah angin.',
           'Hubungi Damkar di 113 bila melihat kebakaran lahan.',
         ]
+
+  const reportHotspotKey = reportHotspot
+    ? `${reportHotspot.time}|${reportHotspot.lat}|${reportHotspot.lon}`
+    : ''
+  if (reportHotspotKey !== handledReportKey) {
+    setHandledReportKey(reportHotspotKey)
+    if (reportHotspotKey) setActiveTab('laporan')
+  }
 
   useEffect(() => {
     titleRef.current?.focus()

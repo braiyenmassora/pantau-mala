@@ -1,233 +1,107 @@
-import { useEffect, useMemo, useRef } from 'react'
-import type { Feature, FeatureCollection, Point } from 'geojson'
-import type { GeoJSONSource, MapLayerMouseEvent } from 'maplibre-gl'
+import { useMemo, type CSSProperties } from 'react'
 
-import { useMap } from '@/components/ui/map'
+import { focusRing } from '@/components/common/focus-ring'
+import { MapMarker, MarkerContent } from '@/components/ui/map'
 import { useRegionCatalog } from '@/data/queries'
 import type { Region, RiskCategory } from '@/data/types'
 import { aggregateByProvince, provinceLabelAnchors } from '@/lib/province-aggregates'
-import { MAP_COLORS } from '@/lib/map-colors'
-import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
-import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
+import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
-
-const SOURCE_ID = 'province-radars-source'
-const PULSE_LAYER_HIGH = 'province-radars-pulse-high'
-const PULSE_LAYER_MID = 'province-radars-pulse-mid'
-const CENTER_DOT_LAYER = 'province-radars-center-dot'
-
-type ProvinceRadarProps = {
-  name: string
-  hotspots_24h: number
-  risk_category: RiskCategory
-  risk_rank: number
-}
 
 type ProvinceRadarsLayerProps = {
   regions: Region[]
 }
 
+type RadarPoint = {
+  coordinates: [number, number]
+  name: string
+  hotspots24h: number
+  riskCategory: Extract<RiskCategory, 'sangat_tinggi' | 'sedang'>
+}
+
+const riskLabel: Record<'sangat_tinggi' | 'sedang', string> = {
+  sangat_tinggi: 'sangat tinggi',
+  sedang: 'sedang',
+}
+
+/**
+ * National risk radars use DOM/CSS transforms so the pulse stays on the browser
+ * compositor and does not invalidate MapLibre paint properties every frame.
+ */
 export function ProvinceRadarsLayer({ regions }: ProvinceRadarsLayerProps) {
-  const { map, isLoaded } = useMap()
   const { data: catalog } = useRegionCatalog()
-  const province = useMapStore((s) => s.province)
-  const selectedCode = useMapStore((s) => s.selectedCode)
-  const setProvince = useMapStore((s) => s.setProvince)
-  const reducedMotion = usePrefersReducedMotion()
-  const setProvinceRef = useRef(setProvince)
-
-  useEffect(() => {
-    setProvinceRef.current = setProvince
-  }, [setProvince])
-
+  const province = useMapStore((state) => state.province)
+  const selectedCode = useMapStore((state) => state.selectedCode)
+  const setProvince = useMapStore((state) => state.setProvince)
   const isNational = province === 'Semua' && !selectedCode
 
-  const geojson = useMemo<FeatureCollection<Point, ProvinceRadarProps>>(() => {
-    if (!isNational || !catalog) {
-      return { type: 'FeatureCollection', features: [] }
-    }
+  const points = useMemo<RadarPoint[]>(() => {
+    if (!isNational || !catalog) return []
 
-    const aggregates = aggregateByProvince(regions, catalog.provinces)
     const anchors = new Map(
-      provinceLabelAnchors(catalog, regions).map((province) => [
-        province.name,
-        province.center,
-      ]),
+      provinceLabelAnchors(catalog, regions).map((item) => [item.name, item.center]),
     )
-    const features: Feature<Point, ProvinceRadarProps>[] = []
 
-    for (const agg of aggregates) {
-      if (agg.hotspots_24h <= 0) continue
-      const riskRank =
-        agg.risk_category === 'sangat_tinggi' ? 3 : agg.risk_category === 'sedang' ? 2 : 1
-      if (riskRank < 2) continue
+    return aggregateByProvince(regions, catalog.provinces)
+      .filter(
+        (item) =>
+          item.hotspots_24h > 0 &&
+          (item.risk_category === 'sangat_tinggi' || item.risk_category === 'sedang'),
+      )
+      .map((item) => ({
+        coordinates: anchors.get(item.name) ?? item.center,
+        name: item.name,
+        hotspots24h: item.hotspots_24h,
+        riskCategory: item.risk_category as Extract<
+          RiskCategory,
+          'sangat_tinggi' | 'sedang'
+        >,
+      }))
+  }, [catalog, isNational, regions])
 
-      features.push({
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: anchors.get(agg.name) ?? agg.center,
-        },
-        properties: {
-          name: agg.name,
-          hotspots_24h: agg.hotspots_24h,
-          risk_category: agg.risk_category,
-          risk_rank: riskRank,
-        },
-      })
-    }
+  return (
+    <>
+      {points.map((point) => {
+        const high = point.riskCategory === 'sangat_tinggi'
+        const color = high
+          ? RISK_CATEGORIES.sangat_tinggi.dot
+          : RISK_CATEGORIES.sedang.dot
+        const style = {
+          '--province-radar-color': color,
+          '--province-radar-duration': high ? '2.8s' : '3.4s',
+          '--province-radar-delay': high ? '-1.4s' : '-1.7s',
+        } as CSSProperties
 
-    return { type: 'FeatureCollection', features }
-  }, [isNational, catalog, regions])
-
-  useEffect(() => {
-    if (!map || !isLoaded) return
-
-    if (!map.getSource(SOURCE_ID)) {
-      map.addSource(SOURCE_ID, {
-        type: 'geojson',
-        data: { type: 'FeatureCollection', features: [] },
-      })
-    }
-
-    if (!map.getLayer(PULSE_LAYER_HIGH)) {
-      map.addLayer({
-        id: PULSE_LAYER_HIGH,
-        type: 'circle',
-        source: SOURCE_ID,
-        filter: ['>=', ['get', 'risk_rank'], 3],
-        paint: {
-          'circle-color': withAlpha(RISK_CATEGORIES.sangat_tinggi.dot, 0.08),
-          'circle-stroke-color': RISK_CATEGORIES.sangat_tinggi.dot,
-          'circle-stroke-width': 2.5,
-          'circle-radius': 14,
-          'circle-stroke-opacity': 0.9,
-          'circle-radius-transition': { duration: 0 },
-          'circle-stroke-opacity-transition': { duration: 0 },
-        },
-      })
-    }
-
-    if (!map.getLayer(PULSE_LAYER_MID)) {
-      map.addLayer({
-        id: PULSE_LAYER_MID,
-        type: 'circle',
-        source: SOURCE_ID,
-        filter: ['==', ['get', 'risk_rank'], 2],
-        paint: {
-          'circle-color': withAlpha(RISK_CATEGORIES.sedang.dot, 0.08),
-          'circle-stroke-color': RISK_CATEGORIES.sedang.dot,
-          'circle-stroke-width': 2,
-          'circle-radius': 12,
-          'circle-stroke-opacity': 0.8,
-          'circle-radius-transition': { duration: 0 },
-          'circle-stroke-opacity-transition': { duration: 0 },
-        },
-      })
-    }
-
-    if (!map.getLayer(CENTER_DOT_LAYER)) {
-      map.addLayer({
-        id: CENTER_DOT_LAYER,
-        type: 'circle',
-        source: SOURCE_ID,
-        paint: {
-          'circle-radius': 4.5,
-          'circle-color': [
-            'case',
-            ['>=', ['get', 'risk_rank'], 3],
-            RISK_CATEGORIES.sangat_tinggi.dot,
-            RISK_CATEGORIES.sedang.dot,
-          ],
-          'circle-stroke-color': MAP_COLORS.surface,
-          'circle-stroke-width': 1.5,
-          'circle-opacity': 0.95,
-        },
-      })
-    }
-
-    const onRadarClick = (e: MapLayerMouseEvent) => {
-      const name = e.features?.[0]?.properties?.name
-      if (typeof name === 'string' && name) {
-        setProvinceRef.current(name)
-      }
-    }
-
-    const onEnter = () => {
-      map.getCanvas().style.cursor = 'pointer'
-    }
-
-    const onLeave = () => {
-      map.getCanvas().style.cursor = ''
-    }
-
-    const layers = [CENTER_DOT_LAYER, PULSE_LAYER_HIGH, PULSE_LAYER_MID]
-    map.on('click', layers, onRadarClick)
-    map.on('mouseenter', layers, onEnter)
-    map.on('mouseleave', layers, onLeave)
-
-    return () => {
-      try {
-        map.off('click', layers, onRadarClick)
-        map.off('mouseenter', layers, onEnter)
-        map.off('mouseleave', layers, onLeave)
-        map.getCanvas().style.cursor = ''
-        if (map.getLayer(CENTER_DOT_LAYER)) map.removeLayer(CENTER_DOT_LAYER)
-        if (map.getLayer(PULSE_LAYER_MID)) map.removeLayer(PULSE_LAYER_MID)
-        if (map.getLayer(PULSE_LAYER_HIGH)) map.removeLayer(PULSE_LAYER_HIGH)
-        if (map.getSource(SOURCE_ID)) map.removeSource(SOURCE_ID)
-      } catch {
-        // teardown
-      }
-    }
-  }, [map, isLoaded])
-
-  useEffect(() => {
-    if (!map || !isLoaded) return
-    const source = map.getSource(SOURCE_ID) as GeoJSONSource | undefined
-    source?.setData(geojson)
-  }, [map, isLoaded, geojson])
-
-  useEffect(() => {
-    if (!map || !isLoaded || !isNational || reducedMotion) return
-
-    const layers = [
-      { id: PULSE_LAYER_HIGH, base: 14, expanded: 21, opacity: 0.9 },
-      { id: PULSE_LAYER_MID, base: 12, expanded: 18, opacity: 0.8 },
-    ]
-    let expandTimer: number | undefined
-
-    const pulse = () => {
-      if (document.visibilityState === 'hidden') return
-      for (const layer of layers) {
-        if (!map.getLayer(layer.id)) continue
-        map.setPaintProperty(layer.id, 'circle-radius-transition', { duration: 0 })
-        map.setPaintProperty(layer.id, 'circle-stroke-opacity-transition', {
-          duration: 0,
-        })
-        map.setPaintProperty(layer.id, 'circle-radius', layer.base)
-        map.setPaintProperty(layer.id, 'circle-stroke-opacity', layer.opacity)
-      }
-      expandTimer = window.setTimeout(() => {
-        for (const layer of layers) {
-          if (!map.getLayer(layer.id)) continue
-          map.setPaintProperty(layer.id, 'circle-radius-transition', { duration: 1100 })
-          map.setPaintProperty(layer.id, 'circle-stroke-opacity-transition', {
-            duration: 1100,
-          })
-          map.setPaintProperty(layer.id, 'circle-radius', layer.expanded)
-          map.setPaintProperty(layer.id, 'circle-stroke-opacity', 0.18)
-        }
-      }, 50)
-    }
-
-    pulse()
-    const interval = window.setInterval(pulse, 2400)
-    return () => {
-      window.clearInterval(interval)
-      if (expandTimer !== undefined) window.clearTimeout(expandTimer)
-    }
-  }, [map, isLoaded, isNational, reducedMotion])
-
-  return null
+        return (
+          <MapMarker
+            key={point.name}
+            longitude={point.coordinates[0]}
+            latitude={point.coordinates[1]}
+            anchor="center"
+          >
+            <MarkerContent className="overflow-visible">
+              <button
+                type="button"
+                aria-label={`Buka ${point.name}: ${point.hotspots24h} titik panas, risiko ${riskLabel[point.riskCategory]}`}
+                onClick={() => setProvince(point.name)}
+                className={cn(
+                  'group relative flex size-11 cursor-pointer items-center justify-center rounded-full',
+                  focusRing,
+                )}
+                style={style}
+              >
+                <span
+                  data-testid="province-radar-ring"
+                  className="province-radar-ring"
+                  aria-hidden
+                />
+                <span className="province-radar-core" aria-hidden />
+              </button>
+            </MarkerContent>
+          </MapMarker>
+        )
+      })}
+    </>
+  )
 }

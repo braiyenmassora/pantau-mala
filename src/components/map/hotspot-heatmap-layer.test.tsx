@@ -205,7 +205,10 @@ describe('HotspotHeatmapLayer', () => {
         id: 'fy-hotspot-cluster-count-layer',
         type: 'symbol',
         filter: ['has', 'point_count'],
-        layout: expect.objectContaining({ 'text-allow-overlap': true }),
+        layout: expect.objectContaining({
+          'text-allow-overlap': true,
+          'text-font': ['Open Sans Bold'],
+        }),
       }),
     )
     expect(addLayer).toHaveBeenCalledWith(
@@ -231,5 +234,43 @@ describe('HotspotHeatmapLayer', () => {
       ['fy-hotspot-clusters-layer', 'fy-hotspot-cluster-count-layer'],
       expect.any(Function),
     )
+  })
+
+  it('uses an unclustered hotspot click as the report location', () => {
+    useMapStore.setState({ selectedCode: null, province: 'Papua', reportHotspot: null })
+    getLayer.mockReturnValue(undefined)
+
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <HotspotHeatmapLayer regions={[region]} />
+      </QueryClientProvider>,
+    )
+
+    const clickHandler = on.mock.calls.find(
+      ([event, layer]) => event === 'click' && layer === 'fy-hotspot-points-layer',
+    )?.[2]
+    expect(clickHandler).toBeTypeOf('function')
+
+    clickHandler({
+      features: [
+        {
+          geometry: { type: 'Point', coordinates: [140.1, -8.1] },
+          properties: {
+            region_code: 'IDN.1.1_1',
+            time: '2026-10-11T00:00:00Z',
+            satellite: 'VIIRS',
+            frp_mw: 1,
+          },
+        },
+      ],
+    })
+
+    expect(useMapStore.getState().reportHotspot).toEqual({
+      lat: -8.1,
+      lon: 140.1,
+      time: '2026-10-11T00:00:00Z',
+      satellite: 'VIIRS',
+      frpMw: 1,
+    })
   })
 })

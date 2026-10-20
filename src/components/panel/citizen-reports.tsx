@@ -98,7 +98,11 @@ export function CitizenReports({
   const create = useCreateHotspotReport()
   const reportHotspot = useMapStore((state) => state.reportHotspot)
   const setReportHotspot = useMapStore((state) => state.setReportHotspot)
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(Boolean(reportHotspot))
+  const reportHotspotKey = reportHotspot
+    ? `${reportHotspot.time}|${pointKey(reportHotspot.lat, reportHotspot.lon)}`
+    : ''
+  const [autoOpenedTarget, setAutoOpenedTarget] = useState(reportHotspotKey)
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [photo, setPhoto] = useState<File | null>(null)
@@ -123,6 +127,10 @@ export function CitizenReports({
             pointKey(reportHotspot.lat, reportHotspot.lon),
       )
     : undefined
+  if (reportHotspotKey !== autoOpenedTarget) {
+    setAutoOpenedTarget(reportHotspotKey)
+    if (reportHotspotKey) setOpen(true)
+  }
   const pointReports = usePointHotspotReports(
     target
       ? { lat: target.geometry.coordinates[1], lon: target.geometry.coordinates[0] }

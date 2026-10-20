@@ -162,6 +162,60 @@
   }
 }
 
+/* Radar risiko nasional: hanya transform + opacity agar halus tanpa repaint peta. */
+.province-radar-ring,
+.province-radar-ring::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--province-radar-color);
+  border-radius: 999px;
+  content: '';
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.72);
+  transform-origin: center;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: province-radar-ripple var(--province-radar-duration) var(--ease-out-soft)
+    infinite;
+}
+
+.province-radar-ring::after {
+  animation-delay: var(--province-radar-delay);
+}
+
+.province-radar-core {
+  position: relative;
+  z-index: 1;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--color-surface);
+  border-radius: 999px;
+  background: var(--province-radar-color);
+  box-shadow: var(--shadow-sm);
+  transition: transform 150ms var(--ease-out-soft);
+}
+
+.group:hover .province-radar-core,
+.group:focus-visible .province-radar-core {
+  transform: scale(1.2);
+}
+
+@keyframes province-radar-ripple {
+  0% {
+    transform: translate(-50%, -50%) scale(0.72);
+    opacity: 0.72;
+  }
+  72%,
+  100% {
+    transform: translate(-50%, -50%) scale(2.05);
+    opacity: 0;
+  }
+}
+
 /* Short landscape viewports need compact map chrome regardless of width. */
 @media (max-height: 520px) {
   .map-legend {
@@ -404,6 +458,20 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .province-radar-ring,
+  .province-radar-ring::after {
+    animation: none;
+  }
+
+  .province-radar-ring {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.35;
+  }
+
+  .province-radar-ring::after {
+    display: none;
+  }
+
   .mobile-panel-toggle {
     transition: none;
   }

@@ -104,6 +104,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   const province = useMapStore((s) => s.province)
   const selectedCode = useMapStore((s) => s.selectedCode)
   const select = useMapStore((s) => s.select)
+  const selectHotspot = useMapStore((s) => s.selectHotspot)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
   const catalog = useRegionCatalog()
@@ -120,6 +121,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   const [activeHotspot, setActiveHotspot] = useState<ActiveHotspot | null>(null)
   const regionsRef = useRef(regions)
   const selectRef = useRef(select)
+  const selectHotspotRef = useRef(selectHotspot)
   const panelOpenRef = useRef(panelOpen)
   const setPanelOpenRef = useRef(setPanelOpen)
   const compactMap = useMemo(() => prefersCompactMap(), [])
@@ -127,9 +129,10 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   useEffect(() => {
     regionsRef.current = regions
     selectRef.current = select
+    selectHotspotRef.current = selectHotspot
     panelOpenRef.current = panelOpen
     setPanelOpenRef.current = setPanelOpen
-  }, [regions, select, panelOpen, setPanelOpen])
+  }, [regions, select, selectHotspot, panelOpen, setPanelOpen])
 
   const collection = useMemo(() => {
     if (province === 'Semua' && !selectedCode) {
@@ -264,7 +267,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         filter: ['has', 'point_count'],
         layout: {
           'text-field': ['get', 'point_count_abbreviated'],
-          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+          'text-font': ['Open Sans Bold'],
           'text-size': 11,
           'text-allow-overlap': true,
           'text-ignore-placement': true,
@@ -324,19 +327,44 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       }
     }
 
-    const openRegionFromEvent = (e: MapLayerMouseEvent) => {
+    const openReportFromEvent = (e: MapLayerMouseEvent) => {
       const feature = e.features?.[0]
       const code = feature?.properties?.region_code
       if (typeof code !== 'string' || !code) return false
       const reg = regionsRef.current.find((r) => r.code === code)
-      selectRef.current(code, reg?.province)
+      const coordinates =
+        feature.geometry.type === 'Point'
+          ? (feature.geometry.coordinates as [number, number])
+          : undefined
+      const time = feature.properties?.time
+      const satellite = feature.properties?.satellite
+      const frpMw = feature.properties?.frp_mw
+      if (
+        reg &&
+        coordinates &&
+        Number.isFinite(coordinates[0]) &&
+        Number.isFinite(coordinates[1]) &&
+        typeof time === 'string' &&
+        typeof satellite === 'string' &&
+        typeof frpMw === 'number'
+      ) {
+        selectHotspotRef.current(code, reg.province, {
+          lat: coordinates[1],
+          lon: coordinates[0],
+          time,
+          satellite,
+          frpMw,
+        })
+      } else {
+        selectRef.current(code, reg?.province)
+      }
       if (!panelOpenRef.current) setPanelOpenRef.current(true)
       return true
     }
 
     const onPointClick = (e: MapLayerMouseEvent) => {
       // Klik titik/heatmap merah → buka detail kabupaten bila ada region_code
-      if (openRegionFromEvent(e)) {
+      if (openReportFromEvent(e)) {
         setActiveHotspot(null)
         return
       }

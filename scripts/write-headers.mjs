@@ -22,7 +22,8 @@ if (/^https?:\/\//i.test(dataUrl)) {
   }
 }
 
-const connectSrc = `'self' https://*.basemaps.cartocdn.com https://*.cartocdn.com${dataOrigin}`
+const r2UploadOrigin = 'https://840ff00b21969ff808e3b4fca131d95c.r2.cloudflarestorage.com'
+const connectSrc = `'self' https://*.basemaps.cartocdn.com https://*.cartocdn.com ${r2UploadOrigin}${dataOrigin}`
 
 const headers = `/*
   X-Content-Type-Options: nosniff

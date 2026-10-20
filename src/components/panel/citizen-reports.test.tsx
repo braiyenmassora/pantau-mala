@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { CitizenReports } from '@/components/panel/citizen-reports'
+import { useMapStore } from '@/store/map'
 
 const mutate = vi.fn()
 const reset = vi.fn()
@@ -54,6 +55,24 @@ describe('CitizenReports', () => {
   afterEach(() => {
     cleanup()
     vi.clearAllMocks()
+    useMapStore.setState({ reportHotspot: null })
+  })
+
+  it('opens the form with coordinates filled from the hotspot clicked on the map', () => {
+    useMapStore.setState({
+      reportHotspot: {
+        lat: -3.2,
+        lon: 116.2,
+        time: '2026-10-19T12:00:00Z',
+        frpMw: 3.2,
+        satellite: 'VIIRS',
+      },
+    })
+
+    render(<CitizenReports regionCode="63.02" />)
+
+    expect(screen.getByText('Detail laporan')).toBeTruthy()
+    expect(screen.getByText('Titik -3.20000, 116.20000')).toBeTruthy()
   })
 
   it('shows labelled fields and a custom photo control', () => {

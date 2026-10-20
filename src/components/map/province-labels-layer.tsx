@@ -67,7 +67,7 @@ export function ProvinceLabelsLayer({ regions }: ProvinceLabelsLayerProps) {
     if (!map.getLayer(LAYER_ID)) {
       const layout: SymbolLayerSpecification['layout'] = {
         'text-field': ['get', 'name'],
-        'text-font': ['Open Sans Semibold', 'Arial Unicode MS Regular'],
+        'text-font': ['Open Sans Regular'],
         'text-size': 11,
         'text-anchor': 'top',
         'text-offset': [0, 0.9],

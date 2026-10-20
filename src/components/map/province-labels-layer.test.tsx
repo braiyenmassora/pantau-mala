@@ -101,6 +101,7 @@ describe('ProvinceLabelsLayer', () => {
       expect.objectContaining({
         id: 'province-labels-layer',
         type: 'symbol',
+        layout: expect.objectContaining({ 'text-font': ['Open Sans Regular'] }),
       }),
     )
     expect(setData).toHaveBeenCalledWith(
