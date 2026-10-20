@@ -26,6 +26,7 @@ export const LOCATION_ZOOM = 5.5
  * Sabang→Merauke harus muat (Papua tidak boleh terpotong).
  */
 export const OVERVIEW_ZOOM_FLOOR = 3.2
+export const MOBILE_OVERVIEW_ZOOM_CEILING = 3
 
 function overviewZoomFloor() {
   return typeof window !== 'undefined' && window.innerWidth < 640
@@ -60,7 +61,11 @@ function overviewCamera(map: MaplibreMap, panelOpen: boolean) {
   })
   // Pakai zoom natural fitBounds; lantai hanya cegah zoom terlalu jauh ke luar negeri.
   const floor = overviewZoomFloor()
-  const zoom = Math.max(camera?.zoom ?? floor, floor)
+  const naturalZoom = Math.max(camera?.zoom ?? floor, floor)
+  const zoom =
+    typeof window !== 'undefined' && window.innerWidth < 640
+      ? Math.min(naturalZoom, MOBILE_OVERVIEW_ZOOM_CEILING)
+      : naturalZoom
   const rawCenter = camera?.center
   const center: [number, number] =
     rawCenter != null

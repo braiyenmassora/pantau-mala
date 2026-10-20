@@ -90,4 +90,13 @@ describe('fitProvinceBounds', () => {
     expect(map.jumpTo).toHaveBeenCalledWith(expect.objectContaining({ zoom: 2.4 }))
     expect(map.setMinZoom).toHaveBeenLastCalledWith(2)
   })
+
+  it('caps an over-zoomed mobile fit caused by bottom-sheet padding', () => {
+    vi.stubGlobal('window', { innerWidth: 390 })
+    const map = mockMap()
+    map.cameraForBounds = vi.fn(() => ({ zoom: 4.5, center: [118, -2] as never }))
+
+    expect(fitIndonesia(map as never, true, 0)).toBe(3)
+    expect(map.jumpTo).toHaveBeenCalledWith(expect.objectContaining({ zoom: 3 }))
+  })
 })
