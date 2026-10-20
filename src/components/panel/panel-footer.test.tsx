@@ -15,7 +15,9 @@ describe('PanelFooter', () => {
   it('lists data sources with links, without pull ages', () => {
     render(<PanelFooter />)
 
-    expect(screen.getByRole('navigation', { name: copy.footer.sourcesLabel })).toBeTruthy()
+    expect(
+      screen.getByRole('navigation', { name: copy.footer.sourcesLabel }),
+    ).toBeTruthy()
     expect(screen.getByRole('link', { name: /NASA FIRMS/ })).toBeTruthy()
     expect(screen.getByRole('link', { name: /Open-Meteo/ })).toBeTruthy()
     expect(screen.getByRole('link', { name: /BMKG/ })).toBeTruthy()
@@ -27,5 +29,11 @@ describe('PanelFooter', () => {
     expect(screen.queryByRole('link', { name: /CARTO/ })).toBeNull()
     expect(screen.queryByText(/menit lalu/)).toBeNull()
     expect(screen.queryByText(/Diagnostik browser/)).toBeNull()
+
+    const sourceLogos = screen.getAllByRole('presentation')
+    expect(sourceLogos).toHaveLength(copy.footer.sources.length)
+    expect(
+      sourceLogos.every((logo) => logo.getAttribute('src')?.startsWith('/brands/')),
+    ).toBe(true)
   })
 })
