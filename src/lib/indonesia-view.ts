@@ -174,7 +174,7 @@ export function fitIndonesia(map: MaplibreMap, panelOpen: boolean, duration = 0)
       easing: easeOutSoft,
     })
   }
-  map.setMinZoom(OVERVIEW_ZOOM_FLOOR)
+  map.setMinZoom(overviewZoomFloor())
   scheduleMaxBounds(map, duration)
   return zoom
 }
@@ -191,7 +191,7 @@ export function refreshFitMinZoom(map: MaplibreMap, panelOpen: boolean): number 
     bearing: map.getBearing(),
     pitch: map.getPitch(),
   }
-  const minZoom = OVERVIEW_ZOOM_FLOOR
+  const minZoom = overviewZoomFloor()
   const wasOverview = prev.zoom <= zoom + 0.15
 
   clearMapLimits(map)

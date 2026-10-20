@@ -88,5 +88,6 @@ describe('fitProvinceBounds', () => {
 
     expect(fitIndonesia(map as never, false, 0)).toBe(2.4)
     expect(map.jumpTo).toHaveBeenCalledWith(expect.objectContaining({ zoom: 2.4 }))
+    expect(map.setMinZoom).toHaveBeenLastCalledWith(2)
   })
 })
