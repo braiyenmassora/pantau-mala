@@ -81,7 +81,43 @@ export async function installGoFixtures(context, signedIn = true) {
         json: { data: [region], pagination: { limit: 1000, offset: 0 } },
       })
     if (path === '/api/v1/hotspots.geojson')
-      return route.fulfill({ json: { type: 'FeatureCollection', features: [] } })
+      return route.fulfill({
+        json: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: [114.1, -2.1] },
+              properties: {
+                waktu: '2026-10-19T12:00:00Z',
+                satelit: 'VIIRS',
+                keyakinan: 'tinggi',
+                frp_mw: 4.2,
+                kode_wilayah: region.kode,
+              },
+            },
+          ],
+        },
+      })
+    if (path === '/api/v1/summary')
+      return route.fulfill({
+        json: {
+          data: {
+            titik_panas_24j: 11,
+            titik_panas_kemarin: 7,
+            tren_7h: [2, 4, 3, 6, 5, 7, 11],
+            wilayah_sangat_tinggi: 1,
+            perubahan_harian: 0.571,
+            arah_tren: 'naik',
+            jumlah_kategori: { sangat_tinggi: 1, sedang: 0, rendah: 0 },
+          },
+        },
+      })
+    if (path === '/api/v1/hotspot-reports/counts')
+      return route.fulfill({
+        json: { data: [{ point_lat: -2.1, point_lon: 114.1, count: 2 }] },
+      })
+    if (path === '/api/v1/hotspot-reports') return route.fulfill({ json: { data: [] } })
     if (path === '/api/v1/data-status')
       return route.fulfill({
         json: {

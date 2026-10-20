@@ -108,6 +108,7 @@ try {
   }
 
   for (const { w, h } of [
+    { w: 360, h: 740 },
     { w: 390, h: 844 },
     { w: 430, h: 932 },
   ]) {
@@ -157,6 +158,27 @@ try {
 
     console.log(`mobile layout ok: ${w}x${h}`)
   }
+
+  await page.setViewportSize({ width: 844, height: 390 })
+  await page.goto(BASE, { waitUntil: 'networkidle' })
+  await wait(500)
+  const landscape = await page.evaluate(() => {
+    const legend = document.querySelector('[data-testid="map-legend"]')
+    const trigger = document.querySelector('.mobile-legend-trigger')
+    const zoom = document.querySelector('.mobile-zoom-control')
+    return {
+      overflow: document.documentElement.scrollWidth - window.innerWidth,
+      legendWidth: legend?.getBoundingClientRect().width ?? window.innerWidth,
+      triggerDisplay: trigger ? getComputedStyle(trigger).display : 'none',
+      zoomDisplay: zoom ? getComputedStyle(zoom).display : 'none',
+    }
+  })
+  if (landscape.overflow !== 0) throw new Error('844x390: horizontal overflow')
+  if (landscape.legendWidth > 180 || landscape.triggerDisplay === 'none')
+    throw new Error('844x390: legend did not collapse')
+  if (landscape.zoomDisplay !== 'none')
+    throw new Error('844x390: zoom controls should collapse on short viewport')
+  console.log('short landscape layout ok: 844x390')
 
   // Long name truncation smoke (title present on row)
   await page.setViewportSize({ width: 1440, height: 900 })

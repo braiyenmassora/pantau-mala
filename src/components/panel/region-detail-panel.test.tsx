@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen, within } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/prefers-reduced-motion', () => ({
@@ -93,19 +93,25 @@ describe('RegionDetailPanel', () => {
     expect(within(chart).getByText(copy.extra.trendAverage)).toBeTruthy()
   })
 
-  it('renders all sections in a single scroll without tabs', () => {
+  it('groups long detail content into mobile-friendly tabs', () => {
     renderDetail(pulangPisau)
 
-    // No tabs
-    expect(screen.queryByRole('tab')).toBeNull()
+    expect(screen.getAllByRole('tab')).toHaveLength(4)
+    expect(
+      screen.getByRole('tab', { name: 'Ringkasan' }).getAttribute('aria-selected'),
+    ).toBe('true')
 
     // Sticky header back button
     expect(screen.getByRole('button', { name: copy.panel.closeDetail })).toBeTruthy()
 
-    // Sections without Ringkasan or duplicate attribution
-    expect(screen.queryByText('Ringkasan')).toBeNull()
-    expect(screen.getByText('Kondisi saat ini')).toBeTruthy()
     expect(screen.getByText('Yang bisa kamu lakukan')).toBeTruthy()
+    expect(screen.queryByText('Kondisi saat ini')).toBeNull()
+    const telLink = screen.getByRole('link', { name: '113' })
+    expect(telLink.getAttribute('href')).toBe('tel:113')
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Lingkungan' }))
+    expect(screen.getByText('Kondisi saat ini')).toBeTruthy()
+    expect(screen.queryByText('Yang bisa kamu lakukan')).toBeNull()
     expect(screen.queryByText(/Data: NASA FIRMS · Open-Meteo/)).toBeNull()
 
     // Condition cells
@@ -113,11 +119,6 @@ describe('RegionDetailPanel', () => {
     expect(screen.getByText('48%')).toBeTruthy()
     expect(screen.getByText('Kecepatan angin')).toBeTruthy()
     expect(screen.getByText('12 km/jam')).toBeTruthy()
-
-    // Damkar tel link
-    const telLink = screen.getByRole('link', { name: '113' })
-    expect(telLink).toBeTruthy()
-    expect(telLink.getAttribute('href')).toBe('tel:113')
 
     // Disclaimer via ikon info di samping judul
     expect(

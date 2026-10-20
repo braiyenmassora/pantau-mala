@@ -155,6 +155,10 @@ const provenanceSchema = z.object({
   catatan_kualitas: z.string().optional(),
 })
 
+export const providerProvenanceSchema = z.object({
+  data: z.array(provenanceSchema),
+})
+
 export const providerRegistrySchema = z.object({
   data: z.array(
     z.object({

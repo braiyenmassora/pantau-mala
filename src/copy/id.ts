@@ -118,6 +118,7 @@ export const copy = {
     contextHide: 'Tutup konteks event NASA',
     contextStatus: 'Contextual · NASA EONET',
     providers: 'Penyedia data',
+    categoryDistribution: 'Distribusi kategori risiko',
 
     river: 'Debit sungai model',
     riverNote:
@@ -218,6 +219,7 @@ export const copy = {
     searchPlaceholder: 'Cari kabupaten/kota',
     searchClear: 'Hapus pencarian dan pilihan',
     closeDetail: 'Tutup detail',
+    regionInformation: 'Informasi wilayah',
     backHome: 'Kembali ke pantauan',
     tabSummary: 'Ringkasan',
     tabDetail: 'Detail',
@@ -261,6 +263,7 @@ export const copy = {
     reportNamePlaceholder: 'Nama tampilan',
     reportDescriptionPlaceholder: 'Apa yang kamu lihat?',
     removeReportPhoto: 'Hapus foto terpilih',
+    closeReportDetail: 'Tutup detail laporan',
     updatedAt: (when: string) => `Diperbarui ${when}`,
     trendUp: 'Naik',
     trendDown: 'Turun',

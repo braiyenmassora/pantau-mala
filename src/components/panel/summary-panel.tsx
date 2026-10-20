@@ -265,10 +265,10 @@ export function SummaryPanel({
         <SearchBox mapRef={mapRef} />
 
         <div className="flex flex-col gap-4">
+          <SourceDataPanel />
           <LocationCard regions={regions} />
           <LatestEarthquakeCard />
           <NasaEonetCard />
-          <SourceDataPanel />
 
           <section className="space-y-3">
             <h2 className="text-ink text-sm font-semibold">
@@ -327,7 +327,7 @@ export function SummaryPanel({
           }}
           aria-label={copy.panel.closeDetail}
           className={cn(
-            'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex size-8 shrink-0 items-center justify-center transition-colors',
+            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-11 shrink-0 items-center justify-center rounded-full transition-colors',
             focusRing,
           )}
         >

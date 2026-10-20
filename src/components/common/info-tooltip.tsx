@@ -17,7 +17,7 @@ export function InfoTooltip({ content, className }: InfoTooltipProps) {
           type="button"
           aria-label={content}
           className={cn(
-            'text-ink-3 hover:text-ink hover:bg-surface-muted inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors',
+            'text-ink-3 hover:text-ink hover:bg-surface-muted -m-3 inline-flex size-11 shrink-0 items-center justify-center rounded-full transition-colors sm:m-0 sm:size-6',
             className,
           )}
         >

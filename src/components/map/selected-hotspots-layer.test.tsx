@@ -1,7 +1,7 @@
 import { useSession } from '@/auth/session'
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { SelectedHotspotsLayer } from '@/components/map/selected-hotspots-layer'
@@ -77,7 +77,7 @@ describe('SelectedHotspotsLayer', () => {
       },
       generation: 0,
     })
-    useMapStore.setState({ selectedCode: null, province: 'Semua' })
+    useMapStore.setState({ selectedCode: null, province: 'Semua', reportHotspot: null })
   })
 
   it('skips DOM markers when many hotspots (heatmap-only)', () => {
@@ -134,5 +134,13 @@ describe('SelectedHotspotsLayer', () => {
       </QueryClientProvider>,
     )
     expect(screen.getAllByTestId('hotspot-marker')).toHaveLength(1)
+    const marker = screen.getByRole('button', { name: /Titik panas/ })
+    expect(marker.className).toContain('size-11')
+    fireEvent.click(marker)
+    expect(useMapStore.getState().reportHotspot).toMatchObject({
+      lat: -7.1,
+      lon: 110.1,
+      time: '2026-10-11T00:00:00Z',
+    })
   })
 })

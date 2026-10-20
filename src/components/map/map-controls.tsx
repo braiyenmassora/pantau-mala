@@ -57,7 +57,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
         <button
           type="button"
           className={cn(
-            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-10 shrink-0 items-center justify-center',
+            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-11 shrink-0 items-center justify-center',
             'transition-[background-color,color] duration-150 ease-in-out',
             active && 'text-brand bg-brand-soft',
             focusRing,
@@ -96,7 +96,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
           type="button"
           className={cn(
             'mobile-zoom-control',
-            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-10 shrink-0 items-center justify-center',
+            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-11 shrink-0 items-center justify-center',
             'transition-[background-color,color] duration-150 ease-in-out',
             focusRing,
           )}
@@ -109,7 +109,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
           type="button"
           className={cn(
             'mobile-zoom-control',
-            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-10 shrink-0 items-center justify-center',
+            'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-11 shrink-0 items-center justify-center',
             'transition-[background-color,color] duration-150 ease-in-out',
             focusRing,
           )}

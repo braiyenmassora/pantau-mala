@@ -7,6 +7,7 @@ import {
   dischargeSchema,
   sourceStatusSchema,
   soilMoistureSchema,
+  providerProvenanceSchema,
 } from './extended-contract'
 const envelope = {
   sumber: 'Synthetic fixture only',
@@ -92,6 +93,23 @@ describe('extended Go source contracts', () => {
       status: 'gagal',
       diperbarui: null,
     })
+  })
+  it('parses provider provenance used by the source disclosure', () => {
+    const value = providerProvenanceSchema.parse({
+      data: [
+        {
+          penyedia: 'NASA FIRMS',
+          endpoint: 'https://firms.modaps.eosdis.nasa.gov/api/area',
+          sifat_data: 'observed',
+          atribusi: 'NASA FIRMS',
+          status: 'ok',
+          validasi: 'valid',
+          waktu_tarik: '2026-10-19T12:00:00Z',
+          request_id: 'synthetic-request',
+        },
+      ],
+    })
+    expect(value.data[0].penyedia).toBe('NASA FIRMS')
   })
 })
 

@@ -13,6 +13,15 @@ vi.mock('@/data/hotspot-reports', () => ({
     isLoading: false,
     isError: false,
   }),
+  usePointHotspotReports: () => ({
+    data: [],
+    isLoading: false,
+    isError: false,
+  }),
+  useHotspotReport: () => ({
+    data: undefined,
+    isError: false,
+  }),
   useCreateHotspotReport: () => ({
     mutate,
     reset,
@@ -32,6 +41,8 @@ vi.mock('@/data/queries', () => ({
           properties: {
             region_code: '63.02',
             time: '2026-10-19T12:00:00Z',
+            frp_mw: 3.2,
+            satellite: 'VIIRS',
           },
         },
       ],
@@ -47,6 +58,10 @@ describe('CitizenReports', () => {
 
   it('shows labelled fields and a custom photo control', () => {
     render(<CitizenReports regionCode="63.02" />)
+    const target = screen.getByLabelText(
+      /Titik panas yang dilaporkan/,
+    ) as HTMLSelectElement
+    fireEvent.change(target, { target: { value: target.options[1].value } })
     fireEvent.click(screen.getByRole('button', { name: 'Kirim laporan' }))
 
     expect(screen.getByLabelText(/Nama tampilan/)).toBeTruthy()
@@ -62,6 +77,10 @@ describe('CitizenReports', () => {
 
   it('validates photo size before enabling submission', () => {
     render(<CitizenReports regionCode="63.02" />)
+    const target = screen.getByLabelText(
+      /Titik panas yang dilaporkan/,
+    ) as HTMLSelectElement
+    fireEvent.change(target, { target: { value: target.options[1].value } })
     fireEvent.click(screen.getByRole('button', { name: 'Kirim laporan' }))
     fireEvent.change(screen.getByLabelText(/Nama tampilan/), {
       target: { value: 'Sari' },

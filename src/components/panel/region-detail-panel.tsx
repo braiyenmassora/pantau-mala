@@ -12,7 +12,7 @@ import {
   Wind,
   X,
 } from 'lucide-react'
-import { useEffect, useRef, type ReactNode, type RefObject } from 'react'
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react'
 
 import { Badge, InfoTooltip, TrendChart } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
@@ -35,6 +35,15 @@ type RegionDetailPanelProps = {
   region: Region
   mapRef?: RefObject<MapRef | null>
 }
+
+type DetailTab = 'ringkasan' | 'laporan' | 'lingkungan' | 'riwayat'
+
+const DETAIL_TABS: Array<{ id: DetailTab; label: string }> = [
+  { id: 'ringkasan', label: 'Ringkasan' },
+  { id: 'laporan', label: 'Laporan' },
+  { id: 'lingkungan', label: 'Lingkungan' },
+  { id: 'riwayat', label: 'Riwayat' },
+]
 
 const TREND_UI: Record<
   TrendDirection,
@@ -127,6 +136,7 @@ function ConditionCell({
 // ponytail: detail = kartu konsisten + TrendChart 7 hari dari develop.
 export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
   const titleRef = useRef<HTMLHeadingElement>(null)
+  const [activeTab, setActiveTab] = useState<DetailTab>('ringkasan')
   const select = useMapStore((s) => s.select)
   const province = useMapStore((s) => s.province)
   const panelOpen = useUiStore((s) => s.panelOpen)
@@ -178,7 +188,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
               onClick={handleBack}
               aria-label={copy.panel.closeDetail}
               className={cn(
-                'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex size-8 shrink-0 items-center justify-center transition-colors',
+                'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-11 shrink-0 items-center justify-center rounded-full transition-colors',
                 focusRing,
               )}
             >
@@ -212,185 +222,291 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
             <InfoTooltip content="Perbandingan jumlah titik panas selama 7 hari terakhir." />
           </div>
 
-          <TrendChart
-            values={region.trend_7d}
-            timeZone={region.time_zone}
-            className="mt-4"
-          />
+          {activeTab === 'ringkasan' ? (
+            <>
+              <TrendChart
+                values={region.trend_7d}
+                timeZone={region.time_zone}
+                className="mt-4"
+              />
 
-          {stamp ? (
-            <p className="text-ink-3 mt-3 text-xs leading-5">Diperbarui {stamp}</p>
-          ) : null}
-
-          {region.summary ? (
-            <p className="bg-surface-muted text-ink rounded-ctl mt-3 px-3 py-2 text-sm leading-5">
-              {region.summary}
-            </p>
-          ) : null}
-          <p className="text-ink-2 mt-2 text-xs leading-4">
-            {copy.detail.calibrationNote(
-              region.score == null ? null : formatNumber(region.score),
-              region.quality ?? null,
-            )}
-          </p>
-        </section>
-
-        <CitizenReports regionCode={region.code} />
-
-        <RegionTerrainCard center={region.center} timeZone={region.time_zone} />
-
-        <Card className="bg-surface-muted border-0">
-          <CardHeader>
-            <CardTitle>Kondisi saat ini</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <ConditionCell
-                icon={<CloudSun strokeWidth={2} />}
-                label="Cuaca"
-                value={
-                  region.weather.temp_c != null
-                    ? `${formatNumber(region.weather.temp_c)}°C · ${region.weather.condition}`
-                    : region.weather.condition || '—'
-                }
-                isMissing={region.weather.temp_c == null}
-              />
-              <ConditionCell
-                icon={<Droplets strokeWidth={2} />}
-                label="Kelembapan"
-                value={
-                  region.weather.humidity != null
-                    ? `${formatNumber(region.weather.humidity)}%`
-                    : '—'
-                }
-                isMissing={region.weather.humidity == null}
-              />
-              <ConditionCell
-                icon={<Wind strokeWidth={2} />}
-                label="Kecepatan angin"
-                value={
-                  region.weather.wind_kmh != null
-                    ? `${formatNumber(region.weather.wind_kmh)} km/jam`
-                    : '—'
-                }
-                isMissing={region.weather.wind_kmh == null}
-              />
-              <ConditionCell
-                icon={<Sun strokeWidth={2} />}
-                label="Hari tanpa hujan"
-                value={
-                  region.weather.dry_days != null
-                    ? `${formatNumber(region.weather.dry_days)} hari`
-                    : '—'
-                }
-                isMissing={region.weather.dry_days == null}
-              />
-              <ConditionCell
-                icon={<CloudFog strokeWidth={2} />}
-                label="Kualitas udara"
-                value={copy.air[region.air_quality.category]}
-                isMissing={region.air_quality.category === 'missing'}
-                tooltip={copy.detail.airTooltip}
-              />
-              <ConditionCell
-                icon={<Gauge strokeWidth={2} />}
-                label="PM2.5 / ISPU"
-                value={
-                  region.air_quality.pm25 != null
-                    ? `${formatNumber(region.air_quality.pm25)} µg/m³${region.air_quality.ispu != null ? ` · ${formatNumber(region.air_quality.ispu)}` : ''}`
-                    : '—'
-                }
-                isMissing={region.air_quality.pm25 == null}
-                tooltip="PM2.5 adalah estimasi konsentrasi partikel halus. Angka setelah pemisah adalah ISPU bila tersedia."
-              />
-              {region.weather_danger ? (
-                <ConditionCell
-                  icon={<Gauge strokeWidth={2} />}
-                  label="Kelas FWI"
-                  value={`${copy.bahaya[region.weather_danger.class]} (${formatNumber(region.weather_danger.fwi)})`}
-                  tooltip={copy.detail.weatherDangerTooltip}
-                />
+              {stamp ? (
+                <p className="text-ink-3 mt-3 text-xs leading-5">Diperbarui {stamp}</p>
               ) : null}
-            </div>
-          </CardContent>
-        </Card>
 
-        {region.last_detection ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>Deteksi satelit terakhir</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <ConditionCell
-                  icon={<Clock strokeWidth={2} />}
-                  label="Waktu"
-                  value={formatDateTime(region.last_detection.time, region.time_zone)}
-                />
-                <ConditionCell
-                  icon={<Gauge strokeWidth={2} />}
-                  label="FRP"
-                  value={`${formatNumber(region.last_detection.frp_mw)} MW`}
-                  tooltip="Fire Radiative Power adalah intensitas energi panas yang terukur oleh sensor satelit."
-                />
-                <ConditionCell
-                  icon={<CloudSun strokeWidth={2} />}
-                  label="Satelit"
-                  value={region.last_detection.satellite}
-                />
-                <ConditionCell
-                  icon={<Check strokeWidth={2} />}
-                  label="Keyakinan"
-                  value={copy.detail.confidence[region.last_detection.confidence]}
-                />
-              </div>
-              <div className="border-line text-ink-3 mt-3 space-y-1 border-t pt-3 text-xs leading-4">
-                <p>
-                  Indikator dihitung:{' '}
-                  {region.computed_at
-                    ? formatDateTime(region.computed_at, region.time_zone)
-                    : 'belum tersedia'}
+              {region.summary ? (
+                <p className="bg-surface-muted text-ink rounded-ctl mt-3 px-3 py-2 text-sm leading-5">
+                  {region.summary}
                 </p>
-                <p>
-                  Cuaca diperbarui:{' '}
-                  {region.weather_updated_at
-                    ? formatDateTime(region.weather_updated_at, region.time_zone)
-                    : 'belum tersedia'}
-                </p>
-                <p>
-                  Udara diperbarui:{' '}
-                  {region.air_updated_at
-                    ? formatDateTime(region.air_updated_at, region.time_zone)
-                    : 'belum tersedia'}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        ) : null}
-
-        <RegionHistoryPanel code={region.code} />
-
-        <section className="border-line border-t px-1 pt-4">
-          <h3 className="font-heading text-ink text-sm leading-5 font-semibold">
-            Yang bisa kamu lakukan
-          </h3>
-          <div className="mt-3">
-            <ul className="space-y-3">
-              {actions.map((act, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <Check
-                    className="text-risk-low mt-1 size-4 shrink-0"
-                    strokeWidth={2}
-                    aria-hidden
-                  />
-                  <span className="text-ink text-sm leading-6">
-                    <ActionText text={act} />
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+              ) : null}
+              <p className="text-ink-2 mt-2 text-xs leading-4">
+                {copy.detail.calibrationNote(
+                  region.score == null ? null : formatNumber(region.score),
+                  region.quality ?? null,
+                )}
+              </p>
+            </>
+          ) : null}
         </section>
+
+        <div
+          role="tablist"
+          aria-label={copy.panel.regionInformation}
+          className="border-line bg-surface sticky top-0 z-10 grid grid-cols-4 border-y py-1"
+        >
+          {DETAIL_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              role="tab"
+              id={`region-tab-${tab.id}-trigger`}
+              aria-controls={`region-tab-${tab.id}`}
+              aria-selected={activeTab === tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                'rounded-ctl min-h-11 px-1 text-xs font-medium transition-colors',
+                activeTab === tab.id
+                  ? 'bg-brand-soft text-brand'
+                  : 'text-ink-2 hover:bg-surface-muted hover:text-ink',
+                focusRing,
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div
+          role="tabpanel"
+          id={`region-tab-${activeTab}`}
+          aria-labelledby={`region-tab-${activeTab}-trigger`}
+          className="contents"
+        >
+          {activeTab === 'laporan' ? (
+            <CitizenReports regionCode={region.code} timeZone={region.time_zone} />
+          ) : null}
+
+          {activeTab === 'lingkungan' ? (
+            <RegionTerrainCard center={region.center} timeZone={region.time_zone} />
+          ) : null}
+
+          {activeTab === 'lingkungan' ? (
+            <Card className="bg-surface-muted border-0">
+              <CardHeader>
+                <CardTitle>Kondisi saat ini</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <ConditionCell
+                    icon={<CloudSun strokeWidth={2} />}
+                    label="Cuaca"
+                    value={
+                      region.weather.temp_c != null
+                        ? `${formatNumber(region.weather.temp_c)}°C · ${region.weather.condition}`
+                        : region.weather.condition || '—'
+                    }
+                    isMissing={region.weather.temp_c == null}
+                  />
+                  <ConditionCell
+                    icon={<Droplets strokeWidth={2} />}
+                    label="Kelembapan"
+                    value={
+                      region.weather.humidity != null
+                        ? `${formatNumber(region.weather.humidity)}%`
+                        : '—'
+                    }
+                    isMissing={region.weather.humidity == null}
+                  />
+                  <ConditionCell
+                    icon={<Wind strokeWidth={2} />}
+                    label="Kecepatan angin"
+                    value={
+                      region.weather.wind_kmh != null
+                        ? `${formatNumber(region.weather.wind_kmh)} km/jam`
+                        : '—'
+                    }
+                    isMissing={region.weather.wind_kmh == null}
+                  />
+                  <ConditionCell
+                    icon={<Sun strokeWidth={2} />}
+                    label="Hari tanpa hujan"
+                    value={
+                      region.weather.dry_days != null
+                        ? `${formatNumber(region.weather.dry_days)} hari`
+                        : '—'
+                    }
+                    isMissing={region.weather.dry_days == null}
+                  />
+                  <ConditionCell
+                    icon={<CloudFog strokeWidth={2} />}
+                    label="Kualitas udara"
+                    value={copy.air[region.air_quality.category]}
+                    isMissing={region.air_quality.category === 'missing'}
+                    tooltip={copy.detail.airTooltip}
+                  />
+                  <ConditionCell
+                    icon={<Gauge strokeWidth={2} />}
+                    label="PM2.5 / ISPU"
+                    value={
+                      region.air_quality.pm25 != null
+                        ? `${formatNumber(region.air_quality.pm25)} µg/m³${region.air_quality.ispu != null ? ` · ${formatNumber(region.air_quality.ispu)}` : ''}`
+                        : '—'
+                    }
+                    isMissing={region.air_quality.pm25 == null}
+                    tooltip="PM2.5 adalah estimasi konsentrasi partikel halus. Angka setelah pemisah adalah ISPU bila tersedia."
+                  />
+                  {region.weather_danger ? (
+                    <ConditionCell
+                      icon={<Gauge strokeWidth={2} />}
+                      label="Kelas FWI"
+                      value={`${copy.bahaya[region.weather_danger.class]} (${formatNumber(region.weather_danger.fwi)})`}
+                      tooltip={copy.detail.weatherDangerTooltip}
+                    />
+                  ) : null}
+                </div>
+                {region.air_quality.pm25_24h != null ||
+                region.air_quality.valid_hours != null ||
+                region.air_quality.method ||
+                region.air_quality.source ||
+                region.air_quality.status ||
+                region.air_quality.window_end ? (
+                  <dl className="border-line mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t pt-4 text-xs">
+                    {region.air_quality.pm25_24h != null ? (
+                      <div>
+                        <dt className="text-ink-3">Rata-rata PM2.5 24 jam</dt>
+                        <dd className="text-ink mt-1 font-mono font-semibold">
+                          {formatNumber(region.air_quality.pm25_24h)} µg/m³
+                        </dd>
+                      </div>
+                    ) : null}
+                    {region.air_quality.valid_hours != null ? (
+                      <div>
+                        <dt className="text-ink-3">Jam data valid</dt>
+                        <dd className="text-ink mt-1 font-semibold">
+                          {formatNumber(region.air_quality.valid_hours)} dari 24 jam
+                        </dd>
+                      </div>
+                    ) : null}
+                    {region.air_quality.method ? (
+                      <div>
+                        <dt className="text-ink-3">Metode</dt>
+                        <dd className="text-ink mt-1 font-medium">
+                          {region.air_quality.method}
+                        </dd>
+                      </div>
+                    ) : null}
+                    {region.air_quality.source ? (
+                      <div>
+                        <dt className="text-ink-3">Sumber udara</dt>
+                        <dd className="text-ink mt-1 font-medium">
+                          {region.air_quality.source}
+                        </dd>
+                      </div>
+                    ) : null}
+                    {region.air_quality.status ? (
+                      <div>
+                        <dt className="text-ink-3">Status validasi</dt>
+                        <dd className="text-ink mt-1 font-medium">
+                          {region.air_quality.status}
+                        </dd>
+                      </div>
+                    ) : null}
+                    {region.air_quality.window_end ? (
+                      <div>
+                        <dt className="text-ink-3">Periode berakhir</dt>
+                        <dd className="text-ink mt-1 font-medium">
+                          {formatDateTime(
+                            region.air_quality.window_end,
+                            region.time_zone,
+                          )}
+                        </dd>
+                      </div>
+                    ) : null}
+                  </dl>
+                ) : null}
+              </CardContent>
+            </Card>
+          ) : null}
+
+          {activeTab === 'ringkasan' && region.last_detection ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Deteksi satelit terakhir</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  <ConditionCell
+                    icon={<Clock strokeWidth={2} />}
+                    label="Waktu"
+                    value={formatDateTime(region.last_detection.time, region.time_zone)}
+                  />
+                  <ConditionCell
+                    icon={<Gauge strokeWidth={2} />}
+                    label="FRP"
+                    value={`${formatNumber(region.last_detection.frp_mw)} MW`}
+                    tooltip="Fire Radiative Power adalah intensitas energi panas yang terukur oleh sensor satelit."
+                  />
+                  <ConditionCell
+                    icon={<CloudSun strokeWidth={2} />}
+                    label="Satelit"
+                    value={region.last_detection.satellite}
+                  />
+                  <ConditionCell
+                    icon={<Check strokeWidth={2} />}
+                    label="Keyakinan"
+                    value={copy.detail.confidence[region.last_detection.confidence]}
+                  />
+                </div>
+                <div className="border-line text-ink-3 mt-3 space-y-1 border-t pt-3 text-xs leading-4">
+                  <p>
+                    Indikator dihitung:{' '}
+                    {region.computed_at
+                      ? formatDateTime(region.computed_at, region.time_zone)
+                      : 'belum tersedia'}
+                  </p>
+                  <p>
+                    Cuaca diperbarui:{' '}
+                    {region.weather_updated_at
+                      ? formatDateTime(region.weather_updated_at, region.time_zone)
+                      : 'belum tersedia'}
+                  </p>
+                  <p>
+                    Udara diperbarui:{' '}
+                    {region.air_updated_at
+                      ? formatDateTime(region.air_updated_at, region.time_zone)
+                      : 'belum tersedia'}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : null}
+
+          {activeTab === 'riwayat' ? <RegionHistoryPanel code={region.code} /> : null}
+
+          {activeTab === 'ringkasan' ? (
+            <section className="border-line border-t px-1 pt-4">
+              <h3 className="font-heading text-ink text-sm leading-5 font-semibold">
+                Yang bisa kamu lakukan
+              </h3>
+              <div className="mt-3">
+                <ul className="space-y-3">
+                  {actions.map((act, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <Check
+                        className="text-risk-low mt-1 size-4 shrink-0"
+                        strokeWidth={2}
+                        aria-hidden
+                      />
+                      <span className="text-ink text-sm leading-6">
+                        <ActionText text={act} />
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </section>
+          ) : null}
+        </div>
       </div>
     </div>
   )

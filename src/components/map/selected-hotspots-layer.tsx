@@ -7,6 +7,7 @@ import type { GeoJSONSource } from 'maplibre-gl'
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { copy } from '@/copy/id'
+import { useHotspotReportCounts } from '@/data/hotspot-reports'
 import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { formatDateTime, formatNumber } from '@/lib/format'
@@ -28,7 +29,9 @@ type SelectedHotspotsLayerProps = {
 export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
   const { map, isLoaded } = useMap()
   const selectedCode = useMapStore((s) => s.selectedCode)
+  const selectHotspot = useMapStore((s) => s.selectHotspot)
   const panelOpen = useUiStore((s) => s.panelOpen)
+  const setPanelOpen = useUiStore((s) => s.setPanelOpen)
   const { data } = useHotspots(Boolean(selectedCode))
   const lastFitCode = useRef<string | null>(null)
   const [hovered, setHovered] = useState<number | null>(null)
@@ -42,6 +45,23 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
     if (!selectedCode || !data) return []
     return data.features.filter((f) => f.properties.region_code === selectedCode)
   }, [selectedCode, data])
+  const reportCounts = useHotspotReportCounts(
+    regionHotspots.map((feature) => ({
+      lat: feature.geometry.coordinates[1],
+      lon: feature.geometry.coordinates[0],
+    })),
+    regionHotspots.length > 0 && regionHotspots.length <= 64,
+  )
+  const countByPoint = useMemo(
+    () =>
+      new Map(
+        (reportCounts.data ?? []).map((item) => [
+          `${item.point_lat.toFixed(5)},${item.point_lon.toFixed(5)}`,
+          item.count,
+        ]),
+      ),
+    [reportCounts.data],
+  )
 
   const focus = useMemo(() => {
     if (!selectedRegion) return null
@@ -188,7 +208,8 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
       {regionHotspots.map((f, i) => {
         const [lon, lat] = f.geometry.coordinates
         const stamp = formatDateTime(f.properties.time, selectedRegion.time_zone)
-        const label = `Titik panas ${stamp} · FRP ${formatNumber(f.properties.frp_mw)} MW`
+        const count = countByPoint.get(`${lat.toFixed(5)},${lon.toFixed(5)}`) ?? 0
+        const label = `Titik panas ${stamp} · FRP ${formatNumber(f.properties.frp_mw)} MW · ${count} laporan warga`
 
         return (
           <MapMarker
@@ -210,20 +231,40 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                   />
                 </div>
               ) : null}
-              <span
-                tabIndex={0}
-                role="img"
+              <button
+                type="button"
                 aria-label={label}
                 className={cn(
-                  'border-surface relative size-2.5 cursor-pointer rounded-full border-2 shadow-sm',
-                  'transition-transform duration-150 hover:scale-125',
+                  'group relative flex size-11 cursor-pointer items-center justify-center rounded-full',
+                  'focus-visible:ring-brand focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
                 )}
-                style={{ backgroundColor: HOTSPOT_HEX }}
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}
                 onFocus={() => setHovered(i)}
                 onBlur={() => setHovered(null)}
-              />
+                onClick={(event) => {
+                  event.stopPropagation()
+                  selectHotspot(selectedRegion.code, selectedRegion.province, {
+                    lat,
+                    lon,
+                    time: f.properties.time,
+                    frpMw: f.properties.frp_mw,
+                    satellite: f.properties.satellite,
+                  })
+                  setPanelOpen(true)
+                }}
+              >
+                <span
+                  className="border-surface size-3 rounded-full border-2 shadow-sm transition-transform duration-150 group-hover:scale-125"
+                  style={{ backgroundColor: HOTSPOT_HEX }}
+                  aria-hidden
+                />
+                {count > 0 ? (
+                  <span className="bg-ink text-surface absolute top-0 right-0 flex min-h-4 min-w-4 items-center justify-center rounded-full px-1 font-mono text-xs font-semibold shadow-sm">
+                    {count > 99 ? '99+' : count}
+                  </span>
+                ) : null}
+              </button>
             </MarkerContent>
           </MapMarker>
         )

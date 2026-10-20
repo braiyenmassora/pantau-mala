@@ -12,6 +12,14 @@ export type UserLocation = {
   coords?: { lon: number; lat: number }
 }
 
+export type ReportHotspot = {
+  lat: number
+  lon: number
+  time: string
+  frpMw: number
+  satellite: string
+}
+
 type MapState = {
   selectedCode: string | null
   hoveredCode: string | null
@@ -27,6 +35,7 @@ type MapState = {
   earthquakeFocus: { event: Earthquake; sequence: number } | null
   windLocation: { lon: number; lat: number; label: string } | null
   windTime: number | null
+  reportHotspot: ReportHotspot | null
   toggleWind: () => void
   toggleTemperature: () => void
   toggleEarthquakes: () => void
@@ -34,6 +43,8 @@ type MapState = {
   focusEarthquake: (event: Earthquake) => void
   setWindLocation: (location: { lon: number; lat: number; label: string }) => void
   setWindTime: (timestamp: number | null) => void
+  selectHotspot: (code: string, province: string, hotspot: ReportHotspot) => void
+  setReportHotspot: (hotspot: ReportHotspot | null) => void
   select: (code: string | null, regionProvince?: string) => void
   hover: (code: string | null) => void
   setProvince: (province: string) => void
@@ -59,6 +70,7 @@ export const useMapStore = create<MapState>((set) => ({
   earthquakeFocus: null,
   windLocation: null,
   windTime: null,
+  reportHotspot: null,
   toggleWind: () => set((s) => ({ showWind: !s.showWind })),
   toggleTemperature: () => set((s) => ({ showTemperature: !s.showTemperature })),
   toggleEarthquakes: () => set((s) => ({ showEarthquakes: !s.showEarthquakes })),
@@ -70,28 +82,38 @@ export const useMapStore = create<MapState>((set) => ({
     })),
   setWindLocation: (windLocation) => set({ windLocation, windTime: null }),
   setWindTime: (windTime) => set({ windTime }),
+  selectHotspot: (selectedCode, province, reportHotspot) =>
+    set({ selectedCode, province, reportHotspot, query: '' }),
+  setReportHotspot: (reportHotspot) => set({ reportHotspot }),
   select: (selectedCode, regionProvince) =>
     set({
       selectedCode,
+      reportHotspot: null,
       // Buka detail: kosongkan pencarian agar panel detail tampil bersih
       ...(selectedCode ? { query: '' } : {}),
       ...(regionProvince ? { province: regionProvince } : {}),
     }),
   hover: (hoveredCode) => set({ hoveredCode }),
-  setProvince: (province) => set({ province, selectedCode: null }),
+  setProvince: (province) => set({ province, selectedCode: null, reportHotspot: null }),
   /** Single-select: pick one category, or clear if the same chip is clicked again. */
   toggleCategory: (category) =>
     set((s) => {
       if (s.selectedCategories.has(category)) {
-        return { selectedCategories: new Set(), selectedCode: null }
+        return { selectedCategories: new Set(), selectedCode: null, reportHotspot: null }
       }
-      return { selectedCategories: new Set([category]), selectedCode: null }
+      return {
+        selectedCategories: new Set([category]),
+        selectedCode: null,
+        reportHotspot: null,
+      }
     }),
-  clearCategories: () => set({ selectedCategories: new Set(), selectedCode: null }),
+  clearCategories: () =>
+    set({ selectedCategories: new Set(), selectedCode: null, reportHotspot: null }),
   resetHome: () =>
     set({
       query: '',
       selectedCode: null,
+      reportHotspot: null,
       selectedCategories: new Set(),
       province: 'Semua',
     }),

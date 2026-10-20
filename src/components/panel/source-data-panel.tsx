@@ -1,12 +1,13 @@
 import { ChevronDown, CloudSun, Database } from 'lucide-react'
 import { useState } from 'react'
 
-import { Button, ProgressBar } from '@/components/common'
+import { Button, ProgressBar, Sparkline } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { Card, CardContent } from '@/components/ui/card'
 import { copy } from '@/copy/id'
 import {
   forecastSchema,
+  providerProvenanceSchema,
   providerRegistrySchema,
   sourceStatusSchema,
   summarySchema,
@@ -19,19 +20,94 @@ import { VillageSearch } from './village-search'
 
 export function SourceDataPanel() {
   const [open, setOpen] = useState(false)
+  const summary = useOptionalData(
+    'national-summary',
+    '/summary',
+    (raw) => summarySchema.parse(raw).data,
+    true,
+  )
 
   return (
     <Card>
+      <CardContent className="space-y-3 pt-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-ink-3 text-xs font-medium">Situasi nasional · 24 jam</p>
+            <p className="text-ink mt-1 font-mono text-2xl font-semibold tabular-nums">
+              {summary.data ? formatNumber(summary.data.titik_panas_24j) : '—'}
+            </p>
+            <p className="text-ink-2 text-xs">titik panas terdeteksi</p>
+          </div>
+          {summary.data ? (
+            <div className="text-right">
+              <span className="text-brand bg-brand-soft rounded-full px-2 py-1 text-xs font-semibold capitalize">
+                {summary.data.arah_tren}
+              </span>
+              <Sparkline
+                data={summary.data.tren_7h}
+                width={72}
+                height={28}
+                className="mt-2 opacity-70"
+              />
+            </div>
+          ) : null}
+        </div>
+        {summary.isFetching && !summary.data ? <ProgressBar /> : null}
+        {summary.isError ? (
+          <p role="alert" className="text-ink-2 text-xs">
+            Ringkasan nasional belum dapat dimuat.
+          </p>
+        ) : null}
+        {summary.data ? (
+          <dl className="grid grid-cols-3 gap-2">
+            <div className="bg-surface-muted rounded-ctl p-2">
+              <dt className="text-ink-3 text-xs">Sebelumnya</dt>
+              <dd className="text-ink mt-1 font-mono text-sm font-semibold">
+                {formatNumber(summary.data.titik_panas_kemarin)}
+              </dd>
+            </div>
+            <div className="bg-surface-muted rounded-ctl p-2">
+              <dt className="text-ink-3 text-xs">Perubahan</dt>
+              <dd className="text-ink mt-1 font-mono text-sm font-semibold">
+                {summary.data.perubahan_harian == null
+                  ? '—'
+                  : `${formatNumber(summary.data.perubahan_harian * 100, { maximumFractionDigits: 1 })}%`}
+              </dd>
+            </div>
+            <div className="bg-surface-muted rounded-ctl p-2">
+              <dt className="text-ink-3 text-xs">Sangat tinggi</dt>
+              <dd className="text-ink mt-1 font-mono text-sm font-semibold">
+                {formatNumber(summary.data.wilayah_sangat_tinggi)}
+              </dd>
+            </div>
+          </dl>
+        ) : null}
+        {summary.data ? (
+          <div
+            className="flex flex-wrap gap-2"
+            aria-label={copy.extra.categoryDistribution}
+          >
+            {Object.entries(summary.data.jumlah_kategori).map(([category, count]) => (
+              <span
+                key={category}
+                className="border-line text-ink-2 rounded-full border px-2 py-1 text-xs capitalize"
+              >
+                {category.replaceAll('_', ' ')} · {formatNumber(count)}
+              </span>
+            ))}
+          </div>
+        ) : null}
+      </CardContent>
       <details onToggle={(event) => setOpen(event.currentTarget.open)}>
         <summary
           className={cn(
-            'text-ink hover:bg-surface-muted flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3 text-sm font-semibold [&::-webkit-details-marker]:hidden',
+            'border-line text-ink hover:bg-surface-muted flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 border-t px-3 text-sm font-semibold [&::-webkit-details-marker]:hidden',
             focusRing,
           )}
         >
           <span className="flex items-center gap-2">
             <Database className="text-brand size-4" aria-hidden />
-            Data nasional & sumber
+            Sumber data & cuaca desa
           </span>
           <ChevronDown
             className={cn('size-4 transition-transform', open && 'rotate-180')}
@@ -45,12 +121,6 @@ export function SourceDataPanel() {
 }
 
 function SourceDataContent() {
-  const summary = useOptionalData(
-    'national-summary',
-    '/summary',
-    (raw) => summarySchema.parse(raw).data,
-    true,
-  )
   const status = useOptionalData(
     'all-source-status',
     '/data-status',
@@ -63,6 +133,12 @@ function SourceDataContent() {
     (raw) => providerRegistrySchema.parse(raw).data,
     true,
   )
+  const provenance = useOptionalData(
+    'provider-provenance',
+    '/providers/provenance?limit=10',
+    (raw) => providerProvenanceSchema.parse(raw).data,
+    true,
+  )
   const [village, setVillage] = useState<Village | null>(null)
   const forecast = useOptionalData(
     'bmkg-village-weather',
@@ -70,43 +146,12 @@ function SourceDataContent() {
     (raw) => forecastSchema.parse(raw),
     Boolean(village),
   )
-  const loading = summary.isFetching || status.isFetching || providers.isFetching
+  const loading = status.isFetching || providers.isFetching || provenance.isFetching
 
   return (
     <CardContent className="border-line space-y-5 border-t pt-3">
       {loading ? <ProgressBar /> : null}
       <section className="space-y-2">
-        <h3 className="text-ink text-xs font-semibold">Ringkasan nasional</h3>
-        {summary.isError ? (
-          <p role="alert" className="text-ink-2 text-xs">
-            Ringkasan nasional belum dapat dimuat.
-          </p>
-        ) : null}
-        {summary.data ? (
-          <dl className="grid grid-cols-2 gap-2">
-            {[
-              ['Titik panas 24 jam', formatNumber(summary.data.titik_panas_24j)],
-              ['24 jam sebelumnya', formatNumber(summary.data.titik_panas_kemarin)],
-              [
-                'Perubahan harian',
-                summary.data.perubahan_harian == null
-                  ? '—'
-                  : `${formatNumber(summary.data.perubahan_harian * 100, { maximumFractionDigits: 1 })}%`,
-              ],
-              ['Wilayah sangat tinggi', formatNumber(summary.data.wilayah_sangat_tinggi)],
-            ].map(([label, value]) => (
-              <div key={label} className="bg-surface-muted rounded-ctl p-3">
-                <dt className="text-ink-2 text-xs leading-4">{label}</dt>
-                <dd className="text-ink mt-1 font-mono text-sm font-semibold tabular-nums">
-                  {value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        ) : null}
-      </section>
-
-      <section className="border-line space-y-2 border-t pt-4">
         <h3 className="text-ink text-xs font-semibold">Status sumber data</h3>
         {status.data ? (
           <ul className="space-y-2">
@@ -137,6 +182,29 @@ function SourceDataContent() {
                 {provider.provider} · {provider.status}
               </span>
             ))}
+          </div>
+        ) : null}
+        {provenance.data?.length ? (
+          <div className="border-line mt-3 border-t pt-3">
+            <h4 className="text-ink text-xs font-semibold">Aktivitas penyedia terbaru</h4>
+            <ul className="mt-2 space-y-2">
+              {provenance.data.slice(0, 5).map((item) => (
+                <li
+                  key={`${item.penyedia}-${item.waktu_tarik}-${item.endpoint}`}
+                  className="flex items-start justify-between gap-3 text-xs"
+                >
+                  <div className="min-w-0">
+                    <p className="text-ink truncate font-medium">{item.penyedia}</p>
+                    <p className="text-ink-3 mt-1 capitalize">
+                      {item.sifat_data} · {item.validasi}
+                    </p>
+                  </div>
+                  <span className="text-ink-2 shrink-0 text-right">
+                    {item.status} · {formatDateTime(item.waktu_tarik, 'WIB')}
+                  </span>
+                </li>
+              ))}
+            </ul>
           </div>
         ) : null}
       </section>
