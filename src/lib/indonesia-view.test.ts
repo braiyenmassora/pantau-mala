@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { fitIndonesia, fitProvinceBounds } from '@/lib/indonesia-view'
 
@@ -36,6 +36,8 @@ function mockMap() {
 }
 
 describe('fitProvinceBounds', () => {
+  afterEach(() => vi.unstubAllGlobals())
+
   it('clears maxBounds before fitBounds so navigation is not stuck', () => {
     const map = mockMap()
     fitProvinceBounds(map as never, [110, -4, 116, 0], true, 600)
@@ -77,5 +79,14 @@ describe('fitProvinceBounds', () => {
     expect(map.jumpTo).toHaveBeenCalledWith(
       expect.objectContaining({ center: [115, -1], zoom: 4.5 }),
     )
+  })
+
+  it('allows the natural mobile overview zoom so Indonesia is not cropped', () => {
+    vi.stubGlobal('window', { innerWidth: 390 })
+    const map = mockMap()
+    map.cameraForBounds = vi.fn(() => ({ zoom: 2.4, center: [118, -2] as never }))
+
+    expect(fitIndonesia(map as never, false, 0)).toBe(2.4)
+    expect(map.jumpTo).toHaveBeenCalledWith(expect.objectContaining({ zoom: 2.4 }))
   })
 })

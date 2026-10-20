@@ -17,6 +17,7 @@ const getLayer = vi.fn()
 const on = vi.fn()
 const off = vi.fn()
 const getCanvas = vi.fn(() => ({ style: {} }))
+const reducedMotion = vi.hoisted(() => ({ value: true }))
 
 vi.mock('@/components/ui/map', () => ({
   useMap: () => ({
@@ -37,7 +38,7 @@ vi.mock('@/components/ui/map', () => ({
 }))
 
 vi.mock('@/lib/prefers-reduced-motion', () => ({
-  usePrefersReducedMotion: () => true,
+  usePrefersReducedMotion: () => reducedMotion.value,
 }))
 
 vi.mock('@/data/queries', () => ({
@@ -133,6 +134,7 @@ describe('ProvinceRadarsLayer', () => {
     off.mockClear()
     getSource.mockReturnValue(undefined)
     getLayer.mockReturnValue(undefined)
+    reducedMotion.value = true
     useMapStore.setState({ province: 'Semua', selectedCode: null })
   })
 
@@ -196,5 +198,26 @@ describe('ProvinceRadarsLayer', () => {
         features: [],
       }),
     )
+  })
+
+  it('uses throttled MapLibre transitions for radar pulses', () => {
+    vi.useFakeTimers()
+    reducedMotion.value = false
+    getLayer.mockReturnValue({})
+
+    render(<ProvinceRadarsLayer regions={regions} />)
+    vi.advanceTimersByTime(60)
+
+    expect(setPaintProperty).toHaveBeenCalledWith(
+      'province-radars-pulse-high',
+      'circle-radius',
+      21,
+    )
+    expect(setPaintProperty).toHaveBeenCalledWith(
+      'province-radars-pulse-mid',
+      'circle-stroke-opacity',
+      0.18,
+    )
+    vi.useRealTimers()
   })
 })

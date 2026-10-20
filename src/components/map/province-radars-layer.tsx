@@ -7,6 +7,7 @@ import { useRegionCatalog } from '@/data/queries'
 import type { Region, RiskCategory } from '@/data/types'
 import { aggregateByProvince, provinceLabelAnchors } from '@/lib/province-aggregates'
 import { MAP_COLORS } from '@/lib/map-colors'
+import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { RISK_CATEGORIES, withAlpha } from '@/lib/risk-category'
 import { useMapStore } from '@/store/map'
 
@@ -32,6 +33,7 @@ export function ProvinceRadarsLayer({ regions }: ProvinceRadarsLayerProps) {
   const province = useMapStore((s) => s.province)
   const selectedCode = useMapStore((s) => s.selectedCode)
   const setProvince = useMapStore((s) => s.setProvince)
+  const reducedMotion = usePrefersReducedMotion()
   const setProvinceRef = useRef(setProvince)
 
   useEffect(() => {
@@ -185,6 +187,47 @@ export function ProvinceRadarsLayer({ regions }: ProvinceRadarsLayerProps) {
     const source = map.getSource(SOURCE_ID) as GeoJSONSource | undefined
     source?.setData(geojson)
   }, [map, isLoaded, geojson])
+
+  useEffect(() => {
+    if (!map || !isLoaded || !isNational || reducedMotion) return
+
+    const layers = [
+      { id: PULSE_LAYER_HIGH, base: 14, expanded: 21, opacity: 0.9 },
+      { id: PULSE_LAYER_MID, base: 12, expanded: 18, opacity: 0.8 },
+    ]
+    let expandTimer: number | undefined
+
+    const pulse = () => {
+      if (document.visibilityState === 'hidden') return
+      for (const layer of layers) {
+        if (!map.getLayer(layer.id)) continue
+        map.setPaintProperty(layer.id, 'circle-radius-transition', { duration: 0 })
+        map.setPaintProperty(layer.id, 'circle-stroke-opacity-transition', {
+          duration: 0,
+        })
+        map.setPaintProperty(layer.id, 'circle-radius', layer.base)
+        map.setPaintProperty(layer.id, 'circle-stroke-opacity', layer.opacity)
+      }
+      expandTimer = window.setTimeout(() => {
+        for (const layer of layers) {
+          if (!map.getLayer(layer.id)) continue
+          map.setPaintProperty(layer.id, 'circle-radius-transition', { duration: 1100 })
+          map.setPaintProperty(layer.id, 'circle-stroke-opacity-transition', {
+            duration: 1100,
+          })
+          map.setPaintProperty(layer.id, 'circle-radius', layer.expanded)
+          map.setPaintProperty(layer.id, 'circle-stroke-opacity', 0.18)
+        }
+      }, 50)
+    }
+
+    pulse()
+    const interval = window.setInterval(pulse, 2400)
+    return () => {
+      window.clearInterval(interval)
+      if (expandTimer !== undefined) window.clearTimeout(expandTimer)
+    }
+  }, [map, isLoaded, isNational, reducedMotion])
 
   return null
 }

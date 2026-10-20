@@ -27,6 +27,12 @@ export const LOCATION_ZOOM = 5.5
  */
 export const OVERVIEW_ZOOM_FLOOR = 3.2
 
+function overviewZoomFloor() {
+  return typeof window !== 'undefined' && window.innerWidth < 640
+    ? 2
+    : OVERVIEW_ZOOM_FLOOR
+}
+
 /**
  * Padding area aman agar fit nasional tidak ketutup chip/legend/panel.
  */
@@ -35,13 +41,13 @@ export function getMapPadding(panelOpen: boolean): PaddingOptions {
     return {
       left: LAYOUT.gutter,
       top: 72,
-      right: LAYOUT.gutter,
+      right: LAYOUT.controlSize + LAYOUT.gutter,
       bottom: panelOpen ? Math.min(window.innerHeight * 0.64, 620) + LAYOUT.gutter : 88,
     }
   return {
     left: panelOpen ? LAYOUT.overlayInset : 24,
     top: 72,
-    right: LAYOUT.controlsClearance,
+    right: LAYOUT.controlsClearance + LAYOUT.gutter,
     bottom: 96,
   }
 }
@@ -53,7 +59,8 @@ function overviewCamera(map: MaplibreMap, panelOpen: boolean) {
     absolutePadding: true,
   })
   // Pakai zoom natural fitBounds; lantai hanya cegah zoom terlalu jauh ke luar negeri.
-  const zoom = Math.max(camera?.zoom ?? OVERVIEW_ZOOM_FLOOR, OVERVIEW_ZOOM_FLOOR)
+  const floor = overviewZoomFloor()
+  const zoom = Math.max(camera?.zoom ?? floor, floor)
   const rawCenter = camera?.center
   const center: [number, number] =
     rawCenter != null
