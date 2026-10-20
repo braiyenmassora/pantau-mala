@@ -44,7 +44,6 @@ type MapShellProps = {
 function MapUnavailable({ onReload }: { onReload: () => void }) {
   const panelOpen = useUiStore((s) => s.panelOpen)
   const pad = getMapPadding(panelOpen)
-
   return (
     <div className="bg-map-bg absolute inset-0 z-10" data-testid="map-webgl-fail">
       <div
@@ -320,6 +319,9 @@ export function MapShell({
   }
 
   const pad = getMapPadding(panelOpen)
+  // Fallback camera sebelum fitBounds siap. Mobile tidak boleh mulai dari zoom
+  // desktop karena Sabang/Papua akan terpotong selama style/catalog dimuat.
+  const initialZoom = prefersCompactMap() ? 3 : 4.5
 
   return (
     <div
@@ -350,7 +352,7 @@ export function MapShell({
           framed ? 'opacity-100' : 'opacity-0',
         )}
         center={INDONESIA_CENTER}
-        zoom={4.5}
+        zoom={initialZoom}
         attributionControl={{ compact: true }}
         boxZoom={false}
         cooperativeGestures={false}
