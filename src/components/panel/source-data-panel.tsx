@@ -15,6 +15,12 @@ import {
 } from '@/data/extended-contract'
 import { useOptionalData } from '@/data/queries'
 import { formatDateTime, formatNumber } from '@/lib/format'
+import {
+  providerDisplayName,
+  providerKindLabel,
+  providerStatusLabel,
+  providerValidationLabel,
+} from '@/lib/provider-display'
 import { cn } from '@/lib/utils'
 import { VillageSearch } from './village-search'
 
@@ -179,7 +185,8 @@ function SourceDataContent() {
                 title={provider.attribution}
                 className="border-line bg-surface text-ink-2 rounded-full border px-2 py-1 text-xs"
               >
-                {provider.provider} · {provider.status}
+                {providerDisplayName(provider.id, provider.provider)} ·{' '}
+                {providerStatusLabel(provider.status)}
               </span>
             ))}
           </div>
@@ -194,13 +201,17 @@ function SourceDataContent() {
                   className="flex items-start justify-between gap-3 text-xs"
                 >
                   <div className="min-w-0">
-                    <p className="text-ink truncate font-medium">{item.penyedia}</p>
+                    <p className="text-ink truncate font-medium">
+                      {providerDisplayName(item.feed, item.penyedia)}
+                    </p>
                     <p className="text-ink-3 mt-1 capitalize">
-                      {item.sifat_data} · {item.validasi}
+                      {providerKindLabel(item.sifat_data)} ·{' '}
+                      {providerValidationLabel(item.validasi)}
                     </p>
                   </div>
                   <span className="text-ink-2 shrink-0 text-right">
-                    {item.status} · {formatDateTime(item.waktu_tarik, 'WIB')}
+                    {providerStatusLabel(item.status)} ·{' '}
+                    {formatDateTime(item.waktu_tarik, 'WIB')}
                   </span>
                 </li>
               ))}

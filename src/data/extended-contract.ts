@@ -141,6 +141,7 @@ export const villagesSchema = z.object({ data: z.array(villageSchema) })
 export type Village = z.infer<typeof villageSchema>
 
 const provenanceSchema = z.object({
+  feed: z.string().min(1).optional(),
   penyedia: z.string().min(1),
   endpoint: z.url(),
   sifat_data: z.enum(['observed', 'modelled', 'derived', 'contextual']),
