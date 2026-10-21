@@ -177,7 +177,6 @@ export const copy = {
     detailCoords: (lat: string, lon: string) => `${lat}, ${lon}`,
     detailWhen: 'Waktu laporan',
     detailSighting: 'Yang dilihat',
-    detailOpenPoint: 'Tulis laporan di titik ini',
     detailMapHint: 'Koordinat dibulatkan ~1 m untuk pengelompokan titik.',
   },
   detail: {

@@ -1,12 +1,11 @@
 import { MapPin, X } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
-import { Button } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { ReportPhoto } from '@/components/panel/report-photo'
 import { copy } from '@/copy/id'
 import { useHotspotReport } from '@/data/hotspot-reports'
-import { rememberFocusTrigger, restoreFocusTrigger } from '@/lib/focus-return'
+import { restoreFocusTrigger } from '@/lib/focus-return'
 import { formatRelativeAge, reportAuthorInitials } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui'
@@ -15,8 +14,6 @@ import { useUiStore } from '@/store/ui'
 export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
   const titleRef = useRef<HTMLHeadingElement>(null)
   const setSelectedReportId = useUiStore((s) => s.setSelectedReportId)
-  const setReportTarget = useUiStore((s) => s.setReportTarget)
-  const setPanelOpen = useUiStore((s) => s.setPanelOpen)
   const { data: report, isPending } = useHotspotReport(reportId)
 
   useEffect(() => {
@@ -47,17 +44,6 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
         </p>
       </div>
     )
-  }
-
-  const openCompose = (el: HTMLElement) => {
-    rememberFocusTrigger(el)
-    setReportTarget({
-      lat: report.lat,
-      lon: report.lon,
-      region_code: report.region_code,
-      hotspot_time: report.hotspot_time,
-    })
-    setPanelOpen(true)
   }
 
   return (
@@ -137,13 +123,6 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
             </span>
           </p>
           <p className="text-ink-2 text-xs leading-4">{copy.report.detailMapHint}</p>
-          <Button
-            variant="soft"
-            className="mt-1 w-full shadow-none"
-            onClick={(e) => openCompose(e.currentTarget)}
-          >
-            {copy.report.detailOpenPoint}
-          </Button>
         </div>
 
         <p className="text-ink-2 text-xs leading-4">{copy.report.disclaimer}</p>
