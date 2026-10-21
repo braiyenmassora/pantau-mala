@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { Check, ChevronDown, Search, X } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { focusRing } from '@/components/common/focus-ring'
+import { copy } from '@/copy/id'
 import { cn } from '@/lib/utils'
 
 export type SearchableSelectOption = {
@@ -129,7 +130,8 @@ export function SearchableSelect({
               <button
                 type="button"
                 onClick={() => setSearch('')}
-                className="text-ink-3 hover:text-ink"
+                aria-label={copy.common.clearSearch}
+                className="text-ink-3 hover:text-ink rounded-ctl flex size-8 shrink-0 items-center justify-center"
               >
                 <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
               </button>
@@ -138,7 +140,7 @@ export function SearchableSelect({
         </div>
         <div role="listbox" className="soft-scroll max-h-56 overflow-y-auto p-1">
           {filteredOptions.length === 0 ? (
-            <p className="text-ink-3 px-3 py-2 text-center text-xs">{emptyText}</p>
+            <p className="text-ink-2 px-3 py-2 text-center text-xs leading-4">{emptyText}</p>
           ) : (
             filteredOptions.map((opt) => {
               const active = opt.value === value
@@ -154,7 +156,7 @@ export function SearchableSelect({
                     setSearch('')
                   }}
                   className={cn(
-                    'rounded-ctl flex w-full items-center justify-between gap-2 px-2 py-1 text-left text-sm leading-5 font-medium transition-colors duration-150',
+                    'rounded-ctl flex w-full items-center justify-between gap-2 px-2 py-2 text-left text-sm leading-5 font-medium transition-colors duration-150',
                     'hover:bg-surface-muted',
                     active && 'bg-surface-muted text-ink font-semibold',
                     focusRing,
@@ -163,7 +165,7 @@ export function SearchableSelect({
                   <div className="min-w-0 flex-1">
                     <p className="truncate">{opt.label}</p>
                     {opt.description && (
-                      <p className="text-ink-3 mt-1 truncate text-xs leading-4">
+                      <p className="text-ink-2 mt-1 truncate text-xs leading-4">
                         {opt.description}
                       </p>
                     )}

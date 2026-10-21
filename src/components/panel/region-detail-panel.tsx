@@ -18,8 +18,7 @@ import {
   type RefObject,
 } from 'react'
 
-import { Button, HotspotStatusBadge, InfoTooltip, TrendChart } from '@/components/common'
-import { focusRing } from '@/components/common/focus-ring'
+import { Button, HotspotStatusBadge, IconButton, InfoTooltip, TrendChart } from '@/components/common'
 import { AirCategoryPill } from '@/components/panel/air-quality-card'
 import { airPm25Value } from '@/lib/air-card'
 import { SectionHead } from '@/components/common/section-head'
@@ -298,17 +297,9 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
   return (
     <div key={region.code} className="flex flex-col">
       <div className="bg-surface sticky top-0 z-10 flex justify-end px-4 pt-3 pb-2">
-        <button
-          type="button"
-          onClick={handleBack}
-          aria-label={copy.panel.closeDetail}
-          className={cn(
-            'text-ink-2 hover:bg-surface-muted rounded-ctl flex size-11 shrink-0 items-center justify-center transition-colors',
-            focusRing,
-          )}
-        >
+        <IconButton onClick={handleBack} aria-label={copy.panel.closeDetail}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-        </button>
+        </IconButton>
       </div>
 
       <div className="flex flex-col gap-6 px-4 pt-3 pb-6">

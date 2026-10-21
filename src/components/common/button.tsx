@@ -37,6 +37,7 @@ export function Button({
     <button
       type="button"
       disabled={disabled || loading}
+      aria-busy={loading || undefined}
       className={cn(
         'rounded-card relative inline-flex items-center justify-center gap-2 overflow-hidden',
         'transition-[background-color,opacity,transform] duration-150 ease-in-out',

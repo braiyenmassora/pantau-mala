@@ -1,13 +1,12 @@
 import { MapPin, X } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
-import { focusRing } from '@/components/common/focus-ring'
+import { IconButton } from '@/components/common/icon-button'
 import { ReportPhoto } from '@/components/panel/report-photo'
 import { copy } from '@/copy/id'
 import { useHotspotReport } from '@/data/hotspot-reports'
 import { restoreFocusTrigger } from '@/lib/focus-return'
 import { formatRelativeAge, reportAuthorInitials } from '@/lib/format'
-import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui'
 
 /** Side panel detail satu laporan warga (klik dari list). */
@@ -28,17 +27,9 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
   if (!report) {
     return (
       <div className="flex flex-col gap-4 px-4 pt-3 pb-6">
-        <button
-          type="button"
-          onClick={back}
-          aria-label={copy.report.detailBack}
-          className={cn(
-            'text-ink-2 hover:bg-surface-muted rounded-ctl flex size-11 items-center justify-center',
-            focusRing,
-          )}
-        >
+        <IconButton onClick={back} aria-label={copy.report.detailBack}>
           <X className="size-4" strokeWidth={2} aria-hidden />
-        </button>
+        </IconButton>
         <p className="text-ink-2 text-sm leading-5">
           {isPending ? copy.common.loading : copy.report.detailNotFound}
         </p>
@@ -56,17 +47,9 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
         >
           {copy.report.detailTitle}
         </h1>
-        <button
-          type="button"
-          onClick={back}
-          aria-label={copy.report.detailBack}
-          className={cn(
-            'text-ink-2 hover:bg-surface-muted rounded-ctl flex size-11 shrink-0 items-center justify-center transition-colors',
-            focusRing,
-          )}
-        >
+        <IconButton onClick={back} aria-label={copy.report.detailBack}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-        </button>
+        </IconButton>
       </div>
 
       <div className="flex flex-col gap-6 px-4 pt-3 pb-6">

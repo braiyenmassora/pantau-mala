@@ -1,7 +1,7 @@
 import { X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
-import { Button } from '@/components/common'
+import { Button, IconButton } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { copy } from '@/copy/id'
 import {
@@ -122,17 +122,9 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
         >
           {copy.report.formTitle}
         </h1>
-        <button
-          type="button"
-          onClick={back}
-          aria-label={copy.report.close}
-          className={cn(
-            'text-ink-2 hover:bg-surface-muted rounded-ctl flex size-11 shrink-0 items-center justify-center transition-colors',
-            focusRing,
-          )}
-        >
+        <IconButton onClick={back} aria-label={copy.report.close}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-        </button>
+        </IconButton>
       </div>
 
       <div className="flex flex-col gap-6 px-4 pt-3 pb-6">

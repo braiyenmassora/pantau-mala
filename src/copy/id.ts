@@ -425,6 +425,7 @@ export const copy = {
   common: {
     retry: 'Coba lagi',
     dismissNotification: 'Tutup notifikasi',
+    clearSearch: 'Hapus pencarian',
     /** Satu copy boot (sesi, data, peta). Jangan pecah jadi “Memuat data/peta”. */
     loading: 'Memuat…',
     indonesia: 'Indonesia',

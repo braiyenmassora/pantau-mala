@@ -46,7 +46,7 @@ function StateActions({
         type="button"
         variant="soft"
         size="sm"
-        className="h-8 w-full shrink-0 px-3 text-xs leading-4 font-medium min-[380px]:w-auto"
+        className="w-full shrink-0 min-[380px]:w-auto"
         onClick={(e) => onRetry(e.currentTarget)}
       >
         {retryLabel}
@@ -55,7 +55,7 @@ function StateActions({
         type="button"
         variant="secondary"
         size="sm"
-        className="h-8 w-full shrink-0 px-3 text-xs leading-4 font-medium shadow-none min-[380px]:w-auto"
+        className="w-full shrink-0 shadow-none min-[380px]:w-auto"
         onClick={() => focusWilayahSearch()}
       >
         {copy.location.searchManual}
@@ -184,7 +184,7 @@ export function LocationCard({ regions }: LocationCardProps) {
               type="button"
               variant="soft"
               size="sm"
-              className="h-8 w-full shrink-0 px-3 text-xs leading-4 font-medium min-[380px]:w-auto"
+              className="w-full shrink-0 min-[380px]:w-auto"
               aria-label={copy.location.allowLocationFull}
               onClick={(e) => requestLocation(e.currentTarget)}
             >

@@ -118,8 +118,8 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
           className="soft-scroll max-h-60 overflow-y-auto"
         >
           {filteredOptions.length === 0 ? (
-            <p className="text-ink-3 px-3 py-4 text-center text-sm leading-5">
-              Provinsi tidak ditemukan.
+            <p className="text-ink-2 px-3 py-4 text-center text-sm leading-5">
+              {copy.search.noProvinceFound}
             </p>
           ) : (
             filteredOptions.map((option) => {

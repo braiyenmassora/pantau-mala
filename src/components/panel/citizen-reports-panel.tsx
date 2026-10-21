@@ -1,6 +1,7 @@
-import { X } from 'lucide-react'
+import { ClipboardList, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, type RefObject } from 'react'
 
+import { EmptyState, IconButton } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
@@ -96,25 +97,17 @@ export function CitizenReportsPanel({ regions, mapRef }: CitizenReportsPanelProp
         >
           {copy.report.panelTitle}
         </h1>
-        <button
-          type="button"
-          onClick={back}
-          aria-label={copy.panel.backHome}
-          className={cn(
-            'text-ink-2 hover:bg-surface-muted rounded-ctl flex size-11 shrink-0 items-center justify-center transition-colors',
-            focusRing,
-          )}
-        >
+        <IconButton onClick={back} aria-label={copy.panel.backHome}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-        </button>
+        </IconButton>
       </div>
 
       <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
         <p className="text-ink-2 text-xs leading-4">{copy.report.panelHint}</p>
         {isPending ? (
-          <p className="text-ink-2 text-sm leading-5">{copy.common.loading}</p>
+          <p className="text-ink-2 text-sm leading-5" aria-busy="true">{copy.common.loading}</p>
         ) : groups.length === 0 ? (
-          <p className="text-ink-2 text-sm leading-5">{copy.report.groupedEmpty}</p>
+          <EmptyState icon={ClipboardList} title={copy.report.panelTitle} description={copy.report.groupedEmpty} />
         ) : (
           groups.map((group) => (
             <section key={group.name} className="space-y-3">

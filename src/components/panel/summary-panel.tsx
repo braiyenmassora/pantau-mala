@@ -15,11 +15,11 @@ import { useMemo } from 'react'
 import {
   EmptyState,
   HotspotStatusBadge,
+  IconButton,
   InfoTooltip,
   Skeleton,
 } from '@/components/common'
 import { Brand } from '@/components/common/brand'
-import { focusRing } from '@/components/common/focus-ring'
 import { CitizenReportComposePanel } from '@/components/panel/citizen-report-compose-panel'
 import { CitizenReportsPanel } from '@/components/panel/citizen-reports-panel'
 import { CitizenReportDetailPanel } from '@/components/panel/citizen-report-detail-panel'
@@ -198,7 +198,7 @@ export function SummaryPanel({
 
   if (wilayahNotFound) {
     return (
-      <div className="flex flex-col gap-6 p-4">
+      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
         <header className="space-y-3">
           <Brand compact />
           <h1 className="text-ink truncate text-xl leading-8 font-semibold">
@@ -234,7 +234,7 @@ export function SummaryPanel({
   // Filter kosong jangan menelan mode cari — tanpa SearchBox query bisa “stuck”.
   if (filtering && filtered.length === 0 && !searching) {
     return (
-      <div className="flex flex-col gap-6 p-4">
+      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
         <header className="space-y-3">
           <Brand compact />
           <h1 className="text-ink truncate text-xl leading-8 font-semibold">
@@ -259,7 +259,7 @@ export function SummaryPanel({
 
   if (noHotspots && !filtering && !searching) {
     return (
-      <div className="flex flex-col gap-6 p-4">
+      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
         <header className="space-y-3">
           <Brand compact />
           <div className="space-y-1">
@@ -381,20 +381,15 @@ export function SummaryPanel({
   return (
     <div className="flex flex-col">
       <div className="bg-surface sticky top-0 z-10 flex justify-end px-4 pt-3 pb-2">
-        <button
-          type="button"
+        <IconButton
           onClick={() => {
             setProvince('Semua')
             if (mapRef?.current) fitIndonesia(mapRef.current, panelOpen, 0)
           }}
           aria-label={copy.panel.closeDetail}
-          className={cn(
-            'text-ink-2 hover:bg-surface-muted rounded-ctl flex size-11 shrink-0 items-center justify-center transition-colors',
-            focusRing,
-          )}
         >
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-        </button>
+        </IconButton>
       </div>
 
       <div className="flex flex-col gap-6 px-4 pt-3 pb-6">

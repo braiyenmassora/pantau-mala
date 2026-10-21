@@ -42,7 +42,7 @@ export function Toast() {
           <div className="min-w-0 flex-1 space-y-1">
             <p className="text-ink text-xs leading-4 font-semibold">{title}</p>
             {description ? (
-              <p className="text-ink-3 text-xs leading-4">{description}</p>
+              <p className="text-ink-2 text-xs leading-4">{description}</p>
             ) : null}
           </div>
           <button
@@ -50,7 +50,7 @@ export function Toast() {
             onClick={dismissToast}
             aria-label={copy.common.dismissNotification}
             className={cn(
-              'text-ink-3 hover:bg-surface-muted hover:text-ink rounded-ctl inline-flex size-6 shrink-0 items-center justify-center transition-colors',
+              'text-ink-3 hover:bg-surface-muted hover:text-ink rounded-ctl inline-flex size-8 shrink-0 items-center justify-center transition-colors',
               focusRing,
             )}
           >

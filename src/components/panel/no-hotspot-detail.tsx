@@ -1,7 +1,6 @@
 import { ShieldCheck, X } from 'lucide-react'
 
-import { EmptyState, HotspotStatusBadge } from '@/components/common'
-import { focusRing } from '@/components/common/focus-ring'
+import { EmptyState, HotspotStatusBadge, IconButton } from '@/components/common'
 import { DataFreshnessBanner } from '@/components/panel/data-freshness-banner'
 import { CitizenReportsCard } from '@/components/panel/region-detail-panel'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -9,7 +8,6 @@ import { copy } from '@/copy/id'
 import { useMeta } from '@/data/queries'
 import type { CatalogRegency } from '@/data/types'
 import { restoreFocusTrigger } from '@/lib/focus-return'
-import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 
 type NoHotspotDetailProps = {
@@ -29,17 +27,9 @@ export function NoHotspotDetail({ kab }: NoHotspotDetailProps) {
   return (
     <div className="flex flex-col">
       <div className="bg-surface sticky top-0 z-10 flex justify-end px-4 pt-3 pb-2">
-        <button
-          type="button"
-          onClick={handleBack}
-          aria-label={copy.panel.closeDetail}
-          className={cn(
-            'text-ink-2 hover:bg-surface-muted rounded-ctl flex size-11 shrink-0 items-center justify-center transition-colors',
-            focusRing,
-          )}
-        >
+        <IconButton onClick={handleBack} aria-label={copy.panel.closeDetail}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-        </button>
+        </IconButton>
       </div>
 
       <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
