@@ -79,7 +79,7 @@ export function UserLocationLayer() {
               </button>
             </TooltipTrigger>
             <TooltipContent side="top" sideOffset={8} className={mapPinTip}>
-              <span className="border-line flex w-full items-center justify-between gap-2 border-b pb-1.5">
+              <span className="border-line flex w-full items-center justify-between gap-2 border-b pb-2">
                 <span className="text-ink text-sm leading-5 font-semibold">
                   {copy.location.yourLocation}
                 </span>

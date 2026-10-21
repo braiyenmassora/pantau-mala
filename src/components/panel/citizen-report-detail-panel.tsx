@@ -1,17 +1,13 @@
 import { MapPin, X } from 'lucide-react'
-import { useEffect, useRef, useSyncExternalStore } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { Button } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
-import { reportAuthorInitials } from '@/components/panel/citizen-report-review'
+import { ReportPhoto } from '@/components/panel/report-photo'
 import { copy } from '@/copy/id'
-import {
-  getHotspotReportsSnapshot,
-  getReportById,
-  subscribeHotspotReports,
-} from '@/data/hotspot-reports'
+import { useHotspotReport } from '@/data/hotspot-reports'
 import { rememberFocusTrigger, restoreFocusTrigger } from '@/lib/focus-return'
-import { formatRelativeAge } from '@/lib/format'
+import { formatRelativeAge, reportAuthorInitials } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui'
 
@@ -21,10 +17,7 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
   const setSelectedReportId = useUiStore((s) => s.setSelectedReportId)
   const setReportTarget = useUiStore((s) => s.setReportTarget)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
-  const snap = useSyncExternalStore(subscribeHotspotReports, getHotspotReportsSnapshot)
-  void snap
-
-  const report = getReportById(reportId)
+  const { data: report, isPending } = useHotspotReport(reportId)
 
   useEffect(() => {
     titleRef.current?.focus()
@@ -49,7 +42,9 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
         >
           <X className="size-4" strokeWidth={2} aria-hidden />
         </button>
-        <p className="text-ink-2 text-sm leading-5">{copy.report.detailNotFound}</p>
+        <p className="text-ink-2 text-sm leading-5">
+          {isPending ? copy.common.loading : copy.report.detailNotFound}
+        </p>
       </div>
     )
   }
@@ -90,7 +85,7 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
 
       <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
         {report.photo_url ? (
-          <img
+          <ReportPhoto
             src={report.photo_url}
             alt={copy.report.photoAlt(report.author_name)}
             className="aspect-[4/3] w-full rounded-card object-cover"
@@ -105,10 +100,10 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
             {reportAuthorInitials(report.author_name)}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-ink text-base leading-6 font-semibold">
+            <p className="text-ink text-sm leading-5 font-semibold">
               {report.author_name}
             </p>
-            <p className="text-ink-2 mt-0.5 text-xs leading-4">
+            <p className="text-ink-2 mt-1 text-xs leading-4">
               {copy.report.sightings[report.sighting]}
               <span aria-hidden> · </span>
               <time dateTime={report.created_at}>
@@ -130,7 +125,7 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
           </p>
           <p className="text-ink flex items-start gap-2 text-sm leading-5">
             <MapPin
-              className="text-ink-2 mt-0.5 size-4 shrink-0"
+              className="text-ink-2 mt-1 size-4 shrink-0"
               strokeWidth={2}
               aria-hidden
             />

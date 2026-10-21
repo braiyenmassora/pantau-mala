@@ -24,6 +24,8 @@ export const LAYOUT = {
   overlayInset: 432,
   /** Cadangan kanan agar legend/filter tidak menabrak kolom MapControls (~44×2). */
   controlsClearance: 88,
+  /** Lebar blok stamp/atribusi di bawah MapControls (mirror max-w-48) — elemen terlebar kolom itu. */
+  stampWidth: 192,
   /** Kontrol peta 44×44 (touch target). */
   controlSize: 44,
   /** Sisa lebar peta minimum saat panel terbuka di tablet. */
@@ -66,6 +68,15 @@ export function chromeAvailWidth(panelOpen: boolean, width = viewportWidth()): n
   return Math.max(0, width - left - LAYOUT.gutter - LAYOUT.controlsClearance)
 }
 
+/** Lebar sisa khusus legend bawah: harus berhenti sebelum blok stamp/atribusi (lebih lebar dari tombol). */
+export function chromeLegendAvailWidth(
+  panelOpen: boolean,
+  width = viewportWidth(),
+): number {
+  const left = chromeLeft(panelOpen, width)
+  return Math.max(0, width - left - LAYOUT.stampWidth - LAYOUT.gutter * 2)
+}
+
 /** Re-render chrome overlay saat jendela di-resize. */
 export function useViewportWidth(): number {
   const [width, setWidth] = useState(viewportWidth)
@@ -84,5 +95,6 @@ export function useMapChrome(panelOpen: boolean) {
     width,
     left: chromeLeft(panelOpen, width),
     availWidth: chromeAvailWidth(panelOpen, width),
+    legendAvailWidth: chromeLegendAvailWidth(panelOpen, width),
   }
 }

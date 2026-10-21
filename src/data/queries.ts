@@ -9,6 +9,7 @@ export async function getData<T>(
   path: string,
   parse: (data: unknown) => T,
   signal?: AbortSignal,
+  init?: { method: 'POST'; body: string },
 ): Promise<T> {
   const { token, generation, accessMode } = useSession.getState()
   if (!token && accessMode !== 'client') throw new Error('Sesi diperlukan.')
@@ -18,7 +19,12 @@ export async function getData<T>(
       'FE dan API Go memerlukan proxy origin yang sama dengan base /api/v1.',
     )
   const res = await fetch(configured + path, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    method: init?.method ?? 'GET',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(init ? { 'Content-Type': 'application/json' } : {}),
+    },
+    body: init?.body,
     credentials: 'same-origin',
     cache: 'no-store',
     signal: signal
@@ -30,10 +36,13 @@ export async function getData<T>(
     throw new Error('Sesi berakhir. Masuk kembali.')
   }
   if (!res.ok)
+    // Tanpa jargon status HTTP (pola Pola Mantap); 429 dipertahankan untuk deteksi toast.
     throw new Error(
       res.status === 429
         ? 'Batas permintaan tercapai. Coba lagi nanti.'
-        : `Data belum dapat dimuat (${res.status}).`,
+        : res.status >= 500
+          ? 'Layanan belum siap. Coba lagi sebentar.'
+          : 'Data belum dapat dimuat.',
     )
   return parse(await res.json())
 }

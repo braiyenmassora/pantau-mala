@@ -40,7 +40,7 @@ export function PanelHeaderPill({ mapRef }: PanelHeaderPillProps) {
           }}
           aria-label={copy.panel.closeDetail}
           className={cn(
-            'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex h-9 min-w-0 flex-1 items-center gap-2 px-2',
+            'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex h-11 min-w-0 flex-1 items-center gap-2 px-2',
             'transition-colors duration-150',
             focusRing,
           )}

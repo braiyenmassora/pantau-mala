@@ -41,7 +41,7 @@ const SECURITY = {
   'X-Content-Type-Options': 'nosniff',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
   'Content-Security-Policy':
-    "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.cartocdn.com https://*.goatcounter.com; font-src 'self' data:; connect-src 'self' https://*.cartocdn.com https://unpkg.com https://*.goatcounter.com; worker-src 'self' blob: https://unpkg.com",
+    "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self' 'unsafe-inline' https://gc.zgo.at; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.cartocdn.com https://*.goatcounter.com https://*.r2.dev; font-src 'self' data:; connect-src 'self' https://*.cartocdn.com https://unpkg.com https://*.goatcounter.com https://*.r2.cloudflarestorage.com; worker-src 'self' blob: https://unpkg.com",
 }
 
 async function sendFile(res, filename, method, cacheControl) {
@@ -62,9 +62,17 @@ createServer(async (req, res) => {
       if (typeof value === 'string') headers.set(key, value)
       else if (Array.isArray(value)) headers.set(key, value.join(', '))
     }
+    // Body wajib diteruskan: gateway membaca arrayBuffer untuk POST (telemetry/laporan).
+    let body
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      const chunks = []
+      for await (const chunk of req) chunks.push(chunk)
+      if (chunks.length > 0) body = Buffer.concat(chunks)
+    }
     const request = new Request(`http://${req.headers.host}${req.url}`, {
       method: req.method,
       headers,
+      body,
     })
     const api = await gateway(request)
     if (api) {

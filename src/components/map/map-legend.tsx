@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
+import { focusRing } from '@/components/common/focus-ring'
 import { RiskMarker } from '@/components/common/risk-marker'
 import { Card } from '@/components/ui/card'
 import { copy } from '@/copy/id'
@@ -13,12 +14,12 @@ const MAP_RISK_ORDER = ['sangat_tinggi', 'sedang', 'rendah'] as const
 
 /** Strip compact: radius/border Card, pad & isi seperti sebelumnya (tanpa scroll). */
 const legendCardClass =
-  'bg-surface/95 shrink-0 gap-1.5 px-3 py-2 shadow-chrome backdrop-blur-sm'
+  'bg-surface/95 shrink-0 gap-2 px-3 py-2 shadow-chrome backdrop-blur-sm'
 
 /** Dua kartu strip: risiko (+ abu tanpa titik) dan kerapatan — lebar & tinggi sama. */
 export function MapLegend() {
   const panelOpen = useUiStore((s) => s.panelOpen)
-  const { left, availWidth } = useMapChrome(panelOpen)
+  const { left, legendAvailWidth: availWidth } = useMapChrome(panelOpen)
   const rowRef = useRef<HTMLDivElement>(null)
   const riskRef = useRef<HTMLDivElement>(null)
   const [overflowX, setOverflowX] = useState(false)
@@ -48,12 +49,15 @@ export function MapLegend() {
     <div
       ref={rowRef}
       data-testid="map-legend"
+      // Region scroll horizontal harus bisa difokus keyboard (axe scrollable-region-focusable).
+      tabIndex={overflowX ? 0 : undefined}
       className={cn(
         'pointer-events-auto fixed bottom-(--floating-control-offset) z-30',
         'soft-scroll flex flex-row items-stretch gap-2 overflow-x-auto',
         overflowX && 'soft-fade-x pr-7',
         'ease-out-soft transition-[left,max-width] duration-300',
         panelOpen && 'max-sm:hidden',
+        focusRing,
       )}
       style={{ left, maxWidth: availWidth }}
       {...mapOverlayGestureProps}
@@ -91,7 +95,7 @@ export function MapLegend() {
         <p className="text-ink-2 text-xs leading-4 font-medium">
           {copy.legend.densityTitle}
         </p>
-        <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-1.5">
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-2">
           <div
             className="h-1.5 w-full rounded-full"
             style={{

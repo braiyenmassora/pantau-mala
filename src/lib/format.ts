@@ -29,6 +29,14 @@ export function formatNumber(
   return n == null ? '-' : new Intl.NumberFormat('id-ID', options).format(n)
 }
 
+/** Inisial avatar pelapor: dua huruf pertama dari dua kata pertama. */
+export function reportAuthorInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return '?'
+  if (parts.length === 1) return parts[0]!.slice(0, 2).toUpperCase()
+  return `${parts[0]![0] ?? ''}${parts[1]![0] ?? ''}`.toUpperCase()
+}
+
 /** Relatif untuk badge meta; clock = sekarang. Contoh: "46 menit yang lalu". */
 export function formatRelativeAge(iso: string, nowMs: number = Date.now()): string {
   const t = new Date(iso).getTime()

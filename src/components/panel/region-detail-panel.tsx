@@ -14,7 +14,6 @@ import {
   useEffect,
   useMemo,
   useRef,
-  useSyncExternalStore,
   type ReactNode,
   type RefObject,
 } from 'react'
@@ -23,18 +22,14 @@ import { Button, HotspotStatusBadge, InfoTooltip, TrendChart } from '@/component
 import { focusRing } from '@/components/common/focus-ring'
 import { AirCategoryPill } from '@/components/panel/air-quality-card'
 import { airPm25Value } from '@/lib/air-card'
+import { SectionHead } from '@/components/common/section-head'
 import { CitizenReportReview } from '@/components/panel/citizen-report-review'
 import { DataFreshnessBanner } from '@/components/panel/data-freshness-banner'
 import { OfficialRefsCard } from '@/components/panel/official-refs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
-import {
-  ensureDemoReports,
-  getHotspotReportsSnapshot,
-  listReportsForRegion,
-  subscribeHotspotReports,
-} from '@/data/hotspot-reports'
+import { useRegionReports } from '@/data/hotspot-reports'
 import { useHotspots } from '@/data/queries'
 import type { Region, RiskCategory } from '@/data/types'
 import { rememberFocusTrigger, restoreFocusTrigger } from '@/lib/focus-return'
@@ -112,12 +107,12 @@ function ConditionCell({
   return (
     <div className="flex items-start gap-2">
       <span
-        className={cn('text-ink-2 mt-0.5 shrink-0 [&>svg]:size-4', iconClass)}
+        className={cn('text-ink-2 mt-1 shrink-0 [&>svg]:size-4', iconClass)}
         aria-hidden
       >
         {icon}
       </span>
-      <div className="min-w-0 flex-1 space-y-0.5">
+      <div className="min-w-0 flex-1 space-y-1">
         <p className="text-ink-2 text-xs leading-4 font-medium">{label}</p>
         <p className="text-ink text-sm leading-5 font-semibold tabular-nums">{value}</p>
       </div>
@@ -195,28 +190,15 @@ function CitizenReportsCard({ region }: { region: Region }) {
   const setSelectedReportId = useUiStore((s) => s.setSelectedReportId)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
   const { data } = useHotspots()
-  const reportsSnap = useSyncExternalStore(
-    subscribeHotspotReports,
-    getHotspotReportsSnapshot,
+  const { data: regionReports = [], isPending: reportsPending } = useRegionReports(
+    region.code,
   )
-  void reportsSnap
 
   const hotspots = useMemo(() => {
     if (!data) return []
     return data.features.filter((f) => f.properties.region_code === region.code)
   }, [data, region.code])
 
-  useEffect(() => {
-    for (const f of hotspots) {
-      const [lon, lat] = f.geometry.coordinates
-      ensureDemoReports(lat, lon, f.properties.region_code)
-    }
-  }, [hotspots])
-
-  const regionReports = useMemo(
-    () => listReportsForRegion(region.code),
-    [region.code, reportsSnap],
-  )
   const latest = regionReports.slice(0, 6)
 
   const openDetail = (el: HTMLElement, id: string) => {
@@ -241,18 +223,22 @@ function CitizenReportsCard({ region }: { region: Region }) {
 
   return (
     <Card aria-label={copy.report.panelTitle}>
-      <CardHeader>
-        <CardTitle>{copy.report.panelTitle}</CardTitle>
-        {regionReports.length > 0 ? (
-          <span className="text-ink text-xs leading-4 font-semibold tabular-nums">
-            {copy.report.badge(String(regionReports.length))}
-          </span>
-        ) : null}
-      </CardHeader>
+      <SectionHead
+        title={copy.report.panelTitle}
+        action={
+          regionReports.length > 0 ? (
+            <span className="text-ink text-xs leading-4 font-semibold tabular-nums">
+              {copy.report.badge(String(regionReports.length))}
+            </span>
+          ) : undefined
+        }
+      />
       <CardContent className="space-y-3">
         <p className="text-ink-2 text-xs leading-4">{copy.report.panelHint}</p>
         {hotspots.length === 0 ? (
           <p className="text-ink-2 text-sm leading-5">{copy.report.panelEmptyHotspots}</p>
+        ) : reportsPending ? (
+          <p className="text-ink-2 text-sm leading-5">{copy.common.loading}</p>
         ) : latest.length === 0 ? (
           <p className="text-ink-2 text-sm leading-5">{copy.report.panelEmpty}</p>
         ) : (
@@ -389,15 +375,13 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
         <ConditionsCard region={region} />
 
         <Card>
-          <CardHeader>
-            <CardTitle>{copy.detail.actions}</CardTitle>
-          </CardHeader>
+          <SectionHead title={copy.detail.actions} />
           <CardContent>
             <ul className="space-y-3">
               {actions.map((act, i) => (
                 <li key={i} className="flex items-start gap-2">
                   <Check
-                    className="panel-icon-check text-risk-low mt-0.5 size-4 shrink-0"
+                    className="panel-icon-check text-risk-low mt-1 size-4 shrink-0"
                     strokeWidth={2}
                     aria-hidden
                   />

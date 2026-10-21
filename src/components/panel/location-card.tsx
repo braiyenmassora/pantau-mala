@@ -3,6 +3,7 @@ import { useMemo, type KeyboardEvent, type MouseEvent, type ReactNode } from 're
 
 import { Button, HotspotStatusBadge, InfoTooltip, ProgressBar } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
+import { SectionHead } from '@/components/common/section-head'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { copy } from '@/copy/id'
 import { useHotspots, useNearbyHotspots } from '@/data/queries'
@@ -26,10 +27,7 @@ type LocationCardProps = {
 function Shell({ children, trailing }: { children: ReactNode; trailing?: ReactNode }) {
   return (
     <Card aria-label={copy.location.nearbyLabel}>
-      <CardHeader>
-        <CardTitle>{copy.location.nearbyLabel}</CardTitle>
-        {trailing}
-      </CardHeader>
+      <SectionHead title={copy.location.nearbyLabel} action={trailing} />
       <CardContent>{children}</CardContent>
     </Card>
   )

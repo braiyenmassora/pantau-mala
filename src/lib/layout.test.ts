@@ -4,6 +4,7 @@ import {
   BREAKPOINT,
   LAYOUT,
   chromeAvailWidth,
+  chromeLegendAvailWidth,
   chromeLeft,
   isDesktopWidth,
   isMobileWidth,
@@ -59,6 +60,18 @@ describe('chromeAvailWidth', () => {
     expect(left + avail).toBeLessThanOrEqual(
       width - LAYOUT.gutter - LAYOUT.controlsClearance,
     )
+  })
+
+  it('stops the legend before the wider stamp/attribution block', () => {
+    const width = 1024
+    const avail = chromeLegendAvailWidth(true, width)
+    const left = chromeLeft(true, width)
+    // Tepi kanan legend ≤ tepi kiri blok stamp (192) dikurangi satu gutter.
+    expect(left + avail).toBeLessThanOrEqual(
+      width - LAYOUT.gutter - LAYOUT.stampWidth - LAYOUT.gutter,
+    )
+    expect(avail).toBeGreaterThan(0)
+    expect(chromeLegendAvailWidth(true, 1920)).toBeGreaterThan(avail)
   })
 
   it('leaves room for stamp-sized clearance on narrow desktop with panel open', () => {

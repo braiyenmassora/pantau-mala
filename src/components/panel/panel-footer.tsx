@@ -30,7 +30,7 @@ export function PanelFooter() {
               rel="noopener noreferrer"
               aria-label={copy.footer.openInNewTab(source.name)}
               className={cn(
-                'hover:text-brand inline-flex min-h-11 items-center gap-1.5 py-1 font-medium no-underline transition-colors duration-150',
+                'hover:text-brand inline-flex min-h-11 items-center gap-2 py-1 font-medium no-underline transition-colors duration-150',
                 focusRing,
                 'rounded-ctl',
               )}

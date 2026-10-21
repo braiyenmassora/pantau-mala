@@ -1,6 +1,6 @@
 # PRD — Laporan warga (hotspot reports) · Backend
 
-**Status:** FE demo lokal siap · BE belum  
+**Status:** BE tersedia di `api-pantau-mala@main` · FE terintegrasi (React Query + gateway)  
 **Tujuan:** Persistensi + API laporan warga per titik panas satelit, mengganti store `localStorage` di FE.
 
 ## Masalah
@@ -100,11 +100,11 @@ Batas: jenis image, ukuran ~1–2 MB, virus scan opsional nanti.
 - **Disclaimer produk:** laporan warga ≠ verifikasi resmi (sudah di copy FE).
 - **OpenAPI** + migration SQL wajib sebelum merge.
 
-## Migrasi FE
+## Migrasi FE (selesai)
 
-1. Ganti `src/data/hotspot-reports.ts` store lokal → fetch/mutation React Query.
-2. Hapus seed demo + `localStorage` key `pantau-mala:hotspot-reports-demo-v2`.
-3. Gateway worker: allowlist path GET/POST hotspot-reports (+ upload).
+1. ✅ `src/data/hotspot-reports.ts` store lokal → fetch/mutation React Query.
+2. ✅ Hapus seed demo + `localStorage` key `pantau-mala:hotspot-reports-demo-v2`.
+3. ✅ Gateway worker: allowlist path GET/POST hotspot-reports (+ upload).
 
 ## Acceptance (BE v1)
 

@@ -32,7 +32,7 @@ export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
     dot: '#80868B',
     tint: '#F1F3F4',
     text: '#5F6368',
-    badgeClass: 'bg-surface-muted text-ink-2',
+    badgeClass: 'bg-risk-na-tint text-risk-na-text',
     dotClass: 'bg-ink-3',
   },
   tanpa_titik: {
@@ -40,7 +40,7 @@ export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
     dot: '#80868B',
     tint: '#F1F3F4',
     text: '#5F6368',
-    badgeClass: 'bg-surface-muted text-ink-2',
+    badgeClass: 'bg-risk-na-tint text-risk-na-text',
     dotClass: 'bg-ink-3',
   },
   sangat_tinggi: {

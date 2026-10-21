@@ -37,6 +37,9 @@
   --color-risk-low: #188038;
   --color-risk-low-tint: #e6f4ea;
   --color-risk-low-text: #137333;
+  --color-risk-na: #80868b;
+  --color-risk-na-tint: #f1f3f4;
+  --color-risk-na-text: #5f6368;
 
   /* Heatmap kepadatan — kuning → oranye → merah (terlihat di basemap) */
   --color-heat-low: #ffe08a;

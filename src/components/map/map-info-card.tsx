@@ -54,7 +54,7 @@ function UpdatedAtLine({ value }: { value: string }) {
     return <InfoLine>{value}</InfoLine>
   }
   return (
-    <p className="text-ink-2 flex items-center gap-1.5 text-left text-xs leading-4">
+    <p className="text-ink-2 flex items-center gap-2 text-left text-xs leading-4">
       <span>{parts[0]}</span>
       <span className="bg-ink-3 size-1 shrink-0 rounded-full" aria-hidden />
       <span>{parts[1]}</span>

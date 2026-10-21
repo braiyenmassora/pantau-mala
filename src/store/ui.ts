@@ -7,7 +7,7 @@ type UiState = {
   panelOpen: boolean
   /** false sampai framing peta + data regions siap — overlay boot AccessGate. */
   bootDone: boolean
-  /** Sheet tulis/list laporan di satu titik (demo FE). */
+  /** Sheet tulis laporan di satu titik. */
   reportTarget: HotspotReportTarget | null
   /** Detail satu laporan warga di side panel. */
   selectedReportId: string | null

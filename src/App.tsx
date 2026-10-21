@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 
+import { Toast } from '@/components/common/toast'
 import { StatusAnnouncer } from '@/components/common/status-announcer'
 import { focusRing } from '@/components/common/focus-ring'
 import { FilterBar } from '@/components/map/filter-bar'
@@ -155,6 +156,7 @@ export default function App() {
       <div className="bg-map-bg text-ink relative h-dvh w-dvw overflow-hidden">
         <WilayahUrlSync />
         <StatusAnnouncer />
+        <Toast />
 
         <aside
           aria-label={copy.app.panelAria}

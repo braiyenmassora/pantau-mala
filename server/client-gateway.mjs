@@ -31,7 +31,7 @@ export function createClientGateway(env, fetcher = fetch) {
       },
     })
   const allowed =
-    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages)$/
+    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages|hotspot-reports(?:\/(?:counts|photo|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}))?)$/
   async function upstream(path) {
     return fetcher(new URL(path, origin), {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
@@ -48,7 +48,16 @@ export function createClientGateway(env, fetcher = fetch) {
     )
       return null
     const isTelemetry = url.pathname === '/api/v1/telemetry'
-    if (isTelemetry ? request.method !== 'POST' : request.method !== 'GET')
+    // Satu-satunya tulis selain telemetry: buat laporan warga + minta URL upload foto.
+    const isReportWrite =
+      request.method === 'POST' &&
+      (url.pathname === '/api/v1/hotspot-reports' ||
+        url.pathname === '/api/v1/hotspot-reports/photo')
+    if (
+      isTelemetry || isReportWrite
+        ? request.method !== 'POST'
+        : request.method !== 'GET'
+    )
       return reply(405, { error: 'Read-only frontend' })
     if (request.headers.has('authorization') || request.headers.has('x-client-id'))
       return reply(400, { error: 'Client identity is server configured' })
@@ -83,6 +92,10 @@ export function createClientGateway(env, fetcher = fetch) {
       'lon',
       'radius_km',
       'q',
+      'region_code',
+      'point_lat',
+      'point_lon',
+      'points',
     ])
     for (const key of url.searchParams.keys())
       if (!queryNames.has(key))
@@ -170,6 +183,45 @@ export function createClientGateway(env, fetcher = fetch) {
             role: 'reader',
             kind: 'key',
             scope: 'data:read',
+          },
+        })
+      }
+      // Laporan warga: teruskan body JSON + Origin/IP agar rate limit BE per-pengirim jalan.
+      if (isReportWrite) {
+        const headers = {
+          Accept: 'application/json',
+          'Content-Type': request.headers.get('content-type') || 'application/json',
+          Authorization: `Bearer ${token}`,
+        }
+        const reqOrigin = request.headers.get('origin')
+        if (reqOrigin) headers.Origin = reqOrigin
+        const forwardedFor =
+          request.headers.get('cf-connecting-ip') ||
+          request.headers.get('x-forwarded-for')
+        if (forwardedFor) headers['X-Forwarded-For'] = forwardedFor
+        const created = await fetcher(new URL(url.pathname, origin), {
+          method: 'POST',
+          headers,
+          body: await request.arrayBuffer(),
+          redirect: 'manual',
+          signal: AbortSignal.timeout(20000),
+        })
+        if (!created.ok)
+          return reply(
+            created.status === 429
+              ? 429
+              : created.status >= 500
+                ? 502
+                : created.status,
+            { error: 'Data unavailable' },
+          )
+        const createdBody = await created.arrayBuffer()
+        return new Response(createdBody, {
+          status: created.status,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+            'X-Content-Type-Options': 'nosniff',
           },
         })
       }

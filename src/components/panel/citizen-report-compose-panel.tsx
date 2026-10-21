@@ -5,15 +5,15 @@ import { Button } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { copy } from '@/copy/id'
 import {
-  addHotspotReport,
-  ensureDemoReports,
-  readPhotoAsDataUrl,
+  useCreateHotspotReport,
   type HotspotReportTarget,
   type HotspotSighting,
   hotspotSightingSchema,
 } from '@/data/hotspot-reports'
 import { restoreFocusTrigger } from '@/lib/focus-return'
+import { friendlyActionError } from '@/lib/friendly-error'
 import { cn } from '@/lib/utils'
+import { useToastStore } from '@/store/toast'
 import { useUiStore } from '@/store/ui'
 
 const SIGHTINGS = hotspotSightingSchema.options
@@ -30,22 +30,28 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
   const setReportTarget = useUiStore((s) => s.setReportTarget)
   const setSelectedReportId = useUiStore((s) => s.setSelectedReportId)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
+  const showToast = useToastStore((s) => s.showToast)
 
   const [sighting, setSighting] = useState<HotspotSighting>('asap')
   const [authorName, setAuthorName] = useState('')
   const [description, setDescription] = useState('')
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [photoError, setPhotoError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
+  const createReport = useCreateHotspotReport()
 
+  // Panel di-remount per target (key lat,lon di pemanggil) — state awal cukup dari useState.
   useEffect(() => {
-    ensureDemoReports(target.lat, target.lon, target.region_code)
-    setSighting('asap')
-    setAuthorName('')
-    setDescription('')
-    setPhotoUrl(null)
-    setPhotoError(null)
     titleRef.current?.focus()
   }, [target])
+
+  useEffect(
+    () => () => {
+      if (photoPreview) URL.revokeObjectURL(photoPreview)
+    },
+    [photoPreview],
+  )
 
   const back = () => {
     setReportTarget(null)
@@ -54,36 +60,56 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
 
   const onPhotoChange = (file: File | undefined) => {
     setPhotoError(null)
-    setPhotoUrl(null)
+    setPhotoFile(null)
+    setPhotoPreview(null)
     if (!file) return
-    void readPhotoAsDataUrl(file).then((url) => {
-      if (!url) {
-        setPhotoError(copy.report.photoTooBig)
-        return
-      }
-      setPhotoUrl(url)
-    })
+    if (
+      !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
+      file.size > 2 * 1024 * 1024
+    ) {
+      setPhotoError(copy.report.photoTooBig)
+      return
+    }
+    setPhotoFile(file)
+    setPhotoPreview(URL.createObjectURL(file))
   }
 
   const submit = () => {
     const name = authorName.trim()
-    if (!name || !photoUrl) {
-      setPhotoError(photoUrl ? null : copy.report.photoMissing)
+    if (!name || !photoFile) {
+      setPhotoError(photoFile ? null : copy.report.photoMissing)
       return
     }
-    const created = addHotspotReport({
-      lat: target.lat,
-      lon: target.lon,
-      region_code: target.region_code,
-      hotspot_time: target.hotspot_time,
-      sighting,
-      author_name: name,
-      description,
-      photo_url: photoUrl,
-    })
-    setReportTarget(null)
-    setSelectedReportId(created.id)
-    setPanelOpen(true)
+    setFormError(null)
+    createReport.mutate(
+      {
+        lat: target.lat,
+        lon: target.lon,
+        region_code: target.region_code,
+        hotspot_time: target.hotspot_time,
+        sighting,
+        author_name: name,
+        description: description.trim() || undefined,
+        file: photoFile,
+      },
+      {
+        onSuccess: (created) => {
+          setReportTarget(null)
+          setSelectedReportId(created.id)
+          setPanelOpen(true)
+          showToast(copy.report.submitSuccessTitle, copy.report.submitSuccess, 'ok')
+        },
+        onError: (error) => {
+          // 429 dari BE: cukup toast global, form tetap terisi untuk dicoba lagi nanti.
+          if (error.message.includes('Batas permintaan')) {
+            setFormError(null)
+            showToast(copy.report.rateLimitedTitle, copy.report.rateLimited, 'err')
+            return
+          }
+          setFormError(friendlyActionError(error, copy.report.submitFailed))
+        },
+      },
+    )
   }
 
   return (
@@ -137,7 +163,7 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
                     aria-pressed={pressed}
                     onClick={() => setSighting(s)}
                     className={cn(
-                      'rounded-ctl inline-flex h-9 items-center border px-3 text-sm leading-5 font-medium',
+                      'rounded-ctl inline-flex h-11 items-center border px-3 text-sm leading-5 font-medium',
                       'transition-colors',
                       focusRing,
                       pressed
@@ -168,28 +194,33 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
             <span className="text-ink-2 text-xs leading-4">{copy.report.photoLabel}</span>
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               className="text-ink-2 block w-full text-xs file:mr-3 file:rounded-ctl file:border-0 file:bg-surface-muted file:px-3 file:py-2 file:text-sm file:font-medium"
               onChange={(e) => onPhotoChange(e.target.files?.[0])}
             />
             <span className="text-ink-2 text-xs leading-4">{copy.report.photoHint}</span>
-            {photoUrl ? (
+            {photoPreview ? (
               <img
-                src={photoUrl}
+                src={photoPreview}
                 alt=""
                 className="mt-2 aspect-[3/2] w-full rounded-card object-cover"
               />
             ) : null}
           </label>
 
-          {photoError ? (
+          {photoError || formError ? (
             <p className="text-risk-high text-sm leading-5" role="alert">
-              {photoError}
+              {photoError ?? formError}
             </p>
           ) : null}
 
-          <Button variant="primary" className="w-full shadow-none" onClick={submit}>
-            {copy.report.submit}
+          <Button
+            variant="primary"
+            className="w-full shadow-none"
+            onClick={submit}
+            disabled={createReport.isPending}
+          >
+            {createReport.isPending ? copy.report.submitting : copy.report.submit}
           </Button>
         </section>
       </div>

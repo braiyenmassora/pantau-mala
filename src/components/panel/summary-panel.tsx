@@ -38,6 +38,7 @@ import { filterRegions } from '@/lib/filter-regions'
 import { formatNumber } from '@/lib/format'
 import { focusWilayahSearch } from '@/lib/geolocation'
 import { hotspotTrend, type TrendDirection } from '@/lib/hotspot-trend'
+import { T } from '@/lib/pola'
 import { fitIndonesia } from '@/lib/indonesia-view'
 import { aggregateByProvince } from '@/lib/province-aggregates'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
@@ -289,7 +290,7 @@ export function SummaryPanel({
           <DataFreshnessBanner />
           {searching ? (
             <section className="space-y-3">
-              <h2 className="text-ink text-sm leading-5 font-semibold">
+              <h2 className={T.section}>
                 {copy.panel.searchResults}
               </h2>
               {filtered.length === 0 ? (
@@ -325,7 +326,7 @@ export function SummaryPanel({
               <LocationCard regions={regions} />
 
               <section className="space-y-3">
-                <h2 className="text-ink text-sm leading-5 font-semibold">
+                <h2 className={T.section}>
                   {copy.panel.topRisk}
                 </h2>
                 {daftarPending && !daftar ? (
@@ -431,7 +432,7 @@ export function SummaryPanel({
         </Card>
 
         <section className="space-y-3">
-          <h2 className="text-ink text-sm leading-5 font-semibold">
+          <h2 className={T.section}>
             {copy.panel.topKab}
           </h2>
           {provinceTopRegencies.length === 0 ? (

@@ -1,8 +1,31 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 
-/** Round ~1 m — kunci tampilan per titik (selaras rencana BE). */
+import { useSession } from '@/auth/session'
+import { getData } from './queries'
+
+/** Round ~1 m — kunci tampilan per titik (server membulatkan 5 desimal). */
 export function pointKey(lat: number, lon: number): string {
   return `${lat.toFixed(5)},${lon.toFixed(5)}`
+}
+
+const publicReportPhotoHost = 'pub-32d942c9574c4f02a9c7fb2e260e33e2.r2.dev'
+
+/** Foto dilayani Worker sendiri (/report-photos) karena host r2.dev tidak andal. */
+export function reportPhotoSrc(photoURL: string): string {
+  try {
+    const url = new URL(photoURL)
+    if (
+      url.protocol === 'https:' &&
+      url.hostname === publicReportPhotoHost &&
+      url.pathname.startsWith('/hotspot-reports/')
+    ) {
+      return `/report-photos${url.pathname}`
+    }
+  } catch {
+    // Schema API sudah menolak URL rusak; pakai URL asli sebagai cadangan.
+  }
+  return photoURL
 }
 
 export const hotspotSightingSchema = z.enum([
@@ -14,36 +37,77 @@ export const hotspotSightingSchema = z.enum([
 
 export type HotspotSighting = z.infer<typeof hotspotSightingSchema>
 
-export const hotspotReportSchema = z.object({
+/** Bentuk wire BE: field opsional dikirim sebagai null. */
+const wireReportSchema = z.object({
   id: z.string().uuid(),
   lat: z.number(),
   lon: z.number(),
   point_lat: z.number(),
   point_lon: z.number(),
-  region_code: z.string().optional(),
-  hotspot_time: z.string().datetime().optional(),
+  region_code: z.string().nullable(),
+  hotspot_time: z.string().nullable(),
   sighting: hotspotSightingSchema,
   author_name: z.string().min(1).max(80),
-  description: z.string().max(500).optional(),
-  /** URL http(s) atau data: (demo lokal). */
-  photo_url: z.string().min(1).max(600_000).optional(),
-  created_at: z.string().datetime(),
+  description: z.string().nullable(),
+  photo_url: z.string().min(1),
+  created_at: z.string(),
 })
 
-export type HotspotReport = z.infer<typeof hotspotReportSchema>
-
-export type HotspotReportInput = {
+export type HotspotReport = {
+  id: string
   lat: number
   lon: number
+  point_lat: number
+  point_lon: number
   region_code?: string
   hotspot_time?: string
   sighting: HotspotSighting
   author_name: string
   description?: string
-  photo_url?: string
+  photo_url: string
+  created_at: string
 }
 
-/** Titik yang dibuka di sheet laporan. */
+function toReport(w: z.infer<typeof wireReportSchema>): HotspotReport {
+  return {
+    id: w.id,
+    lat: w.lat,
+    lon: w.lon,
+    point_lat: w.point_lat,
+    point_lon: w.point_lon,
+    region_code: w.region_code ?? undefined,
+    hotspot_time: w.hotspot_time ?? undefined,
+    sighting: w.sighting,
+    author_name: w.author_name,
+    description: w.description ?? undefined,
+    photo_url: w.photo_url,
+    created_at: w.created_at,
+  }
+}
+
+export function decodeHotspotReports(raw: unknown): HotspotReport[] {
+  return z
+    .object({ data: z.array(wireReportSchema) })
+    .parse(raw)
+    .data.map(toReport)
+}
+
+export function decodeHotspotReport(raw: unknown): HotspotReport {
+  return toReport(z.object({ data: wireReportSchema }).parse(raw).data)
+}
+
+/** Titik tanpa laporan tidak dikembalikan BE — anggap 0 di pemanggil. */
+export function decodeReportCounts(raw: unknown): Map<string, number> {
+  const { data } = z
+    .object({
+      data: z.array(
+        z.object({ point_lat: z.number(), point_lon: z.number(), count: z.number() }),
+      ),
+    })
+    .parse(raw)
+  return new Map(data.map((c) => [pointKey(c.point_lat, c.point_lon), c.count]))
+}
+
 export type HotspotReportTarget = {
   lat: number
   lon: number
@@ -51,170 +115,120 @@ export type HotspotReportTarget = {
   hotspot_time?: string
 }
 
-type Listener = () => void
-
-/** shortcut: localStorage demo only — ganti API saat BE siap. */
-const STORAGE_KEY = 'pantau-mala:hotspot-reports-demo-v2'
-
-function loadReports(): HotspotReport[] {
-  if (typeof localStorage === 'undefined') return []
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    const parsed = z.array(hotspotReportSchema).safeParse(JSON.parse(raw))
-    return parsed.success ? parsed.data : []
-  } catch {
-    return []
-  }
+export type CreateHotspotReportInput = HotspotReportTarget & {
+  sighting: HotspotSighting
+  author_name: string
+  description?: string
+  file: File
 }
 
-function saveReports(next: HotspotReport[]) {
-  if (typeof localStorage === 'undefined') return
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-  } catch {
-    // quota / private mode — tetap pakai memory
-  }
-}
+const photoUploadSchema = z.object({
+  data: z.object({
+    upload_url: z.string(),
+    public_url: z.string(),
+    required_headers: z.record(z.string(), z.string()),
+  }),
+})
 
-let reports: HotspotReport[] = loadReports()
-const listeners = new Set<Listener>()
-const demoSeeded = new Set<string>()
-
-function emit() {
-  saveReports(reports)
-  for (const fn of listeners) fn()
-}
-
-export function subscribeHotspotReports(fn: Listener): () => void {
-  listeners.add(fn)
-  return () => {
-    listeners.delete(fn)
-  }
-}
-
-export function getHotspotReportsSnapshot(): HotspotReport[] {
-  return reports
-}
-
-export function getReportById(id: string): HotspotReport | undefined {
-  return reports.find((r) => r.id === id)
-}
-
-const DEMO_PHOTOS = [
-  'https://picsum.photos/seed/pantau-asap/480/320',
-  'https://picsum.photos/seed/pantau-api/480/320',
-  'https://picsum.photos/seed/pantau-kabut/480/320',
-] as const
-
-/** Seed laporan dummy sekali per titik (hanya FE demo). */
-export function ensureDemoReports(lat: number, lon: number, regionCode?: string) {
-  const key = pointKey(lat, lon)
-  if (demoSeeded.has(key)) return
-  demoSeeded.add(key)
-  if (listReportsAt(lat, lon).length > 0) return
-  const now = Date.now()
-  const [pointLat, pointLon] = key.split(',').map(Number) as [number, number]
-  const base = { lat, lon, point_lat: pointLat, point_lon: pointLon, region_code: regionCode }
-  reports = [
-    ...reports,
+/** Alur BE v1: minta URL upload → PUT file ke storage → buat laporan. */
+async function createHotspotReport(
+  input: CreateHotspotReportInput,
+): Promise<HotspotReport> {
+  const { file, ...fields } = input
+  const upload = await getData('/hotspot-reports/photo', (raw) =>
+    photoUploadSchema.parse(raw).data,
+    undefined,
     {
-      ...base,
-      id: crypto.randomUUID(),
-      sighting: 'asap',
-      author_name: 'Sari Wulandari',
-      description:
-        'Asap tebal ke arah utara, kelihatan dari jalan desa. Bau hangus cukup kuat.',
-      photo_url: DEMO_PHOTOS[0],
-      created_at: new Date(now - 3600_000).toISOString(),
+      method: 'POST',
+      body: JSON.stringify({ content_type: file.type, content_length: file.size }),
     },
-    {
-      ...base,
-      id: crypto.randomUUID(),
-      sighting: 'api_terlihat',
-      author_name: 'Budi Hartono',
-      description: 'Api kecil di tepi lahan. Sudah ada warga yang coba padamkan.',
-      photo_url: DEMO_PHOTOS[1],
-      created_at: new Date(now - 5 * 3600_000).toISOString(),
-    },
-    {
-      ...base,
-      id: crypto.randomUUID(),
-      sighting: 'tidak_yakin',
-      author_name: 'Rina Kusuma',
-      description: 'Kabut atau asap? Dari jauh belum jelas, tapi langitnya gelap.',
-      photo_url: DEMO_PHOTOS[2],
-      created_at: new Date(now - 26 * 3600_000).toISOString(),
-    },
-  ]
-  emit()
-}
-
-export function listReportsAt(lat: number, lon: number): HotspotReport[] {
-  const key = pointKey(lat, lon)
-  return reports
-    .filter((r) => pointKey(r.point_lat, r.point_lon) === key)
-    .sort((a, b) => b.created_at.localeCompare(a.created_at))
-}
-
-export function listReportsForRegion(regionCode: string): HotspotReport[] {
-  return reports
-    .filter((r) => r.region_code === regionCode)
-    .sort((a, b) => b.created_at.localeCompare(a.created_at))
-}
-
-export function countAt(lat: number, lon: number): number {
-  return listReportsAt(lat, lon).length
-}
-
-export function addHotspotReport(input: HotspotReportInput): HotspotReport {
-  const sighting = hotspotSightingSchema.parse(input.sighting)
-  const author = input.author_name.trim().slice(0, 80)
-  if (!author) throw new Error('author_name required')
-  const description = (input.description ?? '').trim().slice(0, 500)
-  const key = pointKey(input.lat, input.lon)
-  const [pointLat, pointLon] = key.split(',').map(Number) as [number, number]
-  const report: HotspotReport = hotspotReportSchema.parse({
-    id: crypto.randomUUID(),
-    lat: input.lat,
-    lon: input.lon,
-    point_lat: pointLat,
-    point_lon: pointLon,
-    region_code: input.region_code?.trim() || undefined,
-    hotspot_time: input.hotspot_time,
-    sighting,
-    author_name: author,
-    description: description || undefined,
-    photo_url: input.photo_url?.trim() || undefined,
-    created_at: new Date().toISOString(),
+  )
+  const stored = await fetch(upload.upload_url, {
+    method: 'PUT',
+    headers: upload.required_headers,
+    body: file,
   })
-  reports = [report, ...reports]
-  emit()
-  return report
-}
-
-/** Baca foto lokal ke data URL (demo). Max ~180KB. */
-export function readPhotoAsDataUrl(file: File): Promise<string | null> {
-  if (!file.type.startsWith('image/')) return Promise.resolve(null)
-  if (file.size > 180_000) return Promise.resolve(null)
-  return new Promise((resolve) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      const result = typeof reader.result === 'string' ? reader.result : null
-      resolve(result && result.length < 600_000 ? result : null)
-    }
-    reader.onerror = () => resolve(null)
-    reader.readAsDataURL(file)
+  if (!stored.ok) throw new Error('Upload foto gagal. Coba lagi.')
+  // Payload create laporan — persis kontrak BE, jangan tambah field lain.
+  const payload = {
+    lat: fields.lat,
+    lon: fields.lon,
+    region_code: fields.region_code,
+    hotspot_time: fields.hotspot_time,
+    sighting: fields.sighting,
+    author_name: fields.author_name,
+    description: fields.description ?? '',
+    photo_url: upload.public_url,
+  }
+  return getData('/hotspot-reports', decodeHotspotReport, undefined, {
+    method: 'POST',
+    body: JSON.stringify(payload),
   })
 }
 
-/** Test-only. */
-export function resetHotspotReportsForTests() {
-  reports = []
-  demoSeeded.clear()
-  if (typeof localStorage !== 'undefined') {
-    localStorage.removeItem(STORAGE_KEY)
-    localStorage.removeItem('pantau-mala:hotspot-reports-demo')
-  }
-  for (const fn of listeners) fn()
+function useReportQuery<T>(
+  key: readonly unknown[],
+  load: (signal: AbortSignal) => Promise<T>,
+  enabled: boolean,
+) {
+  const session = useSession()
+  return useQuery({
+    queryKey: [...key, session.principal?.client_id, session.generation],
+    enabled: session.status === 'authenticated' && enabled,
+    queryFn: ({ signal }) => load(signal),
+    staleTime: 60 * 1000,
+  })
+}
+
+export function useRegionReports(regionCode: string) {
+  return useReportQuery(
+    ['hotspot-reports', 'region', regionCode],
+    (signal) =>
+      getData(
+        `/hotspot-reports?region_code=${encodeURIComponent(regionCode)}&limit=50`,
+        decodeHotspotReports,
+        signal,
+      ),
+    Boolean(regionCode),
+  )
+}
+
+export function useHotspotReport(id: string) {
+  return useReportQuery(
+    ['hotspot-reports', 'detail', id],
+    (signal) =>
+      getData(`/hotspot-reports/${encodeURIComponent(id)}`, decodeHotspotReport, signal),
+    Boolean(id),
+  )
+}
+
+/** Counts dibaca per batch maks 100 titik (batas BE). */
+export function useReportCounts(points: Array<{ lat: number; lon: number }>) {
+  const key = points.map((p) => pointKey(p.lat, p.lon)).join('|')
+  return useReportQuery(
+    ['hotspot-reports', 'counts', key],
+    async (signal) => {
+      const merged = new Map<string, number>()
+      for (let i = 0; i < points.length; i += 100) {
+        const chunk = points.slice(i, i + 100)
+        const counts = await getData(
+          `/hotspot-reports/counts?points=${encodeURIComponent(JSON.stringify(chunk))}`,
+          decodeReportCounts,
+          signal,
+        )
+        for (const [k, v] of counts) merged.set(k, v)
+      }
+      return merged
+    },
+    points.length > 0,
+  )
+}
+
+export function useCreateHotspotReport() {
+  const client = useQueryClient()
+  return useMutation({
+    mutationFn: createHotspotReport,
+    onSuccess: () =>
+      client.invalidateQueries({ queryKey: ['hotspot-reports'] }),
+  })
 }

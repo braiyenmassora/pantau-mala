@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 
 import { copy } from '@/copy/id'
+import { T } from '@/lib/pola'
 import { reportTelemetryError } from '@/lib/telemetry'
 
 type Props = { children: ReactNode }
@@ -24,7 +25,7 @@ export class AppErrorBoundary extends Component<Props, State> {
 
     return (
       <div className="bg-surface text-ink flex min-h-dvh flex-col items-center justify-center gap-4 p-6 text-center">
-        <h1 className="text-lg leading-7 font-semibold">{copy.empty.appCrash.title}</h1>
+        <h1 className={T.page}>{copy.empty.appCrash.title}</h1>
         <p className="text-ink-2 max-w-sm text-sm leading-5">
           {copy.empty.appCrash.description}
         </p>

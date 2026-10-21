@@ -150,6 +150,82 @@ it('rejects browser identity on telemetry', async () => {
     ))!.status,
   ).toBe(400)
 })
+it('forwards hotspot report reads and writes with server key only', async () => {
+  const created = {
+    data: { id: 'e9170c75-3623-4471-9ca5-4f2c4f9f86fd', sighting: 'asap' },
+  }
+  const fetcher = vi
+    .fn()
+    .mockResolvedValueOnce(Response.json({ data: [] }))
+    .mockResolvedValueOnce(Response.json(created, { status: 201 }))
+    .mockResolvedValueOnce(
+      Response.json({
+        data: {
+          upload_url: 'https://storage.example/put',
+          public_url: 'https://media.example/report.jpg',
+          required_headers: { 'Content-Type': 'image/jpeg' },
+        },
+      }, { status: 201 }),
+    )
+  const gateway = createClientGateway(env, fetcher)
+
+  const list = await gateway(
+    new Request('http://localhost/api/v1/hotspot-reports?region_code=62.01&limit=50'),
+  )
+  expect(list!.status).toBe(200)
+  expect(String(fetcher.mock.calls[0][0])).toBe(
+    'http://127.0.0.1:8080/api/v1/hotspot-reports?region_code=62.01&limit=50',
+  )
+
+  const body = JSON.stringify({
+    lat: -2.1,
+    lon: 113.5,
+    sighting: 'asap',
+    author_name: 'Sari W.',
+    photo_url: 'https://media.example/report.jpg',
+  })
+  const post = await gateway(
+    new Request('http://localhost/api/v1/hotspot-reports', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Origin: 'http://localhost' },
+      body,
+    }),
+  )
+  expect(post!.status).toBe(201)
+  expect(await post!.json()).toEqual(created)
+  const postCall = fetcher.mock.calls[1]
+  expect(postCall[1].method).toBe('POST')
+  expect(postCall[1].headers.Authorization).toBe('Bearer ' + env.PANTAU_API_KEY)
+  expect(postCall[1].headers.Origin).toBe('http://localhost')
+  expect(await new Request('http://x', postCall[1]).text()).toBe(body)
+
+  const photo = await gateway(
+    new Request('http://localhost/api/v1/hotspot-reports/photo', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content_type: 'image/jpeg', content_length: 123 }),
+    }),
+  )
+  expect(photo!.status).toBe(201)
+})
+it('rejects report writes to other routes and unknown report queries', async () => {
+  const fetcher = vi.fn()
+  const gateway = createClientGateway(env, fetcher)
+  expect(
+    (await gateway(
+      new Request('http://localhost/api/v1/hotspot-reports/counts', {
+        method: 'POST',
+        body: '{}',
+      }),
+    ))!.status,
+  ).toBe(405)
+  expect(
+    (await gateway(
+      new Request('http://localhost/api/v1/hotspot-reports?client_id=other'),
+    ))!.status,
+  ).toBe(400)
+  expect(fetcher).not.toHaveBeenCalled()
+})
 it('masks upstream telemetry 401 as 502', async () => {
   const gateway = createClientGateway(
     env,

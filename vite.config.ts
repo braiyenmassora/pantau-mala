@@ -28,10 +28,19 @@ export default defineConfig(({ mode }) => {
               for (const [key, value] of Object.entries(req.headers)) {
                 if (typeof value === 'string') headers.set(key, value)
               }
+              // Body wajib diteruskan: gateway membaca arrayBuffer untuk POST (telemetry/laporan).
+              let body: Buffer | undefined
+              if (req.method !== 'GET' && req.method !== 'HEAD') {
+                const chunks: Buffer[] = []
+                for await (const chunk of req)
+                  chunks.push(chunk as Buffer)
+                if (chunks.length > 0) body = Buffer.concat(chunks)
+              }
               const response = await gateway(
                 new Request(`http://${req.headers.host}${req.url}`, {
                   method: req.method,
                   headers,
+                  body,
                 }),
               )
               if (!response) return next()

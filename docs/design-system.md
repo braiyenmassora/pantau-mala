@@ -759,6 +759,40 @@ Breakpoints        640 / 1024
 
 ---
 
+## 14. Adopsi Pola Mantap (konsol admin BE) — batas & keputusan
+
+Repo BE (`api-pantau-mala@main`) memakai sistem token yang sama, ditambah pola
+admin **Pola Mantap** (`docs/pola-mantap.md` + `web/src/lib/pola-mantap.tsx`:
+skala `T`, toast, cache-first, copy error ramah). Web publik ini mengadopsi
+Pola Mantap sebagai referensi **perilaku**, bukan skala visual admin.
+
+**Diadopsi:**
+
+- Toast kanan-atas: ikon `Info`, merah `risk-high` untuk error / hijau `brand`
+  untuk sukses, judul + deskripsi singkat, auto-dismiss ±3,2 dtk
+  (`src/components/common/toast.tsx`).
+- Copy error ramah tanpa jargon teknis untuk jalur data & aksi
+  (`src/lib/friendly-error.ts`): timeout/jaringan → arahkan segarkan;
+  pesan server kasar → kalimat pendek.
+- Header section kartu seragam (`SectionHead`), filter default “Semua”,
+  cache-first (di sini: React Query `staleTime`, bukan `page-cache`).
+
+**Secara eksplisit TIDAK diadopsi** (konteks publik/mobile, bukan admin desktop):
+
+- Kontrol `h-9` (36px) dan body 12/16 ala admin — kontrol tetap 44px (§1 #4)
+  dan body tetap 14/20.
+- Larangan tombol “Coba lagi” di empty/error state — di sini dipertahankan
+  untuk konteks publik yang sering offline; muat ulang data tetap satu-satunya
+  aksi di state error panel.
+- Layout halaman `p-6`/`gap-4` dan komponen tabel admin.
+- Dark mode (§14 dokumen BE) — web ini light only (§1 #5).
+- `page-cache` sessionStorage dan keep-alive nav — sudah setara via React Query.
+
+Bila ragu, dokumen ini yang menang untuk web publik; Pola Mantap hanya menang
+untuk pola perilaku yang tercantum di atas.
+
+---
+
 ## Asal & status
 
 Diekstrak dari implementasi UI pantaumala (audit source). Nilai di §2–§5 adalah yang dipakai di produk; token `risk-na` dan `shadow-pin-active` disertakan di blok portable agar repo lain tidak perlu file TS terpisah.

@@ -82,6 +82,61 @@ describe('Cloudflare Worker routing', () => {
     },
   )
 
+  it('serves report photos from the R2 binding, not assets', async () => {
+    const env = {
+      ...environment(),
+      REPORT_PHOTOS: {
+        get: vi.fn().mockResolvedValue({
+          body: new Response('jpg-bytes').body,
+          size: 9,
+          etag: '"etag-1"',
+          uploaded: new Date('2026-10-21T00:00:00Z'),
+          httpMetadata: { contentType: 'image/jpeg' },
+        }),
+      },
+    }
+    const key =
+      'hotspot-reports/36a7bdb0-0fab-42f4-8f90-272b7c9e2bb4/6cde8c5a-bcf3-4cc0-a394-6a88ad118103.jpg'
+    const response = await handleRequest(request(`/report-photos/${key}`), env, vi.fn())
+    expect(response.status).toBe(200)
+    expect(response.headers.get('Content-Type')).toBe('image/jpeg')
+    expect(response.headers.get('Cache-Control')).toContain('immutable')
+    expect(await response.text()).toBe('jpg-bytes')
+    expect(env.REPORT_PHOTOS.get).toHaveBeenCalledWith(key)
+    expect(env.ASSETS.fetch).not.toHaveBeenCalled()
+  })
+
+  it('rejects bad photo keys, missing objects and writes', async () => {
+    const env = {
+      ...environment(),
+      REPORT_PHOTOS: { get: vi.fn().mockResolvedValue(null) },
+    }
+    const key =
+      'hotspot-reports/36a7bdb0-0fab-42f4-8f90-272b7c9e2bb4/6cde8c5a-bcf3-4cc0-a394-6a88ad118103.jpg'
+    expect(
+      (
+        await handleRequest(
+          request('/report-photos/hotspot-reports/bukan-uuid/foto.jpg'),
+          env,
+          vi.fn(),
+        )
+      ).status,
+    ).toBe(404)
+    expect(
+      (await handleRequest(request(`/report-photos/${key}`), env, vi.fn())).status,
+    ).toBe(404)
+    expect(
+      (
+        await handleRequest(
+          request(`/report-photos/${key}`, { method: 'POST' }),
+          env,
+          vi.fn(),
+        )
+      ).status,
+    ).toBe(405)
+    expect(env.ASSETS.fetch).not.toHaveBeenCalled()
+  })
+
   it('rejects management, writes and requests from another origin', async () => {
     const env = environment()
     for (const [path, init, status] of [

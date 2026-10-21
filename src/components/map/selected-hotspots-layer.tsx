@@ -1,6 +1,6 @@
 import circle from '@turf/circle'
 import distance from '@turf/distance'
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FeatureCollection, Polygon } from 'geojson'
 import type { GeoJSONSource } from 'maplibre-gl'
 
@@ -8,12 +8,7 @@ import { BeatWaveRadius } from '@/components/map/beat-wave-radius'
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { copy } from '@/copy/id'
-import {
-  countAt,
-  ensureDemoReports,
-  getHotspotReportsSnapshot,
-  subscribeHotspotReports,
-} from '@/data/hotspot-reports'
+import { pointKey, useReportCounts } from '@/data/hotspot-reports'
 import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { rememberFocusTrigger } from '@/lib/focus-return'
@@ -44,11 +39,6 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
   const [hovered, setHovered] = useState<number | null>(null)
   const setReportTarget = useUiStore((s) => s.setReportTarget)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
-  const reportsSnap = useSyncExternalStore(
-    subscribeHotspotReports,
-    getHotspotReportsSnapshot,
-  )
-  void reportsSnap
 
   const selectedRegion = useMemo(
     () => regions.find((r) => r.code === selectedCode),
@@ -60,13 +50,15 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
     return data.features.filter((f) => f.properties.region_code === selectedCode)
   }, [selectedCode, data])
 
-  // Seed dummy laporan biar badge kelihatan tanpa submit dulu
-  useEffect(() => {
-    for (const f of regionHotspots) {
-      const [lon, lat] = f.geometry.coordinates
-      ensureDemoReports(lat, lon, f.properties.region_code)
-    }
-  }, [regionHotspots])
+  const countPoints = useMemo(
+    () =>
+      regionHotspots.map((f) => {
+        const [lon, lat] = f.geometry.coordinates
+        return { lat, lon }
+      }),
+    [regionHotspots],
+  )
+  const { data: reportCounts } = useReportCounts(countPoints)
 
   const focus = useMemo(() => {
     if (!selectedRegion) return null
@@ -230,7 +222,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
         ? regionHotspots.map((f, i) => {
             const [lon, lat] = f.geometry.coordinates
             const stamp = formatDateDotTime(f.properties.time, selectedRegion.time_zone)
-            const reportCount = countAt(lat, lon)
+            const reportCount = reportCounts?.get(pointKey(lat, lon)) ?? 0
             const label =
               reportCount > 0
                 ? `Titik panas ${stamp}, ${copy.report.badge(String(reportCount))}`
@@ -270,7 +262,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                   ) : null}
                   {reportCount > 0 ? (
                     <span
-                      className="bg-brand text-surface absolute -top-3 -right-3 z-20 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[11px] leading-none font-semibold shadow-sm"
+                      className="bg-brand text-surface absolute -top-3 -right-3 z-20 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs leading-none font-semibold shadow-sm"
                       aria-hidden
                     >
                       {reportCount}

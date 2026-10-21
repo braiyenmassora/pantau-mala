@@ -1,5 +1,6 @@
 import { OutboundLink } from '@/components/common/outbound-link'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { SectionHead } from '@/components/common/section-head'
+import { Card, CardContent } from '@/components/ui/card'
 import { copy } from '@/copy/id'
 import { OFFICIAL_REFS, POSKO_KARHUTLA, type OfficialRefId } from '@/data/official-refs'
 import { cn } from '@/lib/utils'
@@ -50,9 +51,7 @@ export function OfficialRefsCompact({ className }: { className?: string }) {
 export function OfficialRefsCard() {
   return (
     <Card aria-label={copy.official.title} data-testid="official-refs-card">
-      <CardHeader>
-        <CardTitle>{copy.official.title}</CardTitle>
-      </CardHeader>
+      <SectionHead title={copy.official.title} />
       <CardContent className="space-y-3">
         <p className="text-ink-2 text-xs leading-4">{copy.official.differNote}</p>
 
