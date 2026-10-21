@@ -4,6 +4,8 @@ import {
   decodeHotspotReport,
   decodeHotspotReports,
   decodeReportCounts,
+  decodeReportRegionCounts,
+  decodeReportTotal,
   pointKey,
   reportPhotoSrc,
 } from './hotspot-reports'
@@ -83,5 +85,16 @@ describe('hotspot-reports API decoding', () => {
     })
     expect(counts.get(pointKey(-2.1000042, 113.5000039))).toBe(3)
     expect(counts.get(pointKey(-3, 113.5))).toBeUndefined()
+  })
+
+  it('decodes per-region counts', () => {
+    expect(
+      decodeReportRegionCounts({ data: [{ region_code: '62.01', count: 3 }] }),
+    ).toEqual([{ region_code: '62.01', count: 3 }])
+  })
+
+  it('decodes the national total', () => {
+    expect(decodeReportTotal({ data: { count: 42 } })).toBe(42)
+    expect(() => decodeReportTotal({ data: {} })).toThrow()
   })
 })

@@ -3,6 +3,7 @@ import { ShieldCheck, X } from 'lucide-react'
 import { EmptyState, HotspotStatusBadge } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { DataFreshnessBanner } from '@/components/panel/data-freshness-banner'
+import { CitizenReportsCard } from '@/components/panel/region-detail-panel'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { copy } from '@/copy/id'
 import { useMeta } from '@/data/queries'
@@ -59,6 +60,8 @@ export function NoHotspotDetail({ kab }: NoHotspotDetailProps) {
             <p>{copy.panel.coverageNote}</p>
           </CardContent>
         </Card>
+
+        <CitizenReportsCard regionCode={kab.code} />
 
         <EmptyState
           icon={ShieldCheck}

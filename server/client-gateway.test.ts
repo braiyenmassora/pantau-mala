@@ -167,6 +167,8 @@ it('forwards hotspot report reads and writes with server key only', async () => 
         },
       }, { status: 201 }),
     )
+    .mockResolvedValueOnce(Response.json({ data: { count: 7 } }))
+    .mockResolvedValueOnce(Response.json({ data: [{ region_code: '62.01', count: 7 }] }))
   const gateway = createClientGateway(env, fetcher)
 
   const list = await gateway(
@@ -207,6 +209,17 @@ it('forwards hotspot report reads and writes with server key only', async () => 
     }),
   )
   expect(photo!.status).toBe(201)
+
+  const total = await gateway(
+    new Request('http://localhost/api/v1/hotspot-reports/total'),
+  )
+  expect(total!.status).toBe(200)
+  expect(await total!.json()).toEqual({ data: { count: 7 } })
+
+  const byRegion = await gateway(
+    new Request('http://localhost/api/v1/hotspot-reports/counts/by-region'),
+  )
+  expect(byRegion!.status).toBe(200)
 })
 it('rejects report writes to other routes and unknown report queries', async () => {
   const fetcher = vi.fn()

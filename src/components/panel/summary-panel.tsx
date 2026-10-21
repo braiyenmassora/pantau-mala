@@ -21,6 +21,7 @@ import {
 import { Brand } from '@/components/common/brand'
 import { focusRing } from '@/components/common/focus-ring'
 import { CitizenReportComposePanel } from '@/components/panel/citizen-report-compose-panel'
+import { CitizenReportsPanel } from '@/components/panel/citizen-reports-panel'
 import { CitizenReportDetailPanel } from '@/components/panel/citizen-report-detail-panel'
 import { DataFreshnessBanner } from '@/components/panel/data-freshness-banner'
 import { LocationCard } from '@/components/panel/location-card'
@@ -29,6 +30,7 @@ import { RegionDetailPanel } from '@/components/panel/region-detail-panel'
 import { RegionRow } from '@/components/panel/region-row'
 import { SearchBox } from '@/components/panel/search-box'
 import { TopProvincesList } from '@/components/panel/top-provinces-list'
+import { TotalReportsCard } from '@/components/panel/total-reports-card'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
@@ -81,6 +83,7 @@ export function SummaryPanel({
   const panelOpen = useUiStore((s) => s.panelOpen)
   const selectedReportId = useUiStore((s) => s.selectedReportId)
   const reportTarget = useUiStore((s) => s.reportTarget)
+  const reportsOpen = useUiStore((s) => s.reportsOpen)
 
   const { data: daftar, isPending: daftarPending } = useRegionCatalog()
 
@@ -187,6 +190,10 @@ export function SummaryPanel({
 
   if (selectedCatalog) {
     return <NoHotspotDetail kab={selectedCatalog} />
+  }
+
+  if (reportsOpen) {
+    return <CitizenReportsPanel regions={regions} mapRef={mapRef} />
   }
 
   if (wilayahNotFound) {
@@ -324,6 +331,8 @@ export function SummaryPanel({
               </header>
 
               <LocationCard regions={regions} />
+
+              <TotalReportsCard />
 
               <section className="space-y-3">
                 <h2 className={T.section}>

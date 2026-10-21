@@ -185,19 +185,18 @@ function ConditionsCard({ region }: { region: Region }) {
   )
 }
 
-function CitizenReportsCard({ region }: { region: Region }) {
+export function CitizenReportsCard({ regionCode }: { regionCode: string }) {
   const setReportTarget = useUiStore((s) => s.setReportTarget)
   const setSelectedReportId = useUiStore((s) => s.setSelectedReportId)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
   const { data } = useHotspots()
-  const { data: regionReports = [], isPending: reportsPending } = useRegionReports(
-    region.code,
-  )
+  const { data: regionReports = [], isPending: reportsPending } =
+    useRegionReports(regionCode)
 
   const hotspots = useMemo(() => {
     if (!data) return []
-    return data.features.filter((f) => f.properties.region_code === region.code)
-  }, [data, region.code])
+    return data.features.filter((f) => f.properties.region_code === regionCode)
+  }, [data, regionCode])
 
   const latest = regionReports.slice(0, 6)
 
@@ -235,9 +234,7 @@ function CitizenReportsCard({ region }: { region: Region }) {
       />
       <CardContent className="space-y-3">
         <p className="text-ink-2 text-xs leading-4">{copy.report.panelHint}</p>
-        {hotspots.length === 0 ? (
-          <p className="text-ink-2 text-sm leading-5">{copy.report.panelEmptyHotspots}</p>
-        ) : reportsPending ? (
+        {reportsPending ? (
           <p className="text-ink-2 text-sm leading-5">{copy.common.loading}</p>
         ) : latest.length === 0 ? (
           <p className="text-ink-2 text-sm leading-5">{copy.report.panelEmpty}</p>
@@ -370,7 +367,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
           </CardContent>
         </Card>
 
-        <CitizenReportsCard region={region} />
+        <CitizenReportsCard regionCode={region.code} />
 
         <ConditionsCard region={region} />
 

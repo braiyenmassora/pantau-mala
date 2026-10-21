@@ -108,6 +108,20 @@ export function decodeReportCounts(raw: unknown): Map<string, number> {
   return new Map(data.map((c) => [pointKey(c.point_lat, c.point_lon), c.count]))
 }
 
+export type ReportRegionCount = { region_code: string; count: number }
+
+export function decodeReportRegionCounts(raw: unknown): ReportRegionCount[] {
+  return z
+    .object({
+      data: z.array(z.object({ region_code: z.string(), count: z.number() })),
+    })
+    .parse(raw).data
+}
+
+export function decodeReportTotal(raw: unknown): number {
+  return z.object({ data: z.object({ count: z.number() }) }).parse(raw).data.count
+}
+
 export type HotspotReportTarget = {
   lat: number
   lon: number
@@ -221,6 +235,29 @@ export function useReportCounts(points: Array<{ lat: number; lon: number }>) {
       return merged
     },
     points.length > 0,
+  )
+}
+
+/** Total semua laporan warga klien ini (angka kartu ringkasan beranda). */
+export function useTotalReports() {
+  return useReportQuery(
+    ['hotspot-reports', 'total'],
+    (signal) => getData('/hotspot-reports/total', decodeReportTotal, signal),
+    true,
+  )
+}
+
+/** Jumlah laporan per kab/kota untuk daftar berkelompok provinsi. */
+export function useReportCountsByRegion() {
+  return useReportQuery(
+    ['hotspot-reports', 'counts-by-region'],
+    (signal) =>
+      getData(
+        '/hotspot-reports/counts/by-region',
+        decodeReportRegionCounts,
+        signal,
+      ),
+    true,
   )
 }
 

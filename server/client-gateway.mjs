@@ -31,7 +31,7 @@ export function createClientGateway(env, fetcher = fetch) {
       },
     })
   const allowed =
-    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages|hotspot-reports(?:\/(?:counts|photo|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}))?)$/
+    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages|hotspot-reports(?:\/(?:counts(?:\/by-region)?|total|photo|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}))?)$/
   async function upstream(path) {
     return fetcher(new URL(path, origin), {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
