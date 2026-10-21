@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 import { useSession } from '@/auth/session'
+import { MAX_REPORT_PHOTO_OUTPUT_BYTES } from '@/lib/report-photo'
 import { getData } from './queries'
 
 const sighting = z.enum(['asap', 'api_terlihat', 'tidak_yakin', 'sudah_padam'])
@@ -148,6 +149,9 @@ export function useCreateHotspotReport() {
   const client = useQueryClient()
   return useMutation({
     mutationFn: async ({ file, ...input }: SubmitHotspotReport) => {
+      if (file.type !== 'image/webp' || file.size > MAX_REPORT_PHOTO_OUTPUT_BYTES) {
+        throw new Error('Foto laporan harus berupa WebP teroptimasi maksimal 700 KB.')
+      }
       const upload = await getData(
         '/hotspot-reports/photo',
         z.object({

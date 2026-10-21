@@ -1,5 +1,13 @@
 import { CheckCircle2, ImagePlus, MapPin, MessageSquare, X } from 'lucide-react'
-import { useId, useMemo, useRef, useState, type FormEvent } from 'react'
+import {
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from 'react'
 import { Button } from '@/components/common/button'
 import { focusRing } from '@/components/common/focus-ring'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -15,12 +23,16 @@ import {
 } from '@/data/hotspot-reports'
 import { useHotspots } from '@/data/queries'
 import { formatDateTime, formatRelativeAge } from '@/lib/format'
+import {
+  formatPhotoBytes,
+  MAX_REPORT_PHOTO_INPUT_BYTES,
+  optimizeReportPhoto,
+  REPORT_PHOTO_TYPES,
+  type OptimizedReportPhoto,
+} from '@/lib/report-photo'
 import { cn } from '@/lib/utils'
 import { useMapStore, type ReportHotspot } from '@/store/map'
 import type { TimeZoneId } from '@/data/types'
-
-const MAX_PHOTO_BYTES = 2 * 1024 * 1024
-const PHOTO_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 
 const sightingLabel = {
   asap: 'Melihat asap',
@@ -94,6 +106,7 @@ export function CitizenReports({
 }) {
   const fieldId = useId()
   const fileRef = useRef<HTMLInputElement>(null)
+  const photoJob = useRef(0)
   const regionalReports = useRegionHotspotReports(regionCode)
   const hotspots = useHotspots(true, { regionCode })
   const create = useCreateHotspotReport()
@@ -107,6 +120,8 @@ export function CitizenReports({
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [photo, setPhoto] = useState<File | null>(null)
+  const [photoDetails, setPhotoDetails] = useState<OptimizedReportPhoto | null>(null)
+  const [isOptimizingPhoto, setIsOptimizingPhoto] = useState(false)
   const [photoError, setPhotoError] = useState('')
   const [sighting, setSighting] = useState<HotspotSighting>('asap')
   const [selectedReport, setSelectedReport] = useState<HotspotReport | null>(null)
@@ -138,6 +153,65 @@ export function CitizenReports({
       : undefined,
   )
   const reports = target ? pointReports : regionalReports
+  const photoPreview = useMemo(
+    () =>
+      photo && typeof URL.createObjectURL === 'function'
+        ? URL.createObjectURL(photo)
+        : '',
+    [photo],
+  )
+  useEffect(
+    () => () => {
+      if (photoPreview && typeof URL.revokeObjectURL === 'function') {
+        URL.revokeObjectURL(photoPreview)
+      }
+    },
+    [photoPreview],
+  )
+
+  const clearPhoto = () => {
+    photoJob.current += 1
+    setPhoto(null)
+    setPhotoDetails(null)
+    setIsOptimizingPhoto(false)
+    setPhotoError('')
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
+  const selectPhoto = async (event: ChangeEvent<HTMLInputElement>) => {
+    const next = event.currentTarget.files?.[0] ?? null
+    const job = photoJob.current + 1
+    photoJob.current = job
+    setPhoto(null)
+    setPhotoDetails(null)
+    setPhotoError('')
+    if (!next) return
+    if (!REPORT_PHOTO_TYPES.has(next.type)) {
+      setPhotoError('Format foto harus JPEG, PNG, atau WebP.')
+      event.currentTarget.value = ''
+      return
+    }
+    if (next.size > MAX_REPORT_PHOTO_INPUT_BYTES) {
+      setPhotoError('Foto asli melebihi batas 12 MiB.')
+      event.currentTarget.value = ''
+      return
+    }
+
+    setIsOptimizingPhoto(true)
+    try {
+      const optimized = await optimizeReportPhoto(next)
+      if (photoJob.current !== job) return
+      setPhoto(optimized.file)
+      setPhotoDetails(optimized)
+    } catch (error) {
+      if (photoJob.current !== job) return
+      setPhotoError(error instanceof Error ? error.message : 'Foto gagal dioptimalkan.')
+      if (fileRef.current) fileRef.current.value = ''
+    } finally {
+      if (photoJob.current === job) setIsOptimizingPhoto(false)
+    }
+  }
+
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!photo || !target || !name.trim()) return
@@ -158,6 +232,7 @@ export function CitizenReports({
           setName('')
           setDescription('')
           setPhoto(null)
+          setPhotoDetails(null)
           setPhotoError('')
           if (fileRef.current) fileRef.current.value = ''
           setOpen(false)
@@ -440,46 +515,36 @@ export function CitizenReports({
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 aria-describedby={`${fieldId}-photo-help`}
-                onChange={(e) => {
-                  const next = e.target.files?.[0] ?? null
-                  if (next && !PHOTO_TYPES.has(next.type)) {
-                    setPhoto(null)
-                    setPhotoError('Format foto harus JPEG, PNG, atau WebP.')
-                    e.currentTarget.value = ''
-                    return
-                  }
-                  if (next && next.size > MAX_PHOTO_BYTES) {
-                    setPhoto(null)
-                    setPhotoError('Ukuran foto melebihi batas 2 MiB.')
-                    e.currentTarget.value = ''
-                    return
-                  }
-                  setPhoto(next)
-                  setPhotoError('')
-                }}
+                onChange={(event) => void selectPhoto(event)}
                 className="sr-only"
               />
               {photo ? (
                 <div className="border-brand/30 bg-brand-soft rounded-ctl flex min-h-16 items-center gap-3 border px-3 py-2">
-                  <span className="bg-surface text-brand rounded-ctl flex size-9 shrink-0 items-center justify-center">
-                    <CheckCircle2 className="size-4" aria-hidden />
-                  </span>
+                  {photoPreview ? (
+                    <img
+                      src={photoPreview}
+                      alt="Pratinjau foto laporan"
+                      className="rounded-ctl size-12 shrink-0 object-cover"
+                    />
+                  ) : (
+                    <span className="bg-surface text-brand rounded-ctl flex size-9 shrink-0 items-center justify-center">
+                      <CheckCircle2 className="size-4" aria-hidden />
+                    </span>
+                  )}
                   <div className="min-w-0 flex-1">
-                    <p className="text-ink truncate text-sm font-medium">{photo.name}</p>
+                    <p className="text-ink truncate text-sm font-medium">
+                      {photoDetails?.originalName ?? photo.name}
+                    </p>
                     <p className="text-ink-2 text-xs">
-                      {(photo.size / 1024 / 1024).toLocaleString('id-ID', {
-                        maximumFractionDigits: 1,
-                      })}{' '}
-                      MiB
+                      {photoDetails
+                        ? `${formatPhotoBytes(photoDetails.originalBytes)} → ${formatPhotoBytes(photo.size)} WebP · ${photoDetails.outputWidth}×${photoDetails.outputHeight}`
+                        : formatPhotoBytes(photo.size)}
                     </p>
                   </div>
                   <button
                     type="button"
                     aria-label={copy.detail.removeReportPhoto}
-                    onClick={() => {
-                      setPhoto(null)
-                      if (fileRef.current) fileRef.current.value = ''
-                    }}
+                    onClick={clearPhoto}
                     className={cn(
                       'text-ink-2 hover:bg-surface rounded-ctl flex size-11 shrink-0 items-center justify-center',
                       focusRing,
@@ -487,6 +552,16 @@ export function CitizenReports({
                   >
                     <X className="size-4" aria-hidden />
                   </button>
+                </div>
+              ) : isOptimizingPhoto ? (
+                <div
+                  role="status"
+                  className="border-brand/30 bg-brand-soft rounded-ctl flex min-h-20 items-center gap-3 border px-3 py-3"
+                >
+                  <span className="border-brand/30 border-t-brand size-8 shrink-0 animate-spin rounded-full border-2" />
+                  <span className="text-ink text-sm font-medium">
+                    Mengoptimalkan foto…
+                  </span>
                 </div>
               ) : (
                 <label
@@ -514,7 +589,7 @@ export function CitizenReports({
                       id={`${fieldId}-photo-help`}
                       className="text-ink-2 mt-1 block text-xs leading-4"
                     >
-                      JPEG, PNG, atau WebP · Maksimal 2 MiB
+                      JPEG, PNG, atau WebP hingga 12 MiB · Otomatis jadi WebP
                     </span>
                   </span>
                 </label>
@@ -535,7 +610,7 @@ export function CitizenReports({
               type="submit"
               size="md"
               loading={create.isPending}
-              disabled={create.isPending || !photo || !name.trim()}
+              disabled={create.isPending || isOptimizingPhoto || !photo || !name.trim()}
               className="w-full"
             >
               {create.isPending ? 'Mengirim…' : 'Kirim laporan'}

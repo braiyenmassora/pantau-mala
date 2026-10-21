@@ -1,14 +1,25 @@
 /** @vitest-environment jsdom */
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { CitizenReports } from '@/components/panel/citizen-reports'
 import { useMapStore } from '@/store/map'
 
 const mutate = vi.fn()
 const reset = vi.fn()
+const { optimizeReportPhoto } = vi.hoisted(() => ({
+  optimizeReportPhoto: vi.fn(),
+}))
+
+vi.mock('@/lib/report-photo', () => ({
+  REPORT_PHOTO_TYPES: new Set(['image/jpeg', 'image/png', 'image/webp']),
+  MAX_REPORT_PHOTO_INPUT_BYTES: 12 * 1024 * 1024,
+  optimizeReportPhoto,
+  formatPhotoBytes: (bytes: number) => `${bytes} bytes`,
+}))
 
 vi.mock('@/data/hotspot-reports', () => ({
+  reportPhotoSrc: (value: string) => value,
   useRegionHotspotReports: () => ({
     data: [],
     isLoading: false,
@@ -52,6 +63,20 @@ vi.mock('@/data/queries', () => ({
 }))
 
 describe('CitizenReports', () => {
+  beforeEach(() => {
+    optimizeReportPhoto.mockImplementation(async (file: File) => ({
+      file: new File(['webp'], file.name.replace(/\.[^.]+$/, '.webp'), {
+        type: 'image/webp',
+      }),
+      originalName: file.name,
+      originalBytes: file.size,
+      originalWidth: 3024,
+      originalHeight: 4032,
+      outputWidth: 1200,
+      outputHeight: 1600,
+    }))
+  })
+
   afterEach(() => {
     cleanup()
     vi.clearAllMocks()
@@ -94,7 +119,7 @@ describe('CitizenReports', () => {
     ).toBe(true)
   })
 
-  it('validates photo size before enabling submission', () => {
+  it('optimizes a camera photo before enabling submission', async () => {
     render(<CitizenReports regionCode="63.02" />)
     const target = screen.getByLabelText(
       /Titik panas yang dilaporkan/,
@@ -109,18 +134,24 @@ describe('CitizenReports', () => {
     fireEvent.change(input, {
       target: {
         files: [
-          new File([new Uint8Array(2 * 1024 * 1024 + 1)], 'besar.jpg', {
+          new File([new Uint8Array(12 * 1024 * 1024 + 1)], 'besar.jpg', {
             type: 'image/jpeg',
           }),
         ],
       },
     })
-    expect(screen.getByRole('alert').textContent).toContain('melebihi batas')
+    expect(screen.getByRole('alert').textContent).toContain('12 MiB')
 
-    fireEvent.change(input, {
-      target: { files: [new File(['foto'], 'lapangan.webp', { type: 'image/webp' })] },
+    const cameraPhoto = new File([new Uint8Array(3 * 1024 * 1024)], 'lapangan.jpg', {
+      type: 'image/jpeg',
     })
-    expect(screen.getByText('lapangan.webp')).toBeTruthy()
+    fireEvent.change(input, {
+      target: { files: [cameraPhoto] },
+    })
+    expect(screen.getByText('Mengoptimalkan foto…')).toBeTruthy()
+    await waitFor(() => expect(screen.getByText('lapangan.jpg')).toBeTruthy())
+    expect(optimizeReportPhoto).toHaveBeenCalledWith(cameraPhoto)
+    expect(screen.getByText(/1200×1600/)).toBeTruthy()
     expect(
       screen.getByRole('button', { name: 'Kirim laporan' }).hasAttribute('disabled'),
     ).toBe(false)
