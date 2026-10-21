@@ -60,6 +60,25 @@ const validPoint = ({ lat, lon }: HotspotReportPoint) =>
   lon >= -180 &&
   lon <= 180
 
+const publicReportPhotoHost = 'pub-32d942c9574c4f02a9c7fb2e260e33e2.r2.dev'
+
+/** Serve report photos through our Worker because the bucket's r2.dev origin is unreliable. */
+export function reportPhotoSrc(photoURL: string) {
+  try {
+    const url = new URL(photoURL)
+    if (
+      url.protocol === 'https:' &&
+      url.hostname === publicReportPhotoHost &&
+      url.pathname.startsWith('/hotspot-reports/')
+    ) {
+      return `/report-photos${url.pathname}`
+    }
+  } catch {
+    // The API schema already rejects malformed URLs. Keep the original as a fallback.
+  }
+  return photoURL
+}
+
 function useReportQuery<T>(
   key: readonly unknown[],
   enabled: boolean,

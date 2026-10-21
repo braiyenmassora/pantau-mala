@@ -5,6 +5,7 @@ import { focusRing } from '@/components/common/focus-ring'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { copy } from '@/copy/id'
 import {
+  reportPhotoSrc,
   useCreateHotspotReport,
   useHotspotReport,
   usePointHotspotReports,
@@ -69,7 +70,7 @@ function ReportDetail({
         </p>
       ) : null}
       <img
-        src={item.photo_url}
+        src={reportPhotoSrc(item.photo_url)}
         alt={`Foto laporan kondisi lapangan oleh ${item.author_name}`}
         className="rounded-card mt-3 aspect-[4/3] w-full object-cover"
       />
@@ -284,7 +285,7 @@ export function CitizenReports({
                     ) : null}
                   </div>
                   <img
-                    src={report.photo_url}
+                    src={reportPhotoSrc(report.photo_url)}
                     alt=""
                     className="rounded-ctl size-14 shrink-0 object-cover"
                     loading="lazy"

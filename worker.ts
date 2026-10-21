@@ -3,10 +3,23 @@ import { deliverPageTraffic, preparePageTraffic } from './server/page-traffic'
 
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> }
+  REPORT_PHOTOS: ReportPhotoBucket
   FE_ACCESS_MODE: string
   PANTAU_API_ORIGIN: string
   PANTAU_CLIENT_SLUG: string
   PANTAU_API_KEY: string
+}
+
+interface ReportPhotoObject {
+  body: ReadableStream
+  size: number
+  etag: string
+  uploaded: Date
+  httpMetadata?: { contentType?: string }
+}
+
+interface ReportPhotoBucket {
+  get(key: string): Promise<ReportPhotoObject | null>
 }
 
 interface ExecutionContext {
@@ -31,6 +44,33 @@ function runtimeEdgeCache(): EdgeCache | undefined {
       caches?: { default?: EdgeCache }
     }
   ).caches?.default
+}
+
+const REPORT_PHOTO_ROUTE = '/report-photos/'
+const REPORT_PHOTO_KEY =
+  /^hotspot-reports\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.(?:jpe?g|png|webp)$/i
+
+async function serveReportPhoto(request: Request, bucket: ReportPhotoBucket) {
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    return new Response(null, { status: 405, headers: { Allow: 'GET, HEAD' } })
+  }
+
+  const pathname = new URL(request.url).pathname
+  const key = pathname.slice(REPORT_PHOTO_ROUTE.length)
+  if (!REPORT_PHOTO_KEY.test(key)) return new Response(null, { status: 404 })
+
+  const object = await bucket.get(key)
+  if (!object) return new Response(null, { status: 404 })
+
+  const headers = new Headers({
+    'Cache-Control': 'public, max-age=31536000, immutable',
+    'Content-Length': String(object.size),
+    'Content-Type': object.httpMetadata?.contentType ?? 'application/octet-stream',
+    ETag: object.etag,
+    'Last-Modified': object.uploaded.toUTCString(),
+    'X-Content-Type-Options': 'nosniff',
+  })
+  return new Response(request.method === 'HEAD' ? null : object.body, { headers })
 }
 
 /** Cache only public read models. Gateway auth still runs before every data lookup. */
@@ -81,6 +121,9 @@ export async function handleRequest(
   edgeCache = runtimeEdgeCache(),
 ): Promise<Response> {
   const pathname = new URL(request.url).pathname
+  if (pathname.startsWith(REPORT_PHOTO_ROUTE)) {
+    return serveReportPhoto(request, env.REPORT_PHOTOS)
+  }
   const reserved =
     pathname === '/api' ||
     pathname.startsWith('/api/') ||

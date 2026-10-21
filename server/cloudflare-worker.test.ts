@@ -11,6 +11,7 @@ const principal = {
 function environment() {
   return {
     ASSETS: { fetch: vi.fn().mockResolvedValue(new Response('frontend assets')) },
+    REPORT_PHOTOS: { get: vi.fn() },
     FE_ACCESS_MODE: 'client',
     PANTAU_API_ORIGIN: 'https://api.example.test',
     PANTAU_CLIENT_SLUG: 'fixture',
@@ -21,6 +22,37 @@ const request = (pathname: string, init?: RequestInit) =>
   new Request(`https://fixture.workers.dev${pathname}`, init)
 
 describe('Cloudflare Worker routing', () => {
+  it('serves immutable report photos directly from the bound R2 bucket', async () => {
+    const env = environment()
+    const body = new TextEncoder().encode('image-bytes')
+    env.REPORT_PHOTOS.get.mockResolvedValue({
+      body,
+      size: body.byteLength,
+      etag: 'fixture-etag',
+      uploaded: new Date('2026-10-21T00:00:00Z'),
+      httpMetadata: { contentType: 'image/webp' },
+    })
+    const path =
+      '/report-photos/hotspot-reports/e48b7f4b-d811-4519-9f20-bc35de0e3bff/5da70a8a-2440-464a-8c9e-6655b316ad32.webp'
+
+    const response = await handleRequest(request(path), env)
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('Content-Type')).toBe('image/webp')
+    expect(response.headers.get('Cache-Control')).toContain('immutable')
+    expect(await response.text()).toBe('image-bytes')
+    expect(env.REPORT_PHOTOS.get).toHaveBeenCalledWith(path.split('/').slice(2).join('/'))
+    expect(env.ASSETS.fetch).not.toHaveBeenCalled()
+  })
+
+  it('rejects invalid report-photo keys before querying R2', async () => {
+    const env = environment()
+    expect(
+      (await handleRequest(request('/report-photos/other/private.txt'), env)).status,
+    ).toBe(404)
+    expect(env.REPORT_PHOTOS.get).not.toHaveBeenCalled()
+  })
+
   it('serves assets even when the data key has not been configured', async () => {
     const env = { ...environment(), PANTAU_API_KEY: '' }
     expect(await (await handleRequest(request('/'), env)).text()).toBe('frontend assets')

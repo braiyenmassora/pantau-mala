@@ -1,5 +1,23 @@
 import { describe, expect, it } from 'vitest'
-import { hotspotReportSchema } from './hotspot-reports'
+import { hotspotReportSchema, reportPhotoSrc } from './hotspot-reports'
+
+describe('reportPhotoSrc', () => {
+  it('routes public R2 report photos through the same-origin Worker', () => {
+    expect(
+      reportPhotoSrc(
+        'https://pub-32d942c9574c4f02a9c7fb2e260e33e2.r2.dev/hotspot-reports/e48b7f4b-d811-4519-9f20-bc35de0e3bff/5da70a8a-2440-464a-8c9e-6655b316ad32.png',
+      ),
+    ).toBe(
+      '/report-photos/hotspot-reports/e48b7f4b-d811-4519-9f20-bc35de0e3bff/5da70a8a-2440-464a-8c9e-6655b316ad32.png',
+    )
+  })
+
+  it('leaves unrelated image origins unchanged', () => {
+    expect(reportPhotoSrc('https://media.example/report.jpg')).toBe(
+      'https://media.example/report.jpg',
+    )
+  })
+})
 
 describe('hotspot report contract', () => {
   it('accepts the Go OpenAPI response shape', () => {
