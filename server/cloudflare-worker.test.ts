@@ -82,35 +82,34 @@ describe('Cloudflare Worker routing', () => {
     },
   )
 
-  it('serves report photos from the R2 binding, not assets', async () => {
-    const env = {
-      ...environment(),
-      REPORT_PHOTOS: {
-        get: vi.fn().mockResolvedValue({
-          body: new Response('jpg-bytes').body,
-          size: 9,
-          etag: '"etag-1"',
-          uploaded: new Date('2026-10-21T00:00:00Z'),
-          httpMetadata: { contentType: 'image/jpeg' },
-        }),
-      },
-    }
+  it('proxies report photos from the public R2 origin, not assets', async () => {
+    const env = environment()
+    const fetcher = vi.fn().mockResolvedValue(
+      new Response('jpg-bytes', {
+        headers: { 'Content-Type': 'image/jpeg', ETag: '"etag-1"' },
+      }),
+    )
     const key =
       'hotspot-reports/36a7bdb0-0fab-42f4-8f90-272b7c9e2bb4/6cde8c5a-bcf3-4cc0-a394-6a88ad118103.jpg'
-    const response = await handleRequest(request(`/report-photos/${key}`), env, vi.fn())
+    const response = await handleRequest(
+      request(`/report-photos/${key}`),
+      env,
+      fetcher,
+    )
     expect(response.status).toBe(200)
     expect(response.headers.get('Content-Type')).toBe('image/jpeg')
     expect(response.headers.get('Cache-Control')).toContain('immutable')
     expect(await response.text()).toBe('jpg-bytes')
-    expect(env.REPORT_PHOTOS.get).toHaveBeenCalledWith(key)
+    expect(fetcher).toHaveBeenCalledWith(
+      `https://pub-32d942c9574c4f02a9c7fb2e260e33e2.r2.dev/${key}`,
+      { method: 'GET' },
+    )
     expect(env.ASSETS.fetch).not.toHaveBeenCalled()
   })
 
   it('rejects bad photo keys, missing objects and writes', async () => {
-    const env = {
-      ...environment(),
-      REPORT_PHOTOS: { get: vi.fn().mockResolvedValue(null) },
-    }
+    const env = environment()
+    const missing = vi.fn().mockResolvedValue(new Response(null, { status: 404 }))
     const key =
       'hotspot-reports/36a7bdb0-0fab-42f4-8f90-272b7c9e2bb4/6cde8c5a-bcf3-4cc0-a394-6a88ad118103.jpg'
     expect(
@@ -118,19 +117,20 @@ describe('Cloudflare Worker routing', () => {
         await handleRequest(
           request('/report-photos/hotspot-reports/bukan-uuid/foto.jpg'),
           env,
-          vi.fn(),
+          missing,
         )
       ).status,
     ).toBe(404)
+    expect(missing).not.toHaveBeenCalled()
     expect(
-      (await handleRequest(request(`/report-photos/${key}`), env, vi.fn())).status,
+      (await handleRequest(request(`/report-photos/${key}`), env, missing)).status,
     ).toBe(404)
     expect(
       (
         await handleRequest(
           request(`/report-photos/${key}`, { method: 'POST' }),
           env,
-          vi.fn(),
+          missing,
         )
       ).status,
     ).toBe(405)

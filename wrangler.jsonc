@@ -29,12 +29,6 @@
       "/report-photos/*",
     ],
   },
-  "r2_buckets": [
-    {
-      "binding": "REPORT_PHOTOS",
-      "bucket_name": "pantau0mala",
-    },
-  ],
   "vars": {
     "FE_ACCESS_MODE": "client",
     "PANTAU_API_ORIGIN": "https://api.pantaumala.live",

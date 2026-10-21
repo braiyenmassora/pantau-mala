@@ -1,20 +1,7 @@
 import { createClientGateway } from './server/client-gateway.mjs'
 
-interface ReportPhotoObject {
-  body: ReadableStream
-  size: number
-  etag: string
-  uploaded: Date
-  httpMetadata?: { contentType?: string }
-}
-
-interface ReportPhotoBucket {
-  get(key: string): Promise<ReportPhotoObject | null>
-}
-
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> }
-  REPORT_PHOTOS?: ReportPhotoBucket
   FE_ACCESS_MODE: string
   PANTAU_API_ORIGIN: string
   PANTAU_CLIENT_SLUG: string
@@ -25,29 +12,41 @@ const REPORT_PHOTO_ROUTE = '/report-photos/'
 const REPORT_PHOTO_KEY =
   /^hotspot-reports\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.(?:jpe?g|png|webp)$/i
 
-/** Foto laporan dilayani dari binding R2 sendiri — host r2.dev tidak andal diblokir sebagian ISP. */
+const REPORT_PHOTO_ORIGIN =
+  'https://pub-32d942c9574c4f02a9c7fb2e260e33e2.r2.dev'
+
+/**
+ * Foto laporan diproksi dari URL publik R2 milik BE — bucket BE ada di akun
+ * Cloudflare lain sehingga binding R2 tidak bisa menjangkaunya, dan host
+ * r2.dev dari browser pengguna tidak andal (diblokir sebagian ISP), jadi
+ * pengambilan dilakukan dari edge Worker.
+ */
 async function serveReportPhoto(
   request: Request,
-  bucket: ReportPhotoBucket | undefined,
+  fetcher: typeof fetch,
 ): Promise<Response> {
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     return new Response(null, { status: 405, headers: { Allow: 'GET, HEAD' } })
   }
   const key = new URL(request.url).pathname.slice(REPORT_PHOTO_ROUTE.length)
-  if (!bucket || !REPORT_PHOTO_KEY.test(key)) {
-    return new Response(null, { status: 404 })
-  }
-  const object = await bucket.get(key)
-  if (!object) return new Response(null, { status: 404 })
+  if (!REPORT_PHOTO_KEY.test(key)) return new Response(null, { status: 404 })
+  const upstream = await fetcher(`${REPORT_PHOTO_ORIGIN}/${key}`, {
+    method: request.method,
+  })
+  if (!upstream.ok) return new Response(null, { status: 404 })
   const headers = new Headers({
     'Cache-Control': 'public, max-age=31536000, immutable',
-    'Content-Length': String(object.size),
-    'Content-Type': object.httpMetadata?.contentType ?? 'application/octet-stream',
-    ETag: object.etag,
-    'Last-Modified': object.uploaded.toUTCString(),
+    'Content-Type':
+      upstream.headers.get('Content-Type') ?? 'application/octet-stream',
     'X-Content-Type-Options': 'nosniff',
   })
-  return new Response(request.method === 'HEAD' ? null : object.body, { headers })
+  const etag = upstream.headers.get('ETag')
+  if (etag) headers.set('ETag', etag)
+  const lastModified = upstream.headers.get('Last-Modified')
+  if (lastModified) headers.set('Last-Modified', lastModified)
+  return new Response(request.method === 'HEAD' ? null : upstream.body, {
+    headers,
+  })
 }
 
 export async function handleRequest(
@@ -57,7 +56,7 @@ export async function handleRequest(
 ): Promise<Response> {
   const pathname = new URL(request.url).pathname
   if (pathname.startsWith(REPORT_PHOTO_ROUTE)) {
-    return serveReportPhoto(request, env.REPORT_PHOTOS)
+    return serveReportPhoto(request, fetcher)
   }
   const reserved =
     pathname === '/api' ||
