@@ -36,11 +36,7 @@ export const useUiStore = create<UiState>((set) => ({
   setPanelOpen: (panelOpen) => set({ panelOpen }),
   setBootDone: (bootDone) => set({ bootDone }),
   setReportTarget: (reportTarget) =>
-    set(
-      reportTarget
-        ? { reportTarget, selectedReportId: null }
-        : { reportTarget: null },
-    ),
+    set(reportTarget ? { reportTarget, selectedReportId: null } : { reportTarget: null }),
   setSelectedReportId: (selectedReportId) =>
     set(
       selectedReportId

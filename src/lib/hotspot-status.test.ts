@@ -8,7 +8,7 @@ import {
   hotspotPinAria,
   hotspotPinMeta,
 } from '@/lib/hotspot-status'
-import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { RISK_CATEGORIES, riskCategoryLabel } from '@/lib/risk-category'
 
 describe('hotspot status', () => {
   it('treats zero detections as non-risk', () => {
@@ -32,7 +32,7 @@ describe('hotspot status', () => {
 
   it('labels zero points without Risiko Rendah', () => {
     expect(hotspotHoverSubtitle({ risk_category: 'rendah', hotspots_24h: 0 })).toBe(
-      RISK_CATEGORIES.tanpa_titik.label,
+      riskCategoryLabel('tanpa_titik'),
     )
     expect(hotspotPinMeta(0, 'Rendah')).toBe(copy.status.noDetections)
     expect(hotspotPinAria('Kab. Test', 0, 'Rendah', '0')).toBe(
@@ -43,11 +43,11 @@ describe('hotspot status', () => {
 
   it('labels missing counts as Belum dinilai, not nol titik', () => {
     expect(hotspotHoverSubtitle({ risk_category: 'rendah', hotspots_24h: null })).toBe(
-      RISK_CATEGORIES.tidak_tersedia.label,
+      riskCategoryLabel('tidak_tersedia'),
     )
-    expect(hotspotPinMeta(null, 'Rendah')).toBe(RISK_CATEGORIES.tidak_tersedia.label)
+    expect(hotspotPinMeta(null, 'Rendah')).toBe(riskCategoryLabel('tidak_tersedia'))
     expect(hotspotPinAria('Kab. Test', undefined, 'Rendah', '—')).toBe(
-      `Kab. Test, ${RISK_CATEGORIES.tidak_tersedia.label}`,
+      `Kab. Test, ${riskCategoryLabel('tidak_tersedia')}`,
     )
   })
 })

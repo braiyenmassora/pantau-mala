@@ -32,8 +32,7 @@ export default defineConfig(({ mode }) => {
               let body: Buffer | undefined
               if (req.method !== 'GET' && req.method !== 'HEAD') {
                 const chunks: Buffer[] = []
-                for await (const chunk of req)
-                  chunks.push(chunk as Buffer)
+                for await (const chunk of req) chunks.push(chunk as Buffer)
                 if (chunks.length > 0) body = Buffer.concat(chunks)
               }
               const response = await gateway(

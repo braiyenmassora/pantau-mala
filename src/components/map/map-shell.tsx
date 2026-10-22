@@ -24,7 +24,7 @@ import { UserLocationLayer } from '@/components/map/user-location-layer'
 import { Map, useMap, type MapRef } from '@/components/ui/map'
 import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { getMapPadding, INDONESIA_CENTER } from '@/lib/indonesia-view'
 import { useMapChrome } from '@/lib/layout'
 import { isBasemapStyleError, webGlSupported } from '@/lib/map-support'
@@ -56,9 +56,9 @@ function MapUnavailable({ onReload }: { onReload: () => void }) {
       >
         <EmptyState
           icon={MapIcon}
-          title={copy.empty.mapFail.title}
-          description={copy.empty.mapFail.description}
-          action={{ label: copy.empty.mapFail.action, onClick: onReload }}
+          title={getCopy().empty.mapFail.title}
+          description={getCopy().empty.mapFail.description}
+          action={{ label: getCopy().empty.mapFail.action, onClick: onReload }}
           className="shadow-chrome max-w-sm"
         />
       </div>
@@ -78,9 +78,9 @@ function BasemapBanner({ onRetry }: { onRetry: () => void }) {
         top: 68,
       }}
     >
-      <p className="text-ink text-sm leading-5">{copy.empty.basemapFail.title}</p>
+      <p className="text-ink text-sm leading-5">{getCopy().empty.basemapFail.title}</p>
       <Button variant="secondary" size="sm" onClick={onRetry}>
-        {copy.empty.basemapFail.action}
+        {getCopy().empty.basemapFail.action}
       </Button>
     </div>
   )
@@ -99,7 +99,7 @@ function PartialBanner() {
       }}
       role="status"
     >
-      <p className="text-ink text-sm leading-5">{copy.empty.mapPartial.title}</p>
+      <p className="text-ink text-sm leading-5">{getCopy().empty.mapPartial.title}</p>
     </div>
   )
 }

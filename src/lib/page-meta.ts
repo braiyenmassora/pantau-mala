@@ -1,7 +1,4 @@
-import { copy } from '@/copy/id'
-
-const DEFAULT_TITLE = copy.meta.homeTitle
-const DEFAULT_DESCRIPTION = copy.meta.homeDescription
+import { getCopy } from '@/copy'
 
 function setMeta(attr: 'name' | 'property', key: string, content: string) {
   const el =
@@ -27,10 +24,10 @@ function setCanonical(href: string) {
 
 /** Meta klien — crawler chat tetap lihat HTML awal sampai Worker OG (backlog). */
 export function applyHomeMeta(origin: string = window.location.origin) {
-  document.title = DEFAULT_TITLE
-  setMeta('name', 'description', DEFAULT_DESCRIPTION)
-  setMeta('property', 'og:title', DEFAULT_TITLE)
-  setMeta('property', 'og:description', DEFAULT_DESCRIPTION)
+  document.title = getCopy().meta.homeTitle
+  setMeta('name', 'description', getCopy().meta.homeDescription)
+  setMeta('property', 'og:title', getCopy().meta.homeTitle)
+  setMeta('property', 'og:description', getCopy().meta.homeDescription)
   setMeta('property', 'og:url', `${origin}/`)
   setCanonical(`${origin}/`)
 }
@@ -40,8 +37,8 @@ export function applyWilayahMeta(
   path: string,
   origin: string = window.location.origin,
 ) {
-  const title = copy.meta.wilayahTitle(name)
-  const description = copy.meta.wilayahDescription(name)
+  const title = getCopy().meta.wilayahTitle(name)
+  const description = getCopy().meta.wilayahDescription(name)
   const url = `${origin}${path}`
   document.title = title
   setMeta('name', 'description', description)

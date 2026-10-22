@@ -1,6 +1,6 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { T } from '@/lib/pola'
 import { reportTelemetryError } from '@/lib/telemetry'
 
@@ -25,9 +25,9 @@ export class AppErrorBoundary extends Component<Props, State> {
 
     return (
       <div className="bg-surface text-ink flex min-h-dvh flex-col items-center justify-center gap-4 p-6 text-center">
-        <h1 className={T.page}>{copy.empty.appCrash.title}</h1>
+        <h1 className={T.page}>{getCopy().empty.appCrash.title}</h1>
         <p className="text-ink-2 max-w-sm text-sm leading-5">
-          {copy.empty.appCrash.description}
+          {getCopy().empty.appCrash.description}
         </p>
         <button
           type="button"
@@ -36,7 +36,7 @@ export class AppErrorBoundary extends Component<Props, State> {
             window.location.reload()
           }}
         >
-          {copy.empty.appCrash.action}
+          {getCopy().empty.appCrash.action}
         </button>
       </div>
     )

@@ -1,6 +1,6 @@
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { formatNumber } from '@/lib/format'
-import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { RISK_CATEGORIES, riskCategoryLabel } from '@/lib/risk-category'
 import {
   effectiveRiskCategory,
   isValidHotspotCount,
@@ -19,7 +19,7 @@ export function hotspotDotColor(r: RiskInput): string {
 
 /** Subtitle hover: label risiko, nol titik, atau belum dinilai. */
 export function hotspotHoverSubtitle(r: RiskInput): string {
-  return RISK_CATEGORIES[effectiveRiskCategory(r)].label
+  return riskCategoryLabel(effectiveRiskCategory(r))
 }
 
 /** Meta baris popup pin kab/kota. */
@@ -28,10 +28,10 @@ export function hotspotPinMeta(
   riskLabel: string,
 ): string {
   if (!isValidHotspotCount(hotspots_24h)) {
-    return RISK_CATEGORIES.tidak_tersedia.label
+    return riskCategoryLabel('tidak_tersedia')
   }
-  if (hotspots_24h === 0) return copy.status.noDetections
-  return copy.map.regionPinDetails(formatNumber(hotspots_24h), riskLabel)
+  if (hotspots_24h === 0) return getCopy().status.noDetections
+  return getCopy().map.regionPinDetails(formatNumber(hotspots_24h), riskLabel)
 }
 
 /** aria-label pin kab/kota. */
@@ -42,10 +42,10 @@ export function hotspotPinAria(
   countLabel: string,
 ): string {
   if (!isValidHotspotCount(hotspots_24h)) {
-    return `${name}, ${RISK_CATEGORIES.tidak_tersedia.label}`
+    return `${name}, ${riskCategoryLabel('tidak_tersedia')}`
   }
   if (hotspots_24h === 0) {
-    return copy.map.pinAriaNoDetections(name)
+    return getCopy().map.pinAriaNoDetections(name)
   }
-  return copy.map.pinAria(name, riskLabel, countLabel)
+  return getCopy().map.pinAria(name, riskLabel, countLabel)
 }

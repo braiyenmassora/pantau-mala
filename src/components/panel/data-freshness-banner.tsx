@@ -1,7 +1,7 @@
 import { AlertTriangle, CloudOff } from 'lucide-react'
 
 import { EmptyState } from '@/components/common'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { useMeta } from '@/data/queries'
 import { getDataFreshness } from '@/lib/data-freshness'
 import { formatRelativeAge } from '@/lib/format'
@@ -29,8 +29,8 @@ export function DataFreshnessBanner({
           'border-risk-mid/40 bg-risk-mid-tint text-risk-mid-text',
           className,
         )}
-        title={copy.empty.loadFail.title}
-        description={copy.empty.loadFail.description}
+        title={getCopy().empty.loadFail.title}
+        description={getCopy().empty.loadFail.description}
       />
     )
   }
@@ -46,8 +46,8 @@ export function DataFreshnessBanner({
           'border-risk-mid/40 bg-risk-mid-tint text-risk-mid-text',
           className,
         )}
-        title={copy.empty.metaUnavailable.title}
-        description={copy.empty.metaUnavailable.description}
+        title={getCopy().empty.metaUnavailable.title}
+        description={getCopy().empty.metaUnavailable.description}
       />
     )
   }
@@ -66,8 +66,8 @@ export function DataFreshnessBanner({
           'border-risk-mid/40 bg-risk-mid-tint text-risk-mid-text',
           className,
         )}
-        title={copy.empty.metaUnavailable.title}
-        description={copy.empty.metaUnavailable.description}
+        title={getCopy().empty.metaUnavailable.title}
+        description={getCopy().empty.metaUnavailable.description}
       />
     )
   }
@@ -80,8 +80,8 @@ export function DataFreshnessBanner({
       icon={AlertTriangle}
       variant="action"
       className={cn('border-risk-mid/40 bg-risk-mid-tint text-risk-mid-text', className)}
-      title={copy.empty.dataStale.title}
-      description={copy.empty.dataStale.description(relative!)}
+      title={getCopy().empty.dataStale.title}
+      description={getCopy().empty.dataStale.description(relative!)}
     />
   )
 }

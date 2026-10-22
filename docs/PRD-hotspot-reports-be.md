@@ -16,10 +16,10 @@ Deteksi satelit tidak selalu punya konteks lapangan. Warga perlu kirim laporan (
 
 ## Pengguna & alur
 
-| Aktor | Kebutuhan |
-|-------|-----------|
+| Aktor       | Kebutuhan                                                          |
+| ----------- | ------------------------------------------------------------------ |
 | Publik (FE) | List laporan per wilayah / per titik; detail; kirim laporan + foto |
-| Ops / admin | Rate limit, audit, hapus konten bermasalah (fase belakangan OK) |
+| Ops / admin | Rate limit, audit, hapus konten bermasalah (fase belakangan OK)    |
 
 Alur FE saat ini: panel wilayah → list → detail → tulis laporan di titik → (setelah BE) sync API.
 
@@ -27,18 +27,18 @@ Alur FE saat ini: panel wilayah → list → detail → tulis laporan di titik �
 
 **Kunci titik:** `point_lat` / `point_lon` = lat/lon dibulatkan **5 desimal** (~1 m). Semua laporan di kunci yang sama digabung di UI.
 
-| Field | Tipe | Catatan |
-|-------|------|---------|
-| `id` | UUID | PK |
-| `lat`, `lon` | float | Koordinat mentah submit |
-| `point_lat`, `point_lon` | float | Hasil rounding server |
-| `region_code` | string? | Kode kab/kota FE |
-| `hotspot_time` | timestamptz? | Waktu deteksi satelit terkait (opsional) |
-| `sighting` | enum | `asap` \| `api_terlihat` \| `tidak_yakin` \| `sudah_padam` |
-| `author_name` | string(1–80) | Nama tampilan |
-| `description` | string(≤500)? | Teks bebas |
-| `photo_url` | string | URL objek storage (bukan data-URL) |
-| `created_at` | timestamptz | Server |
+| Field                    | Tipe          | Catatan                                                    |
+| ------------------------ | ------------- | ---------------------------------------------------------- |
+| `id`                     | UUID          | PK                                                         |
+| `lat`, `lon`             | float         | Koordinat mentah submit                                    |
+| `point_lat`, `point_lon` | float         | Hasil rounding server                                      |
+| `region_code`            | string?       | Kode kab/kota FE                                           |
+| `hotspot_time`           | timestamptz?  | Waktu deteksi satelit terkait (opsional)                   |
+| `sighting`               | enum          | `asap` \| `api_terlihat` \| `tidak_yakin` \| `sudah_padam` |
+| `author_name`            | string(1–80)  | Nama tampilan                                              |
+| `description`            | string(≤500)? | Teks bebas                                                 |
+| `photo_url`              | string        | URL objek storage (bukan data-URL)                         |
+| `created_at`             | timestamptz   | Server                                                     |
 
 **Foto:** upload terpisah (presigned URL atau `multipart`) → simpan URL publik/signed di row. Jangan terima base64 besar di JSON body.
 
@@ -87,7 +87,7 @@ Response: `201` + objek laporan.
 
 ### Upload foto (pilih satu)
 
-- **A (disarankan):** `POST /api/v1/hotspot-reports/photo` → `{ upload_url, public_url }` lalu client PUT file; atau  
+- **A (disarankan):** `POST /api/v1/hotspot-reports/photo` → `{ upload_url, public_url }` lalu client PUT file; atau
 - **B:** `multipart` langsung di POST laporan.
 
 Batas: jenis image, ukuran ~1–2 MB, virus scan opsional nanti.
@@ -108,14 +108,14 @@ Batas: jenis image, ukuran ~1–2 MB, virus scan opsional nanti.
 
 ## Acceptance (BE v1)
 
-- [ ] Insert + list by `region_code` dan by point key konsisten dengan rounding 5 desimal  
-- [ ] Counts cocok dengan jumlah list per titik  
-- [ ] Foto tersimpan di object storage; URL valid di GET  
-- [ ] Rate limit menolak flood POST  
-- [ ] OpenAPI + migration ada di repo BE  
-- [ ] FE demo bisa diganti tanpa ubah shape field di atas  
+- [ ] Insert + list by `region_code` dan by point key konsisten dengan rounding 5 desimal
+- [ ] Counts cocok dengan jumlah list per titik
+- [ ] Foto tersimpan di object storage; URL valid di GET
+- [ ] Rate limit menolak flood POST
+- [ ] OpenAPI + migration ada di repo BE
+- [ ] FE demo bisa diganti tanpa ubah shape field di atas
 
 ## Referensi FE
 
-- Model & rounding: `src/data/hotspot-reports.ts`  
+- Model & rounding: `src/data/hotspot-reports.ts`
 - UI: panel list / detail / compose di `src/components/panel/citizen-report-*.tsx`

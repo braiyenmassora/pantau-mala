@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 
 import { IconButton } from '@/components/common/icon-button'
 import { ReportPhoto } from '@/components/panel/report-photo'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { useHotspotReport } from '@/data/hotspot-reports'
 import { restoreFocusTrigger } from '@/lib/focus-return'
 import { formatRelativeAge, reportAuthorInitials } from '@/lib/format'
@@ -27,11 +27,11 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
   if (!report) {
     return (
       <div className="flex flex-col gap-4 px-4 pt-3 pb-6">
-        <IconButton onClick={back} aria-label={copy.report.detailBack}>
+        <IconButton onClick={back} aria-label={getCopy().report.detailBack}>
           <X className="size-4" strokeWidth={2} aria-hidden />
         </IconButton>
         <p className="text-ink-2 text-sm leading-5">
-          {isPending ? copy.common.loading : copy.report.detailNotFound}
+          {isPending ? getCopy().common.loading : getCopy().report.detailNotFound}
         </p>
       </div>
     )
@@ -45,9 +45,9 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
           tabIndex={-1}
           className="text-ink min-w-0 truncate text-sm leading-5 font-semibold outline-none"
         >
-          {copy.report.detailTitle}
+          {getCopy().report.detailTitle}
         </h1>
-        <IconButton onClick={back} aria-label={copy.report.detailBack}>
+        <IconButton onClick={back} aria-label={getCopy().report.detailBack}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         </IconButton>
       </div>
@@ -56,8 +56,8 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
         {report.photo_url ? (
           <ReportPhoto
             src={report.photo_url}
-            alt={copy.report.photoAlt(report.author_name)}
-            className="aspect-[4/3] w-full rounded-card object-cover"
+            alt={getCopy().report.photoAlt(report.author_name)}
+            className="rounded-card aspect-[4/3] w-full object-cover"
           />
         ) : null}
 
@@ -73,7 +73,7 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
               {report.author_name}
             </p>
             <p className="text-ink-2 mt-1 text-xs leading-4">
-              {copy.report.sightings[report.sighting]}
+              {getCopy().report.sightings[report.sighting]}
               <span aria-hidden> · </span>
               <time dateTime={report.created_at}>
                 {formatRelativeAge(report.created_at)}
@@ -90,7 +90,7 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
 
         <div className="border-line space-y-2 border-t pt-4">
           <p className="text-ink-2 text-xs leading-4 font-medium">
-            {copy.report.detailLocation}
+            {getCopy().report.detailLocation}
           </p>
           <p className="text-ink flex items-start gap-2 text-sm leading-5">
             <MapPin
@@ -99,16 +99,16 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
               aria-hidden
             />
             <span className="font-mono tabular-nums">
-              {copy.report.detailCoords(
+              {getCopy().report.detailCoords(
                 report.point_lat.toFixed(5),
                 report.point_lon.toFixed(5),
               )}
             </span>
           </p>
-          <p className="text-ink-2 text-xs leading-4">{copy.report.detailMapHint}</p>
+          <p className="text-ink-2 text-xs leading-4">{getCopy().report.detailMapHint}</p>
         </div>
 
-        <p className="text-ink-2 text-xs leading-4">{copy.report.disclaimer}</p>
+        <p className="text-ink-2 text-xs leading-4">{getCopy().report.disclaimer}</p>
       </div>
     </div>
   )

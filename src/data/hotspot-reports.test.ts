@@ -72,9 +72,7 @@ describe('hotspot-reports API decoding', () => {
       'https://media.example/report.jpg',
     )
     expect(
-      reportPhotoSrc(
-        'https://pub-32d942c9574c4f02a9c7fb2e260e33e2.r2.dev/lain/foto.jpg',
-      ),
+      reportPhotoSrc('https://pub-32d942c9574c4f02a9c7fb2e260e33e2.r2.dev/lain/foto.jpg'),
     ).toContain('r2.dev')
     expect(reportPhotoSrc('bukan-url')).toBe('bukan-url')
   })

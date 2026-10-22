@@ -1,7 +1,7 @@
 import { useId } from 'react'
 
 import type { TimeZoneId } from '@/data/types'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { chartScaleMax, formatNumber, formatTrendDates } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
@@ -74,7 +74,7 @@ function dayLabel(date: string): string {
 export function TrendChart({
   values,
   timeZone,
-  label = copy.extra.trendChart,
+  label = getCopy().extra.trendChart,
   description = null,
   partialUntil,
   tone = 'chart',
@@ -97,7 +97,9 @@ export function TrendChart({
         <h3 id={`${titleId}-title`} className="text-ink-2 text-xs leading-4 font-medium">
           {label}
         </h3>
-        <p className="text-ink-2 text-xs leading-4">{copy.extra.trendChartUnavailable}</p>
+        <p className="text-ink-2 text-xs leading-4">
+          {getCopy().extra.trendChartUnavailable}
+        </p>
       </section>
     )
   }
@@ -213,7 +215,7 @@ export function TrendChart({
               className="fill-ink-3"
               fontSize="10"
             >
-              {copy.extra.trendPartialToday(untilLabel)}
+              {getCopy().extra.trendPartialToday(untilLabel)}
             </text>
           ) : null}
         </svg>
@@ -228,9 +230,9 @@ export function TrendChart({
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        <TrendStat label={copy.extra.trendLatest} value={latest} />
-        <TrendStat label={copy.extra.trendPeak} value={peak} />
-        <TrendStat label={copy.extra.trendAverage} value={average} />
+        <TrendStat label={getCopy().extra.trendLatest} value={latest} />
+        <TrendStat label={getCopy().extra.trendPeak} value={peak} />
+        <TrendStat label={getCopy().extra.trendAverage} value={average} />
       </div>
     </section>
   )

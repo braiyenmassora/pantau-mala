@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 
+import { useLocaleStore } from '@/copy'
 import { useRegionCatalog, useRegions } from '@/data/queries'
 import { applyHomeMeta, applyWilayahMeta } from '@/lib/page-meta'
 import { buildWilayahPath, parseWilayahPath, slugifyWilayah } from '@/lib/wilayah-path'
@@ -17,6 +18,7 @@ type Pending =
  * pushState saat pilih/tutup; replaceState saat normalisasi slug; popstate baca URL.
  */
 export function WilayahUrlSync() {
+  const locale = useLocaleStore((s) => s.locale)
   const selectedCode = useMapStore((s) => s.selectedCode)
   const wilayahNotFound = useMapStore((s) => s.wilayahNotFound)
   const select = useMapStore((s) => s.select)
@@ -160,7 +162,7 @@ export function WilayahUrlSync() {
     }
     applyWilayahMeta(name, path)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCode, wilayahNotFound, regions, catalog])
+  }, [selectedCode, wilayahNotFound, regions, catalog, locale])
 
   return null
 }

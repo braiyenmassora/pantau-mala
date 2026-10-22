@@ -4,11 +4,8 @@ import { useEffect, useMemo, useRef, type RefObject } from 'react'
 import { EmptyState, IconButton } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import type { MapRef } from '@/components/ui/map'
-import { copy } from '@/copy/id'
-import {
-  useReportCountsByRegion,
-  type ReportRegionCount,
-} from '@/data/hotspot-reports'
+import { getCopy } from '@/copy'
+import { useReportCountsByRegion, type ReportRegionCount } from '@/data/hotspot-reports'
 import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { rememberFocusTrigger, restoreFocusTrigger } from '@/lib/focus-return'
@@ -51,7 +48,7 @@ export function CitizenReportsPanel({ regions, mapRef }: CitizenReportsPanelProp
       const province =
         catalog?.regencies.find((r) => r.code === item.region_code)?.province ??
         regions.find((r) => r.code === item.region_code)?.province ??
-        'Wilayah lain'
+        getCopy().report.otherRegions
       const group = byProvince.get(province) ?? { name: province, total: 0, items: [] }
       group.total += item.count
       group.items.push(item)
@@ -95,26 +92,32 @@ export function CitizenReportsPanel({ regions, mapRef }: CitizenReportsPanelProp
           tabIndex={-1}
           className="text-ink min-w-0 truncate text-sm leading-5 font-semibold outline-none"
         >
-          {copy.report.panelTitle}
+          {getCopy().report.panelTitle}
         </h1>
-        <IconButton onClick={back} aria-label={copy.panel.backHome}>
+        <IconButton onClick={back} aria-label={getCopy().panel.backHome}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         </IconButton>
       </div>
 
       <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
-        <p className="text-ink-2 text-xs leading-4">{copy.report.panelHint}</p>
+        <p className="text-ink-2 text-xs leading-4">{getCopy().report.panelHint}</p>
         {isPending ? (
-          <p className="text-ink-2 text-sm leading-5" aria-busy="true">{copy.common.loading}</p>
+          <p className="text-ink-2 text-sm leading-5" aria-busy="true">
+            {getCopy().common.loading}
+          </p>
         ) : groups.length === 0 ? (
-          <EmptyState icon={ClipboardList} title={copy.report.panelTitle} description={copy.report.groupedEmpty} />
+          <EmptyState
+            icon={ClipboardList}
+            title={getCopy().report.panelTitle}
+            description={getCopy().report.groupedEmpty}
+          />
         ) : (
           groups.map((group) => (
             <section key={group.name} className="space-y-3">
               <div className="flex items-center justify-between gap-2">
                 <h2 className={T.section}>{group.name}</h2>
                 <span className="text-ink text-xs leading-4 font-semibold tabular-nums">
-                  {copy.report.badge(String(group.total))}
+                  {getCopy().report.badge(String(group.total))}
                 </span>
               </div>
               <ul className="flex flex-col">

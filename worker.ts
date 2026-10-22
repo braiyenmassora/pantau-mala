@@ -12,8 +12,7 @@ const REPORT_PHOTO_ROUTE = '/report-photos/'
 const REPORT_PHOTO_KEY =
   /^hotspot-reports\/[0-9a-f-]{36}\/[0-9a-f-]{36}\.(?:jpe?g|png|webp)$/i
 
-const REPORT_PHOTO_ORIGIN =
-  'https://pub-32d942c9574c4f02a9c7fb2e260e33e2.r2.dev'
+const REPORT_PHOTO_ORIGIN = 'https://pub-32d942c9574c4f02a9c7fb2e260e33e2.r2.dev'
 
 /**
  * Foto laporan diproksi dari URL publik R2 milik BE — bucket BE ada di akun
@@ -36,8 +35,7 @@ async function serveReportPhoto(
   if (!upstream.ok) return new Response(null, { status: 404 })
   const headers = new Headers({
     'Cache-Control': 'public, max-age=31536000, immutable',
-    'Content-Type':
-      upstream.headers.get('Content-Type') ?? 'application/octet-stream',
+    'Content-Type': upstream.headers.get('Content-Type') ?? 'application/octet-stream',
     'X-Content-Type-Options': 'nosniff',
   })
   const etag = upstream.headers.get('ETag')

@@ -1,6 +1,44 @@
 /** Semua teks UI berbahasa Indonesia. Sapaan "kamu". */
 
 export const copy = {
+  language: {
+    label: 'Bahasa / Language',
+    indonesian: 'Bahasa Indonesia',
+    english: 'English',
+  },
+  errors: {
+    loadFallback: 'Data belum dapat dimuat.',
+    actionFallback: 'Coba lagi sebentar.',
+    timeout: 'Koneksi terlalu lama. Coba lagi sebentar.',
+    network: 'Tidak terhubung ke server. Coba lagi sebentar.',
+    serviceNotReady: 'Layanan belum siap. Coba lagi sebentar.',
+    accessDenied: 'Akses tidak diizinkan.',
+    sessionRequired: 'Sesi diperlukan.',
+    sessionExpired: 'Sesi berakhir. Masuk kembali.',
+    rateLimited: 'Batas permintaan tercapai. Coba lagi nanti.',
+    catalogTooLarge: 'Katalog wilayah melebihi batas dukungan.',
+    photoUploadFailed: 'Upload foto gagal. Coba lagi.',
+    workspaceSwitchUnavailable: 'Ganti ruang kerja tidak tersedia di mode ini.',
+    tooManyAttempts: 'Terlalu banyak percobaan. Coba lagi setelah satu menit.',
+    wrongCredentials: 'Nama pengguna atau kata sandi salah, atau sesi telah berakhir.',
+    accessServiceUnavailable: 'Layanan akses belum tersedia. Coba lagi.',
+    appAccessUnavailable: 'Akses aplikasi belum tersedia. Coba lagi nanti.',
+    accessUnavailable: 'Akses belum tersedia.',
+  },
+  riskCategory: {
+    tidak_tersedia: 'Belum dinilai',
+    tanpa_titik: 'Tidak ada titik panas terdeteksi',
+    sangat_tinggi: 'Sangat tinggi',
+    sedang: 'Sedang',
+    rendah: 'Rendah',
+  },
+  airPlain: {
+    baik: 'Baik',
+    sedang: 'Sedang',
+    tidak_sehat: 'Tidak sehat',
+    sangat_tidak_sehat: 'Sangat tidak sehat',
+    berbahaya: 'Berbahaya',
+  },
   extra: {
     noDataset: 'Data satelit belum siap',
     noDatasetNote: 'Data satelit belum masuk. Itu belum tentu berarti tidak ada api.',
@@ -135,8 +173,7 @@ export const copy = {
     title: 'Laporan di titik ini',
     openAria: 'Buka laporan warga di titik panas ini',
     close: 'Tutup laporan',
-    disclaimer:
-      'Laporan warga bukan verifikasi resmi dan bukan pengganti panggilan 112.',
+    disclaimer: 'Laporan warga bukan verifikasi resmi dan bukan pengganti panggilan 112.',
     empty: 'Belum ada laporan di titik ini.',
     formTitle: 'Kirim laporan',
     sightingLabel: 'Apa yang kamu lihat?',
@@ -180,6 +217,7 @@ export const copy = {
     detailWhen: 'Waktu laporan',
     detailSighting: 'Yang dilihat',
     detailMapHint: 'Koordinat dibulatkan ~1 m untuk pengelompokan titik.',
+    otherRegions: 'Wilayah lain',
   },
   detail: {
     actions: 'Yang bisa kamu lakukan',
@@ -298,6 +336,8 @@ export const copy = {
     regionMetaHotspots: (n: string) => `${n} titik panas`,
     /** Heading cadangan bila nama wilayah tidak ada. */
     hotspotUntitled: 'Titik panas satelit',
+    districtName: (nama: string) => `Kecamatan ${nama}`,
+    regencyName: (nama: string) => `Kabupaten ${nama}`,
   },
   filter: {
     allProvinces: 'Semua provinsi',
@@ -423,6 +463,9 @@ export const copy = {
     udara: 'Kualitas udara',
   },
   common: {
+    pick: 'Pilih...',
+    search: 'Cari...',
+    notFound: 'Tidak ditemukan',
     retry: 'Coba lagi',
     dismissNotification: 'Tutup notifikasi',
     clearSearch: 'Hapus pencarian',
@@ -447,4 +490,4 @@ export const copy = {
     text: (name: string) =>
       `${name} · pantauan titik panas satelit pantaumala. Bukan konfirmasi kebakaran atau peringatan resmi.`,
   },
-} as const
+}

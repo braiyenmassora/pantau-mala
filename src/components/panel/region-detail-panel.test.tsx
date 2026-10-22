@@ -10,6 +10,7 @@ vi.mock('@/lib/prefers-reduced-motion', () => ({
 
 import { RegionDetailPanel } from '@/components/panel/region-detail-panel'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { useLocaleStore } from '@/copy'
 import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
 
@@ -122,6 +123,27 @@ describe('RegionDetailPanel', () => {
     expect(within(chart).getByText(copy.extra.trendLatest)).toBeTruthy()
     expect(within(chart).getByText(copy.extra.trendPeak)).toBeTruthy()
     expect(within(chart).getByText(copy.extra.trendAverage)).toBeTruthy()
+  })
+
+  it('translates known backend saran actions when locale is English', () => {
+    useLocaleStore.getState().setLocale('en')
+    try {
+      renderDetail({
+        ...pulangPisau,
+        actions: [
+          'Jangan membakar lahan, sampah, atau membuang puntung rokok sembarangan.',
+          'Kurangi aktivitas di luar bila ada asap dan ikuti informasi kualitas udara resmi.',
+        ],
+      })
+      expect(
+        screen.getByText(/Do not burn land or trash, and do not carelessly throw away/),
+      ).toBeTruthy()
+      expect(
+        screen.getByText(/Reduce outdoor activities when there is smoke/),
+      ).toBeTruthy()
+    } finally {
+      useLocaleStore.getState().setLocale('id')
+    }
   })
 
   it('renders all sections in a single scroll without tabs', () => {

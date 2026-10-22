@@ -7,7 +7,7 @@ import type { GeoJSONSource } from 'maplibre-gl'
 import { BeatWaveRadius } from '@/components/map/beat-wave-radius'
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { pointKey, useReportCounts } from '@/data/hotspot-reports'
 import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
@@ -225,8 +225,8 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
             const reportCount = reportCounts?.get(pointKey(lat, lon)) ?? 0
             const label =
               reportCount > 0
-                ? `Titik panas ${stamp}, ${copy.report.badge(String(reportCount))}`
-                : `Titik panas ${stamp}`
+                ? `${getCopy().extra.detections} ${stamp}, ${getCopy().report.badge(String(reportCount))}`
+                : `${getCopy().extra.detections} ${stamp}`
 
             const openReport = (el: HTMLElement) => {
               rememberFocusTrigger(el)
@@ -253,8 +253,8 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                         title={selectedRegion.name}
                         meta={
                           reportCount > 0
-                            ? `${copy.map.regionMetaHotspots('1')} · ${copy.report.badge(String(reportCount))}`
-                            : copy.map.regionMetaHotspots('1')
+                            ? `${getCopy().map.regionMetaHotspots('1')} · ${getCopy().report.badge(String(reportCount))}`
+                            : getCopy().map.regionMetaHotspots('1')
                         }
                         updatedAt={stamp}
                       />
@@ -270,7 +270,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                   ) : null}
                   <button
                     type="button"
-                    aria-label={`${label}. ${copy.report.openAria}`}
+                    aria-label={`${label}. ${getCopy().report.openAria}`}
                     className={cn(
                       'marker--interactive marker--pulse border-surface relative size-4 cursor-pointer rounded-full border-2 shadow-md',
                     )}

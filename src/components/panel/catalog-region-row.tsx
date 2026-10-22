@@ -3,7 +3,7 @@ import type { RefObject } from 'react'
 
 import { ListRow } from '@/components/common/list-row'
 import type { MapRef } from '@/components/ui/map'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import type { CatalogRegency } from '@/data/types'
 import { rememberFocusTrigger } from '@/lib/focus-return'
 import { getMapPadding, PLACE_ZOOM } from '@/lib/indonesia-view'
@@ -36,9 +36,9 @@ export function CatalogRegionRow({ kab, mapRef }: CatalogRegionRowProps) {
       meta={
         <>
           <span className="block truncate">
-            {copy.map.regionMetaProvince(kab.province)}
+            {getCopy().map.regionMetaProvince(kab.province)}
           </span>
-          <span className="block truncate">{copy.search.noHotspots}</span>
+          <span className="block truncate">{getCopy().search.noHotspots}</span>
         </>
       }
       onClick={(e) => {

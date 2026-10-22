@@ -1,3 +1,4 @@
+import { getCopy } from '@/copy'
 import { INDONESIA_BOUNDS } from '@/lib/indonesia-view'
 
 /** Padding derajat di luar bbox peta — GPS di perbatasan tetap dianggap dalam Indonesia. */
@@ -86,7 +87,7 @@ export function resolveUserCoords(): Promise<GeoResult> {
 /** Fokus ke kolom cari kabupaten/kota di panel. */
 export function focusWilayahSearch(): void {
   const input = document.querySelector<HTMLInputElement>(
-    'input[aria-label="Cari kabupaten/kota"]',
+    `input[aria-label="${getCopy().panel.searchPlaceholder}"]`,
   )
   input?.focus()
 }

@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from 'react'
 import { focusRing } from '@/components/common/focus-ring'
 import { RiskMarker } from '@/components/common/risk-marker'
 import { Card } from '@/components/ui/card'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { useMapChrome } from '@/lib/layout'
-import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { riskCategoryLabel } from '@/lib/risk-category'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui'
@@ -64,11 +64,11 @@ export function MapLegend() {
     >
       <Card
         ref={riskRef}
-        aria-label={copy.legend.riskTitle}
+        aria-label={getCopy().legend.riskTitle}
         className={cn(legendCardClass, 'w-max')}
       >
         <p className="text-ink-2 text-xs leading-4 font-medium">
-          {copy.legend.riskTitle}
+          {getCopy().legend.riskTitle}
         </p>
         <ul className="flex flex-nowrap items-center gap-3">
           {MAP_RISK_ORDER.map((category) => (
@@ -77,23 +77,23 @@ export function MapLegend() {
               className="text-ink flex items-center gap-2 text-xs leading-4 whitespace-nowrap"
             >
               <RiskMarker kategori={category} className="size-2" />
-              <span>{RISK_CATEGORIES[category].label}</span>
+              <span>{riskCategoryLabel(category)}</span>
             </li>
           ))}
           <li className="text-ink flex items-center gap-2 text-xs leading-4 whitespace-nowrap">
             <RiskMarker kategori="tanpa_titik" className="size-2" />
-            <span>{copy.legend.noDetectionsTitle}</span>
+            <span>{getCopy().legend.noDetectionsTitle}</span>
           </li>
         </ul>
       </Card>
 
       <Card
-        aria-label={`${copy.legend.densityTitle}: ${copy.legend.densityLow}, ${copy.legend.densityMid}, ${copy.legend.densityHigh}`}
+        aria-label={`${getCopy().legend.densityTitle}: ${getCopy().legend.densityLow}, ${getCopy().legend.densityMid}, ${getCopy().legend.densityHigh}`}
         className={cn(legendCardClass, 'box-border min-w-0')}
         style={riskWidth != null ? { width: riskWidth } : undefined}
       >
         <p className="text-ink-2 text-xs leading-4 font-medium">
-          {copy.legend.densityTitle}
+          {getCopy().legend.densityTitle}
         </p>
         <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-2">
           <div
@@ -108,9 +108,9 @@ export function MapLegend() {
             className="text-ink-2 flex items-center justify-between gap-2 text-xs leading-4 whitespace-nowrap"
             aria-hidden
           >
-            <span>{copy.legend.densityLow}</span>
-            <span>{copy.legend.densityMid}</span>
-            <span>{copy.legend.densityHigh}</span>
+            <span>{getCopy().legend.densityLow}</span>
+            <span>{getCopy().legend.densityMid}</span>
+            <span>{getCopy().legend.densityHigh}</span>
           </p>
         </div>
       </Card>

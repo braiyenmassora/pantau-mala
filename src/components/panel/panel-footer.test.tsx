@@ -33,5 +33,4 @@ describe('PanelFooter', () => {
     expect(screen.queryByTestId('official-refs-compact')).toBeNull()
     expect(screen.queryByText(copy.footer.officialLabel)).toBeNull()
   })
-
 })

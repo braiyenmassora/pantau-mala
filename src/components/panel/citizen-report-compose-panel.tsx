@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { Button, IconButton } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import {
   useCreateHotspotReport,
   type HotspotReportTarget,
@@ -67,7 +67,7 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
       !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
       file.size > 2 * 1024 * 1024
     ) {
-      setPhotoError(copy.report.photoTooBig)
+      setPhotoError(getCopy().report.photoTooBig)
       return
     }
     setPhotoFile(file)
@@ -77,7 +77,7 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
   const submit = () => {
     const name = authorName.trim()
     if (!name || !photoFile) {
-      setPhotoError(photoFile ? null : copy.report.photoMissing)
+      setPhotoError(photoFile ? null : getCopy().report.photoMissing)
       return
     }
     setFormError(null)
@@ -97,16 +97,25 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
           setReportTarget(null)
           setSelectedReportId(created.id)
           setPanelOpen(true)
-          showToast(copy.report.submitSuccessTitle, copy.report.submitSuccess, 'ok')
+          showToast(
+            getCopy().report.submitSuccessTitle,
+            getCopy().report.submitSuccess,
+            'ok',
+          )
         },
         onError: (error) => {
           // 429 dari BE: cukup toast global, form tetap terisi untuk dicoba lagi nanti.
-          if (error.message.includes('Batas permintaan')) {
+          // shortcut: match both locales' rate-limit wording; upgrade when API returns an error code.
+          if (/Batas permintaan|Request limit/i.test(error.message)) {
             setFormError(null)
-            showToast(copy.report.rateLimitedTitle, copy.report.rateLimited, 'err')
+            showToast(
+              getCopy().report.rateLimitedTitle,
+              getCopy().report.rateLimited,
+              'err',
+            )
             return
           }
-          setFormError(friendlyActionError(error, copy.report.submitFailed))
+          setFormError(friendlyActionError(error, getCopy().report.submitFailed))
         },
       },
     )
@@ -120,31 +129,35 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
           tabIndex={-1}
           className="text-ink min-w-0 truncate text-sm leading-5 font-semibold outline-none"
         >
-          {copy.report.formTitle}
+          {getCopy().report.formTitle}
         </h1>
-        <IconButton onClick={back} aria-label={copy.report.close}>
+        <IconButton onClick={back} aria-label={getCopy().report.close}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         </IconButton>
       </div>
 
       <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
-        <p className="text-ink-2 text-xs leading-4">{copy.report.disclaimer}</p>
+        <p className="text-ink-2 text-xs leading-4">{getCopy().report.disclaimer}</p>
 
-        <section aria-label={copy.report.formTitle} className="space-y-4">
+        <section aria-label={getCopy().report.formTitle} className="space-y-4">
           <label className="block space-y-1">
-            <span className="text-ink-2 text-xs leading-4">{copy.report.authorLabel}</span>
+            <span className="text-ink-2 text-xs leading-4">
+              {getCopy().report.authorLabel}
+            </span>
             <input
               type="text"
               value={authorName}
               onChange={(e) => setAuthorName(e.target.value)}
               maxLength={80}
-              placeholder={copy.report.authorPlaceholder}
+              placeholder={getCopy().report.authorPlaceholder}
               className={cn(fieldClass, 'h-11')}
             />
           </label>
 
           <fieldset className="space-y-2">
-            <legend className="text-ink-2 text-xs leading-4">{copy.report.sightingLabel}</legend>
+            <legend className="text-ink-2 text-xs leading-4">
+              {getCopy().report.sightingLabel}
+            </legend>
             <div className="flex flex-wrap gap-2">
               {SIGHTINGS.map((s) => {
                 const pressed = sighting === s
@@ -163,7 +176,7 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
                         : 'border-line bg-surface text-ink hover:bg-surface-muted',
                     )}
                   >
-                    {copy.report.sightings[s]}
+                    {getCopy().report.sightings[s]}
                   </button>
                 )
               })}
@@ -171,31 +184,37 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
           </fieldset>
 
           <label className="block space-y-1">
-            <span className="text-ink-2 text-xs leading-4">{copy.report.descriptionLabel}</span>
+            <span className="text-ink-2 text-xs leading-4">
+              {getCopy().report.descriptionLabel}
+            </span>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               maxLength={500}
               rows={4}
-              placeholder={copy.report.descriptionPlaceholder}
+              placeholder={getCopy().report.descriptionPlaceholder}
               className={cn(fieldClass, 'py-2')}
             />
           </label>
 
           <label className="block space-y-1">
-            <span className="text-ink-2 text-xs leading-4">{copy.report.photoLabel}</span>
+            <span className="text-ink-2 text-xs leading-4">
+              {getCopy().report.photoLabel}
+            </span>
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"
-              className="text-ink-2 block w-full text-xs file:mr-3 file:rounded-ctl file:border-0 file:bg-surface-muted file:px-3 file:py-2 file:text-sm file:font-medium"
+              className="text-ink-2 file:rounded-ctl file:bg-surface-muted block w-full text-xs file:mr-3 file:border-0 file:px-3 file:py-2 file:text-sm file:font-medium"
               onChange={(e) => onPhotoChange(e.target.files?.[0])}
             />
-            <span className="text-ink-2 text-xs leading-4">{copy.report.photoHint}</span>
+            <span className="text-ink-2 text-xs leading-4">
+              {getCopy().report.photoHint}
+            </span>
             {photoPreview ? (
               <img
                 src={photoPreview}
                 alt=""
-                className="mt-2 aspect-[3/2] w-full rounded-card object-cover"
+                className="rounded-card mt-2 aspect-[3/2] w-full object-cover"
               />
             ) : null}
           </label>
@@ -212,7 +231,9 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
             onClick={submit}
             disabled={createReport.isPending}
           >
-            {createReport.isPending ? copy.report.submitting : copy.report.submit}
+            {createReport.isPending
+              ? getCopy().report.submitting
+              : getCopy().report.submit}
           </Button>
         </section>
       </div>

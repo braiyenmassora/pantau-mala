@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
 import { Card, CardContent } from '@/components/ui/card'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { cn } from '@/lib/utils'
 
 export type MapInfoCardProps = {
@@ -91,14 +91,14 @@ export function MapInfoCard({
   const formattedDistrict = districtName
     ? districtName.toLowerCase().startsWith('kecamatan')
       ? districtName
-      : `Kecamatan ${districtName}`
+      : getCopy().map.districtName(districtName)
     : undefined
 
   const formattedRegency = regencyName
     ? regencyName.toLowerCase().startsWith('kab') ||
       regencyName.toLowerCase().startsWith('kota')
       ? regencyName
-      : `Kabupaten ${regencyName}`
+      : getCopy().map.regencyName(regencyName)
     : undefined
 
   let heading: string | undefined
@@ -114,7 +114,7 @@ export function MapInfoCard({
     if (formattedDistrict) push(body, formattedRegency)
     push(body, meta)
     for (const line of lines ?? []) push(body, line)
-    if (!heading && (body.length > 0 || updated)) heading = copy.map.hotspotUntitled
+    if (!heading && (body.length > 0 || updated)) heading = getCopy().map.hotspotUntitled
   }
 
   return (

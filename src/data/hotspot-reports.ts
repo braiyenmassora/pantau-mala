@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import { useSession } from '@/auth/session'
+import { getCopy } from '@/copy'
 import { getData } from './queries'
 
 /** Round ~1 m — kunci tampilan per titik (server membulatkan 5 desimal). */
@@ -149,8 +150,9 @@ async function createHotspotReport(
   input: CreateHotspotReportInput,
 ): Promise<HotspotReport> {
   const { file, ...fields } = input
-  const upload = await getData('/hotspot-reports/photo', (raw) =>
-    photoUploadSchema.parse(raw).data,
+  const upload = await getData(
+    '/hotspot-reports/photo',
+    (raw) => photoUploadSchema.parse(raw).data,
     undefined,
     {
       method: 'POST',
@@ -162,7 +164,7 @@ async function createHotspotReport(
     headers: upload.required_headers,
     body: file,
   })
-  if (!stored.ok) throw new Error('Upload foto gagal. Coba lagi.')
+  if (!stored.ok) throw new Error(getCopy().errors.photoUploadFailed)
   // Payload create laporan — persis kontrak BE, jangan tambah field lain.
   const payload = {
     lat: fields.lat,
@@ -252,11 +254,7 @@ export function useReportCountsByRegion() {
   return useReportQuery(
     ['hotspot-reports', 'counts-by-region'],
     (signal) =>
-      getData(
-        '/hotspot-reports/counts/by-region',
-        decodeReportRegionCounts,
-        signal,
-      ),
+      getData('/hotspot-reports/counts/by-region', decodeReportRegionCounts, signal),
     true,
   )
 }
@@ -265,7 +263,6 @@ export function useCreateHotspotReport() {
   const client = useQueryClient()
   return useMutation({
     mutationFn: createHotspotReport,
-    onSuccess: () =>
-      client.invalidateQueries({ queryKey: ['hotspot-reports'] }),
+    onSuccess: () => client.invalidateQueries({ queryKey: ['hotspot-reports'] }),
   })
 }

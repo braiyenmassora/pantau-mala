@@ -10,15 +10,15 @@ import {
   Wind,
   X,
 } from 'lucide-react'
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  type ReactNode,
-  type RefObject,
-} from 'react'
+import { useEffect, useMemo, useRef, type ReactNode, type RefObject } from 'react'
 
-import { Button, HotspotStatusBadge, IconButton, InfoTooltip, TrendChart } from '@/components/common'
+import {
+  Button,
+  HotspotStatusBadge,
+  IconButton,
+  InfoTooltip,
+  TrendChart,
+} from '@/components/common'
 import { AirCategoryPill } from '@/components/panel/air-quality-card'
 import { airPm25Value } from '@/lib/air-card'
 import { SectionHead } from '@/components/common/section-head'
@@ -27,7 +27,7 @@ import { DataFreshnessBanner } from '@/components/panel/data-freshness-banner'
 import { OfficialRefsCard } from '@/components/panel/official-refs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
-import { copy } from '@/copy/id'
+import { getCopy, getLocale } from '@/copy'
 import { useRegionReports } from '@/data/hotspot-reports'
 import { useHotspots } from '@/data/queries'
 import type { Region, RiskCategory } from '@/data/types'
@@ -45,11 +45,17 @@ type RegionDetailPanelProps = {
   mapRef?: RefObject<MapRef | null>
 }
 
-const TREND_UI: Record<TrendDirection, { label: string; Icon: typeof TrendingUp }> = {
-  naik: { label: copy.detail.trendUp, Icon: TrendingUp },
-  turun: { label: copy.detail.trendDown, Icon: TrendingDown },
-  stabil: { label: copy.detail.trendFlat, Icon: Minus },
+const TREND_UI: Record<TrendDirection, { Icon: typeof TrendingUp }> = {
+  naik: { Icon: TrendingUp },
+  turun: { Icon: TrendingDown },
+  stabil: { Icon: Minus },
 }
+const TREND_LABEL = (d: TrendDirection) =>
+  ({
+    naik: getCopy().detail.trendUp,
+    turun: getCopy().detail.trendDown,
+    stabil: getCopy().detail.trendFlat,
+  })[d]
 
 function chartTone(risk: RiskCategory): 'chart' | 'risk-high' | 'risk-mid' | 'risk-low' {
   if (risk === 'sangat_tinggi') return 'risk-high'
@@ -58,13 +64,30 @@ function chartTone(risk: RiskCategory): 'chart' | 'risk-high' | 'risk-mid' | 'ri
   return 'chart'
 }
 
+// shortcut: API `saran` masih teks bebas berbahasa Indonesia — petakan kalimat baku yang dikenal.
+// Upgrade: backend kirim kode saran, FE yang memilih bahasa.
+const KNOWN_ACTION_EN: Record<string, string> = {
+  'jangan membakar lahan, sampah, atau membuang puntung rokok sembarangan':
+    'Do not burn land or trash, and do not carelessly throw away cigarette butts.',
+  'kurangi aktivitas di luar bila ada asap dan ikuti informasi kualitas udara resmi':
+    'Reduce outdoor activities when there is smoke and follow official air quality information.',
+}
+
 function sanitizeAction(text: string): string {
   const lower = text.toLowerCase()
   if (
     lower.includes('verifikasi ketersediaan nomor') ||
     lower.includes('tampilkan atribusi')
   ) {
-    return copy.detail.actionFireContact
+    return getCopy().detail.actionFireContact
+  }
+  if (getLocale() === 'en') {
+    const key = text.trim().replace(/\.$/, '').toLowerCase()
+    if (KNOWN_ACTION_EN[key]) return KNOWN_ACTION_EN[key]
+    if (key === 'jika melihat asap atau api, hubungi 112 atau bpbd setempat') {
+      return getCopy().detail.actionFireContact
+    }
+    if (key.startsWith('cek lagi nanti')) return getCopy().detail.actionCheckLater
   }
   return text
 }
@@ -124,24 +147,24 @@ function ConditionsCard({ region }: { region: Region }) {
     region.weather.humidity != null ? `${formatNumber(region.weather.humidity)}%` : null
   const wind =
     region.weather.wind_kmh != null
-      ? `${formatNumber(region.weather.wind_kmh)} ${copy.detail.windUnit}`
+      ? `${formatNumber(region.weather.wind_kmh)} ${getCopy().detail.windUnit}`
       : null
   const dryDays =
     region.weather.dry_days != null
-      ? `${formatNumber(region.weather.dry_days)} ${copy.detail.dayUnit}`
+      ? `${formatNumber(region.weather.dry_days)} ${getCopy().detail.dayUnit}`
       : null
   const weatherDanger = region.weather_danger
-    ? `${copy.bahaya[region.weather_danger.class]} (${formatNumber(region.weather_danger.fwi)})`
+    ? `${getCopy().bahaya[region.weather_danger.class]} (${formatNumber(region.weather_danger.fwi)})`
     : null
   const pm25 = airPm25Value(region)
   const hasMetrics = !!(humidity || wind || dryDays || weatherDanger || pm25)
 
   return (
-    <Card aria-label={copy.detail.conditions}>
+    <Card aria-label={getCopy().detail.conditions}>
       <CardHeader>
         <div className="flex min-w-0 items-center gap-1">
-          <CardTitle>{copy.detail.conditions}</CardTitle>
-          <InfoTooltip content={copy.detail.weatherSourceNote} />
+          <CardTitle>{getCopy().detail.conditions}</CardTitle>
+          <InfoTooltip content={getCopy().detail.weatherSourceNote} />
         </div>
         <AirCategoryPill region={region} />
       </CardHeader>
@@ -151,30 +174,30 @@ function ConditionsCard({ region }: { region: Region }) {
             <ConditionCell
               icon={<Droplets strokeWidth={2} />}
               iconClass="panel-icon-drip"
-              label={copy.detail.humidity}
+              label={getCopy().detail.humidity}
               value={humidity}
             />
             <ConditionCell
               icon={<Wind strokeWidth={2} />}
               iconClass="panel-icon-breeze"
-              label={copy.detail.wind}
+              label={getCopy().detail.wind}
               value={wind}
             />
             <ConditionCell
               icon={<Sun strokeWidth={2} />}
               iconClass="panel-icon-sun"
-              label={copy.detail.dryDays}
+              label={getCopy().detail.dryDays}
               value={dryDays}
             />
             <ConditionCell
               icon={<Gauge strokeWidth={2} />}
               iconClass="panel-icon-gauge"
-              label={copy.detail.weatherDanger}
+              label={getCopy().detail.weatherDanger}
               value={weatherDanger}
             />
             <ConditionCell
               icon={<CloudFog strokeWidth={2} />}
-              label={copy.detail.airPm25}
+              label={getCopy().detail.airPm25}
               value={pm25}
             />
           </div>
@@ -220,30 +243,27 @@ export function CitizenReportsCard({ regionCode }: { regionCode: string }) {
   }
 
   return (
-    <Card aria-label={copy.report.panelTitle}>
+    <Card aria-label={getCopy().report.panelTitle}>
       <SectionHead
-        title={copy.report.panelTitle}
+        title={getCopy().report.panelTitle}
         action={
           regionReports.length > 0 ? (
             <span className="text-ink text-xs leading-4 font-semibold tabular-nums">
-              {copy.report.badge(String(regionReports.length))}
+              {getCopy().report.badge(String(regionReports.length))}
             </span>
           ) : undefined
         }
       />
       <CardContent className="space-y-3">
-        <p className="text-ink-2 text-xs leading-4">{copy.report.panelHint}</p>
+        <p className="text-ink-2 text-xs leading-4">{getCopy().report.panelHint}</p>
         {reportsPending ? (
-          <p className="text-ink-2 text-sm leading-5">{copy.common.loading}</p>
+          <p className="text-ink-2 text-sm leading-5">{getCopy().common.loading}</p>
         ) : latest.length === 0 ? (
-          <p className="text-ink-2 text-sm leading-5">{copy.report.panelEmpty}</p>
+          <p className="text-ink-2 text-sm leading-5">{getCopy().report.panelEmpty}</p>
         ) : (
-          <ul className="-mx-1" aria-label={copy.report.panelLatest}>
+          <ul className="-mx-1" aria-label={getCopy().report.panelLatest}>
             {latest.map((r, i) => (
-              <li
-                key={r.id}
-                className={cn(i > 0 && 'border-line border-t')}
-              >
+              <li key={r.id} className={cn(i > 0 && 'border-line border-t')}>
                 <CitizenReportReview
                   report={r}
                   variant="compact"
@@ -259,7 +279,7 @@ export function CitizenReportsCard({ regionCode }: { regionCode: string }) {
             className="w-full shadow-none"
             onClick={(e) => openComposer(e.currentTarget)}
           >
-            {copy.report.panelOpen}
+            {getCopy().report.panelOpen}
           </Button>
         ) : null}
       </CardContent>
@@ -276,11 +296,12 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
 
   const risk = effectiveRiskCategory(region)
   const trend = hotspotTrend(region.trend_7d)
-  const { label: trendLabel, Icon: TrendIcon } = TREND_UI[trend]
+  const { Icon: TrendIcon } = TREND_UI[trend]
+  const trendLabel = TREND_LABEL(trend)
   const actions =
     region.actions.length > 0
       ? region.actions.slice(0, 3).map(sanitizeAction)
-      : [copy.detail.actionCheckLater, copy.detail.actionFireContact]
+      : [getCopy().detail.actionCheckLater, getCopy().detail.actionFireContact]
 
   useEffect(() => {
     titleRef.current?.focus()
@@ -297,7 +318,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
   return (
     <div key={region.code} className="flex flex-col">
       <div className="bg-surface sticky top-0 z-10 flex justify-end px-4 pt-3 pb-2">
-        <IconButton onClick={handleBack} aria-label={copy.panel.closeDetail}>
+        <IconButton onClick={handleBack} aria-label={getCopy().panel.closeDetail}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         </IconButton>
       </div>
@@ -316,7 +337,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
               >
                 {region.name}
               </h1>
-              <InfoTooltip content={copy.detail.riskTooltip} />
+              <InfoTooltip content={getCopy().detail.riskTooltip} />
             </div>
             <HotspotStatusBadge
               hotspots={region.hotspots_24h}
@@ -328,11 +349,13 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
               <p className="text-ink font-mono text-3xl leading-10 font-semibold tabular-nums">
                 {formatNumber(region.hotspots_24h)}
               </p>
-              <p className="text-ink text-sm leading-5">{copy.detail.hotspotUnitLine}</p>
+              <p className="text-ink text-sm leading-5">
+                {getCopy().detail.hotspotUnitLine}
+              </p>
             </div>
 
             <div className="text-ink-2 space-y-1 text-xs leading-4">
-              <p>{copy.map.regionMetaProvince(region.province)}</p>
+              <p>{getCopy().map.regionMetaProvince(region.province)}</p>
               <p className="flex items-center gap-2">
                 <TrendIcon
                   className={cn(
@@ -344,7 +367,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
                   aria-hidden
                 />
                 <span>
-                  {trendLabel} {copy.detail.trendVsPrevious}
+                  {trendLabel} {getCopy().detail.trendVsPrevious}
                 </span>
               </p>
             </div>
@@ -363,7 +386,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
         <ConditionsCard region={region} />
 
         <Card>
-          <SectionHead title={copy.detail.actions} />
+          <SectionHead title={getCopy().detail.actions} />
           <CardContent>
             <ul className="space-y-3">
               {actions.map((act, i) => (

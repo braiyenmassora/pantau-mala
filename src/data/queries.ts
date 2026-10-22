@@ -1,4 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
+
+import { getCopy } from '@/copy'
 import { expireSession, useSession } from '@/auth/session'
 import { decodeRegions, decodeHotspots, decodeMeta, decodeCatalog } from './go-contract'
 import { nearbyHotspotsSchema } from './extended-contract'
@@ -12,7 +14,7 @@ export async function getData<T>(
   init?: { method: 'POST'; body: string },
 ): Promise<T> {
   const { token, generation, accessMode } = useSession.getState()
-  if (!token && accessMode !== 'client') throw new Error('Sesi diperlukan.')
+  if (!token && accessMode !== 'client') throw new Error(getCopy().errors.sessionRequired)
   const configured = import.meta.env.VITE_DATA_URL?.trim() || '/api/v1'
   if (configured !== '/api/v1')
     throw new Error(
@@ -33,16 +35,16 @@ export async function getData<T>(
   })
   if (res.status === 401) {
     if (useSession.getState().generation === generation) expireSession()
-    throw new Error('Sesi berakhir. Masuk kembali.')
+    throw new Error(getCopy().errors.sessionExpired)
   }
   if (!res.ok)
     // Tanpa jargon status HTTP (pola Pola Mantap); 429 dipertahankan untuk deteksi toast.
     throw new Error(
       res.status === 429
-        ? 'Batas permintaan tercapai. Coba lagi nanti.'
+        ? getCopy().errors.rateLimited
         : res.status >= 500
-          ? 'Layanan belum siap. Coba lagi sebentar.'
-          : 'Data belum dapat dimuat.',
+          ? getCopy().errors.serviceNotReady
+          : getCopy().errors.loadFallback,
     )
   return parse(await res.json())
 }
@@ -58,7 +60,7 @@ async function allRegions(signal: AbortSignal) {
     out.push(...page)
     if (page.length < 1000) return out
   }
-  throw new Error('Katalog wilayah melebihi batas dukungan.')
+  throw new Error(getCopy().errors.catalogTooLarge)
 }
 
 function useClientQuery<T>(

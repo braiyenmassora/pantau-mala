@@ -1,10 +1,10 @@
-import { copy } from '@/copy/id'
+import { getCopy, type Copy } from '@/copy'
 import type { AirQuality, AirQualityCategory, Region, TimeZoneId } from '@/data/types'
 import { formatDateTime, formatNumber, formatRelativeAge } from '@/lib/format'
 
 export type AirCardMode = 'missing' | 'pending' | 'stale' | 'ready'
 
-export type AirAdviceCategory = keyof typeof copy.detail.airAdvice
+export type AirAdviceCategory = keyof Copy['detail']['airAdvice']
 
 const READY: ReadonlySet<AirQualityCategory> = new Set([
   'baik',
@@ -26,23 +26,14 @@ export function getAirCardMode(category: AirQualityCategory): AirCardMode {
 /** Label sumber: field API bila ada, else fallback Open-Meteo. */
 export function airSourceLabel(source?: string | null): string {
   const trimmed = source?.trim()
-  return trimmed || copy.detail.airSourceFallback
+  return trimmed || getCopy().detail.airSourceFallback
 }
 
 export function airAdviceFor(category: AirQualityCategory): string | null {
-  if (category in copy.detail.airAdvice) {
-    return copy.detail.airAdvice[category as AirAdviceCategory]
+  if (category in getCopy().detail.airAdvice) {
+    return getCopy().detail.airAdvice[category as AirAdviceCategory]
   }
   return null
-}
-
-/** Label kategori polos di kartu udara (boleh tanpa penanda). */
-const AIR_PLAIN: Partial<Record<AirQualityCategory, string>> = {
-  baik: 'Baik',
-  sedang: 'Sedang',
-  tidak_sehat: 'Tidak sehat',
-  sangat_tidak_sehat: 'Sangat tidak sehat',
-  berbahaya: 'Berbahaya',
 }
 
 /** Tint badge — mirror token risiko (baik=hijau, sedang=kuning, tidak sehat+=merah). */
@@ -57,7 +48,7 @@ const AIR_BADGE: Partial<Record<AirQualityCategory, string>> = {
 /** Label kategori hanya untuk mode ready (bukan pending/stale/missing). */
 export function airCategoryLabel(category: AirQualityCategory): string | null {
   if (getAirCardMode(category) !== 'ready') return null
-  return AIR_PLAIN[category] ?? copy.air[category]
+  return getCopy().airPlain[category as keyof Copy['airPlain']] ?? getCopy().air[category]
 }
 
 /** Class pill kategori udara; null bila bukan mode ready. */
@@ -71,7 +62,7 @@ export function airPm25Value(region: Region): string | null {
   const air = region.air_quality
   const mode = getAirCardMode(air.category)
   if ((mode !== 'ready' && mode !== 'stale') || air.pm25 == null) return null
-  return `${formatNumber(air.pm25, { maximumFractionDigits: 1 })} ${copy.detail.airPm25Unit}`
+  return `${formatNumber(air.pm25, { maximumFractionDigits: 1 })} ${getCopy().detail.airPm25Unit}`
 }
 
 /** Waktu pembaruan udara: air_updated_at wilayah, else window_end di payload. */

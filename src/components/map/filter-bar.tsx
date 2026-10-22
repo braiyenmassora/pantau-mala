@@ -5,12 +5,12 @@ import { Chip } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { ProvincePicker } from '@/components/panel/province-picker'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import type { Region, RiskCategory } from '@/data/types'
 import { filterRegions } from '@/lib/filter-regions'
 import { formatNumber } from '@/lib/format'
 import { useMapChrome } from '@/lib/layout'
-import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { RISK_CATEGORIES, riskCategoryLabel } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
@@ -100,8 +100,8 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           <Chip
             pressed={allPressed}
             disabled={allCount === 0}
-            title={copy.filter.allStatusesTitle(formatNumber(allCount))}
-            aria-label={copy.filter.allStatusesTitle(formatNumber(allCount))}
+            title={getCopy().filter.allStatusesTitle(formatNumber(allCount))}
+            aria-label={getCopy().filter.allStatusesTitle(formatNumber(allCount))}
             onClick={clearCategories}
             className={cn(
               'shrink-0',
@@ -109,7 +109,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
             )}
           >
             <span className="inline-flex items-center gap-2">
-              <span>{copy.filter.allStatuses}</span>
+              <span>{getCopy().filter.allStatuses}</span>
               <span className="text-ink-3" aria-hidden>
                 ·
               </span>
@@ -124,7 +124,10 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
             const count = counts[category]
             const pressed = selectedCategories.has(category)
             const isZero = count === 0
-            const chipTitle = copy.filter.categoryTitle(formatNumber(count), meta.label)
+            const chipTitle = getCopy().filter.categoryTitle(
+              formatNumber(count),
+              riskCategoryLabel(category),
+            )
 
             return (
               <Chip
@@ -144,7 +147,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
                   aria-hidden
                 />
                 <span className="inline-flex items-center gap-2">
-                  <span>{meta.label}</span>
+                  <span>{riskCategoryLabel(category)}</span>
                   <span className="text-ink-3" aria-hidden>
                     ·
                   </span>
@@ -181,9 +184,9 @@ function RiskFilterMenu({
   const [open, setOpen] = useState(false)
   const activeCount = allPressed ? 0 : selectedCategories.size
   const summary = allPressed
-    ? `${copy.filter.allStatuses} · ${formatNumber(allCount)}`
+    ? `${getCopy().filter.allStatuses} · ${formatNumber(allCount)}`
     : [...selectedCategories]
-        .map((c) => `${RISK_CATEGORIES[c].label} · ${formatNumber(counts[c])}`)
+        .map((c) => `${riskCategoryLabel(c)} · ${formatNumber(counts[c])}`)
         .join(', ')
 
   return (
@@ -195,8 +198,8 @@ function RiskFilterMenu({
           aria-haspopup="listbox"
           aria-label={
             allPressed
-              ? copy.filter.allStatusesTitle(formatNumber(allCount))
-              : copy.filter.riskMenuTitle(formatNumber(activeCount))
+              ? getCopy().filter.allStatusesTitle(formatNumber(allCount))
+              : getCopy().filter.riskMenuTitle(formatNumber(activeCount))
           }
           title={summary}
           className="shrink-0"
@@ -205,12 +208,12 @@ function RiskFilterMenu({
           <span className="max-w-28 truncate sm:max-w-40">
             {allPressed ? (
               <>
-                {copy.filter.riskMenu}
+                {getCopy().filter.riskMenu}
                 <span className="text-ink-3"> · </span>
                 <span className="font-mono tabular-nums">{formatNumber(allCount)}</span>
               </>
             ) : (
-              copy.filter.riskMenu
+              getCopy().filter.riskMenu
             )}
           </span>
           {!allPressed && activeCount > 0 ? (
@@ -234,12 +237,12 @@ function RiskFilterMenu({
         sideOffset={6}
         className="rounded-card border-line bg-surface text-ink shadow-chrome z-50 w-64 border p-1"
         role="listbox"
-        aria-label={copy.filter.riskMenu}
+        aria-label={getCopy().filter.riskMenu}
       >
         <RiskMenuRow
           pressed={allPressed}
           disabled={allCount === 0}
-          label={copy.filter.allStatuses}
+          label={getCopy().filter.allStatuses}
           count={allCount}
           onSelect={() => {
             onClear()
@@ -254,7 +257,7 @@ function RiskFilterMenu({
               key={category}
               pressed={selectedCategories.has(category)}
               disabled={count === 0}
-              label={meta.label}
+              label={riskCategoryLabel(category)}
               count={count}
               dotClass={meta.dotClass}
               onSelect={() => onToggle(category)}

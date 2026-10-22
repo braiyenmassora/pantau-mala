@@ -1,7 +1,12 @@
+import { getCopy } from '@/copy'
 import type { RiskCategory } from '@/data/types'
 
+/** Localized risk label for the current locale. */
+export function riskCategoryLabel(category: RiskCategory): string {
+  return getCopy().riskCategory[category]
+}
+
 export type RiskCategoryStyle = {
-  label: string
   dot: string
   tint: string
   text: string
@@ -28,7 +33,6 @@ export const LINE_HEX = '#E8EAED'
 /** Warna risiko / status — hex MapLibre / SVG. */
 export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
   tidak_tersedia: {
-    label: 'Belum dinilai',
     dot: '#80868B',
     tint: '#F1F3F4',
     text: '#5F6368',
@@ -36,7 +40,6 @@ export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
     dotClass: 'bg-ink-3',
   },
   tanpa_titik: {
-    label: 'Tidak ada titik panas terdeteksi',
     dot: '#80868B',
     tint: '#F1F3F4',
     text: '#5F6368',
@@ -44,7 +47,6 @@ export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
     dotClass: 'bg-ink-3',
   },
   sangat_tinggi: {
-    label: 'Sangat tinggi',
     dot: '#D93025',
     tint: '#FCE8E6',
     text: '#C5221F',
@@ -52,7 +54,6 @@ export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
     dotClass: 'bg-risk-high',
   },
   sedang: {
-    label: 'Sedang',
     dot: '#F29900',
     tint: '#FEF7E0',
     text: '#854800',
@@ -60,7 +61,6 @@ export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {
     dotClass: 'bg-risk-mid',
   },
   rendah: {
-    label: 'Rendah',
     dot: '#188038',
     tint: '#E6F4EA',
     text: '#137333',

@@ -4,7 +4,7 @@ import { Skeleton } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { SectionHead } from '@/components/common/section-head'
 import { Card, CardContent } from '@/components/ui/card'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { useTotalReports } from '@/data/hotspot-reports'
 import { rememberFocusTrigger } from '@/lib/focus-return'
 import { formatNumber } from '@/lib/format'
@@ -25,7 +25,7 @@ export function TotalReportsCard() {
 
   return (
     <Card
-      aria-label={copy.report.panelTitle}
+      aria-label={getCopy().report.panelTitle}
       className={cn(
         'hover:bg-surface-muted cursor-pointer transition-colors duration-150',
         focusRing,
@@ -40,7 +40,7 @@ export function TotalReportsCard() {
         }
       }}
     >
-      <SectionHead title={copy.report.panelTitle} />
+      <SectionHead title={getCopy().report.panelTitle} />
       <CardContent className="space-y-1">
         {isPending ? (
           <Skeleton className="rounded-ctl h-10 w-24" />
@@ -49,8 +49,8 @@ export function TotalReportsCard() {
             {formatNumber(total ?? null)}
           </p>
         )}
-        <p className="text-ink text-sm leading-5">{copy.report.totalUnit}</p>
-        <p className="text-ink-2 text-xs leading-4">{copy.report.totalOpenHint}</p>
+        <p className="text-ink text-sm leading-5">{getCopy().report.totalUnit}</p>
+        <p className="text-ink-2 text-xs leading-4">{getCopy().report.totalOpenHint}</p>
       </CardContent>
     </Card>
   )

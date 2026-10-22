@@ -5,7 +5,7 @@ import { Button, HotspotStatusBadge, InfoTooltip, ProgressBar } from '@/componen
 import { focusRing } from '@/components/common/focus-ring'
 import { SectionHead } from '@/components/common/section-head'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { useHotspots, useNearbyHotspots } from '@/data/queries'
 import type { Region, RiskCategory } from '@/data/types'
 import { rememberFocusTrigger } from '@/lib/focus-return'
@@ -26,8 +26,8 @@ type LocationCardProps = {
 
 function Shell({ children, trailing }: { children: ReactNode; trailing?: ReactNode }) {
   return (
-    <Card aria-label={copy.location.nearbyLabel}>
-      <SectionHead title={copy.location.nearbyLabel} action={trailing} />
+    <Card aria-label={getCopy().location.nearbyLabel}>
+      <SectionHead title={getCopy().location.nearbyLabel} action={trailing} />
       <CardContent>{children}</CardContent>
     </Card>
   )
@@ -58,7 +58,7 @@ function StateActions({
         className="w-full shrink-0 shadow-none min-[380px]:w-auto"
         onClick={() => focusWilayahSearch()}
       >
-        {copy.location.searchManual}
+        {getCopy().location.searchManual}
       </Button>
     </div>
   )
@@ -121,10 +121,10 @@ export function LocationCard({ regions }: LocationCardProps) {
     return (
       <Shell>
         <div className="space-y-3 text-left">
-          <p className="text-ink-2 text-xs leading-4">{copy.location.deniedBody}</p>
+          <p className="text-ink-2 text-xs leading-4">{getCopy().location.deniedBody}</p>
           <StateActions
             onRetry={requestLocation}
-            retryLabel={copy.location.useLocation}
+            retryLabel={getCopy().location.useLocation}
           />
         </div>
       </Shell>
@@ -135,8 +135,8 @@ export function LocationCard({ regions }: LocationCardProps) {
     return (
       <Shell>
         <div className="space-y-3 text-left">
-          <p className="text-ink-2 text-xs leading-4">{copy.location.errorBody}</p>
-          <StateActions onRetry={retryPrompt} retryLabel={copy.location.tryAgain} />
+          <p className="text-ink-2 text-xs leading-4">{getCopy().location.errorBody}</p>
+          <StateActions onRetry={retryPrompt} retryLabel={getCopy().location.tryAgain} />
         </div>
       </Shell>
     )
@@ -146,8 +146,8 @@ export function LocationCard({ regions }: LocationCardProps) {
     return (
       <Shell>
         <div className="space-y-3 text-left">
-          <p className="text-ink-2 text-xs leading-4">{copy.location.timeoutBody}</p>
-          <StateActions onRetry={retryPrompt} retryLabel={copy.location.tryAgain} />
+          <p className="text-ink-2 text-xs leading-4">{getCopy().location.timeoutBody}</p>
+          <StateActions onRetry={retryPrompt} retryLabel={getCopy().location.tryAgain} />
         </div>
       </Shell>
     )
@@ -158,10 +158,13 @@ export function LocationCard({ regions }: LocationCardProps) {
       <Shell>
         <div className="space-y-3 text-left">
           <p className="text-ink text-sm leading-5 font-semibold">
-            {copy.location.outsideTitle}
+            {getCopy().location.outsideTitle}
           </p>
-          <p className="text-ink-2 text-xs leading-4">{copy.location.outsideBody}</p>
-          <StateActions onRetry={requestLocation} retryLabel={copy.location.tryAgain} />
+          <p className="text-ink-2 text-xs leading-4">{getCopy().location.outsideBody}</p>
+          <StateActions
+            onRetry={requestLocation}
+            retryLabel={getCopy().location.tryAgain}
+          />
         </div>
       </Shell>
     )
@@ -173,19 +176,19 @@ export function LocationCard({ regions }: LocationCardProps) {
         {location.status === 'requesting' ? (
           <div className="space-y-2 text-left" aria-busy="true">
             <ProgressBar />
-            <p className="text-ink-2 text-xs leading-4">{copy.location.loading}</p>
+            <p className="text-ink-2 text-xs leading-4">{getCopy().location.loading}</p>
           </div>
         ) : (
           <div className="flex flex-col gap-3 text-left min-[380px]:flex-row min-[380px]:items-center min-[380px]:justify-between">
             <p className="text-ink-2 min-w-0 flex-1 text-sm leading-5">
-              {copy.location.riskSubtitle}
+              {getCopy().location.riskSubtitle}
             </p>
             <Button
               type="button"
               variant="soft"
               size="sm"
               className="w-full shrink-0 min-[380px]:w-auto"
-              aria-label={copy.location.allowLocationFull}
+              aria-label={getCopy().location.allowLocationFull}
               onClick={(e) => requestLocation(e.currentTarget)}
             >
               <LocateFixed
@@ -193,7 +196,7 @@ export function LocationCard({ regions }: LocationCardProps) {
                 strokeWidth={2}
                 aria-hidden
               />
-              {copy.location.useLocation}
+              {getCopy().location.useLocation}
             </Button>
           </div>
         )}
@@ -206,7 +209,7 @@ export function LocationCard({ regions }: LocationCardProps) {
       <Shell>
         <div className="space-y-1 text-left">
           <ProgressBar />
-          <p className="text-ink-2 text-xs leading-4">{copy.location.loading}</p>
+          <p className="text-ink-2 text-xs leading-4">{getCopy().location.loading}</p>
         </div>
       </Shell>
     )
@@ -265,7 +268,7 @@ function ActiveNearbyCard({
 
   return (
     <Card
-      aria-label={copy.location.nearbyLabel}
+      aria-label={getCopy().location.nearbyLabel}
       className={cn(
         detailCode &&
           'hover:bg-surface-muted cursor-pointer transition-colors duration-150',
@@ -291,8 +294,8 @@ function ActiveNearbyCard({
     >
       <CardHeader>
         <div className="flex min-w-0 items-center gap-1">
-          <CardTitle>{copy.location.nearbyLabel}</CardTitle>
-          <InfoTooltip content={copy.location.riskNearbyTip} />
+          <CardTitle>{getCopy().location.nearbyLabel}</CardTitle>
+          <InfoTooltip content={getCopy().location.riskNearbyTip} />
         </div>
         <HotspotStatusBadge hotspots={nearby.hotspotCount} riskCategory={riskCategory} />
       </CardHeader>
@@ -301,11 +304,13 @@ function ActiveNearbyCard({
           <p className="text-ink font-mono text-3xl leading-10 font-semibold tabular-nums">
             {formatNumber(nearby.hotspotCount)}
           </p>
-          <p className="text-ink text-sm leading-5">{copy.location.hotspotUnitLine}</p>
+          <p className="text-ink text-sm leading-5">
+            {getCopy().location.hotspotUnitLine}
+          </p>
         </div>
         {nearestKm || locationText ? (
           <div className="text-ink-2 space-y-1 text-xs leading-4">
-            {nearestKm ? <p>{copy.location.nearestDistance(nearestKm)}</p> : null}
+            {nearestKm ? <p>{getCopy().location.nearestDistance(nearestKm)}</p> : null}
             {locationText ? (
               <p className="text-ink-2 line-clamp-2">{locationText}</p>
             ) : null}

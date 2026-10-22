@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import type { Region } from '@/data/types'
 import { formatDateDotTime, formatNumber } from '@/lib/format'
 import { hasHotspotDetections, hotspotDotColor } from '@/lib/hotspot-status'
@@ -114,8 +114,8 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                     title={r.name}
                     meta={
                       hasDetections
-                        ? copy.map.regionMetaHotspots(formatNumber(r.hotspots_24h))
-                        : copy.status.noDetections
+                        ? getCopy().map.regionMetaHotspots(formatNumber(r.hotspots_24h))
+                        : getCopy().status.noDetections
                     }
                     updatedAt={
                       r.last_detection?.time

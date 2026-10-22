@@ -1,7 +1,7 @@
 import { focusRing } from '@/components/common/focus-ring'
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { useMeta } from '@/data/queries'
 import { formatDateDotTime, formatNumber } from '@/lib/format'
 import { fitProvinceBounds } from '@/lib/indonesia-view'
@@ -72,8 +72,8 @@ export function ProvincePin({ aggregate, hovered = false, onHover }: ProvincePin
               title={aggregate.name}
               meta={
                 hasDetections
-                  ? copy.map.regionMetaHotspots(formatNumber(aggregate.hotspots_24h))
-                  : copy.status.noDetections
+                  ? getCopy().map.regionMetaHotspots(formatNumber(aggregate.hotspots_24h))
+                  : getCopy().status.noDetections
               }
               updatedAt={updatedAt}
             />

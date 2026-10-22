@@ -1,4 +1,4 @@
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { cn } from '@/lib/utils'
 
 type BrandProps = {
@@ -15,7 +15,7 @@ export function Brand({ compact = false, textOnly = false, className }: BrandPro
     return (
       <img
         src="/brand-wordmark.svg"
-        alt={copy.a11y.brand}
+        alt={getCopy().a11y.brand}
         width={108}
         height={20}
         className={cn('h-5 w-auto shrink-0 select-none', className)}
@@ -34,7 +34,7 @@ export function Brand({ compact = false, textOnly = false, className }: BrandPro
       />
       <img
         src="/brand-wordmark.svg"
-        alt={copy.a11y.brand}
+        alt={getCopy().a11y.brand}
         width={compact ? 108 : 152}
         height={compact ? 20 : 28}
         className={compact ? 'h-5 w-auto shrink-0' : 'h-7 w-auto shrink-0'}

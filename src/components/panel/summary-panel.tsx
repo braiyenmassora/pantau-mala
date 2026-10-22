@@ -20,6 +20,7 @@ import {
   Skeleton,
 } from '@/components/common'
 import { Brand } from '@/components/common/brand'
+import { LanguageToggle } from '@/components/common/language-toggle'
 import { CitizenReportComposePanel } from '@/components/panel/citizen-report-compose-panel'
 import { CitizenReportsPanel } from '@/components/panel/citizen-reports-panel'
 import { CitizenReportDetailPanel } from '@/components/panel/citizen-report-detail-panel'
@@ -33,7 +34,7 @@ import { TopProvincesList } from '@/components/panel/top-provinces-list'
 import { TotalReportsCard } from '@/components/panel/total-reports-card'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { filterRegions } from '@/lib/filter-regions'
@@ -43,7 +44,7 @@ import { hotspotTrend, type TrendDirection } from '@/lib/hotspot-trend'
 import { T } from '@/lib/pola'
 import { fitIndonesia } from '@/lib/indonesia-view'
 import { aggregateByProvince } from '@/lib/province-aggregates'
-import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { riskCategoryLabel } from '@/lib/risk-category'
 import { worstRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -58,11 +59,17 @@ type SummaryPanelProps = {
   onRetry?: () => void
 }
 
-const TREND_UI: Record<TrendDirection, { label: string; Icon: typeof TrendingUp }> = {
-  naik: { label: copy.detail.trendUp, Icon: TrendingUp },
-  turun: { label: copy.detail.trendDown, Icon: TrendingDown },
-  stabil: { label: copy.detail.trendFlat, Icon: Minus },
+const TREND_UI: Record<TrendDirection, { Icon: typeof TrendingUp }> = {
+  naik: { Icon: TrendingUp },
+  turun: { Icon: TrendingDown },
+  stabil: { Icon: Minus },
 }
+const TREND_LABEL = (d: TrendDirection) =>
+  ({
+    naik: getCopy().detail.trendUp,
+    turun: getCopy().detail.trendDown,
+    stabil: getCopy().detail.trendFlat,
+  })[d]
 
 // ponytail: panel kiri 400px tanpa divider, beranda 5 baris, provinsi 10 baris.
 export function SummaryPanel({
@@ -156,7 +163,7 @@ export function SummaryPanel({
 
   if (isError) {
     const offline = typeof navigator !== 'undefined' && navigator.onLine === false
-    const fail = offline ? copy.empty.offline : copy.empty.loadFail
+    const fail = offline ? getCopy().empty.offline : getCopy().empty.loadFail
     return (
       <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
         <EmptyState
@@ -200,18 +207,21 @@ export function SummaryPanel({
     return (
       <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
         <header className="space-y-3">
-          <Brand compact />
+          <div className="flex items-center justify-between gap-2">
+            <Brand compact />
+            <LanguageToggle />
+          </div>
           <h1 className="text-ink truncate text-xl leading-8 font-semibold">
-            {copy.panel.indonesiaToday}
+            {getCopy().panel.indonesiaToday}
           </h1>
         </header>
         <EmptyState
           icon={Search}
           variant="action"
-          title={copy.empty.wilayahNotFound.title}
-          description={copy.empty.wilayahNotFound.description}
+          title={getCopy().empty.wilayahNotFound.title}
+          description={getCopy().empty.wilayahNotFound.description}
           action={{
-            label: copy.empty.wilayahNotFound.action,
+            label: getCopy().empty.wilayahNotFound.action,
             onClick: () => {
               setWilayahNotFound(false)
               if (window.location.pathname !== '/') {
@@ -225,7 +235,7 @@ export function SummaryPanel({
     )
   }
 
-  const wilayahLabel = province === 'Semua' ? copy.common.indonesia : province
+  const wilayahLabel = province === 'Semua' ? getCopy().common.indonesia : province
   const filtering = selectedCategories.size > 0
   const clearCategories = useMapStore.getState().clearCategories
   const noHotspots =
@@ -236,20 +246,23 @@ export function SummaryPanel({
     return (
       <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
         <header className="space-y-3">
-          <Brand compact />
+          <div className="flex items-center justify-between gap-2">
+            <Brand compact />
+            <LanguageToggle />
+          </div>
           <h1 className="text-ink truncate text-xl leading-8 font-semibold">
-            {copy.panel.indonesiaToday}
+            {getCopy().panel.indonesiaToday}
           </h1>
         </header>
         <EmptyState
           icon={Filter}
-          title={copy.empty.noRegionsFilter.title}
-          description={copy.empty.noRegionsFilter.description(
-            [...selectedCategories].map((c) => RISK_CATEGORIES[c].label).join(', '),
+          title={getCopy().empty.noRegionsFilter.title}
+          description={getCopy().empty.noRegionsFilter.description(
+            [...selectedCategories].map((c) => riskCategoryLabel(c)).join(', '),
             wilayahLabel,
           )}
           action={{
-            label: copy.empty.noRegionsFilter.action,
+            label: getCopy().empty.noRegionsFilter.action,
             onClick: clearCategories,
           }}
         />
@@ -261,23 +274,28 @@ export function SummaryPanel({
     return (
       <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
         <header className="space-y-3">
-          <Brand compact />
+          <div className="flex items-center justify-between gap-2">
+            <Brand compact />
+            <LanguageToggle />
+          </div>
           <div className="space-y-1">
             <div className="flex min-w-0 items-center gap-1">
               <h1 className="text-ink truncate text-xl leading-8 font-semibold">
-                {copy.panel.indonesiaToday}
+                {getCopy().panel.indonesiaToday}
               </h1>
-              <InfoTooltip content={copy.panel.titleTip} className="-my-4" />
+              <InfoTooltip content={getCopy().panel.titleTip} className="-my-4" />
             </div>
-            <p className="text-ink-2 text-xs leading-4">{copy.panel.limitationNote}</p>
-            <p className="text-ink-2 text-xs leading-4">{copy.panel.coverageNote}</p>
+            <p className="text-ink-2 text-xs leading-4">
+              {getCopy().panel.limitationNote}
+            </p>
+            <p className="text-ink-2 text-xs leading-4">{getCopy().panel.coverageNote}</p>
           </div>
         </header>
         <DataFreshnessBanner />
         <EmptyState
           icon={ShieldCheck}
-          title={copy.empty.noHotspots.title}
-          description={copy.empty.noHotspots.description(wilayahLabel)}
+          title={getCopy().empty.noHotspots.title}
+          description={getCopy().empty.noHotspots.description(wilayahLabel)}
         />
       </div>
     )
@@ -289,7 +307,10 @@ export function SummaryPanel({
     return (
       <div className="flex flex-col">
         <div className="bg-surface sticky top-0 z-10 space-y-3 px-4 pt-3 pb-2">
-          <Brand compact />
+          <div className="flex items-center justify-between gap-2">
+            <Brand compact />
+            <LanguageToggle />
+          </div>
           <SearchBox mapRef={mapRef} />
         </div>
 
@@ -297,14 +318,12 @@ export function SummaryPanel({
           <DataFreshnessBanner />
           {searching ? (
             <section className="space-y-3">
-              <h2 className={T.section}>
-                {copy.panel.searchResults}
-              </h2>
+              <h2 className={T.section}>{getCopy().panel.searchResults}</h2>
               {filtered.length === 0 ? (
                 <EmptyState
                   icon={Search}
-                  title={copy.empty.searchMiss.title}
-                  description={copy.empty.searchMiss.description}
+                  title={getCopy().empty.searchMiss.title}
+                  description={getCopy().empty.searchMiss.description}
                 />
               ) : (
                 <ul className="flex flex-col">
@@ -321,12 +340,12 @@ export function SummaryPanel({
               <header className="space-y-1">
                 <div className="flex min-w-0 items-center gap-1">
                   <h1 className="text-ink min-w-0 text-xl leading-8 font-semibold break-words">
-                    {copy.panel.indonesiaToday}
+                    {getCopy().panel.indonesiaToday}
                   </h1>
-                  <InfoTooltip content={copy.panel.titleTip} className="-my-4" />
+                  <InfoTooltip content={getCopy().panel.titleTip} className="-my-4" />
                 </div>
                 <p className="text-ink-2 text-xs leading-4">
-                  {copy.panel.limitationNote}
+                  {getCopy().panel.limitationNote}
                 </p>
               </header>
 
@@ -335,9 +354,7 @@ export function SummaryPanel({
               <TotalReportsCard />
 
               <section className="space-y-3">
-                <h2 className={T.section}>
-                  {copy.panel.topRisk}
-                </h2>
+                <h2 className={T.section}>{getCopy().panel.topRisk}</h2>
                 {daftarPending && !daftar ? (
                   <div className="flex flex-col gap-1">
                     {Array.from({ length: 5 }).map((_, i) => (
@@ -347,7 +364,7 @@ export function SummaryPanel({
                 ) : topProvinces.length === 0 ? (
                   <div className="text-ink-2 flex items-center gap-2 py-3 text-sm leading-5">
                     <Check className="text-ink-2 size-4" strokeWidth={2} aria-hidden />
-                    <span>{copy.search.noHotspots}</span>
+                    <span>{getCopy().search.noHotspots}</span>
                   </div>
                 ) : (
                   <TopProvincesList
@@ -376,7 +393,8 @@ export function SummaryPanel({
 
   // 3. Panel provinsi — kartu pola Gempa (judul di dalam · atas hanya X)
   const provTrend = hotspotTrend(provinceStats?.trend_7d ?? [0, 0, 0, 0, 0, 0, 0])
-  const { label: trendLabel, Icon: TrendIcon } = TREND_UI[provTrend]
+  const { Icon: TrendIcon } = TREND_UI[provTrend]
+  const trendLabel = TREND_LABEL(provTrend)
 
   return (
     <div className="flex flex-col">
@@ -386,7 +404,7 @@ export function SummaryPanel({
             setProvince('Semua')
             if (mapRef?.current) fitIndonesia(mapRef.current, panelOpen, 0)
           }}
-          aria-label={copy.panel.closeDetail}
+          aria-label={getCopy().panel.closeDetail}
         >
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         </IconButton>
@@ -401,7 +419,7 @@ export function SummaryPanel({
               <h1 className="text-ink min-w-0 truncate text-sm leading-5 font-semibold">
                 {province}
               </h1>
-              <InfoTooltip content={copy.detail.riskTooltip} />
+              <InfoTooltip content={getCopy().detail.riskTooltip} />
             </div>
             <HotspotStatusBadge
               hotspots={provinceStats?.count_24h ?? 0}
@@ -413,7 +431,9 @@ export function SummaryPanel({
               <p className="text-ink font-mono text-3xl leading-10 font-semibold tabular-nums">
                 {formatNumber(provinceStats?.count_24h ?? 0)}
               </p>
-              <p className="text-ink text-sm leading-5">{copy.detail.hotspotUnitLine}</p>
+              <p className="text-ink text-sm leading-5">
+                {getCopy().detail.hotspotUnitLine}
+              </p>
             </div>
             <p className="text-ink-2 flex items-center gap-2 text-xs leading-4">
               <TrendIcon
@@ -426,23 +446,23 @@ export function SummaryPanel({
                 aria-hidden
               />
               <span>
-                {trendLabel} {copy.detail.trendVsPrevious}
+                {trendLabel} {getCopy().detail.trendVsPrevious}
               </span>
             </p>
             {(provinceStats?.count_24h ?? 0) === 0 ? (
-              <p className="text-ink-2 text-xs leading-4">{copy.panel.coverageNote}</p>
+              <p className="text-ink-2 text-xs leading-4">
+                {getCopy().panel.coverageNote}
+              </p>
             ) : null}
           </CardContent>
         </Card>
 
         <section className="space-y-3">
-          <h2 className={T.section}>
-            {copy.panel.topKab}
-          </h2>
+          <h2 className={T.section}>{getCopy().panel.topKab}</h2>
           {provinceTopRegencies.length === 0 ? (
             <div className="text-ink-2 flex items-center gap-2 py-3 text-sm leading-5">
               <Check className="size-4" strokeWidth={2} aria-hidden />
-              <span>{copy.search.noHotspots}</span>
+              <span>{getCopy().search.noHotspots}</span>
             </div>
           ) : (
             <ul className="flex flex-col">
@@ -462,7 +482,7 @@ export function SummaryPanel({
 function SummarySkeleton({ nationalView }: { nationalView: boolean }) {
   const rowCount = nationalView ? 5 : 10
   return (
-    <div className="flex flex-col" aria-busy aria-label={copy.common.loading}>
+    <div className="flex flex-col" aria-busy aria-label={getCopy().common.loading}>
       <div className="bg-surface sticky top-0 z-10 space-y-3 px-4 pt-3 pb-2">
         <Skeleton className="rounded-ctl h-7 w-28" />
         <Skeleton className="rounded-ctl h-12 w-full" />

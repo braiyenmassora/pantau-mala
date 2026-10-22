@@ -1,6 +1,6 @@
 import { Loader2 } from 'lucide-react'
 
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { cn } from '@/lib/utils'
 
 /**
@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
  * sampai framing peta + data regions siap (tanpa remount antar tahap).
  */
 export function BootLoading({ className }: { className?: string }) {
-  const label = copy.common.loading
+  const label = getCopy().common.loading
 
   return (
     <div

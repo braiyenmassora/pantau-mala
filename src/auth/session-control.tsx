@@ -3,9 +3,8 @@ import { LogOut } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
 
-import { SearchableSelect } from '@/components/common'
-import { focusRing } from '@/components/common/focus-ring'
-import { copy } from '@/copy/id'
+import { IconButton, SearchableSelect } from '@/components/common'
+import { getCopy } from '@/copy'
 import { logout, sessionRequest, switchClient, useSession } from './session'
 
 export function SessionControl() {
@@ -42,7 +41,7 @@ export function SessionControl() {
       {clients.data && clients.data.length > 1 && (
         <div className="w-full">
           <label htmlFor="workspace" className="mb-1 block text-xs leading-4">
-            {copy.auth.workspace}
+            {getCopy().auth.workspace}
           </label>
           <SearchableSelect
             id="workspace"
@@ -58,39 +57,39 @@ export function SessionControl() {
               void switchClient(val)
                 .catch((err) =>
                   setError(
-                    err instanceof Error ? err.message : copy.auth.workspaceSwitchFail,
+                    err instanceof Error
+                      ? err.message
+                      : getCopy().auth.workspaceSwitchFail,
                   ),
                 )
                 .finally(() => setBusy(false))
             }}
-            searchPlaceholder={copy.auth.workspaceSearch}
-            emptyText={copy.auth.workspaceEmpty}
-            ariaLabel={copy.auth.workspace}
+            searchPlaceholder={getCopy().auth.workspaceSearch}
+            emptyText={getCopy().auth.workspaceEmpty}
+            ariaLabel={getCopy().auth.workspace}
           />
         </div>
       )}
       {clients.isError && (
         <p role="alert" className="w-full text-xs leading-4">
-          {copy.auth.workspaceListFail}
+          {getCopy().auth.workspaceListFail}
         </p>
       )}
-      <button
-        type="button"
-        aria-label={copy.auth.logout}
+      <IconButton
+        aria-label={getCopy().auth.logout}
         disabled={busy}
-        className={`rounded-card flex size-11 items-center justify-center ${focusRing}`}
         onClick={() => {
           setBusy(true)
           setError('')
           void logout()
             .catch((err) =>
-              setError(err instanceof Error ? err.message : copy.auth.logoutFail),
+              setError(err instanceof Error ? err.message : getCopy().auth.logoutFail),
             )
             .finally(() => setBusy(false))
         }}
       >
         <LogOut className="size-4" strokeWidth={2} aria-hidden />
-      </button>
+      </IconButton>
       {error && (
         <p role="alert" className="w-full text-xs leading-4">
           {error}

@@ -4,7 +4,7 @@ import { EmptyState, HotspotStatusBadge, IconButton } from '@/components/common'
 import { DataFreshnessBanner } from '@/components/panel/data-freshness-banner'
 import { CitizenReportsCard } from '@/components/panel/region-detail-panel'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { useMeta } from '@/data/queries'
 import type { CatalogRegency } from '@/data/types'
 import { restoreFocusTrigger } from '@/lib/focus-return'
@@ -27,7 +27,7 @@ export function NoHotspotDetail({ kab }: NoHotspotDetailProps) {
   return (
     <div className="flex flex-col">
       <div className="bg-surface sticky top-0 z-10 flex justify-end px-4 pt-3 pb-2">
-        <IconButton onClick={handleBack} aria-label={copy.panel.closeDetail}>
+        <IconButton onClick={handleBack} aria-label={getCopy().panel.closeDetail}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         </IconButton>
       </div>
@@ -46,8 +46,8 @@ export function NoHotspotDetail({ kab }: NoHotspotDetailProps) {
             <HotspotStatusBadge hotspots={0} />
           </CardHeader>
           <CardContent className="text-ink-2 space-y-1 text-xs leading-4">
-            <p>{copy.map.regionMetaProvince(kab.province)}</p>
-            <p>{copy.panel.coverageNote}</p>
+            <p>{getCopy().map.regionMetaProvince(kab.province)}</p>
+            <p>{getCopy().panel.coverageNote}</p>
           </CardContent>
         </Card>
 
@@ -57,13 +57,13 @@ export function NoHotspotDetail({ kab }: NoHotspotDetailProps) {
           icon={ShieldCheck}
           title={
             meta?.status.firms === 'ok'
-              ? copy.empty.noHotspotsInRegion.title
-              : copy.extra.noDataset
+              ? getCopy().empty.noHotspotsInRegion.title
+              : getCopy().extra.noDataset
           }
           description={
             meta?.status.firms === 'ok'
-              ? copy.empty.noHotspotsInRegion.description(kab.name)
-              : copy.extra.noDatasetNote
+              ? getCopy().empty.noHotspotsInRegion.description(kab.name)
+              : getCopy().extra.noDatasetNote
           }
         />
       </div>

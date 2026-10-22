@@ -159,13 +159,16 @@ it('forwards hotspot report reads and writes with server key only', async () => 
     .mockResolvedValueOnce(Response.json({ data: [] }))
     .mockResolvedValueOnce(Response.json(created, { status: 201 }))
     .mockResolvedValueOnce(
-      Response.json({
-        data: {
-          upload_url: 'https://storage.example/put',
-          public_url: 'https://media.example/report.jpg',
-          required_headers: { 'Content-Type': 'image/jpeg' },
+      Response.json(
+        {
+          data: {
+            upload_url: 'https://storage.example/put',
+            public_url: 'https://media.example/report.jpg',
+            required_headers: { 'Content-Type': 'image/jpeg' },
+          },
         },
-      }, { status: 201 }),
+        { status: 201 },
+      ),
     )
     .mockResolvedValueOnce(Response.json({ data: { count: 7 } }))
     .mockResolvedValueOnce(Response.json({ data: [{ region_code: '62.01', count: 7 }] }))

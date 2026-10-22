@@ -1,4 +1,4 @@
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import type { HotspotReport } from '@/data/hotspot-reports'
 import { ReportPhoto } from '@/components/panel/report-photo'
 import { formatRelativeAge, reportAuthorInitials } from '@/lib/format'
@@ -35,15 +35,10 @@ export function CitizenReportReview({
         </time>
       </div>
       <p className="text-ink-2 mt-1 text-xs leading-4">
-        {copy.report.sightings[report.sighting]}
+        {getCopy().report.sightings[report.sighting]}
       </p>
       {report.description ? (
-        <p
-          className={cn(
-            'text-ink mt-2 text-sm leading-5',
-            compact && 'line-clamp-2',
-          )}
-        >
+        <p className={cn('text-ink mt-2 text-sm leading-5', compact && 'line-clamp-2')}>
           {report.description}
         </p>
       ) : null}
@@ -63,7 +58,7 @@ export function CitizenReportReview({
         <ReportPhoto
           src={report.photo_url}
           alt=""
-          className="size-[68px] shrink-0 rounded-ctl object-cover"
+          className="rounded-ctl size-[68px] shrink-0 object-cover"
         />
       ) : null}
     </div>
@@ -81,8 +76,8 @@ export function CitizenReportReview({
       {report.photo_url ? (
         <ReportPhoto
           src={report.photo_url}
-          alt={copy.report.photoAlt(report.author_name)}
-          className="mt-3 aspect-[3/2] w-full rounded-card object-cover"
+          alt={getCopy().report.photoAlt(report.author_name)}
+          className="rounded-card mt-3 aspect-[3/2] w-full object-cover"
         />
       ) : null}
     </>
@@ -94,7 +89,7 @@ export function CitizenReportReview({
         type="button"
         onClick={(e) => onSelect(e.currentTarget)}
         className={cn(
-          'hover:bg-surface-muted w-full rounded-card px-1 py-3 text-left transition-colors',
+          'hover:bg-surface-muted rounded-card w-full px-1 py-3 text-left transition-colors',
           className,
         )}
       >

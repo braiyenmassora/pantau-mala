@@ -1,6 +1,7 @@
 import { Brand } from '@/components/common/brand'
+import { IconButton } from '@/components/common/icon-button'
 import { BootLoading } from '@/components/map/map-soft-loading'
-import { copy } from '@/copy/id'
+import { getCopy, useLocaleStore } from '@/copy'
 import { Eye, EyeOff } from 'lucide-react'
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { login, restoreSession, useSession } from './session'
@@ -8,6 +9,7 @@ import { focusRing } from '@/components/common/focus-ring'
 import { useUiStore } from '@/store/ui'
 
 export function AccessGate({ children }: { children: ReactNode }) {
+  useLocaleStore((s) => s.locale)
   const accessMode = useSession((s) => s.accessMode)
   const accessError = useSession((s) => s.accessError)
   const status = useSession((s) => s.status)
@@ -34,7 +36,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
       await login(String(fields.get('username')), String(fields.get('password')))
       form.reset()
     } catch (err) {
-      setError(err instanceof Error ? err.message : copy.auth.loginFail)
+      setError(err instanceof Error ? err.message : getCopy().auth.loginFail)
     } finally {
       setBusy(false)
     }
@@ -56,19 +58,19 @@ export function AccessGate({ children }: { children: ReactNode }) {
             <h1 id="login-title" className="text-xl leading-8 font-semibold">
               <Brand />
             </h1>
-            <p className="text-ink-2 text-sm leading-5">{copy.auth.loginLead}</p>
+            <p className="text-ink-2 text-sm leading-5">{getCopy().auth.loginLead}</p>
           </header>
           {accessMode === 'client' ? (
             <div className="space-y-4">
               <p role="alert" className="text-sm leading-5">
-                {accessError || copy.auth.clientUnavailable}
+                {accessError || getCopy().auth.clientUnavailable}
               </p>
               <button
                 type="button"
                 className={`rounded-card border-line h-11 border px-4 text-sm leading-5 ${focusRing}`}
                 onClick={() => void restoreSession()}
               >
-                {copy.auth.retry}
+                {getCopy().auth.retry}
               </button>
             </div>
           ) : (
@@ -80,7 +82,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
             >
               <div>
                 <label htmlFor="username" className="mb-1 block text-sm leading-5">
-                  {copy.auth.username}
+                  {getCopy().auth.username}
                 </label>
                 <input
                   id="username"
@@ -93,7 +95,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
               </div>
               <div>
                 <label htmlFor="password" className="mb-1 block text-sm leading-5">
-                  {copy.auth.password}
+                  {getCopy().auth.password}
                 </label>
                 <div className="relative">
                   <input
@@ -105,19 +107,20 @@ export function AccessGate({ children }: { children: ReactNode }) {
                     maxLength={128}
                     className={`border-line rounded-card h-11 w-full border pr-12 pl-3 text-sm leading-5 ${focusRing}`}
                   />
-                  <button
-                    type="button"
-                    aria-label={show ? copy.auth.hidePassword : copy.auth.showPassword}
+                  <IconButton
+                    aria-label={
+                      show ? getCopy().auth.hidePassword : getCopy().auth.showPassword
+                    }
                     aria-pressed={show}
                     onClick={() => setShow((v) => !v)}
-                    className={`absolute top-0 right-0 flex size-11 items-center justify-center ${focusRing}`}
+                    className="absolute top-0 right-0"
                   >
                     {show ? (
                       <EyeOff className="size-4.5" strokeWidth={2} aria-hidden />
                     ) : (
                       <Eye className="size-4.5" strokeWidth={2} aria-hidden />
                     )}
-                  </button>
+                  </IconButton>
                 </div>
               </div>
               {error && (
@@ -129,7 +132,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
                 disabled={busy}
                 className={`bg-brand text-surface rounded-card h-11 w-full px-4 text-sm leading-5 font-semibold disabled:opacity-60 ${focusRing}`}
               >
-                {busy ? copy.auth.submitting : copy.auth.submit}
+                {busy ? getCopy().auth.submitting : getCopy().auth.submit}
               </button>
             </form>
           )}

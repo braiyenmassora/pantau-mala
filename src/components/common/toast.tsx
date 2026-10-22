@@ -2,7 +2,7 @@ import { Info, X } from 'lucide-react'
 import { useEffect } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { cn } from '@/lib/utils'
 import { useToastStore } from '@/store/toast'
 
@@ -28,7 +28,7 @@ export function Toast() {
     >
       <div
         role={tone === 'err' ? 'alert' : 'status'}
-        className="border-line bg-surface shadow-chrome pointer-events-auto w-full rounded-ctl border px-3 py-2"
+        className="border-line bg-surface shadow-chrome rounded-ctl pointer-events-auto w-full border px-3 py-2"
       >
         <div className="flex items-start gap-2">
           <Info
@@ -48,7 +48,7 @@ export function Toast() {
           <button
             type="button"
             onClick={dismissToast}
-            aria-label={copy.common.dismissNotification}
+            aria-label={getCopy().common.dismissNotification}
             className={cn(
               'text-ink-3 hover:bg-surface-muted hover:text-ink rounded-ctl inline-flex size-8 shrink-0 items-center justify-center transition-colors',
               focusRing,

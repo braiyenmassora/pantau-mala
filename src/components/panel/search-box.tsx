@@ -1,10 +1,10 @@
 import { Search, X } from 'lucide-react'
 import type { RefObject } from 'react'
 
-import { focusRing } from '@/components/common/focus-ring'
+import { IconButton } from '@/components/common/icon-button'
 import { Input } from '@/components/ui/input'
 import type { MapRef } from '@/components/ui/map'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { chromeSurface } from '@/lib/chrome'
 import { fitIndonesia } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
@@ -56,8 +56,8 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
         enterKeyHint="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder={copy.panel.searchPlaceholder}
-        aria-label={copy.panel.searchPlaceholder}
+        placeholder={getCopy().panel.searchPlaceholder}
+        aria-label={getCopy().panel.searchPlaceholder}
         className={cn(
           // h-full (bukan h-auto/py-0): tinggi ketat memotong glif IBM Plex → teks hampir tak kebaca.
           'h-full min-w-0 flex-1 border-0 bg-transparent px-0 text-sm leading-5 shadow-none',
@@ -67,17 +67,9 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
         )}
       />
       {showClear ? (
-        <button
-          type="button"
-          aria-label={copy.panel.searchClear}
-          onClick={clearAll}
-          className={cn(
-            'text-ink-3 hover:bg-surface-muted hover:text-ink rounded-ctl flex size-8 shrink-0 items-center justify-center',
-            focusRing,
-          )}
-        >
+        <IconButton aria-label={getCopy().panel.searchClear} onClick={clearAll}>
           <X className="size-4" strokeWidth={2} aria-hidden />
-        </button>
+        </IconButton>
       ) : null}
     </div>
   )

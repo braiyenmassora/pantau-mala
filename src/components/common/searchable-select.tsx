@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { Check, ChevronDown, Search, X } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { focusRing } from '@/components/common/focus-ring'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { cn } from '@/lib/utils'
 
 export type SearchableSelectOption = {
@@ -32,9 +32,9 @@ export function SearchableSelect({
   value,
   options,
   onChange,
-  placeholder = 'Pilih...',
-  searchPlaceholder = 'Cari...',
-  emptyText = 'Tidak ditemukan',
+  placeholder = getCopy().common.pick,
+  searchPlaceholder = getCopy().common.search,
+  emptyText = getCopy().common.notFound,
   disabled = false,
   className,
   ariaLabel,
@@ -130,7 +130,7 @@ export function SearchableSelect({
               <button
                 type="button"
                 onClick={() => setSearch('')}
-                aria-label={copy.common.clearSearch}
+                aria-label={getCopy().common.clearSearch}
                 className="text-ink-3 hover:text-ink rounded-ctl flex size-8 shrink-0 items-center justify-center"
               >
                 <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
@@ -140,7 +140,9 @@ export function SearchableSelect({
         </div>
         <div role="listbox" className="soft-scroll max-h-56 overflow-y-auto p-1">
           {filteredOptions.length === 0 ? (
-            <p className="text-ink-2 px-3 py-2 text-center text-xs leading-4">{emptyText}</p>
+            <p className="text-ink-2 px-3 py-2 text-center text-xs leading-4">
+              {emptyText}
+            </p>
           ) : (
             filteredOptions.map((opt) => {
               const active = opt.value === value

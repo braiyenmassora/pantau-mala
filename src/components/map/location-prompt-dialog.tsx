@@ -3,7 +3,7 @@ import { useEffect, useRef, type RefObject } from 'react'
 
 import { Button, EmptyState } from '@/components/common'
 import type { MapRef } from '@/components/ui/map'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { chromeSurface } from '@/lib/chrome'
 import { restoreFocusTrigger } from '@/lib/focus-return'
 import { locationFromCoords, resolveUserCoords } from '@/lib/geolocation'
@@ -69,8 +69,8 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
         variant="bare"
         icon={LocateFixed}
         titleId="location-prompt-title"
-        title={copy.location.promptTitle}
-        description={copy.location.promptBody}
+        title={getCopy().location.promptTitle}
+        description={getCopy().location.promptBody}
         actions={
           <>
             <Button
@@ -79,7 +79,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
               className="shadow-none"
               onClick={dismiss}
             >
-              {copy.location.promptLater}
+              {getCopy().location.promptLater}
             </Button>
             <Button
               variant="primary"
@@ -96,7 +96,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
                 })
               }}
             >
-              {copy.location.promptContinue}
+              {getCopy().location.promptContinue}
             </Button>
           </>
         }

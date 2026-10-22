@@ -4,7 +4,7 @@ import { type RefObject } from 'react'
 import { focusRing } from '@/components/common/focus-ring'
 import { MapAttributionLinks } from '@/components/map/map-attribution'
 import type { MapRef } from '@/components/ui/map'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { useHotspots, useMeta, useRegions } from '@/data/queries'
 import { getDataFreshness } from '@/lib/data-freshness'
 import { rememberFocusTrigger } from '@/lib/focus-return'
@@ -42,8 +42,8 @@ export function MapControls({ mapRef }: MapControlsProps) {
   const relative = updatedIso ? formatRelativeAge(updatedIso) : null
   const stampLabel = relative
     ? freshness.stale
-      ? copy.updatedAt.staleStamp(relative)
-      : copy.footer.dataUpdated(relative)
+      ? getCopy().updatedAt.staleStamp(relative)
+      : getCopy().footer.dataUpdated(relative)
     : null
   const hasCoords =
     (location.status === 'active' || location.status === 'outside') && !!location.coords
@@ -62,7 +62,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
         <button
           type="button"
           className={cn(btnClass, hasCoords && 'bg-brand-soft text-brand', focusRing)}
-          aria-label={hasCoords ? copy.map.recenter : copy.map.useMyLocation}
+          aria-label={hasCoords ? getCopy().map.recenter : getCopy().map.useMyLocation}
           aria-pressed={Boolean(hasCoords)}
           onClick={(e) => {
             if (hasCoords) {
@@ -97,7 +97,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
         <button
           type="button"
           className={cn(btnClass, focusRing)}
-          aria-label={copy.map.zoomIn}
+          aria-label={getCopy().map.zoomIn}
           onClick={() => mapRef.current?.zoomIn({ duration: 300 })}
         >
           <Plus className={iconClass} strokeWidth={2} aria-hidden />
@@ -105,7 +105,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
         <button
           type="button"
           className={cn(btnClass, focusRing)}
-          aria-label={copy.map.zoomOut}
+          aria-label={getCopy().map.zoomOut}
           onClick={() => mapRef.current?.zoomOut({ duration: 300 })}
         >
           <Minus className={iconClass} strokeWidth={2} aria-hidden />

@@ -14,7 +14,7 @@ import { SummaryPanel } from '@/components/panel/summary-panel'
 import { WilayahUrlSync } from '@/components/wilayah-url-sync'
 import type { MapRef } from '@/components/ui/map'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import { copy } from '@/copy/id'
+import { getCopy, useLocaleStore } from '@/copy'
 import { useRegions } from '@/data/queries'
 import { filterRegions } from '@/lib/filter-regions'
 import { restoreFocusTrigger } from '@/lib/focus-return'
@@ -32,6 +32,8 @@ const MapShell = lazy(() =>
 const easePanel = 'duration-300 ease-out-soft'
 
 export default function App() {
+  // Subscribe locale: changing language re-renders the whole tree (children read via getCopy()).
+  useLocaleStore((s) => s.locale)
   const mapRef = useRef<MapRef | null>(null)
   const panelContentRef = useRef<HTMLDivElement>(null)
   const [mobile, setMobile] = useState(() => isMobileWidth())
@@ -159,7 +161,7 @@ export default function App() {
         <Toast />
 
         <aside
-          aria-label={copy.app.panelAria}
+          aria-label={getCopy().app.panelAria}
           inert={!panelOpen || undefined}
           className={cn(
             // mobile: viewport−32; tablet+: max 400 tapi sisakan ruang peta
@@ -198,7 +200,7 @@ export default function App() {
           type="button"
           onClick={togglePanel}
           aria-expanded={panelOpen}
-          aria-label={panelOpen ? copy.app.hidePanel : copy.app.showPanel}
+          aria-label={panelOpen ? getCopy().app.hidePanel : getCopy().app.showPanel}
           className={cn(
             // w-11 (44px): touch target; visual tetap tab tipis di tepi panel
             'absolute top-1/2 z-[41] flex h-12 w-11 -translate-y-1/2 items-center justify-center',
@@ -230,7 +232,7 @@ export default function App() {
         <main
           inert={(mobile && panelOpen) || undefined}
           aria-hidden={(mobile && panelOpen) || undefined}
-          aria-label={copy.app.mapAria}
+          aria-label={getCopy().app.mapAria}
           className="absolute inset-0 z-0"
         >
           {/* Suspense: bg polos. Overlay "Memuat…" di AccessGate sampai mapReady. */}

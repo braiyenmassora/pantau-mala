@@ -1,11 +1,11 @@
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { cn } from '@/lib/utils'
 
 export function ProgressBar({ className }: { className?: string } = {}) {
   return (
     <div
       role="progressbar"
-      aria-label={copy.common.loading}
+      aria-label={getCopy().common.loading}
       aria-busy="true"
       className={cn(
         'bg-line relative h-1 w-full overflow-hidden rounded-full',

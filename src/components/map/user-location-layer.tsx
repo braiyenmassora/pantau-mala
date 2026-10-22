@@ -4,7 +4,7 @@ import { BeatWaveRadius } from '@/components/map/beat-wave-radius'
 import { mapPinTip } from '@/components/map/map-pin-tip'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
 import { riskBeatMs } from '@/lib/map-beat'
 import { NEARBY_HOTSPOT_RADIUS_KM } from '@/lib/nearby'
@@ -63,7 +63,7 @@ export function UserLocationLayer() {
               <button
                 type="button"
                 className="border-surface bg-surface relative flex size-5 cursor-pointer items-center justify-center rounded-full border-2 shadow-md transition-transform duration-150 hover:scale-110 active:scale-95"
-                aria-label={copy.location.yourLocation}
+                aria-label={getCopy().location.yourLocation}
                 onClick={(event) => {
                   event.stopPropagation()
                   map?.flyTo({
@@ -81,16 +81,18 @@ export function UserLocationLayer() {
             <TooltipContent side="top" sideOffset={8} className={mapPinTip}>
               <span className="border-line flex w-full items-center justify-between gap-2 border-b pb-2">
                 <span className="text-ink text-sm leading-5 font-semibold">
-                  {copy.location.yourLocation}
+                  {getCopy().location.yourLocation}
                 </span>
                 {!outside ? (
                   <span className="text-ink-2 text-xs leading-4 tabular-nums">
-                    {copy.location.radiusBadge}
+                    {getCopy().location.radiusBadge}
                   </span>
                 ) : null}
               </span>
               <span className="text-ink-2 text-xs leading-4">
-                {outside ? copy.location.outsidePinNote : copy.location.riskSubtitle}
+                {outside
+                  ? getCopy().location.outsidePinNote
+                  : getCopy().location.riskSubtitle}
               </span>
             </TooltipContent>
           </Tooltip>

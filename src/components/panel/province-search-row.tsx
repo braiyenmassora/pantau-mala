@@ -4,7 +4,7 @@ import type { RefObject } from 'react'
 import { ListRow } from '@/components/common/list-row'
 import { RiskMarker } from '@/components/common/risk-marker'
 import type { MapRef } from '@/components/ui/map'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import type { CatalogProvince, RiskCategory } from '@/data/types'
 import { formatNumber } from '@/lib/format'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
@@ -34,13 +34,13 @@ export function ProvinceSearchRow({
   const countLabel = formatNumber(hotspotCount)
   const meta =
     hotspotCount <= 0
-      ? copy.search.noHotspots
+      ? getCopy().search.noHotspots
       : countKind === 'titik'
-        ? copy.map.regionMetaHotspots(countLabel)
-        : copy.search.withHotspots(countLabel)
+        ? getCopy().map.regionMetaHotspots(countLabel)
+        : getCopy().search.withHotspots(countLabel)
   // Top list: nama saja (seperti pin). Search: "Provinsi …".
   const title =
-    countKind === 'titik' ? province.name : copy.search.provinceTitle(province.name)
+    countKind === 'titik' ? province.name : getCopy().search.provinceTitle(province.name)
 
   const effectiveRisk: RiskCategory =
     riskCategory && riskCategory !== 'tidak_tersedia'

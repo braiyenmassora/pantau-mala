@@ -1,7 +1,7 @@
 import type { HTMLAttributes, ReactNode } from 'react'
 
 import type { RiskCategory } from '@/data/types'
-import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { RISK_CATEGORIES, riskCategoryLabel } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
 
@@ -32,7 +32,7 @@ export function Badge(props: BadgeProps) {
   const style = RISK_CATEGORIES[category]
   return (
     <span className={cn(badgeBase, style.badgeClass, className)} {...rest}>
-      {style.label}
+      {riskCategoryLabel(category)}
     </span>
   )
 }

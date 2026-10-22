@@ -1,12 +1,12 @@
 import { OutboundLink } from '@/components/common/outbound-link'
 import { SectionHead } from '@/components/common/section-head'
 import { Card, CardContent } from '@/components/ui/card'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { OFFICIAL_REFS, POSKO_KARHUTLA, type OfficialRefId } from '@/data/official-refs'
 import { cn } from '@/lib/utils'
 
 function refCopy(id: OfficialRefId) {
-  return copy.official.refs[id]
+  return getCopy().official.refs[id]
 }
 
 /** Versi ringkas: tautan saja (footer panel). */
@@ -14,7 +14,7 @@ export function OfficialRefsCompact({ className }: { className?: string }) {
   return (
     <div className={cn('space-y-1', className)} data-testid="official-refs-compact">
       <p className="text-ink-2 text-xs leading-4 font-medium">
-        {copy.footer.officialLabel}
+        {getCopy().footer.officialLabel}
       </p>
       <ul className="flex flex-wrap items-center gap-x-1 gap-y-1">
         {OFFICIAL_REFS.map((ref, index) => {
@@ -31,8 +31,8 @@ export function OfficialRefsCompact({ className }: { className?: string }) {
                 external={ref.external}
                 ariaLabel={
                   ref.external
-                    ? copy.official.openExternal(name)
-                    : copy.official.callLabel(name)
+                    ? getCopy().official.openExternal(name)
+                    : getCopy().official.callLabel(name)
                 }
                 className="text-ink-2 hover:text-brand min-h-11 py-1 text-xs leading-4"
                 showIcon={ref.external}
@@ -50,10 +50,10 @@ export function OfficialRefsCompact({ className }: { className?: string }) {
 /** Versi lengkap: blurb per sumber + Posko (kosong sampai data diisi). */
 export function OfficialRefsCard() {
   return (
-    <Card aria-label={copy.official.title} data-testid="official-refs-card">
-      <SectionHead title={copy.official.title} />
+    <Card aria-label={getCopy().official.title} data-testid="official-refs-card">
+      <SectionHead title={getCopy().official.title} />
       <CardContent className="space-y-3">
-        <p className="text-ink-2 text-xs leading-4">{copy.official.differNote}</p>
+        <p className="text-ink-2 text-xs leading-4">{getCopy().official.differNote}</p>
 
         <ul className="space-y-3">
           {OFFICIAL_REFS.map((ref) => {
@@ -65,8 +65,8 @@ export function OfficialRefsCard() {
                   external={ref.external}
                   ariaLabel={
                     ref.external
-                      ? copy.official.openExternal(name)
-                      : copy.official.callLabel(name)
+                      ? getCopy().official.openExternal(name)
+                      : getCopy().official.callLabel(name)
                   }
                 >
                   {name}
@@ -79,9 +79,11 @@ export function OfficialRefsCard() {
           {POSKO_KARHUTLA.length === 0 ? (
             <li className="space-y-1">
               <p className="text-ink text-sm leading-5 font-medium">
-                {copy.official.poskoEmptyName}
+                {getCopy().official.poskoEmptyName}
               </p>
-              <p className="text-ink-2 text-xs leading-4">{copy.official.poskoEmpty}</p>
+              <p className="text-ink-2 text-xs leading-4">
+                {getCopy().official.poskoEmpty}
+              </p>
             </li>
           ) : (
             POSKO_KARHUTLA.map((posko) => (
@@ -91,7 +93,7 @@ export function OfficialRefsCard() {
                 <OutboundLink
                   href={`tel:${posko.phone.replace(/\s+/g, '')}`}
                   external={false}
-                  ariaLabel={copy.official.poskoPhone(posko.phone)}
+                  ariaLabel={getCopy().official.poskoPhone(posko.phone)}
                 >
                   {posko.phone}
                 </OutboundLink>

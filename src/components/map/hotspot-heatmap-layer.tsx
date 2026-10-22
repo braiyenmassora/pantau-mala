@@ -8,7 +8,7 @@ import type {
 
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapPopup, useMap } from '@/components/ui/map'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { useHotspots } from '@/data/queries'
 import type { Region, TimeZoneId } from '@/data/types'
 import { filterHotspotsForMap } from '@/lib/filter-hotspots-for-map'
@@ -332,7 +332,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
           <MapInfoCard
             district={tipHotspot.district}
             regency={tipHotspot.regency}
-            meta={copy.map.regionMetaHotspots('1')}
+            meta={getCopy().map.regionMetaHotspots('1')}
             updatedAt={tipHotspot.updatedAt}
           />
         </MapPopup>

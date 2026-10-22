@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { Chip } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { copy } from '@/copy/id'
+import { getCopy, getLocale } from '@/copy'
 import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { cn } from '@/lib/utils'
@@ -30,13 +30,14 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
       ...(catalog?.provinces.map((p) => p.name) ?? []),
       ...regions.map((r) => r.province),
     ])
-    return [...set].sort((a, b) => a.localeCompare(b, 'id'))
+    return [...set].sort((a, b) => a.localeCompare(b, getLocale() === 'en' ? 'en' : 'id'))
   }, [regions, catalog])
 
-  const provinceLabel = province === ALL_PROVINCES ? copy.filter.allProvinces : province
+  const provinceLabel =
+    province === ALL_PROVINCES ? getCopy().filter.allProvinces : province
   const options = useMemo(
     () => [
-      { value: ALL_PROVINCES, label: copy.filter.allProvinces },
+      { value: ALL_PROVINCES, label: getCopy().filter.allProvinces },
       ...provinces.map((name) => ({ value: name, label: name })),
     ],
     [provinces],
@@ -60,7 +61,7 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
         <Chip
           aria-expanded={open}
           aria-haspopup="listbox"
-          aria-label={copy.filter.pickProvince}
+          aria-label={getCopy().filter.pickProvince}
           className={cn('max-w-[min(240px,55vw)] shrink-0', className)}
         >
           <MapIcon
@@ -94,7 +95,7 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
             />
             <input
               type="text"
-              placeholder={copy.search.searchProvince}
+              placeholder={getCopy().search.searchProvince}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="text-ink placeholder:text-ink-3 w-full bg-transparent text-sm leading-5 outline-none"
@@ -105,7 +106,7 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
                 type="button"
                 onClick={() => setSearch('')}
                 className="text-ink-3 hover:text-ink"
-                aria-label={copy.search.clearProvinceSearch}
+                aria-label={getCopy().search.clearProvinceSearch}
               >
                 <X className="size-4 shrink-0" strokeWidth={1.75} />
               </button>
@@ -114,12 +115,12 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
         </div>
         <div
           role="listbox"
-          aria-label={copy.search.provinces}
+          aria-label={getCopy().search.provinces}
           className="soft-scroll max-h-60 overflow-y-auto"
         >
           {filteredOptions.length === 0 ? (
             <p className="text-ink-2 px-3 py-4 text-center text-sm leading-5">
-              {copy.search.noProvinceFound}
+              {getCopy().search.noProvinceFound}
             </p>
           ) : (
             filteredOptions.map((option) => {

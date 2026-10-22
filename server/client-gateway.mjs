@@ -54,9 +54,7 @@ export function createClientGateway(env, fetcher = fetch) {
       (url.pathname === '/api/v1/hotspot-reports' ||
         url.pathname === '/api/v1/hotspot-reports/photo')
     if (
-      isTelemetry || isReportWrite
-        ? request.method !== 'POST'
-        : request.method !== 'GET'
+      isTelemetry || isReportWrite ? request.method !== 'POST' : request.method !== 'GET'
     )
       return reply(405, { error: 'Read-only frontend' })
     if (request.headers.has('authorization') || request.headers.has('x-client-id'))
@@ -208,11 +206,7 @@ export function createClientGateway(env, fetcher = fetch) {
         })
         if (!created.ok)
           return reply(
-            created.status === 429
-              ? 429
-              : created.status >= 500
-                ? 502
-                : created.status,
+            created.status === 429 ? 429 : created.status >= 500 ? 502 : created.status,
             { error: 'Data unavailable' },
           )
         const createdBody = await created.arrayBuffer()

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { z } from 'zod'
+import { getCopy } from '@/copy'
 import { queryClient } from '@/data/query-client'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -61,7 +62,7 @@ function acceptSession(raw: unknown) {
 export async function sessionRequest(path: string, method = 'POST', body: unknown = {}) {
   const { token, generation, accessMode } = useSession.getState()
   if (accessMode === 'client')
-    throw new Error('Ganti ruang kerja tidak tersedia di mode ini.')
+    throw new Error(getCopy().errors.workspaceSwitchUnavailable)
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'X-Console-Session': '1',
@@ -84,10 +85,10 @@ export async function sessionRequest(path: string, method = 'POST', body: unknow
   if (!res.ok)
     throw new Error(
       res.status === 429
-        ? 'Terlalu banyak percobaan. Coba lagi setelah satu menit.'
+        ? getCopy().errors.tooManyAttempts
         : res.status === 401
-          ? 'Nama pengguna atau kata sandi salah, atau sesi telah berakhir.'
-          : 'Layanan akses belum tersedia. Coba lagi.',
+          ? getCopy().errors.wrongCredentials
+          : getCopy().errors.accessServiceUnavailable,
     )
   return res.status === 204 ? null : (res.json() as Promise<unknown>)
 }
@@ -124,13 +125,14 @@ async function restoreAccess() {
       return
     }
     if (response.status !== 404 && response.status !== 200)
-      throw new Error('Akses aplikasi belum tersedia. Coba lagi nanti.')
+      throw new Error(getCopy().errors.appAccessUnavailable)
     useSession.setState({ accessMode: 'account' })
     acceptSession(await sessionRequest('/auth/browser-session'))
   } catch (error) {
     expireSession()
     useSession.setState({
-      accessError: error instanceof Error ? error.message : 'Akses belum tersedia.',
+      accessError:
+        error instanceof Error ? error.message : getCopy().errors.accessUnavailable,
     })
   }
 }

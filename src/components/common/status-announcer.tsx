@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { useRegionCatalog, useRegions } from '@/data/queries'
-import { copy } from '@/copy/id'
+import { getCopy } from '@/copy'
 import { searchWilayah } from '@/lib/search-wilayah'
 import { useMapStore } from '@/store/map'
 
@@ -19,10 +19,10 @@ export function StatusAnnouncer() {
     if (selectedCode && regions) {
       const region = regions.find((r) => r.code === selectedCode)
       if (region) {
-        parts.push(copy.a11y.regionSelected(region.name))
+        parts.push(getCopy().a11y.regionSelected(region.name))
       } else if (daftar) {
         const kab = daftar.regencies.find((k) => k.code === selectedCode)
-        if (kab) parts.push(copy.a11y.regionSelected(kab.name))
+        if (kab) parts.push(getCopy().a11y.regionSelected(kab.name))
       }
     }
 
@@ -30,13 +30,15 @@ export function StatusAnnouncer() {
     if (q && daftar && regions && !selectedCode) {
       const hits = searchWilayah(daftar, regions, q)
       const n = hits.provinces.length + hits.kabkota.length
-      parts.push(n === 0 ? copy.empty.searchMiss.title : copy.a11y.searchHits(n))
+      parts.push(
+        n === 0 ? getCopy().empty.searchMiss.title : getCopy().a11y.searchHits(n),
+      )
     }
 
     if (location.status === 'active') {
-      parts.push(copy.location.yourLocation)
+      parts.push(getCopy().location.yourLocation)
     } else if (location.status === 'outside') {
-      parts.push(copy.location.outsideTitle)
+      parts.push(getCopy().location.outsideTitle)
     }
 
     return parts.join('. ')
