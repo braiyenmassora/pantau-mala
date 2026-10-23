@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "pantaumala",
+  // Hostname pantaumala.live terikat ke script pantau-mala (bukan pantaumala).
+  "name": "pantau-mala",
   "main": "worker.ts",
   "compatibility_date": "2026-10-13",
   "workers_dev": true,
@@ -27,6 +28,9 @@
       "/auth/*",
       "/frontend/session",
       "/report-photos/*",
+      // Crawler share: injeksi OG wilayah sebelum SPA assets.
+      "/wilayah",
+      "/wilayah/*",
     ],
   },
   "vars": {

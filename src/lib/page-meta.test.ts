@@ -27,7 +27,7 @@ describe('page-meta', () => {
     ).toBe('https://pantaumala.live/wilayah/kab-pulang-pisau-6211')
     expect(
       document.querySelector('meta[property="og:image"]')?.getAttribute('content'),
-    ).toBe('https://pantaumala.live/og.png')
+    ).toBe('https://pantaumala.live/og.png?v=2')
     expect(
       document.querySelector('meta[name="twitter:card"]')?.getAttribute('content'),
     ).toBe('summary_large_image')

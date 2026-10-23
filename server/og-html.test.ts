@@ -14,7 +14,7 @@ const shell = `<!doctype html><html><head>
 <meta property="og:title" content="old" />
 <meta property="og:description" content="old" />
 <meta property="og:url" content="https://example.test/" />
-<meta property="og:image" content="https://example.test/og.png" />
+<meta property="og:image" content="https://example.test/og.png?v=2" />
 <link rel="canonical" href="https://example.test/" />
 </head><body></body></html>`
 
@@ -39,7 +39,7 @@ describe('og-html', () => {
     expect(og.title).toContain('Kapuas')
     expect(og.title).toContain('Pantau Mala')
     expect(og.url).toBe('https://pantaumala.live/wilayah/kapuas-6203')
-    expect(og.image).toBe('https://pantaumala.live/og.png')
+    expect(og.image).toBe('https://pantaumala.live/og.png?v=2')
     expect(og.description).toContain('Bukan peringatan resmi kebakaran')
   })
 
@@ -48,7 +48,7 @@ describe('og-html', () => {
       title: 'Kab. Tes - Pantau Mala',
       description: 'Deskripsi uji.',
       url: 'https://pantaumala.live/wilayah/kab-tes-6299',
-      image: 'https://pantaumala.live/og.png',
+      image: 'https://pantaumala.live/og.png?v=2',
       imageAlt: 'alt',
     })
     expect(html).toContain('<title>Kab. Tes - Pantau Mala</title>')
