@@ -108,8 +108,16 @@ describe('EmptyState', () => {
     expect(screen.queryByRole('button')).toBeNull()
   })
 
-  it('action variant is bordered surface CTA', () => {
-    const { container } = render(
+  it('info and action share the same soft card chrome', () => {
+    const { container: info } = render(
+      <EmptyState
+        variant="info"
+        icon={MapPinOff}
+        title={copy.location.riskTitle}
+        description={copy.location.riskSubtitle}
+      />,
+    )
+    const { container: action } = render(
       <EmptyState
         variant="action"
         icon={MapPinOff}
@@ -117,9 +125,25 @@ describe('EmptyState', () => {
         description={copy.location.riskSubtitle}
       />,
     )
-    const section = container.querySelector('section')
-    expect(section?.className).toContain('border')
-    expect(section?.className).toContain('bg-surface')
+    const infoSection = info.querySelector('section')
+    const actionSection = action.querySelector('section')
+    expect(infoSection?.className).toContain('border')
+    expect(infoSection?.className).toContain('bg-surface-muted')
+    expect(actionSection?.className).toContain('bg-surface-muted')
+  })
+
+  it('uses secondary button for actions', () => {
+    render(
+      <EmptyState
+        icon={Filter}
+        title={copy.empty.noRegionsFilter.title}
+        description={copy.empty.noRegionsFilter.description('Sedang', 'Jambi')}
+        action={{ label: copy.empty.noRegionsFilter.action, onClick: () => {} }}
+      />,
+    )
+    const btn = screen.getByRole('button', { name: copy.empty.noRegionsFilter.action })
+    expect(btn.className).toMatch(/border/)
+    expect(btn.className).not.toMatch(/bg-brand-soft/)
   })
 
   it('bare variant has no section chrome', () => {

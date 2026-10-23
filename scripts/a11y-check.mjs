@@ -70,8 +70,14 @@ try {
     executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH,
     args: ['--enable-unsafe-swiftshader'],
   })
+  // Scripts assert Indonesian copy; force id (Playwright default is often en).
   const context = await browser.newContext({
     viewport: { width: 1440, height: 900 },
+    locale: 'id-ID',
+    timezoneId: 'Asia/Jakarta',
+  })
+  await context.addInitScript(() => {
+    localStorage.setItem('pantau-mala-locale', 'id')
   })
   await installGoFixtures(context, false)
   const page = await context.newPage()

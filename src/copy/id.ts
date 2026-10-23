@@ -24,6 +24,14 @@ export const copy = {
     accessServiceUnavailable: 'Layanan akses belum tersedia. Coba lagi.',
     appAccessUnavailable: 'Akses aplikasi belum tersedia. Coba lagi nanti.',
     accessUnavailable: 'Akses belum tersedia.',
+    proxyOriginRequired:
+      'FE dan API Go memerlukan proxy origin yang sama dengan base /api/v1.',
+    provinceMetaFailed: 'Metadata batas provinsi belum dapat dimuat.',
+    provinceGeometryFailed: 'Geometri batas provinsi belum dapat dimuat.',
+    provinceHashMismatch: 'Revisi batas provinsi tidak sesuai metadata.',
+    provinceIdentityMismatch: 'Identitas batas provinsi tidak sesuai metadata.',
+    provinceIncomplete: 'Geometri batas provinsi tidak lengkap.',
+    provinceLoadFailed: 'Batas provinsi belum dapat dimuat.',
   },
   riskCategory: {
     tidak_tersedia: 'Belum dinilai',
@@ -150,7 +158,8 @@ export const copy = {
     titleTip:
       'Menampilkan sebaran titik panas satelit di Indonesia selama 24 jam terakhir.',
     /** Satu baris di bawah judul beranda panel. */
-    limitationNote: 'Titik panas terdeteksi satelit, belum tentu kebakaran.',
+    limitationNote:
+      'Titik panas satelit, bukan konfirmasi kebakaran atau peringatan resmi.',
     /** Orbit satelit: hanya saat nol titik terdeteksi. */
     coverageNote:
       'Satelit tidak memantau terus-menerus. Nol titik belum tentu berarti tidak ada api.',
@@ -173,7 +182,9 @@ export const copy = {
     title: 'Laporan di titik ini',
     openAria: 'Buka laporan warga di titik panas ini',
     close: 'Tutup laporan',
-    disclaimer: 'Laporan warga bukan verifikasi resmi dan bukan pengganti panggilan 112.',
+    disclaimer:
+      'Dengan mengirim ini, kamu bertanggung jawab penuh atas keaslian isi laporan.',
+    emergencyHint: 'Jika melihat asap atau api, hubungi 112.',
     empty: 'Belum ada laporan di titik ini.',
     formTitle: 'Kirim laporan',
     sightingLabel: 'Apa yang kamu lihat?',
@@ -185,7 +196,7 @@ export const copy = {
     },
     authorLabel: 'Nama kamu',
     authorPlaceholder: 'Contoh: Sari W.',
-    descriptionLabel: 'Deskripsi',
+    descriptionLabel: 'Deskripsi (wajib)',
     descriptionPlaceholder: 'Ceritakan apa yang kamu lihat…',
     photoLabel: 'Foto (wajib)',
     photoHint: 'JPG, PNG, atau WebP, maks 2 MB.',
@@ -203,10 +214,13 @@ export const copy = {
     listTitle: 'Laporan terbaru',
     panelTitle: 'Laporan warga',
     totalUnit: 'laporan dari warga di seluruh Indonesia',
+    totalContributeHint:
+      'Mau ikut berkontribusi? Buka titik panas di peta, lalu kirim laporan.',
     totalOpenHint: 'Lihat rincian per wilayah',
     groupedEmpty: 'Belum ada laporan warga.',
     panelHint: 'Pengalaman warga di dekat titik panas. Bukan verifikasi resmi.',
     panelOpen: 'Tulis laporan',
+    panelContributeHint: 'Kamu juga bisa kirim laporan di sini, kalau mau.',
     panelEmpty: 'Belum ada laporan di wilayah ini.',
     panelLatest: 'Terbaru',
     detailTitle: 'Detail laporan',

@@ -7,6 +7,7 @@ import {
   getMapPadding,
   isIndonesiaView,
   refreshFitMinZoom,
+  shouldRefitIndonesiaOnZoomOut,
 } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 
@@ -88,6 +89,30 @@ export function IndonesiaMapFraming({ panelOpen, onReady }: IndonesiaMapFramingP
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
   }, [map, isLoaded])
+
+  // Zoom-out sampai lantai overview: re-center nasional (setelah lokasi/wilayah).
+  useEffect(() => {
+    if (!map || !isLoaded) return
+    let snapping = false
+
+    const onZoomEnd = () => {
+      if (snapping || !readyRef.current) return
+      const fitZoom = fitZoomRef.current
+      if (fitZoom == null) return
+      if (!shouldRefitIndonesiaOnZoomOut(map, fitZoom)) return
+      snapping = true
+      const duration = reducedMotion ? 0 : 400
+      fitZoomRef.current = fitIndonesia(map, panelOpenRef.current, duration)
+      window.setTimeout(() => {
+        snapping = false
+      }, duration + 50)
+    }
+
+    map.on('zoomend', onZoomEnd)
+    return () => {
+      map.off('zoomend', onZoomEnd)
+    }
+  }, [map, isLoaded, reducedMotion])
 
   return null
 }

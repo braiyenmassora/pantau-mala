@@ -26,6 +26,14 @@ export const enCopy: typeof copy = {
       'The access service is not available yet. Please try again.',
     appAccessUnavailable: 'App access is not available yet. Please try again later.',
     accessUnavailable: 'Access is not available yet.',
+    proxyOriginRequired:
+      'The FE and Go API need the same-origin proxy with base /api/v1.',
+    provinceMetaFailed: 'Province boundary metadata could not be loaded yet.',
+    provinceGeometryFailed: 'Province boundary geometry could not be loaded yet.',
+    provinceHashMismatch: 'Province boundary revision does not match the metadata.',
+    provinceIdentityMismatch: 'Province boundary identity does not match the metadata.',
+    provinceIncomplete: 'Province boundary geometry is incomplete.',
+    provinceLoadFailed: 'Province boundaries could not be loaded yet.',
   },
   riskCategory: {
     tidak_tersedia: 'Not yet rated',
@@ -150,7 +158,8 @@ export const enCopy: typeof copy = {
     subtitle: 'NASA FIRMS satellite detection · last 24 hours',
     titleTip:
       'Shows the distribution of satellite hotspots in Indonesia over the last 24 hours.',
-    limitationNote: 'A satellite-detected hotspot is not necessarily a fire.',
+    limitationNote:
+      'Satellite hotspots are not a fire confirmation or an official warning.',
     coverageNote:
       'Satellites do not monitor continuously. Zero hotspots does not necessarily mean there is no fire.',
     hotspot24h: 'Hotspots (24 hours)',
@@ -173,7 +182,8 @@ export const enCopy: typeof copy = {
     openAria: 'Open citizen reports at this hotspot',
     close: 'Close reports',
     disclaimer:
-      'Citizen reports are not official verification and are not a substitute for calling 112.',
+      'By submitting this, you are fully responsible for the authenticity of the report.',
+    emergencyHint: 'If you see smoke or fire, call 112.',
     empty: 'No reports at this point yet.',
     formTitle: 'Submit a report',
     sightingLabel: 'What do you see?',
@@ -185,7 +195,7 @@ export const enCopy: typeof copy = {
     },
     authorLabel: 'Your name',
     authorPlaceholder: 'Example: Sari W.',
-    descriptionLabel: 'Description',
+    descriptionLabel: 'Description (required)',
     descriptionPlaceholder: 'Tell us what you saw…',
     photoLabel: 'Photo (required)',
     photoHint: 'JPG, PNG, or WebP, max 2 MB.',
@@ -203,10 +213,13 @@ export const enCopy: typeof copy = {
     listTitle: 'Latest reports',
     panelTitle: 'Citizen reports',
     totalUnit: 'reports from citizens across Indonesia',
+    totalContributeHint:
+      'Want to contribute? Open a hotspot on the map, then send a report.',
     totalOpenHint: 'See details by region',
     groupedEmpty: 'No citizen reports yet.',
     panelHint: 'Citizen experiences near hotspots. Not official verification.',
     panelOpen: 'Write a report',
+    panelContributeHint: 'You can send a report here too, if you want.',
     panelEmpty: 'No reports in this region yet.',
     panelLatest: 'Latest',
     detailTitle: 'Report details',

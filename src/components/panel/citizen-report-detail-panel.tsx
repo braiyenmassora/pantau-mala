@@ -108,7 +108,7 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
           <p className="text-ink-2 text-xs leading-4">{getCopy().report.detailMapHint}</p>
         </div>
 
-        <p className="text-ink-2 text-xs leading-4">{getCopy().report.disclaimer}</p>
+        <p className="text-ink-2 text-xs leading-4">{getCopy().report.panelHint}</p>
       </div>
     </div>
   )

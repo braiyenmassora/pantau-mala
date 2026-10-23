@@ -2,7 +2,7 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 
 /** Kartu panel: putih + border line (tanpa shadow).
- * Anatomi: label 12 · nilai · meta 12 · aksi opsional. Padding 16, radius 12. */
+ * Anatomi: label xs · nilai · meta xs · aksi opsional. Padding 16, radius card. */
 function Card({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div

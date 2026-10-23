@@ -1,7 +1,7 @@
-import { LocateFixed } from 'lucide-react'
+import { Info, LocateFixed } from 'lucide-react'
 import { useMemo, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react'
 
-import { Button, HotspotStatusBadge, InfoTooltip, ProgressBar } from '@/components/common'
+import { Button, HotspotStatusBadge, ProgressBar } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { SectionHead } from '@/components/common/section-head'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -55,7 +55,7 @@ function StateActions({
         type="button"
         variant="secondary"
         size="sm"
-        className="w-full shrink-0 shadow-none min-[380px]:w-auto"
+        className="w-full shrink-0 min-[380px]:w-auto"
         onClick={() => focusWilayahSearch()}
       >
         {getCopy().location.searchManual}
@@ -269,6 +269,7 @@ function ActiveNearbyCard({
   return (
     <Card
       aria-label={getCopy().location.nearbyLabel}
+      aria-description={getCopy().location.riskNearbyTip}
       className={cn(
         detailCode &&
           'hover:bg-surface-muted cursor-pointer transition-colors duration-150',
@@ -295,7 +296,13 @@ function ActiveNearbyCard({
       <CardHeader>
         <div className="flex min-w-0 items-center gap-1">
           <CardTitle>{getCopy().location.nearbyLabel}</CardTitle>
-          <InfoTooltip content={getCopy().location.riskNearbyTip} />
+          <span
+            className="text-ink-3 inline-flex size-3.5 shrink-0"
+            title={getCopy().location.riskNearbyTip}
+            aria-hidden
+          >
+            <Info className="size-3.5" strokeWidth={1.75} />
+          </span>
         </div>
         <HotspotStatusBadge hotspots={nearby.hotspotCount} riskCategory={riskCategory} />
       </CardHeader>

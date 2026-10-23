@@ -16,7 +16,11 @@ const MAP_RISK_ORDER = ['sangat_tinggi', 'sedang', 'rendah'] as const
 const legendCardClass =
   'bg-surface/95 shrink-0 gap-2 px-3 py-2 shadow-chrome backdrop-blur-sm'
 
-/** Dua kartu strip: risiko (+ abu tanpa titik) dan kerapatan — lebar & tinggi sama. */
+/**
+ * Legenda peta (info, bukan filter).
+ * Web (sm+): Tingkat risiko + Kerapatan.
+ * Mobile: hanya Kerapatan (risiko lewat dropdown filter).
+ */
 export function MapLegend() {
   const panelOpen = useUiStore((s) => s.panelOpen)
   const { left, legendAvailWidth: availWidth } = useMapChrome(panelOpen)
@@ -38,7 +42,11 @@ export function MapLegend() {
   useEffect(() => {
     const el = riskRef.current
     if (!el) return
-    const sync = () => setRiskWidth(el.offsetWidth)
+    const sync = () => {
+      // hidden di mobile → width 0; hanya samakan lebar di web.
+      const w = el.offsetWidth
+      setRiskWidth(w > 0 ? w : null)
+    }
     sync()
     const ro = new ResizeObserver(sync)
     ro.observe(el)
@@ -52,11 +60,12 @@ export function MapLegend() {
       // Region scroll horizontal harus bisa difokus keyboard (axe scrollable-region-focusable).
       tabIndex={overflowX ? 0 : undefined}
       className={cn(
-        'pointer-events-auto fixed bottom-(--floating-control-offset) z-30',
-        'soft-scroll flex flex-row items-stretch gap-2 overflow-x-auto',
+        'pointer-events-auto fixed z-30',
+        'soft-scroll flex items-stretch gap-2 overflow-x-auto',
         overflowX && 'soft-fade-x pr-7',
-        'ease-out-soft transition-[left,max-width] duration-300',
-        panelOpen && 'max-sm:hidden',
+        'ease-out-soft transition-[left,max-width,bottom] duration-300',
+        // Mobile: di atas bottom sheet; tablet+: pojok bawah.
+        'bottom-[calc(var(--map-sheet-height)+var(--floating-control-offset))] sm:bottom-(--floating-control-offset)',
         focusRing,
       )}
       style={{ left, maxWidth: availWidth }}
@@ -65,7 +74,7 @@ export function MapLegend() {
       <Card
         ref={riskRef}
         aria-label={getCopy().legend.riskTitle}
-        className={cn(legendCardClass, 'w-max')}
+        className={cn(legendCardClass, 'hidden w-max max-w-full sm:flex')}
       >
         <p className="text-ink-2 text-xs leading-4 font-medium">
           {getCopy().legend.riskTitle}
@@ -89,7 +98,7 @@ export function MapLegend() {
 
       <Card
         aria-label={`${getCopy().legend.densityTitle}: ${getCopy().legend.densityLow}, ${getCopy().legend.densityMid}, ${getCopy().legend.densityHigh}`}
-        className={cn(legendCardClass, 'box-border min-w-0')}
+        className={cn(legendCardClass, 'box-border w-56 max-w-full sm:w-auto')}
         style={riskWidth != null ? { width: riskWidth } : undefined}
       >
         <p className="text-ink-2 text-xs leading-4 font-medium">

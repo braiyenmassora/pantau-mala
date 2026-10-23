@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 import type { HotspotReportTarget } from '@/data/hotspot-reports'
-import { isDesktopWidth } from '@/lib/layout'
+import { isTabletWidth } from '@/lib/layout'
 
 type UiState = {
   panelOpen: boolean
@@ -22,8 +22,8 @@ type UiState = {
 }
 
 function initialPanelOpen(): boolean {
-  // Desktop saja mulai terbuka; mobile/tablet mulai tertutup agar peta penuh.
-  return isDesktopWidth()
+  // Mobile sheet + desktop panel mulai terbuka (Maps-style). Tablet: tertutup agar peta penuh.
+  return !isTabletWidth()
 }
 
 export const useUiStore = create<UiState>((set) => ({

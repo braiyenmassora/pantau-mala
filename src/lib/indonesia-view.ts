@@ -5,6 +5,7 @@ import {
   LAYOUT,
   chromeLeft,
   isMobileWidth,
+  mobileMapBottomInset,
   viewportWidth,
 } from '@/lib/layout'
 
@@ -19,8 +20,14 @@ export const INDONESIA_CENTER: [number, number] = [118, -2]
 
 /** Shared flyTo zoom for wilayah / lokasi — keeps place framing consistent. */
 export const PLACE_ZOOM = 8
-/** Location framing: nearby context without hiding the national overview. */
+/** Location framing (desktop): nearby context without hiding the national overview. */
 export const LOCATION_ZOOM = 5.5
+/** Location framing (mobile): lebih dekat — peep sheet + pola “dekat kamu” ala Maps. */
+export const MOBILE_LOCATION_ZOOM = 7.2
+
+export function locationFramingZoom(width = viewportWidth()): number {
+  return isMobileWidth(width) ? MOBILE_LOCATION_ZOOM : LOCATION_ZOOM
+}
 /**
  * Lantai zoom overview nasional — jangan naikkan di atas cameraForBounds:
  * Sabang→Merauke harus muat (Papua tidak boleh terpotong).
@@ -29,7 +36,7 @@ export const OVERVIEW_ZOOM_FLOOR = 3.8
 
 /**
  * Padding area aman agar fit nasional tidak ketutup chip/legend/panel.
- * Mobile: panel overlay → jangan geser kamera. Tablet: inset lebih pendek dari desktop.
+ * Mobile: bottom sheet → padding bawah = tinggi sheet saat terbuka. Tablet/desktop: inset kiri.
  */
 export function getMapPadding(panelOpen: boolean): PaddingOptions {
   const width = viewportWidth()
@@ -38,7 +45,8 @@ export function getMapPadding(panelOpen: boolean): PaddingOptions {
       left: LAYOUT.gutter,
       top: 72,
       right: LAYOUT.gutter,
-      bottom: 88,
+      // Peep selalu ada → padding bawah tidak pernah kembali ke 88.
+      bottom: mobileMapBottomInset(panelOpen),
     }
   }
   const left = panelOpen ? chromeLeft(true, width) : 24
@@ -160,14 +168,30 @@ export function fitProvinceBounds(
   )
 }
 
-/** Read current view bounds and lock maxBounds to +10% padding. */
+/**
+ * Kunci pan ke wilayah Indonesia (+10%), bukan ke viewport kamera saat ini.
+ * Viewport saat zoom-in (lokasi/wilayah) terlalu sempit → zoom-out tidak bisa
+ * menampilkan Sabang→Merauke.
+ */
 export function applyDynamicMaxBounds(map: MaplibreMap) {
-  map.setMaxBounds(expandBounds10(map.getBounds()))
+  const [[west, south], [east, north]] = INDONESIA_BOUNDS
+  const lonPad = (east - west) * 0.1
+  const latPad = (north - south) * 0.1
+  map.setMaxBounds([
+    [west - lonPad, south - latPad],
+    [east + lonPad, north + latPad],
+  ])
+}
+
+/** Headroom zoom-out di bawah zoom fit nasional (mobile sheet tinggi → headroom lebih besar). */
+function overviewMinZoom(fitZoom: number): number {
+  const headroom = isMobileWidth() ? 1.15 : 0.35
+  return Math.max(OVERVIEW_ZOOM_FLOOR - (isMobileWidth() ? 0.4 : 0), fitZoom - headroom)
 }
 
 /**
  * Overview nasional dengan zoom lantai agar nama provinsi kebaca.
- * Lalu kunci maxBounds dari viewport (+10%).
+ * Lalu kunci maxBounds ke bbox Indonesia (+10%).
  */
 export function fitIndonesia(map: MaplibreMap, panelOpen: boolean, duration = 0): number {
   const { center, zoom, padding } = overviewCamera(map, panelOpen)
@@ -187,7 +211,7 @@ export function fitIndonesia(map: MaplibreMap, panelOpen: boolean, duration = 0)
       easing: easeOutSoft,
     })
   }
-  map.setMinZoom(Math.max(OVERVIEW_ZOOM_FLOOR, zoom - 0.35))
+  map.setMinZoom(overviewMinZoom(zoom))
   scheduleMaxBounds(map, duration)
   return zoom
 }
@@ -204,7 +228,7 @@ export function refreshFitMinZoom(map: MaplibreMap, panelOpen: boolean): number 
     bearing: map.getBearing(),
     pitch: map.getPitch(),
   }
-  const minZoom = Math.max(OVERVIEW_ZOOM_FLOOR, zoom - 0.35)
+  const minZoom = overviewMinZoom(zoom)
   const wasOverview = prev.zoom <= zoom + 0.15
 
   clearMapLimits(map)
@@ -226,4 +250,24 @@ export function refreshFitMinZoom(map: MaplibreMap, panelOpen: boolean): number 
 
 export function isIndonesiaView(map: MaplibreMap, fitZoom: number): boolean {
   return map.getZoom() <= fitZoom + 0.15
+}
+
+/**
+ * Zoom-out sudah di lantai overview tapi viewport belum mencakup Sabang→Merauke
+ * (mis. masih terpusat di lokasi pengguna) → perlu fitIndonesia.
+ */
+export function shouldRefitIndonesiaOnZoomOut(
+  map: MaplibreMap,
+  fitZoom: number,
+): boolean {
+  if (map.getZoom() > fitZoom + 0.25) return false
+  const b = map.getBounds()
+  // Toleransi 2° — padding sheet/chrome boleh sedikit memotong tepi laut.
+  const pad = 2
+  const coversIndonesia =
+    b.getWest() <= INDONESIA_BOUNDS[0][0] + pad &&
+    b.getSouth() <= INDONESIA_BOUNDS[0][1] + pad &&
+    b.getEast() >= INDONESIA_BOUNDS[1][0] - pad &&
+    b.getNorth() >= INDONESIA_BOUNDS[1][1] - pad
+  return !coversIndonesia
 }

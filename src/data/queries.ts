@@ -16,10 +16,7 @@ export async function getData<T>(
   const { token, generation, accessMode } = useSession.getState()
   if (!token && accessMode !== 'client') throw new Error(getCopy().errors.sessionRequired)
   const configured = import.meta.env.VITE_DATA_URL?.trim() || '/api/v1'
-  if (configured !== '/api/v1')
-    throw new Error(
-      'FE dan API Go memerlukan proxy origin yang sama dengan base /api/v1.',
-    )
+  if (configured !== '/api/v1') throw new Error(getCopy().errors.proxyOriginRequired)
   const res = await fetch(configured + path, {
     method: init?.method ?? 'GET',
     headers: {

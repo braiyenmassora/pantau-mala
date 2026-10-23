@@ -1,10 +1,15 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { fitIndonesia, fitProvinceBounds, getMapPadding } from '@/lib/indonesia-view'
-import { LAYOUT } from '@/lib/layout'
+import {
+  fitIndonesia,
+  fitProvinceBounds,
+  getMapPadding,
+  shouldRefitIndonesiaOnZoomOut,
+} from '@/lib/indonesia-view'
+import { LAYOUT, mobileMapBottomInset } from '@/lib/layout'
 
-function stubWidth(width: number) {
-  vi.stubGlobal('window', { innerWidth: width })
+function stubWidth(width: number, height = 800) {
+  vi.stubGlobal('window', { innerWidth: width, innerHeight: height })
 }
 
 function mockMap() {
@@ -85,14 +90,45 @@ describe('fitProvinceBounds', () => {
   })
 })
 
+describe('shouldRefitIndonesiaOnZoomOut', () => {
+  it('asks for national refit when zoomed out but bounds miss Sabang–Merauke', () => {
+    const map = {
+      getZoom: () => 4.0,
+      getBounds: () => ({
+        getWest: () => 108,
+        getSouth: () => -6,
+        getEast: () => 120,
+        getNorth: () => 2,
+      }),
+    }
+    expect(shouldRefitIndonesiaOnZoomOut(map as never, 4.2)).toBe(true)
+  })
+
+  it('skips refit when bounds already cover Indonesia', () => {
+    const map = {
+      getZoom: () => 4.0,
+      getBounds: () => ({
+        getWest: () => 94,
+        getSouth: () => -12,
+        getEast: () => 142,
+        getNorth: () => 7,
+      }),
+    }
+    expect(shouldRefitIndonesiaOnZoomOut(map as never, 4.2)).toBe(false)
+  })
+})
+
 describe('getMapPadding', () => {
   afterEach(() => {
     vi.unstubAllGlobals()
   })
 
-  it('ignores panel inset on mobile', () => {
-    stubWidth(390)
-    expect(getMapPadding(true).left).toBe(LAYOUT.gutter)
+  it('pads above peep or expanded sheet on mobile', () => {
+    stubWidth(390, 800)
+    const open = getMapPadding(true)
+    expect(open.left).toBe(LAYOUT.gutter)
+    expect(open.bottom).toBe(mobileMapBottomInset(true, 800))
+    expect(getMapPadding(false).bottom).toBe(mobileMapBottomInset(false, 800))
   })
 
   it('uses full overlay inset on desktop when panel open', () => {

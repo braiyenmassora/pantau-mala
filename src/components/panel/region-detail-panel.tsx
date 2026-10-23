@@ -3,6 +3,7 @@ import {
   CloudFog,
   Droplets,
   Gauge,
+  MessageSquarePlus,
   Minus,
   Sun,
   TrendingDown,
@@ -207,11 +208,18 @@ function ConditionsCard({ region }: { region: Region }) {
   )
 }
 
-export function CitizenReportsCard({ regionCode }: { regionCode: string }) {
+/** canCompose: dari hitungan wilayah (tersedia segera). Titik GeoJSON bisa datang belakangan. */
+export function CitizenReportsCard({
+  regionCode,
+  canCompose = false,
+}: {
+  regionCode: string
+  canCompose?: boolean
+}) {
   const setReportTarget = useUiStore((s) => s.setReportTarget)
   const setSelectedReportId = useUiStore((s) => s.setSelectedReportId)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
-  const { data } = useHotspots()
+  const { data, isPending: hotspotsPending } = useHotspots()
   const { data: regionReports = [], isPending: reportsPending } =
     useRegionReports(regionCode)
 
@@ -221,6 +229,7 @@ export function CitizenReportsCard({ regionCode }: { regionCode: string }) {
   }, [data, regionCode])
 
   const latest = regionReports.slice(0, 6)
+  const composeReady = hotspots.length > 0
 
   const openDetail = (el: HTMLElement, id: string) => {
     rememberFocusTrigger(el)
@@ -244,16 +253,19 @@ export function CitizenReportsCard({ regionCode }: { regionCode: string }) {
 
   return (
     <Card aria-label={getCopy().report.panelTitle}>
-      <SectionHead
-        title={getCopy().report.panelTitle}
-        action={
-          regionReports.length > 0 ? (
-            <span className="text-ink text-xs leading-4 font-semibold tabular-nums">
-              {getCopy().report.badge(String(regionReports.length))}
-            </span>
-          ) : undefined
-        }
-      />
+      <CardHeader>
+        <div className="flex min-w-0 items-center gap-1">
+          <CardTitle>{getCopy().report.panelTitle}</CardTitle>
+          {canCompose ? (
+            <InfoTooltip content={getCopy().report.panelContributeHint} />
+          ) : null}
+        </div>
+        {regionReports.length > 0 ? (
+          <span className="text-ink shrink-0 text-xs leading-4 font-semibold tabular-nums">
+            {getCopy().report.badge(String(regionReports.length))}
+          </span>
+        ) : null}
+      </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-ink-2 text-xs leading-4">{getCopy().report.panelHint}</p>
         {reportsPending ? (
@@ -273,12 +285,19 @@ export function CitizenReportsCard({ regionCode }: { regionCode: string }) {
             ))}
           </ul>
         )}
-        {hotspots.length > 0 ? (
+        {canCompose ? (
           <Button
             variant="soft"
-            className="w-full shadow-none"
+            className="w-full"
             onClick={(e) => openComposer(e.currentTarget)}
+            disabled={!composeReady}
+            loading={hotspotsPending && !composeReady}
           >
+            <MessageSquarePlus
+              className="panel-icon-report size-3.5"
+              strokeWidth={2}
+              aria-hidden
+            />
             {getCopy().report.panelOpen}
           </Button>
         ) : null}
@@ -381,7 +400,10 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
           </CardContent>
         </Card>
 
-        <CitizenReportsCard regionCode={region.code} />
+        <CitizenReportsCard
+          regionCode={region.code}
+          canCompose={typeof region.hotspots_24h === 'number' && region.hotspots_24h > 0}
+        />
 
         <ConditionsCard region={region} />
 

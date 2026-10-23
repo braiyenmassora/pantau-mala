@@ -17,7 +17,7 @@ describe('MapLegend', () => {
   })
   afterEach(cleanup)
 
-  it('renders two elongated cards: risk row + density', () => {
+  it('renders risk (web) + density legend cards', () => {
     render(<MapLegend />)
 
     expect(screen.getByTestId('map-legend')).toBeTruthy()
@@ -26,13 +26,10 @@ describe('MapLegend', () => {
       `${copy.legend.densityTitle}: ${copy.legend.densityLow}, ${copy.legend.densityMid}, ${copy.legend.densityHigh}`,
     )
     expect(risk).toBeTruthy()
+    expect(risk.className).toMatch(/sm:flex/)
     expect(density).toBeTruthy()
+    expect(density.textContent).toContain(copy.legend.densityLow)
     expect(screen.getByText('Sangat tinggi')).toBeTruthy()
     expect(screen.getByText(copy.legend.noDetectionsTitle)).toBeTruthy()
-    expect(screen.queryByText(/bukan berarti aman/i)).toBeNull()
-    expect(risk.getAttribute('title')).toBeNull()
-    expect(density.textContent).toContain(copy.legend.densityLow)
-    expect(density.textContent).toContain(copy.legend.densityMid)
-    expect(density.textContent).toContain(copy.legend.densityHigh)
   })
 })

@@ -1,16 +1,16 @@
 /* Token desain pantaumala — satu sumber kebenaran.
    Hex MapLibre di risk-category.ts harus mirror nilai di sini.
-   Font: IBM Plex Sans 400/500/600 + Mono (main.tsx). */
+   Font UI: hanya IBM Plex Sans (fonts.css). Mono = Sans + tabular-nums. */
 
 @theme {
-  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-sans: 'IBM Plex Sans', 'IBM Plex Sans Fallback', sans-serif;
+  --font-mono: 'IBM Plex Sans', 'IBM Plex Sans Fallback', sans-serif;
 
   /* Netral — ink-2 / ink-3 lolos AA 4.5:1 di atas surface */
   --color-ink: #1f2328;
   --color-ink-2: #5f6368;
   --color-ink-3: #757575;
-  --color-line: #e8eaed;
+  --color-line: #f0f1f3;
   --color-surface: #ffffff;
   --color-surface-muted: #f8f9fa; /* hover / tile soft */
   --color-map-bg: #e8eaed;
@@ -62,7 +62,11 @@
   --map-panel-width: 400px;
   --map-panel-edge: 416px;
   --map-overlay-inset: 432px;
-  --map-controls-clearance: 88px;
+  --map-controls-clearance: 56px;
+  /* Mobile bottom sheet (Maps-style) — mirror LAYOUT.mobileSheet* */
+  --map-sheet-height: min(55dvh, 480px);
+  /* Peep selalu terlihat (handle + brand + search) — seperti Google Maps */
+  --map-sheet-peek: 152px;
   --card-padding: var(--space-4);
   --card-gap: var(--space-4);
   --section-gap: var(--space-6);
@@ -71,34 +75,43 @@
   --control-height-md: 44px;
   --control-height-lg: 48px;
 
-  /* Tipografi: 12 / 14 / 16 / 24 / 32 — minimum 12 */
+  /* Tipografi (sedikit lebih kecil, desktop + mobile): 12 / 13 / 15 / 22 / 28 */
   --text-xs: 12px;
-  --text-xs--line-height: 16px;
-  --text-sm: 14px;
-  --text-sm--line-height: 20px;
-  --text-base: 14px;
-  --text-base--line-height: 20px;
-  --text-paragraph: 14px;
-  --text-paragraph--line-height: 20px;
-  --text-lg: 16px;
-  --text-lg--line-height: 24px;
-  --text-xl: 24px;
-  --text-xl--line-height: 32px;
-  --text-3xl: 32px;
-  --text-3xl--line-height: 40px;
+  --text-xs--line-height: 15px;
+  --text-sm: 13px;
+  --text-sm--line-height: 18px;
+  --text-base: 13px;
+  --text-base--line-height: 18px;
+  --text-paragraph: 13px;
+  --text-paragraph--line-height: 18px;
+  --text-lg: 15px;
+  --text-lg--line-height: 22px;
+  --text-xl: 22px;
+  --text-xl--line-height: 28px;
+  --text-3xl: 28px;
+  --text-3xl--line-height: 36px;
 
-  /* Radius: 8 chip/badge/kartu soft · 12 panel shell */
-  --radius-ctl: 8px;
-  --radius-card: 12px;
-  --radius-panel: 12px;
-  --radius-pill: 8px;
+  /* leading-* mengikuti skala baru (komponen sering pakai leading-4/5/8/10) */
+  --leading-4: 15px;
+  --leading-5: 18px;
+  --leading-6: 22px;
+  --leading-7: 26px;
+  --leading-8: 28px;
+  --leading-9: 32px;
+  --leading-10: 36px;
 
-  /* Chrome soft — dasar panel pinggir, chip filter, floating UI */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-chrome: var(--shadow-sm);
-  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.08);
+  /* Radius soft: kontrol 12 · kartu/panel 16 */
+  --radius-ctl: 12px;
+  --radius-card: 16px;
+  --radius-panel: 16px;
+  --radius-pill: 12px;
+
+  /* Shadow sangat lembut — sedikit terangkat, tidak “timbul” */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-chrome: 0 1px 3px rgba(0, 0, 0, 0.025);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.035);
   --shadow-lg: var(--shadow-md);
-  --shadow-map: var(--shadow-md);
+  --shadow-map: 0 1px 2px rgba(0, 0, 0, 0.04);
 
   --duration-fast: 150ms;
   --duration-base: 220ms;
@@ -117,8 +130,8 @@
     font-family: var(--font-sans);
     color: var(--color-ink);
     background: var(--color-map-bg);
-    font-size: 14px;
-    line-height: 20px;
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
   }
 }
 

@@ -1,5 +1,4 @@
 import {
-  Check,
   CloudOff,
   Filter,
   Minus,
@@ -256,6 +255,7 @@ export function SummaryPanel({
         </header>
         <EmptyState
           icon={Filter}
+          variant="action"
           title={getCopy().empty.noRegionsFilter.title}
           description={getCopy().empty.noRegionsFilter.description(
             [...selectedCategories].map((c) => riskCategoryLabel(c)).join(', '),
@@ -362,10 +362,12 @@ export function SummaryPanel({
                     ))}
                   </div>
                 ) : topProvinces.length === 0 ? (
-                  <div className="text-ink-2 flex items-center gap-2 py-3 text-sm leading-5">
-                    <Check className="text-ink-2 size-4" strokeWidth={2} aria-hidden />
-                    <span>{getCopy().search.noHotspots}</span>
-                  </div>
+                  <EmptyState
+                    icon={ShieldCheck}
+                    variant="bare"
+                    title={getCopy().empty.noHotspots.title}
+                    description={getCopy().search.noHotspots}
+                  />
                 ) : (
                   <TopProvincesList
                     items={topProvinces.flatMap((agg) => {
@@ -460,10 +462,12 @@ export function SummaryPanel({
         <section className="space-y-3">
           <h2 className={T.section}>{getCopy().panel.topKab}</h2>
           {provinceTopRegencies.length === 0 ? (
-            <div className="text-ink-2 flex items-center gap-2 py-3 text-sm leading-5">
-              <Check className="size-4" strokeWidth={2} aria-hidden />
-              <span>{getCopy().search.noHotspots}</span>
-            </div>
+            <EmptyState
+              icon={ShieldCheck}
+              variant="bare"
+              title={getCopy().empty.noHotspots.title}
+              description={getCopy().search.noHotspots}
+            />
           ) : (
             <ul className="flex flex-col">
               {provinceTopRegencies.map((region) => (

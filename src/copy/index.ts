@@ -6,9 +6,51 @@ import { enCopy } from './en'
 export type Locale = 'id' | 'en'
 export type Copy = typeof idCopy
 
-const STORAGE_KEY = 'pantau-mala-locale'
+export const STORAGE_KEY = 'pantau-mala-locale'
 
 const copies: Record<Locale, Copy> = { id: idCopy, en: enCopy }
+
+/** Zona waktu Indonesia (tanpa izin lokasi / IP). */
+const ID_TIMEZONES = new Set([
+  'Asia/Jakarta',
+  'Asia/Pontianak',
+  'Asia/Makassar',
+  'Asia/Jayapura',
+])
+
+/**
+ * Default bahasa: Indonesia → id, luar → en.
+ * Dipakai hanya jika user belum pernah memilih (belum ada localStorage).
+ */
+export function guessLocale(
+  timeZone = safeTimeZone(),
+  languages = safeLanguages(),
+): Locale {
+  if (timeZone && ID_TIMEZONES.has(timeZone)) return 'id'
+  for (const lang of languages) {
+    if (lang.toLowerCase().startsWith('id')) return 'id'
+  }
+  return 'en'
+}
+
+function safeTimeZone(): string | undefined {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone
+  } catch {
+    return undefined
+  }
+}
+
+function safeLanguages(): readonly string[] {
+  try {
+    if (typeof navigator === 'undefined') return []
+    if (navigator.languages?.length) return navigator.languages
+    if (navigator.language) return [navigator.language]
+  } catch {
+    // ignore
+  }
+  return []
+}
 
 function initialLocale(): Locale {
   if (typeof window === 'undefined') return 'id'
@@ -16,10 +58,9 @@ function initialLocale(): Locale {
     const saved = window.localStorage.getItem(STORAGE_KEY)
     if (saved === 'id' || saved === 'en') return saved
   } catch {
-    // shortcut: storage may be blocked (privacy mode) — fall through to browser language.
+    // shortcut: storage blocked — fall through to guess.
   }
-  // Default stays Indonesian; English only when the user picks it (and it is saved).
-  return 'id'
+  return guessLocale()
 }
 
 type LocaleState = {

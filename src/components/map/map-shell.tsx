@@ -59,7 +59,7 @@ function MapUnavailable({ onReload }: { onReload: () => void }) {
           title={getCopy().empty.mapFail.title}
           description={getCopy().empty.mapFail.description}
           action={{ label: getCopy().empty.mapFail.action, onClick: onReload }}
-          className="shadow-chrome max-w-sm"
+          className="max-w-sm"
         />
       </div>
     </div>
@@ -72,14 +72,16 @@ function BasemapBanner({ onRetry }: { onRetry: () => void }) {
   return (
     <div
       data-testid="map-basemap-banner"
-      className="rounded-card border-line bg-surface shadow-chrome pointer-events-auto absolute z-30 flex max-w-[min(360px,calc(100vw-2rem))] items-center gap-3 border px-4 py-3"
+      className="rounded-card border-line bg-surface-muted pointer-events-auto absolute z-30 flex max-w-[min(360px,calc(100vw-2rem))] items-center gap-3 border px-4 py-3"
       style={{
         left,
         top: 68,
       }}
     >
-      <p className="text-ink text-sm leading-5">{getCopy().empty.basemapFail.title}</p>
-      <Button variant="secondary" size="sm" onClick={onRetry}>
+      <p className="text-ink min-w-0 flex-1 text-sm leading-5">
+        {getCopy().empty.basemapFail.title}
+      </p>
+      <Button variant="secondary" size="sm" className="shrink-0" onClick={onRetry}>
         {getCopy().empty.basemapFail.action}
       </Button>
     </div>
@@ -92,7 +94,7 @@ function PartialBanner() {
   return (
     <div
       data-testid="map-partial-banner"
-      className="rounded-card border-line bg-surface shadow-chrome pointer-events-none absolute z-30 max-w-[min(360px,calc(100vw-2rem))] border px-4 py-3"
+      className="rounded-card border-line bg-surface-muted pointer-events-none absolute z-30 max-w-[min(360px,calc(100vw-2rem))] border px-4 py-3"
       style={{
         left,
         top: 68,

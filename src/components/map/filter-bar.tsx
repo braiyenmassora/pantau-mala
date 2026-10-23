@@ -71,7 +71,6 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         'soft-scroll soft-fade-x fixed top-(--floating-control-offset) z-30',
         'flex items-center gap-2 overflow-x-auto overscroll-x-contain pr-7 pb-1',
         'ease-out-soft transition-[left,max-width] duration-300',
-        panelOpen && 'max-sm:hidden',
       )}
       style={{ left, maxWidth: availWidth }}
       {...mapOverlayGestureProps}

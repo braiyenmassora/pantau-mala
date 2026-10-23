@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+import { getCopy } from '@/copy'
+
 const provinceAliases: Record<string, string> = {
   'DI ACEH': 'ACEH',
   'D I ACEH': 'ACEH',
@@ -105,11 +107,10 @@ export function decodeProvinceBoundaries(
         normalizeProvinceName(feature.properties.province_name) ||
       seen.has(feature.id)
     ) {
-      throw new Error('Identitas batas provinsi tidak sesuai metadata.')
+      throw new Error(getCopy().errors.provinceIdentityMismatch)
     }
     seen.add(feature.id)
   }
-  if (seen.size !== expected.size)
-    throw new Error('Geometri batas provinsi tidak lengkap.')
+  if (seen.size !== expected.size) throw new Error(getCopy().errors.provinceIncomplete)
   return geometry
 }

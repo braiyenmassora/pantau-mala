@@ -1,5 +1,6 @@
 import { useId } from 'react'
 
+import { getCopy } from '@/copy'
 import { cn } from '@/lib/utils'
 
 type SparklineProps = {
@@ -76,7 +77,7 @@ export function Sparkline({
       viewBox={`0 0 ${width} ${height}`}
       className={cn('text-chart shrink-0 overflow-visible', className)}
       role="img"
-      aria-label={ariaLabel ?? 'Tren 7 hari'}
+      aria-label={ariaLabel ?? getCopy().extra.trendChart}
     >
       <defs>
         <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">

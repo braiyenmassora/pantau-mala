@@ -3,6 +3,7 @@ import type { RefObject } from 'react'
 import { focusRing } from '@/components/common/focus-ring'
 import { Sparkline } from '@/components/common/sparkline'
 import type { MapRef } from '@/components/ui/map'
+import { getCopy } from '@/copy'
 import type { Region } from '@/data/types'
 import { rememberFocusTrigger } from '@/lib/focus-return'
 import { formatNumber } from '@/lib/format'
@@ -79,7 +80,7 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
                   ? 'text-risk-mid'
                   : 'text-risk-low'
           }
-          ariaLabel={`Tren 7 hari ${region.name}`}
+          ariaLabel={`${getCopy().extra.trendChart} ${region.name}`}
         />
       ) : null}
       <span className="text-ink shrink-0 font-mono text-sm leading-5 font-semibold tabular-nums">

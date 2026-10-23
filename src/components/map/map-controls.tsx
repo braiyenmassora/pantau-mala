@@ -1,4 +1,4 @@
-import { LocateFixed, Minus, Plus } from 'lucide-react'
+import { LocateFixed } from 'lucide-react'
 import { type RefObject } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
@@ -9,7 +9,7 @@ import { useHotspots, useMeta, useRegions } from '@/data/queries'
 import { getDataFreshness } from '@/lib/data-freshness'
 import { rememberFocusTrigger } from '@/lib/focus-return'
 import { formatRelativeAge } from '@/lib/format'
-import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
+import { getMapPadding, locationFramingZoom } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { resolveUserRegionCode } from '@/lib/resolve-user-region'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
@@ -53,12 +53,15 @@ export function MapControls({ mapRef }: MapControlsProps) {
     <div
       data-testid="map-controls"
       className={cn(
-        'absolute right-(--floating-control-offset) bottom-(--floating-control-offset) z-30 flex flex-col items-end gap-3 sm:gap-4',
-        panelOpen && 'max-sm:hidden',
+        'absolute right-(--floating-control-offset) z-30 flex flex-col items-end gap-3 sm:gap-4',
+        'ease-out-soft transition-[bottom] duration-300',
+        // Mobile: sheet selalu expanded → kontrol di atas sheet. Tablet+: pojok bawah.
+        'bottom-[calc(var(--map-sheet-height)+var(--floating-control-offset))] sm:bottom-(--floating-control-offset)',
       )}
       {...mapOverlayGestureProps}
     >
-      <div className="border-line bg-surface divide-line rounded-ctl shadow-chrome flex flex-col divide-y overflow-hidden border backdrop-blur-sm">
+      {/* Zoom: scroll/gesture — hanya tombol lokasi. */}
+      <div className="border-line bg-surface rounded-ctl shadow-chrome overflow-hidden border backdrop-blur-sm">
         <button
           type="button"
           className={cn(btnClass, hasCoords && 'bg-brand-soft text-brand', focusRing)}
@@ -68,7 +71,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
             if (hasCoords) {
               mapRef.current?.flyTo({
                 center: [location.coords!.lon, location.coords!.lat],
-                zoom: LOCATION_ZOOM,
+                zoom: locationFramingZoom(),
                 padding: getMapPadding(panelOpen),
                 duration: reducedMotion ? 0 : 600,
               })
@@ -93,25 +96,9 @@ export function MapControls({ mapRef }: MapControlsProps) {
         >
           <LocateFixed className={iconClass} strokeWidth={2} aria-hidden />
         </button>
-
-        <button
-          type="button"
-          className={cn(btnClass, focusRing)}
-          aria-label={getCopy().map.zoomIn}
-          onClick={() => mapRef.current?.zoomIn({ duration: 300 })}
-        >
-          <Plus className={iconClass} strokeWidth={2} aria-hidden />
-        </button>
-        <button
-          type="button"
-          className={cn(btnClass, focusRing)}
-          aria-label={getCopy().map.zoomOut}
-          onClick={() => mapRef.current?.zoomOut({ duration: 300 })}
-        >
-          <Minus className={iconClass} strokeWidth={2} aria-hidden />
-        </button>
       </div>
 
+      {/* max-w-48: stamp + © CARTO/OSM utuh; legenda kartu sudah hilang di mobile. */}
       <div className="flex max-w-48 flex-col items-end gap-1 text-right">
         {stampLabel ? (
           <p

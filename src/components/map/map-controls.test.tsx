@@ -33,7 +33,7 @@ describe('MapControls', () => {
     useMeta.mockReset()
   })
 
-  it('shows zoom, relative update stamp, and basemap attribution', () => {
+  it('shows location control, relative update stamp, and basemap attribution', () => {
     useMeta.mockReturnValue({
       data: {
         updated_at: new Date(Date.now() - 28 * 60_000).toISOString(),
@@ -43,8 +43,9 @@ describe('MapControls', () => {
     })
     wrap(<MapControls mapRef={createRef<MapRef | null>()} />)
 
-    expect(screen.getByRole('button', { name: copy.map.zoomIn })).toBeTruthy()
-    expect(screen.getByRole('button', { name: copy.map.zoomOut })).toBeTruthy()
+    expect(screen.getByRole('button', { name: copy.map.useMyLocation })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: copy.map.zoomIn })).toBeNull()
+    expect(screen.queryByRole('button', { name: copy.map.zoomOut })).toBeNull()
     expect(screen.getByTestId('map-updated-stamp').textContent).toMatch(
       /^Diperbarui .+ menit yang lalu$/,
     )

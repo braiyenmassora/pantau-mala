@@ -15,7 +15,7 @@ describe('AppErrorBoundary', () => {
     vi.restoreAllMocks()
   })
 
-  it('shows Indonesian reload fallback when a child throws', () => {
+  it('shows reload fallback when a child throws', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     render(

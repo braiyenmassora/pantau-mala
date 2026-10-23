@@ -8,7 +8,7 @@ type EmptyStateProps = {
   icon: LucideIcon
   title: string
   description: string
-  /** info = muted card; action = bordered CTA; bare = content only (dialog). */
+  /** info/action = kartu lembut; bare = isi saja (dialog). */
   variant?: 'info' | 'action' | 'bare'
   action?: { label: string; onClick: () => void }
   /** Custom action row; wins over `action` when set. */
@@ -17,6 +17,7 @@ type EmptyStateProps = {
   className?: string
 }
 
+/** Empty / error / filter-miss — satu pola; CTA selalu Button secondary. */
 export function EmptyState({
   icon: Icon,
   title,
@@ -27,14 +28,13 @@ export function EmptyState({
   titleId,
   className,
 }: EmptyStateProps) {
-  const titleClass = 'text-ink text-sm leading-5 font-semibold'
-  // Ikon ikut warna teks induk (brand default; risk-mid di banner peringatan).
+  const titleClass = 'text-sm leading-5 font-semibold'
   const body = (
-    <div className="flex items-start gap-2">
+    <div className="flex items-start gap-3">
       <span className="rounded-ctl flex size-8 shrink-0 items-center justify-center bg-current/10 text-current">
         <Icon className="size-4" strokeWidth={2} aria-hidden />
       </span>
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 space-y-2">
         {titleId ? (
           <h2 id={titleId} className={titleClass}>
             {title}
@@ -42,12 +42,12 @@ export function EmptyState({
         ) : (
           <p className={titleClass}>{title}</p>
         )}
-        <p className="text-ink-2 mt-2 text-xs leading-4">{description}</p>
+        <p className="text-xs leading-4">{description}</p>
         {actions ? (
-          <div className="mt-2 flex flex-wrap gap-2">{actions}</div>
+          <div className="flex flex-wrap gap-2 pt-1">{actions}</div>
         ) : (
           action && (
-            <Button variant="soft" size="sm" className="mt-2" onClick={action.onClick}>
+            <Button variant="secondary" size="sm" onClick={action.onClick}>
               {action.label}
             </Button>
           )
@@ -57,14 +57,14 @@ export function EmptyState({
   )
 
   if (variant === 'bare') {
-    return <div className={cn('text-brand', className)}>{body}</div>
+    return <div className={cn('text-ink', className)}>{body}</div>
   }
 
+  // info & action: chrome sama (kartu lembut) — beda lewat className pemanggil bila perlu.
   return (
     <section
       className={cn(
-        'text-brand rounded-card p-4',
-        variant === 'action' ? 'border-line bg-surface border' : 'bg-surface-muted',
+        'text-ink rounded-card border-line bg-surface-muted border p-4',
         className,
       )}
       role="status"

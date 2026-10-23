@@ -2,12 +2,16 @@ import { focusRing } from '@/components/common/focus-ring'
 import { useCopy, useLocaleStore, type Locale } from '@/copy'
 import { cn } from '@/lib/utils'
 
-const OPTIONS: { locale: Locale; short: string; key: 'indonesian' | 'english' }[] = [
-  { locale: 'id', short: 'ID', key: 'indonesian' },
-  { locale: 'en', short: 'EN', key: 'english' },
+const OPTIONS: {
+  locale: Locale
+  key: 'indonesian' | 'english'
+  src: string
+}[] = [
+  { locale: 'id', key: 'indonesian', src: '/flags/id.svg' },
+  { locale: 'en', key: 'english', src: '/flags/en.svg' },
 ]
 
-/** Toggle bahasa ID | EN — pilihan tersimpan di localStorage. */
+/** Toggle bahasa lewat bendera SVG — label teks tetap di aria. */
 export function LanguageToggle() {
   const copy = useCopy()
   const locale = useLocaleStore((s) => s.locale)
@@ -26,14 +30,20 @@ export function LanguageToggle() {
           aria-label={copy.language[opt.key]}
           onClick={() => setLocale(opt.locale)}
           className={cn(
-            'flex h-11 items-center px-3 text-xs leading-4 font-semibold',
+            'flex h-10 w-10 items-center justify-center',
             focusRing,
-            locale === opt.locale
-              ? 'bg-brand text-surface'
-              : 'text-ink-2 hover:bg-surface-muted',
+            locale === opt.locale ? 'bg-brand-soft' : 'hover:bg-surface-muted',
           )}
         >
-          {opt.short}
+          <img
+            src={opt.src}
+            alt=""
+            width={18}
+            height={12}
+            className="border-line rounded-ctl h-3 w-5 border object-cover"
+            decoding="async"
+            draggable={false}
+          />
         </button>
       ))}
     </div>

@@ -5,7 +5,7 @@ import { mapPinTip } from '@/components/map/map-pin-tip'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { getCopy } from '@/copy'
-import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
+import { getMapPadding, locationFramingZoom } from '@/lib/indonesia-view'
 import { riskBeatMs } from '@/lib/map-beat'
 import { NEARBY_HOTSPOT_RADIUS_KM } from '@/lib/nearby'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
@@ -62,20 +62,23 @@ export function UserLocationLayer() {
             <TooltipTrigger asChild>
               <button
                 type="button"
-                className="border-surface bg-surface relative flex size-5 cursor-pointer items-center justify-center rounded-full border-2 shadow-md transition-transform duration-150 hover:scale-110 active:scale-95"
+                className="border-surface bg-surface shadow-map relative flex size-5 cursor-pointer items-center justify-center rounded-full border-2 transition-transform duration-150 hover:scale-110 active:scale-95"
                 aria-label={getCopy().location.yourLocation}
                 onClick={(event) => {
                   event.stopPropagation()
                   map?.flyTo({
                     center: [lon, lat],
-                    zoom: LOCATION_ZOOM,
+                    zoom: locationFramingZoom(),
                     padding: getMapPadding(panelOpen),
                     duration: reducedMotion ? 0 : 600,
                   })
                   setPanelOpen(true)
                 }}
               >
-                <span className="bg-location size-3 rounded-full shadow-sm" aria-hidden />
+                <span
+                  className="bg-location shadow-map size-3 rounded-full"
+                  aria-hidden
+                />
               </button>
             </TooltipTrigger>
             <TooltipContent side="top" sideOffset={8} className={mapPinTip}>

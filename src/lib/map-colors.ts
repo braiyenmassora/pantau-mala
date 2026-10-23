@@ -2,5 +2,5 @@
 export const MAP_COLORS = {
   ink: '#1f2328',
   surface: '#FFFFFF',
-  line: '#E8EAED',
+  line: '#F0F1F3',
 } as const

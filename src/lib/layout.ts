@@ -22,15 +22,43 @@ export const LAYOUT = {
   panelEdge: 416,
   /** Awal area peta/overlay saat panel terbuka: panelEdge + gutter. */
   overlayInset: 432,
-  /** Cadangan kanan agar legend/filter tidak menabrak kolom MapControls (~44×2). */
-  controlsClearance: 88,
+  /** Cadangan kanan agar filter/legend tidak menabrak tombol lokasi (zoom dihapus). */
+  controlsClearance: 56,
   /** Lebar blok stamp/atribusi di bawah MapControls (mirror max-w-48) — elemen terlebar kolom itu. */
   stampWidth: 192,
   /** Kontrol peta 44×44 (touch target). */
   controlSize: 44,
   /** Sisa lebar peta minimum saat panel terbuka di tablet. */
   mapMinWidth: 280,
+  /**
+   * Tinggi bottom sheet mobile (Maps-style). Cap 480px agar tablet kecil tidak menelan peta.
+   * Mirror CSS: `--map-sheet-height` / `--map-sheet-peek`.
+   */
+  mobileSheetMaxPx: 480,
+  mobileSheetVh: 0.55,
+  /** Peep selalu terlihat di mobile (handle + brand + search). */
+  mobileSheetPeekPx: 152,
 } as const
+
+/** Tinggi sheet mobile (expanded) dalam px untuk padding MapLibre. */
+export function mobileSheetHeightPx(height = viewportHeight()): number {
+  return Math.min(LAYOUT.mobileSheetMaxPx, Math.round(height * LAYOUT.mobileSheetVh))
+}
+
+/** Padding bawah peta mobile: expanded sheet atau peep. */
+export function mobileMapBottomInset(
+  panelExpanded: boolean,
+  height = viewportHeight(),
+): number {
+  return (
+    (panelExpanded ? mobileSheetHeightPx(height) : LAYOUT.mobileSheetPeekPx) +
+    LAYOUT.gutter
+  )
+}
+
+export function viewportHeight(): number {
+  return typeof window !== 'undefined' ? window.innerHeight : 800
+}
 
 export type LayoutTokens = typeof LAYOUT
 
@@ -74,6 +102,10 @@ export function chromeLegendAvailWidth(
   width = viewportWidth(),
 ): number {
   const left = chromeLeft(panelOpen, width)
+  // Mobile: stamp sempit di bawah kontrol; stampWidth 192 menyisakan ~150px → legenda terpotong.
+  if (isMobileWidth(width)) {
+    return Math.max(0, width - left - LAYOUT.gutter - LAYOUT.controlsClearance)
+  }
   return Math.max(0, width - left - LAYOUT.stampWidth - LAYOUT.gutter * 2)
 }
 

@@ -36,6 +36,7 @@ export default function App() {
   useLocaleStore((s) => s.locale)
   const mapRef = useRef<MapRef | null>(null)
   const panelContentRef = useRef<HTMLDivElement>(null)
+  const locationNudgedRef = useRef(false)
   const [mobile, setMobile] = useState(() => isMobileWidth())
   const panelOpen = useUiStore((s) => s.panelOpen)
   const togglePanel = useUiStore((s) => s.togglePanel)
@@ -44,12 +45,17 @@ export default function App() {
     const mq = window.matchMedia(`(max-width: ${BREAKPOINT.sm - 1}px)`)
     const onChange = () => {
       setMobile(mq.matches)
-      // Resize ke mobile: tutup panel agar chrome peta (filter/kontrol) tetap bisa dipakai.
-      if (mq.matches) setPanelOpen(false)
+      // Mobile: sheet info tetap terbuka seperti Maps. Tablet: biarkan state.
+      if (mq.matches) setPanelOpen(true)
     }
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)
   }, [setPanelOpen])
+
+  // Mobile: kunci sheet tetap expanded (pola screenshot / Maps drawer).
+  useEffect(() => {
+    if (mobile && !panelOpen) setPanelOpen(true)
+  }, [mobile, panelOpen, setPanelOpen])
 
   const { data, isPending, isError, refetch } = useRegions()
   const province = useMapStore((s) => s.province)
@@ -82,6 +88,20 @@ export default function App() {
       cancelled = true
     }
   }, [setLocation])
+
+  // Mobile: dorong lokasi sekali (Maps-style) — dialog, bukan hard-block.
+  useEffect(() => {
+    if (!mobile || locationNudgedRef.current) return
+    if (locationStatus !== 'off') return
+    if (!('geolocation' in navigator)) return
+    locationNudgedRef.current = true
+    const timer = window.setTimeout(() => {
+      if (useMapStore.getState().location.status === 'off') {
+        setLocation({ status: 'requesting' })
+      }
+    }, 700)
+    return () => window.clearTimeout(timer)
+  }, [mobile, locationStatus, setLocation])
 
   useEffect(() => {
     const el = panelContentRef.current
@@ -162,25 +182,33 @@ export default function App() {
 
         <aside
           aria-label={getCopy().app.panelAria}
-          inert={!panelOpen || undefined}
+          // Desktop/tablet: inert saat tertutup. Mobile: sheet selalu terbuka.
+          inert={(!mobile && !panelOpen) || undefined}
           className={cn(
-            // mobile: viewport−32; tablet+: max 400 tapi sisakan ruang peta
-            'absolute z-40 flex w-[calc(100vw-32px)] flex-col overflow-hidden',
-            'sm:w-[min(var(--map-panel-width),calc(100vw-5rem))]',
-            'top-(--floating-control-offset) bottom-(--floating-control-offset) left-(--floating-control-offset)',
-            'rounded-panel border-line bg-surface shadow-chrome border',
+            'absolute z-40 flex flex-col overflow-hidden',
+            'border-line bg-surface shadow-chrome border',
             easePanel,
             'transition-[transform,opacity]',
-            panelOpen
-              ? 'opacity-100'
-              : 'pointer-events-none -translate-x-(--map-overlay-inset) opacity-0',
+            // Mobile: bottom sheet selalu expanded. Tablet+: panel kiri.
+            'rounded-t-panel inset-x-0 bottom-0 h-(--map-sheet-height) translate-y-0 border-b-0 opacity-100',
+            'sm:inset-auto sm:top-(--floating-control-offset) sm:right-auto sm:bottom-(--floating-control-offset) sm:left-(--floating-control-offset)',
+            'sm:rounded-panel sm:h-auto sm:w-[min(var(--map-panel-width),calc(100vw-5rem))] sm:border',
+            !panelOpen &&
+              'sm:pointer-events-none sm:-translate-x-(--map-overlay-inset) sm:opacity-0',
           )}
-          aria-hidden={!panelOpen}
+          aria-hidden={!mobile && !panelOpen}
           {...mapOverlayGestureProps}
         >
+          {/* Handle visual (drag = step 2) — sheet mobile tidak di-collapse. */}
+          <div
+            className="flex w-full shrink-0 flex-col items-center pt-2 pb-1 sm:hidden"
+            aria-hidden
+          >
+            <span className="bg-ink-3 h-1 w-10 rounded-full" />
+          </div>
           <div
             ref={panelContentRef}
-            className="soft-scroll soft-fade-y-end min-h-0 flex-1 overflow-y-auto overscroll-contain"
+            className="soft-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain"
           >
             <SummaryPanel
               regions={data ?? []}
@@ -196,22 +224,20 @@ export default function App() {
           <PanelFooter />
         </aside>
 
+        {/* Tablet/desktop: tab di tepi panel. */}
         <button
           type="button"
           onClick={togglePanel}
           aria-expanded={panelOpen}
           aria-label={panelOpen ? getCopy().app.hidePanel : getCopy().app.showPanel}
           className={cn(
-            // w-11 (44px): touch target; visual tetap tab tipis di tepi panel
-            'absolute top-1/2 z-[41] flex h-12 w-11 -translate-y-1/2 items-center justify-center',
+            'absolute top-1/2 z-[41] hidden h-12 w-11 -translate-y-1/2 items-center justify-center sm:flex',
             'rounded-r-ctl border-line bg-surface text-ink-2 shadow-chrome border border-l-0',
             'hover:bg-surface-muted',
             easePanel,
             'transition-[left,background-color] duration-150',
             focusRing,
-            panelOpen
-              ? 'left-[calc(100vw-2.75rem)] sm:left-[min(var(--map-panel-edge),calc(100vw-4rem))]'
-              : 'left-0',
+            panelOpen ? 'left-[min(var(--map-panel-edge),calc(100vw-4rem))]' : 'left-0',
           )}
           {...mapOverlayGestureProps}
         >
@@ -229,12 +255,7 @@ export default function App() {
         {!isPending && <MapLegend />}
         {!isPending && <MapControls mapRef={mapRef} />}
 
-        <main
-          inert={(mobile && panelOpen) || undefined}
-          aria-hidden={(mobile && panelOpen) || undefined}
-          aria-label={getCopy().app.mapAria}
-          className="absolute inset-0 z-0"
-        >
+        <main aria-label={getCopy().app.mapAria} className="absolute inset-0 z-0">
           {/* Suspense: bg polos. Overlay "Memuat…" di AccessGate sampai mapReady. */}
           <Suspense fallback={<div className="bg-map-bg size-full" aria-hidden />}>
             <MapShell

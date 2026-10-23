@@ -13,7 +13,7 @@ export function IconButton({ className, children, ...props }: IconButtonProps) {
     <button
       type="button"
       className={cn(
-        'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex size-11 shrink-0 items-center justify-center transition-colors duration-150',
+        'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex size-11 shrink-0 items-center justify-center shadow-none transition-colors duration-150',
         focusRing,
         className,
       )}

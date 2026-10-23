@@ -5,13 +5,13 @@ import { focusRing } from '@/components/common/focus-ring'
 import { cn } from '@/lib/utils'
 
 const variantClass = {
-  primary: 'bg-brand text-surface hover:opacity-95 active:translate-y-px',
+  primary: 'bg-brand text-surface hover:opacity-95',
   secondary: 'border-line bg-surface text-ink hover:bg-surface-muted border',
   soft: 'border-brand/20 bg-brand-soft text-brand hover:bg-brand-soft/80 border',
   ghost: 'bg-transparent text-ink-2 hover:bg-surface-muted hover:text-ink',
 } as const
 
-/** Tinggi sentuh 44 · radius card (12) · body 14 / 600. */
+/** Tinggi sentuh 44 · text-sm (skala token) / 600. */
 const sizeClass = {
   md: 'h-11 min-h-11 px-4 text-sm leading-5 font-semibold',
   sm: 'h-11 min-h-11 px-3 text-sm leading-5 font-semibold',
@@ -39,7 +39,7 @@ export function Button({
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={cn(
-        'rounded-card relative inline-flex items-center justify-center gap-2 overflow-hidden',
+        'rounded-card relative inline-flex items-center justify-center gap-2 overflow-hidden shadow-none',
         'transition-[background-color,opacity,transform] duration-150 ease-in-out',
         focusRing,
         variantClass[variant],

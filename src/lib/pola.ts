@@ -9,7 +9,7 @@ export const T = {
   body: 'text-ink text-sm leading-5 font-medium',
   meta: 'text-ink-2 text-xs leading-4 font-medium',
   quiet: 'text-ink-3 text-xs leading-4',
-  display: 'font-mono text-3xl leading-10 font-semibold tabular-nums text-ink',
-  mono: 'font-mono text-xs leading-4 tabular-nums',
+  display: 'font-sans text-3xl leading-10 font-semibold tabular-nums text-ink',
+  mono: 'font-sans text-xs leading-4 tabular-nums',
   cta: 'text-sm leading-5 font-semibold',
 } as const

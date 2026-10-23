@@ -1,5 +1,6 @@
 import { focusRing } from '@/components/common/focus-ring'
 import { Sparkline } from '@/components/common/sparkline'
+import { getCopy } from '@/copy'
 import type { CatalogProvince, RiskCategory } from '@/data/types'
 import { formatNumber } from '@/lib/format'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
@@ -61,7 +62,7 @@ export function TopProvincesList({ items }: TopProvincesListProps) {
                 width={48}
                 height={18}
                 className={provinceSparkClass(item.risk_category)}
-                ariaLabel={`Tren 7 hari ${item.province.name}`}
+                ariaLabel={`${getCopy().extra.trendChart} ${item.province.name}`}
               />
             ) : null}
             <span className="text-ink shrink-0 font-mono text-sm leading-5 font-semibold tabular-nums">

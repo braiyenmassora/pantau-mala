@@ -30,14 +30,16 @@ const SHORT_MONTHS_EN = [
   'Dec',
 ] as const
 
-// Baca locale langsung dari storage agar modul ini tetap bisa diimpor bare node (format.test.ts).
-// Kunci sama dengan STORAGE_KEY di src/copy/index.ts.
+// Baca locale dari storage agar modul ini tetap bisa diimpor bare node (format.test.ts).
+// Kunci sama STORAGE_KEY di src/copy; tanpa storage → id (format.test default).
 function currentLocale(): 'en' | 'id' {
   try {
-    return window.localStorage.getItem('pantau-mala-locale') === 'en' ? 'en' : 'id'
+    const saved = window.localStorage.getItem('pantau-mala-locale')
+    if (saved === 'en' || saved === 'id') return saved
   } catch {
-    return 'id'
+    // ignore
   }
+  return 'id'
 }
 
 function shortMonths() {

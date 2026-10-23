@@ -19,10 +19,13 @@ import { useUiStore } from '@/store/ui'
 const SIGHTINGS = hotspotSightingSchema.options
 
 const fieldClass = cn(
-  'border-line bg-surface text-ink rounded-card w-full border px-3',
+  'border-line bg-surface text-ink rounded-card w-full border px-3 shadow-none',
   'text-sm leading-5 outline-none',
   'focus-visible:ring-brand/40 focus-visible:ring-2',
 )
+/** Satu pola jarak label → kontrol di semua field. */
+const fieldStack = 'flex flex-col gap-2'
+const fieldLabel = 'text-ink-2 text-xs leading-4'
 
 /** Form tulis laporan di side panel. */
 export function CitizenReportComposePanel({ target }: { target: HotspotReportTarget }) {
@@ -74,9 +77,13 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
     setPhotoPreview(URL.createObjectURL(file))
   }
 
+  // Semua field wajib (sighting selalu terpilih via default).
+  const canSubmit = Boolean(authorName.trim() && description.trim() && photoFile)
+
   const submit = () => {
     const name = authorName.trim()
-    if (!name || !photoFile) {
+    const desc = description.trim()
+    if (!canSubmit || !photoFile) {
       setPhotoError(photoFile ? null : getCopy().report.photoMissing)
       return
     }
@@ -89,7 +96,7 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
         hotspot_time: target.hotspot_time,
         sighting,
         author_name: name,
-        description: description.trim() || undefined,
+        description: desc,
         file: photoFile,
       },
       {
@@ -122,7 +129,7 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex min-h-full flex-col">
       <div className="bg-surface sticky top-0 z-10 flex items-center justify-between gap-2 px-4 pt-3 pb-2">
         <h1
           ref={titleRef}
@@ -136,14 +143,31 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
         </IconButton>
       </div>
 
-      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
-        <p className="text-ink-2 text-xs leading-4">{getCopy().report.disclaimer}</p>
+      <div className="flex flex-1 flex-col gap-6 px-4 pt-3 pb-4">
+        <div className="space-y-1">
+          <p className="text-ink-2 text-xs leading-4">{getCopy().report.disclaimer}</p>
+          <p className="text-ink-2 text-xs leading-4">
+            {getCopy()
+              .report.emergencyHint.split(/(112)/g)
+              .map((part, i) =>
+                part === '112' ? (
+                  <a
+                    key={i}
+                    href="tel:112"
+                    className="text-risk-low font-semibold underline underline-offset-2 hover:opacity-80"
+                  >
+                    112
+                  </a>
+                ) : (
+                  <span key={i}>{part}</span>
+                ),
+              )}
+          </p>
+        </div>
 
         <section aria-label={getCopy().report.formTitle} className="space-y-4">
-          <label className="block space-y-1">
-            <span className="text-ink-2 text-xs leading-4">
-              {getCopy().report.authorLabel}
-            </span>
+          <label className={fieldStack}>
+            <span className={fieldLabel}>{getCopy().report.authorLabel}</span>
             <input
               type="text"
               value={authorName}
@@ -154,10 +178,14 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
             />
           </label>
 
-          <fieldset className="space-y-2">
-            <legend className="text-ink-2 text-xs leading-4">
+          <div
+            role="group"
+            aria-labelledby="report-sighting-label"
+            className={fieldStack}
+          >
+            <div id="report-sighting-label" className={fieldLabel}>
               {getCopy().report.sightingLabel}
-            </legend>
+            </div>
             <div className="flex flex-wrap gap-2">
               {SIGHTINGS.map((s) => {
                 const pressed = sighting === s
@@ -168,7 +196,7 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
                     aria-pressed={pressed}
                     onClick={() => setSighting(s)}
                     className={cn(
-                      'rounded-ctl inline-flex h-11 items-center border px-3 text-sm leading-5 font-medium',
+                      'rounded-ctl inline-flex h-11 items-center border px-3 text-sm leading-5 font-medium shadow-none',
                       'transition-colors',
                       focusRing,
                       pressed
@@ -181,12 +209,10 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
                 )
               })}
             </div>
-          </fieldset>
+          </div>
 
-          <label className="block space-y-1">
-            <span className="text-ink-2 text-xs leading-4">
-              {getCopy().report.descriptionLabel}
-            </span>
+          <label className={fieldStack}>
+            <span className={fieldLabel}>{getCopy().report.descriptionLabel}</span>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -197,24 +223,20 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
             />
           </label>
 
-          <label className="block space-y-1">
-            <span className="text-ink-2 text-xs leading-4">
-              {getCopy().report.photoLabel}
-            </span>
+          <label className={fieldStack}>
+            <span className={fieldLabel}>{getCopy().report.photoLabel}</span>
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"
-              className="text-ink-2 file:rounded-ctl file:bg-surface-muted block w-full text-xs file:mr-3 file:border-0 file:px-3 file:py-2 file:text-sm file:font-medium"
+              className="text-ink-2 file:rounded-ctl file:bg-surface-muted block w-full text-xs file:mr-3 file:border-0 file:px-3 file:py-2 file:text-sm file:font-medium file:shadow-none"
               onChange={(e) => onPhotoChange(e.target.files?.[0])}
             />
-            <span className="text-ink-2 text-xs leading-4">
-              {getCopy().report.photoHint}
-            </span>
+            <span className={fieldLabel}>{getCopy().report.photoHint}</span>
             {photoPreview ? (
               <img
                 src={photoPreview}
                 alt=""
-                className="rounded-card mt-2 aspect-[3/2] w-full object-cover"
+                className="rounded-card aspect-[3/2] w-full object-cover"
               />
             ) : null}
           </label>
@@ -224,18 +246,19 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
               {photoError ?? formError}
             </p>
           ) : null}
-
-          <Button
-            variant="primary"
-            className="w-full shadow-none"
-            onClick={submit}
-            disabled={createReport.isPending}
-          >
-            {createReport.isPending
-              ? getCopy().report.submitting
-              : getCopy().report.submit}
-          </Button>
         </section>
+      </div>
+
+      <div className="border-line bg-surface sticky bottom-0 z-10 shrink-0 border-t px-4 py-3">
+        <Button
+          variant="primary"
+          className="w-full"
+          onClick={submit}
+          loading={createReport.isPending}
+          disabled={!canSubmit || createReport.isPending}
+        >
+          {createReport.isPending ? getCopy().report.submitting : getCopy().report.submit}
+        </Button>
       </div>
     </div>
   )

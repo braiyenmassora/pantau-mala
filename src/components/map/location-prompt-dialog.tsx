@@ -7,7 +7,7 @@ import { getCopy } from '@/copy'
 import { chromeSurface } from '@/lib/chrome'
 import { restoreFocusTrigger } from '@/lib/focus-return'
 import { locationFromCoords, resolveUserCoords } from '@/lib/geolocation'
-import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
+import { getMapPadding, locationFramingZoom } from '@/lib/indonesia-view'
 import { useMapChrome } from '@/lib/layout'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
@@ -44,7 +44,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
   const flyToUser = (lon: number, lat: number) => {
     mapRef.current?.flyTo({
       center: [lon, lat],
-      zoom: LOCATION_ZOOM,
+      zoom: locationFramingZoom(),
       padding: getMapPadding(panelOpen),
       duration: reducedMotion ? 0 : 600,
     })
@@ -60,7 +60,6 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
         chromeSurface,
         'absolute top-[68px] z-50 w-[min(360px,calc(100vw-2rem))] p-4',
         'ease-out-soft transition-[left] duration-300',
-        panelOpen && 'max-sm:hidden',
       )}
       style={{ left }}
       {...mapOverlayGestureProps}
@@ -73,18 +72,12 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
         description={getCopy().location.promptBody}
         actions={
           <>
-            <Button
-              variant="secondary"
-              size="sm"
-              className="shadow-none"
-              onClick={dismiss}
-            >
+            <Button variant="secondary" size="sm" onClick={dismiss}>
               {getCopy().location.promptLater}
             </Button>
             <Button
               variant="primary"
               size="sm"
-              className="shadow-none"
               onClick={() => {
                 void resolveUserCoords().then((result) => {
                   if (result.ok) {

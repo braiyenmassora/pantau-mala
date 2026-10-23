@@ -95,6 +95,7 @@ export default defineConfig(({ mode }) => {
     },
     test: {
       environment: 'node',
+      setupFiles: ['./vitest.setup.ts'],
     },
   }
 })

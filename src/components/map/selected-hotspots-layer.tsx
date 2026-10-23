@@ -262,7 +262,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                   ) : null}
                   {reportCount > 0 ? (
                     <span
-                      className="bg-brand text-surface absolute -top-3 -right-3 z-20 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs leading-none font-semibold shadow-sm"
+                      className="bg-brand text-surface shadow-map absolute -top-3 -right-3 z-20 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs leading-none font-semibold"
                       aria-hidden
                     >
                       {reportCount}
@@ -272,7 +272,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                     type="button"
                     aria-label={`${label}. ${getCopy().report.openAria}`}
                     className={cn(
-                      'marker--interactive marker--pulse border-surface relative size-4 cursor-pointer rounded-full border-2 shadow-md',
+                      'marker--interactive marker--pulse border-surface shadow-map relative size-4 cursor-pointer rounded-full border-2',
                     )}
                     style={{ backgroundColor: style.dot, ...pulseStyle }}
                     onMouseEnter={() => setHovered(i)}

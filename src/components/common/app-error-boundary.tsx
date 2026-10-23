@@ -31,7 +31,7 @@ export class AppErrorBoundary extends Component<Props, State> {
         </p>
         <button
           type="button"
-          className="bg-brand text-surface rounded-card focus-visible:ring-brand min-h-11 px-4 text-sm font-semibold hover:opacity-95 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+          className="border-line bg-surface text-ink hover:bg-surface-muted focus-visible:ring-brand rounded-card min-h-11 border px-4 text-sm leading-5 font-semibold shadow-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
           onClick={() => {
             window.location.reload()
           }}

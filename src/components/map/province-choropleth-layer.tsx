@@ -6,6 +6,7 @@ import type {
 } from 'maplibre-gl'
 
 import { useMap } from '@/components/ui/map'
+import { getCopy } from '@/copy'
 import { useProvinceBoundaries } from '@/data/province-boundaries'
 import { useMeta, useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
@@ -276,6 +277,6 @@ export function ProvinceChoroplethLayer({ regions }: ProvinceChoroplethLayerProp
     }
   }, [map, isLoaded, boundaries, selectedId, reducedMotion])
 
-  if (isError) throw new Error('Batas provinsi belum dapat dimuat.')
+  if (isError) throw new Error(getCopy().errors.provinceLoadFailed)
   return null
 }

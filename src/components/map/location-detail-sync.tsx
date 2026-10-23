@@ -1,7 +1,7 @@
 import { useEffect, useRef, type RefObject } from 'react'
 
 import type { MapRef } from '@/components/ui/map'
-import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
+import { getMapPadding, locationFramingZoom } from '@/lib/indonesia-view'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
 
@@ -28,7 +28,7 @@ export function LocationDetailSync({ mapRef }: LocationDetailSyncProps) {
     syncedKey.current = key
     mapRef.current?.flyTo({
       center: [location.coords.lon, location.coords.lat],
-      zoom: LOCATION_ZOOM,
+      zoom: locationFramingZoom(),
       padding: getMapPadding(panelOpen),
       duration: 600,
     })

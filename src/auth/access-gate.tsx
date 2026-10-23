@@ -1,4 +1,5 @@
 import { Brand } from '@/components/common/brand'
+import { Button } from '@/components/common/button'
 import { IconButton } from '@/components/common/icon-button'
 import { BootLoading } from '@/components/map/map-soft-loading'
 import { getCopy, useLocaleStore } from '@/copy'
@@ -51,7 +52,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
     ) : status === 'restoring' ? null : (
       <main className="bg-map-bg text-ink flex min-h-dvh items-center justify-center p-4">
         <section
-          className="rounded-panel bg-surface w-full max-w-sm space-y-6 p-6 shadow-sm"
+          className="rounded-panel bg-surface shadow-chrome w-full max-w-sm space-y-6 p-6"
           aria-labelledby="login-title"
         >
           <header className="space-y-1">
@@ -65,13 +66,9 @@ export function AccessGate({ children }: { children: ReactNode }) {
               <p role="alert" className="text-sm leading-5">
                 {accessError || getCopy().auth.clientUnavailable}
               </p>
-              <button
-                type="button"
-                className={`rounded-card border-line h-11 border px-4 text-sm leading-5 ${focusRing}`}
-                onClick={() => void restoreSession()}
-              >
+              <Button variant="secondary" onClick={() => void restoreSession()}>
                 {getCopy().auth.retry}
-              </button>
+              </Button>
             </div>
           ) : (
             <form
@@ -128,12 +125,15 @@ export function AccessGate({ children }: { children: ReactNode }) {
                   {error}
                 </p>
               )}
-              <button
+              <Button
+                type="submit"
+                variant="primary"
+                className="w-full"
+                loading={busy}
                 disabled={busy}
-                className={`bg-brand text-surface rounded-card h-11 w-full px-4 text-sm leading-5 font-semibold disabled:opacity-60 ${focusRing}`}
               >
                 {busy ? getCopy().auth.submitting : getCopy().auth.submit}
-              </button>
+              </Button>
             </form>
           )}
         </section>

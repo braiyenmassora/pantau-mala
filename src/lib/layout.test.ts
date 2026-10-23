@@ -9,6 +9,8 @@ import {
   isDesktopWidth,
   isMobileWidth,
   isTabletWidth,
+  mobileMapBottomInset,
+  mobileSheetHeightPx,
 } from '@/lib/layout'
 
 describe('LAYOUT', () => {
@@ -18,7 +20,22 @@ describe('LAYOUT', () => {
     expect(LAYOUT.panelEdge).toBe(LAYOUT.gutter + LAYOUT.panelWidth)
     expect(LAYOUT.overlayInset).toBe(LAYOUT.panelEdge + LAYOUT.gutter)
     expect(LAYOUT.controlSize).toBe(44)
-    expect(LAYOUT.controlsClearance).toBe(LAYOUT.controlSize * 2)
+    // Locate 44 + jarak; zoom in/out sudah dihapus.
+    expect(LAYOUT.controlsClearance).toBe(56)
+  })
+})
+
+describe('mobileSheetHeightPx', () => {
+  it('caps sheet height at mobileSheetMaxPx', () => {
+    expect(mobileSheetHeightPx(2000)).toBe(LAYOUT.mobileSheetMaxPx)
+    expect(mobileSheetHeightPx(800)).toBe(Math.round(800 * LAYOUT.mobileSheetVh))
+  })
+
+  it('uses peek inset when sheet is collapsed', () => {
+    expect(mobileMapBottomInset(false, 800)).toBe(
+      LAYOUT.mobileSheetPeekPx + LAYOUT.gutter,
+    )
+    expect(mobileMapBottomInset(true, 800)).toBe(mobileSheetHeightPx(800) + LAYOUT.gutter)
   })
 })
 
@@ -72,6 +89,14 @@ describe('chromeAvailWidth', () => {
     )
     expect(avail).toBeGreaterThan(0)
     expect(chromeLegendAvailWidth(true, 1920)).toBeGreaterThan(avail)
+  })
+
+  it('uses control clearance on mobile so risk legend is not squeezed to ~150px', () => {
+    const width = 390
+    const avail = chromeLegendAvailWidth(true, width)
+    const left = chromeLeft(true, width)
+    expect(avail).toBe(width - left - LAYOUT.gutter - LAYOUT.controlsClearance)
+    expect(avail).toBeGreaterThanOrEqual(250)
   })
 
   it('leaves room for stamp-sized clearance on narrow desktop with panel open', () => {

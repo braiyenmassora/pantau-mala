@@ -61,7 +61,7 @@ Blok berikut adalah **sumber kebenaran nilai**. Cocok untuk Tailwind v4 `@theme`
   --color-ink: #1f2328;
   --color-ink-2: #5f6368;
   --color-ink-3: #757575;
-  --color-line: #e8eaed;
+  --color-line: #f0f1f3;
   --color-surface: #ffffff;
   --color-surface-muted: #f8f9fa;
   --color-map-bg: #e8eaed;
@@ -246,7 +246,7 @@ Tanpa Tailwind: pakai `var(--…)` langsung.
 | `--color-ink`            | `#1f2328` | Teks utama                      |
 | `--color-ink-2`          | `#5f6368` | Teks sekunder / meta            |
 | `--color-ink-3`          | `#757575` | Placeholder / ikon muted        |
-| `--color-line`           | `#e8eaed` | Border, divider, track progress |
+| `--color-line`           | `#f0f1f3` | Border, divider, track progress |
 | `--color-surface`        | `#ffffff` | Kartu, panel, chrome            |
 | `--color-surface-muted`  | `#f8f9fa` | Hover, empty info, tile soft    |
 | `--color-map-bg`         | `#e8eaed` | Latar app / di luar surface     |
@@ -366,7 +366,7 @@ Jangan hardcode hex di JSX UI — pakai class/token. Untuk MapLibre / canvas / S
 ```ts
 export const BRAND_HEX = '#137333'
 export const LOCATION_HEX = '#137333'
-export const LINE_HEX = '#E8EAED'
+export const LINE_HEX = '#F0F1F3'
 export const INK_HEX = '#1F2328'
 export const SURFACE_HEX = '#FFFFFF'
 
