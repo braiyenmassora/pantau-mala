@@ -157,9 +157,11 @@ describe('Cloudflare Worker routing', () => {
     const env = {
       ...environment(),
       ASSETS: {
-        fetch: vi.fn().mockResolvedValue(
-          new Response(index, { headers: { 'Content-Type': 'text/html' } }),
-        ),
+        fetch: vi
+          .fn()
+          .mockResolvedValue(
+            new Response(index, { headers: { 'Content-Type': 'text/html' } }),
+          ),
       },
     }
     const response = await handleRequest(
@@ -187,9 +189,11 @@ describe('Cloudflare Worker routing', () => {
     const env = {
       ...environment(),
       ASSETS: {
-        fetch: vi.fn().mockResolvedValue(
-          new Response(index, { headers: { 'Content-Type': 'text/html' } }),
-        ),
+        fetch: vi
+          .fn()
+          .mockResolvedValue(
+            new Response(index, { headers: { 'Content-Type': 'text/html' } }),
+          ),
       },
     }
     const response = await handleRequest(

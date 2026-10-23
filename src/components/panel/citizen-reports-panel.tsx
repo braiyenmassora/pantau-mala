@@ -1,8 +1,9 @@
-import { ClipboardList, X } from 'lucide-react'
+import { ChevronRight, ClipboardList, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, type RefObject } from 'react'
 
 import { EmptyState, IconButton } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
+import { Card, CardContent } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import { getCopy } from '@/copy'
 import { useReportCountsByRegion, type ReportRegionCount } from '@/data/hotspot-reports'
@@ -54,7 +55,12 @@ export function CitizenReportsPanel({ regions, mapRef }: CitizenReportsPanelProp
       group.items.push(item)
       byProvince.set(province, group)
     }
-    return [...byProvince.values()].sort((a, b) => b.total - a.total)
+    return [...byProvince.values()]
+      .map((g) => ({
+        ...g,
+        items: [...g.items].sort((a, b) => b.count - a.count),
+      }))
+      .sort((a, b) => b.total - a.total)
   }, [counts, catalog, regions])
 
   const nameOf = (code: string) =>
@@ -86,21 +92,23 @@ export function CitizenReportsPanel({ regions, mapRef }: CitizenReportsPanelProp
 
   return (
     <div className="flex flex-col">
-      <div className="border-line bg-surface sticky top-0 z-10 flex items-center justify-between gap-2 border-b px-4 pt-3 pb-2">
-        <h1
-          ref={titleRef}
-          tabIndex={-1}
-          className="text-ink min-w-0 truncate text-sm leading-5 font-semibold outline-none"
-        >
-          {getCopy().report.panelTitle}
-        </h1>
-        <IconButton onClick={back} aria-label={getCopy().report.close}>
-          <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-        </IconButton>
+      <div className="border-line bg-surface sticky top-0 z-10 space-y-1 border-b px-4 pt-3 pb-3">
+        <div className="flex items-center justify-between gap-2">
+          <h1
+            ref={titleRef}
+            tabIndex={-1}
+            className="text-ink min-w-0 truncate text-sm leading-5 font-semibold outline-none"
+          >
+            {getCopy().report.panelTitle}
+          </h1>
+          <IconButton onClick={back} aria-label={getCopy().report.close}>
+            <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+          </IconButton>
+        </div>
+        <p className="text-ink-2 text-xs leading-4">{getCopy().report.panelHint}</p>
       </div>
 
-      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
-        <p className="text-ink-2 text-xs leading-4">{getCopy().report.panelHint}</p>
+      <div className="flex flex-col gap-3 px-4 pt-3 pb-6">
         {isPending ? (
           <p className="text-ink-2 text-sm leading-5" aria-busy="true">
             {getCopy().common.loading}
@@ -113,35 +121,46 @@ export function CitizenReportsPanel({ regions, mapRef }: CitizenReportsPanelProp
           />
         ) : (
           groups.map((group) => (
-            <section key={group.name} className="space-y-3">
-              <div className="flex items-center justify-between gap-2">
+            <Card key={group.name} aria-label={group.name} className="overflow-hidden">
+              <div className="flex items-center justify-between gap-2 px-4 pt-3 pb-2">
                 <h2 className={T.section}>{group.name}</h2>
-                <span className="text-ink text-xs leading-4 font-semibold tabular-nums">
+                <span className="text-ink-2 shrink-0 text-xs leading-4 font-medium tabular-nums">
                   {getCopy().report.badge(String(group.total))}
                 </span>
               </div>
-              <ul className="flex flex-col">
-                {group.items.map((item) => (
-                  <li key={item.region_code}>
-                    <button
-                      type="button"
-                      onClick={(e) => openRegion(e.currentTarget, item)}
-                      className={cn(
-                        'rounded-ctl hover:bg-surface-muted flex w-full items-center gap-3 px-2 py-3 text-left transition-colors duration-150',
-                        focusRing,
-                      )}
+              <CardContent className="px-0 pt-0 pb-1">
+                <ul className="flex flex-col">
+                  {group.items.map((item, i) => (
+                    <li
+                      key={item.region_code}
+                      className={cn(i > 0 && 'border-line border-t')}
                     >
-                      <span className="text-ink min-w-0 flex-1 truncate text-sm leading-5 font-medium">
-                        {nameOf(item.region_code)}
-                      </span>
-                      <span className="text-ink shrink-0 font-mono text-sm leading-5 font-semibold tabular-nums">
-                        {formatNumber(item.count)}
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </section>
+                      <button
+                        type="button"
+                        onClick={(e) => openRegion(e.currentTarget, item)}
+                        className={cn(
+                          'hover:bg-surface-muted flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors duration-150',
+                          focusRing,
+                          'rounded-none',
+                        )}
+                      >
+                        <span className="text-ink min-w-0 flex-1 truncate text-sm leading-5 font-medium">
+                          {nameOf(item.region_code)}
+                        </span>
+                        <span className="text-ink shrink-0 font-mono text-sm leading-5 font-semibold tabular-nums">
+                          {formatNumber(item.count)}
+                        </span>
+                        <ChevronRight
+                          className="text-ink-3 size-4 shrink-0"
+                          strokeWidth={2}
+                          aria-hidden
+                        />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
           ))
         )}
       </div>
