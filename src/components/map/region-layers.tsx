@@ -1,12 +1,9 @@
 import { useEffect, useMemo } from 'react'
 
-import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { copy } from '@/copy/id'
 import type { Region } from '@/data/types'
 import { formatNumber } from '@/lib/format'
-import { RISK_CATEGORIES } from '@/lib/risk-category'
-import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -65,7 +62,6 @@ export function RegionLayers({ regions }: RegionLayersProps) {
           return null
         }
 
-        const risk = effectiveRiskCategory(r)
         const isHovered = hoveredCode === r.code
 
         return (
@@ -95,16 +91,6 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                 {formatNumber(r.hotspots_24h)}
               </button>
 
-              {isHovered ? (
-                <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
-                  <MapInfoCard
-                    title={r.name}
-                    subtitle={RISK_CATEGORIES[risk].label}
-                    meta={`${formatNumber(r.hotspots_24h)} titik panas · 24 jam`}
-                    lines={[copy.map.summaryMarkerNote]}
-                  />
-                </div>
-              ) : null}
             </MarkerContent>
           </MapMarker>
         )
