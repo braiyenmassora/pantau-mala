@@ -1,4 +1,4 @@
-import { ListFilter, Radio, X } from 'lucide-react'
+import { Activity, ListFilter, X } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
@@ -108,8 +108,9 @@ export function MapLegend() {
         />
         <LegendItem
           symbol={
-            <span className="border-line bg-surface text-risk-mid flex size-5 items-center justify-center rounded-full border">
-              <Radio className="size-3" strokeWidth={2.25} />
+            <span className="border-line bg-surface text-risk-high relative flex size-5 items-center justify-center rounded-full border">
+              <span className="border-risk-high/50 absolute -inset-1 rounded-full border" />
+              <Activity className="relative z-10 size-3" strokeWidth={2} />
             </span>
           }
           title={copy.legend.quakeTitle}

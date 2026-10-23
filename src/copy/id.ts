@@ -406,8 +406,8 @@ export const copy = {
     riskHint: 'Data 24 jam; penanda agregat provinsi, bukan radius dampak',
     detectionTitle: 'Deteksi & heatmap',
     detectionHint: 'Aktif saat wilayah dipilih',
-    quakeTitle: 'Gempa bumi',
-    quakeHint: 'Episentrum dari feed BMKG',
+    quakeTitle: 'Gempa BMKG',
+    quakeHint: 'Episentrum; merah = M5+ / dirasakan',
     densityTitle: 'Kepadatan satelit',
     densityHint: 'Kuning jarang · Merah padat',
     /** @deprecated diganti riskTitle/riskHint */

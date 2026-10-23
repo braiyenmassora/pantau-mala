@@ -17,8 +17,8 @@ describe('MapLegend', () => {
     ).toBeTruthy()
     expect(screen.getByText('Deteksi & heatmap')).toBeTruthy()
     expect(screen.getByText('Aktif saat wilayah dipilih')).toBeTruthy()
-    expect(screen.getByText('Gempa bumi')).toBeTruthy()
-    expect(screen.getByText('Episentrum dari feed BMKG')).toBeTruthy()
+    expect(screen.getByText('Gempa BMKG')).toBeTruthy()
+    expect(screen.getByText('Episentrum; merah = M5+ / dirasakan')).toBeTruthy()
     expect(screen.getByText('Kepadatan satelit')).toBeTruthy()
     expect(screen.getByText('Kuning jarang · Merah padat')).toBeTruthy()
 
