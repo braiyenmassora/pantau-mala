@@ -78,10 +78,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
               className="space-y-4"
             >
               <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="username"
-                  className="text-ink-2 text-xs leading-4"
-                >
+                <label htmlFor="username" className="text-ink-2 text-xs leading-4">
                   {getCopy().auth.username}
                 </label>
                 <input
@@ -94,10 +91,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="password"
-                  className="text-ink-2 text-xs leading-4"
-                >
+                <label htmlFor="password" className="text-ink-2 text-xs leading-4">
                   {getCopy().auth.password}
                 </label>
                 <div className="relative">

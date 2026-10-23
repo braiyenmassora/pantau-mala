@@ -114,15 +114,12 @@ function setTitle(html, title) {
 function setCanonical(html, href) {
   const safe = escapeAttr(href)
   if (/<link[^>]*rel=["']canonical["'][^>]*>/i.test(html)) {
-    return html.replace(
-      /<link([^>]*rel=["']canonical["'][^>]*)>/i,
-      (_m, attrs) => {
-        if (/\bhref=/.test(attrs)) {
-          return `<link${attrs.replace(/\bhref=["'][^"']*["']/, `href="${safe}"`)}>`
-        }
-        return `<link${attrs} href="${safe}">`
-      },
-    )
+    return html.replace(/<link([^>]*rel=["']canonical["'][^>]*)>/i, (_m, attrs) => {
+      if (/\bhref=/.test(attrs)) {
+        return `<link${attrs.replace(/\bhref=["'][^"']*["']/, `href="${safe}"`)}>`
+      }
+      return `<link${attrs} href="${safe}">`
+    })
   }
   return html.replace(
     /<\/head>/i,
@@ -134,7 +131,10 @@ function setCanonical(html, href) {
  * Sisipkan / perbarui meta OG+Twitter di HTML index agar crawler share
  * mendapat judul/URL halaman (bukan hanya home SPA).
  */
-export function injectOgHtml(html, { title, description, url, image, imageAlt, locale = 'id' }) {
+export function injectOgHtml(
+  html,
+  { title, description, url, image, imageAlt, locale = 'id' },
+) {
   const ogLocale = locale === 'en' ? 'en_US' : 'id_ID'
   const ogAlternate = locale === 'en' ? 'id_ID' : 'en_US'
   let out = html
