@@ -30,6 +30,7 @@ import { useUiStore } from '@/store/ui'
 import { RegionTerrainCard } from '@/components/panel/terrain-indicator-card'
 import { CitizenReports } from '@/components/panel/citizen-reports'
 import { RegionHistoryPanel } from '@/components/panel/region-history-panel'
+import { ShareRegionButton } from '@/components/panel/share-region-button'
 
 type RegionDetailPanelProps = {
   region: Region
@@ -199,7 +200,9 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
               </div>
               <p className="text-ink-2 text-xs leading-5">Provinsi {region.province}</p>
             </div>
-            <button
+            <div className="flex shrink-0 items-center gap-1">
+              <ShareRegionButton name={region.name} />
+              <button
               type="button"
               onClick={handleBack}
               aria-label={copy.panel.closeDetail}
@@ -207,9 +210,10 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
                 'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-11 shrink-0 items-center justify-center rounded-full transition-colors',
                 focusRing,
               )}
-            >
-              <X className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
-            </button>
+              >
+                <X className="size-5 shrink-0" strokeWidth={1.75} aria-hidden />
+              </button>
+            </div>
           </div>
 
           <div className="mt-5 flex items-end justify-between gap-3">

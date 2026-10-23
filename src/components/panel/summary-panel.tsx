@@ -23,6 +23,7 @@ import { SearchBox } from '@/components/panel/search-box'
 import { TopProvincesList } from '@/components/panel/top-provinces-list'
 import { NasaEonetCard } from '@/components/panel/nasa-eonet-card'
 import { SourceDataPanel } from '@/components/panel/source-data-panel'
+import { DataFreshnessNotice } from '@/components/panel/data-freshness-notice'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
@@ -261,6 +262,8 @@ export function SummaryPanel({
     return (
       <div className="flex flex-col gap-4 p-4">
         <NationalPanelHeader updatedDate={updatedDate} />
+
+        <DataFreshnessNotice />
 
         <SearchBox mapRef={mapRef} />
 

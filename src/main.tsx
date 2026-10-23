@@ -8,6 +8,7 @@ import './index.css'
 import App from './App.tsx'
 import { registerAppWorker } from '@/pwa/updates'
 import { AppUpdateNotice } from '@/pwa/update-notice'
+import { AppErrorBoundary } from '@/components/common/app-error-boundary'
 
 if (
   import.meta.env.PROD &&
@@ -21,11 +22,13 @@ if (
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <AccessGate>
-        <App />
-        <AppUpdateNotice />
-      </AccessGate>
-    </QueryClientProvider>
+    <AppErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AccessGate>
+          <App />
+          <AppUpdateNotice />
+        </AccessGate>
+      </QueryClientProvider>
+    </AppErrorBoundary>
   </StrictMode>,
 )
