@@ -139,7 +139,7 @@ export function CitizenReportsPanel({ regions, mapRef }: CitizenReportsPanelProp
                         type="button"
                         onClick={(e) => openRegion(e.currentTarget, item)}
                         className={cn(
-                          'hover:bg-surface-muted flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors duration-150',
+                          'hover:bg-surface-muted flex w-full items-center gap-3 px-4 py-2 text-left transition-colors duration-150',
                           focusRing,
                           'rounded-none',
                         )}
