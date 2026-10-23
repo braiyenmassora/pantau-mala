@@ -1,8 +1,4 @@
-import circle from '@turf/circle'
-import distance from '@turf/distance'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { FeatureCollection, Polygon } from 'geojson'
-import type { GeoJSONSource } from 'maplibre-gl'
 
 import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
@@ -12,22 +8,19 @@ import { useHotspots } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { formatDateTime, formatNumber } from '@/lib/format'
 import { getMapPadding } from '@/lib/indonesia-view'
-import { MAP_COLORS } from '@/lib/map-colors'
 import { HOTSPOT_HEX } from '@/lib/risk-category'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
 
-const MASK_SOURCE_ID = 'selected-region-mask-source'
-const MASK_FILL_LAYER = 'selected-region-mask-fill'
-
 type SelectedHotspotsLayerProps = {
   regions: Region[]
 }
 
-// ponytail: fit-bounds sekali per kabupaten; mask setData tanpa removeLayer tiap update.
+// A selected region is a map focus, not a measured impact radius. Keep the
+// useful bounds transition but never draw a circular mask that suggests one.
 export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
-  const { map, isLoaded } = useMap()
+  const { map } = useMap()
   const selectedCode = useMapStore((s) => s.selectedCode)
   const selectHotspot = useMapStore((s) => s.selectHotspot)
   const panelOpen = useUiStore((s) => s.panelOpen)
@@ -85,17 +78,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
       minLat: minLat - pad,
       maxLat: maxLat + pad,
     }
-    const center: [number, number] = [
-      (bounds.minLon + bounds.maxLon) / 2,
-      (bounds.minLat + bounds.maxLat) / 2,
-    ]
-    const radiusKm = Math.max(
-      distance(center, [bounds.minLon, bounds.minLat], { units: 'kilometers' }),
-      distance(center, [bounds.maxLon, bounds.minLat], { units: 'kilometers' }),
-      distance(center, [bounds.maxLon, bounds.maxLat], { units: 'kilometers' }),
-      distance(center, [bounds.minLon, bounds.maxLat], { units: 'kilometers' }),
-    )
-    return { bounds, center, radiusKm }
+    return { bounds }
   }, [selectedRegion, regionHotspots])
 
   // Fit bounds hanya saat ganti kabupaten terpilih
@@ -120,85 +103,6 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
     // shortcut: panelOpen tidak di-deps — menghindari fit ulang tiap toggle panel
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [map, selectedCode, focus])
-
-  // Mask: setData saja; remove hanya saat unmount / tidak ada focus
-  useEffect(() => {
-    if (!map || !isLoaded) return
-
-    if (!focus) {
-      try {
-        if (map.getLayer(MASK_FILL_LAYER)) map.removeLayer(MASK_FILL_LAYER)
-        if (map.getSource(MASK_SOURCE_ID)) map.removeSource(MASK_SOURCE_ID)
-      } catch {
-        // cleanup
-      }
-      return
-    }
-
-    const hole = circle(focus.center, focus.radiusKm, {
-      units: 'kilometers',
-      steps: 64,
-    })
-    const holeRing = hole.geometry.coordinates[0]
-
-    const maskGeoJson: FeatureCollection<Polygon> = {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [-180, -85],
-                [180, -85],
-                [180, 85],
-                [-180, 85],
-                [-180, -85],
-              ],
-              [...holeRing].reverse(),
-            ],
-          },
-          properties: {},
-        },
-      ],
-    }
-
-    if (!map.getSource(MASK_SOURCE_ID)) {
-      map.addSource(MASK_SOURCE_ID, {
-        type: 'geojson',
-        data: maskGeoJson,
-      })
-    } else {
-      const src = map.getSource(MASK_SOURCE_ID) as GeoJSONSource | undefined
-      src?.setData(maskGeoJson)
-    }
-
-    if (!map.getLayer(MASK_FILL_LAYER)) {
-      map.addLayer({
-        id: MASK_FILL_LAYER,
-        type: 'fill',
-        source: MASK_SOURCE_ID,
-        paint: {
-          'fill-color': MAP_COLORS.surface,
-          'fill-opacity': 0.4,
-        },
-      })
-    }
-  }, [map, isLoaded, focus])
-
-  // Teardown mask hanya saat komponen unmount
-  useEffect(() => {
-    if (!map) return
-    return () => {
-      try {
-        if (map.getLayer(MASK_FILL_LAYER)) map.removeLayer(MASK_FILL_LAYER)
-        if (map.getSource(MASK_SOURCE_ID)) map.removeSource(MASK_SOURCE_ID)
-      } catch {
-        // teardown
-      }
-    }
-  }, [map])
 
   if (!selectedRegion || regionHotspots.length === 0 || regionHotspots.length > 64)
     return null

@@ -21,7 +21,6 @@ import {
   type HotspotReport,
   type HotspotSighting,
 } from '@/data/hotspot-reports'
-import { useHotspots } from '@/data/queries'
 import { formatDateTime, formatRelativeAge } from '@/lib/format'
 import {
   formatPhotoBytes,
@@ -31,7 +30,7 @@ import {
   type OptimizedReportPhoto,
 } from '@/lib/report-photo'
 import { cn } from '@/lib/utils'
-import { useMapStore, type ReportHotspot } from '@/store/map'
+import { useMapStore } from '@/store/map'
 import type { TimeZoneId } from '@/data/types'
 
 const sightingLabel = {
@@ -40,8 +39,6 @@ const sightingLabel = {
   tidak_yakin: 'Lainnya / belum yakin',
   sudah_padam: 'Sudah padam',
 } as const
-
-const pointKey = (lat: number, lon: number) => `${lat.toFixed(5)},${lon.toFixed(5)}`
 
 function ReportDetail({
   report,
@@ -108,15 +105,12 @@ export function CitizenReports({
   const fileRef = useRef<HTMLInputElement>(null)
   const photoJob = useRef(0)
   const regionalReports = useRegionHotspotReports(regionCode)
-  const hotspots = useHotspots(true, { regionCode })
   const create = useCreateHotspotReport()
   const reportHotspot = useMapStore((state) => state.reportHotspot)
-  const setReportHotspot = useMapStore((state) => state.setReportHotspot)
-  const [open, setOpen] = useState(Boolean(reportHotspot))
   const reportHotspotKey = reportHotspot
-    ? `${reportHotspot.time}|${pointKey(reportHotspot.lat, reportHotspot.lon)}`
+    ? `${reportHotspot.time}|${reportHotspot.lat.toFixed(5)},${reportHotspot.lon.toFixed(5)}`
     : ''
-  const [autoOpenedTarget, setAutoOpenedTarget] = useState(reportHotspotKey)
+  const [dismissedTargetKey, setDismissedTargetKey] = useState('')
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [photo, setPhoto] = useState<File | null>(null)
@@ -125,32 +119,12 @@ export function CitizenReports({
   const [photoError, setPhotoError] = useState('')
   const [sighting, setSighting] = useState<HotspotSighting>('asap')
   const [selectedReport, setSelectedReport] = useState<HotspotReport | null>(null)
-  const regionHotspots = useMemo(
-    () =>
-      (hotspots.data?.features ?? [])
-        .filter((feature) => feature.properties.region_code === regionCode)
-        .sort(
-          (left, right) =>
-            Date.parse(right.properties.time) - Date.parse(left.properties.time),
-        ),
-    [hotspots.data?.features, regionCode],
-  )
+  // The map selection is the source of truth. Re-looking this up in an async
+  // hotspot query made a freshly clicked marker briefly appear to have no target.
   const target = reportHotspot
-    ? regionHotspots.find(
-        (feature) =>
-          feature.properties.time === reportHotspot.time &&
-          pointKey(feature.geometry.coordinates[1], feature.geometry.coordinates[0]) ===
-            pointKey(reportHotspot.lat, reportHotspot.lon),
-      )
-    : undefined
-  if (reportHotspotKey !== autoOpenedTarget) {
-    setAutoOpenedTarget(reportHotspotKey)
-    if (reportHotspotKey) setOpen(true)
-  }
+  const open = Boolean(target) && reportHotspotKey !== dismissedTargetKey
   const pointReports = usePointHotspotReports(
-    target
-      ? { lat: target.geometry.coordinates[1], lon: target.geometry.coordinates[0] }
-      : undefined,
+    target ? { lat: target.lat, lon: target.lon } : undefined,
   )
   const reports = target ? pointReports : regionalReports
   const photoPreview = useMemo(
@@ -215,13 +189,12 @@ export function CitizenReports({
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (!photo || !target || !name.trim()) return
-    const [lon, lat] = target.geometry.coordinates
     create.mutate(
       {
-        lat,
-        lon,
+        lat: target.lat,
+        lon: target.lon,
         region_code: regionCode,
-        hotspot_time: target.properties.time,
+        hotspot_time: target.time,
         sighting,
         author_name: name.trim(),
         description: description.trim() || undefined,
@@ -235,7 +208,7 @@ export function CitizenReports({
           setPhotoDetails(null)
           setPhotoError('')
           if (fileRef.current) fileRef.current.value = ''
-          setOpen(false)
+          setDismissedTargetKey(reportHotspotKey)
         },
       },
     )
@@ -255,64 +228,25 @@ export function CitizenReports({
         </div>
       </CardHeader>
       <CardContent className="pt-3">
-        {regionHotspots.length > 0 ? (
-          <div className="mb-3 space-y-2">
-            <label
-              htmlFor={`${fieldId}-target`}
-              className="text-ink text-xs font-semibold"
-            >
-              Titik panas yang dilaporkan
-            </label>
-            <select
-              id={`${fieldId}-target`}
-              value={
-                target
-                  ? `${target.properties.time}|${pointKey(target.geometry.coordinates[1], target.geometry.coordinates[0])}`
-                  : ''
-              }
-              onChange={(event) => {
-                const feature = regionHotspots.find(
-                  (item) =>
-                    `${item.properties.time}|${pointKey(item.geometry.coordinates[1], item.geometry.coordinates[0])}` ===
-                    event.target.value,
-                )
-                setSelectedReport(null)
-                setReportHotspot(
-                  feature
-                    ? ({
-                        lat: feature.geometry.coordinates[1],
-                        lon: feature.geometry.coordinates[0],
-                        time: feature.properties.time,
-                        frpMw: feature.properties.frp_mw,
-                        satellite: feature.properties.satellite,
-                      } satisfies ReportHotspot)
-                    : null,
-                )
-              }}
-              className={cn(
-                'border-line bg-surface rounded-ctl h-11 w-full border px-3 text-sm',
-                focusRing,
-              )}
-            >
-              <option value="">Pilih titik pada peta atau daftar ini</option>
-              {regionHotspots.map((feature) => {
-                const [lon, lat] = feature.geometry.coordinates
-                const value = `${feature.properties.time}|${pointKey(lat, lon)}`
-                return (
-                  <option key={value} value={value}>
-                    {formatDateTime(feature.properties.time, timeZone)} · FRP{' '}
-                    {feature.properties.frp_mw.toLocaleString('id-ID')} MW
-                  </option>
-                )
-              })}
-            </select>
-            <p className="text-ink-3 text-xs leading-4">
-              {target
-                ? `Titik ${target.geometry.coordinates[1].toFixed(5)}, ${target.geometry.coordinates[0].toFixed(5)}`
-                : 'Pilih satu titik agar laporan warga tercatat pada lokasi yang tepat.'}
+        {target ? (
+          <div className="border-brand/20 bg-brand-soft/45 rounded-ctl mb-3 flex items-start gap-2 border px-3 py-2">
+            <MapPin className="text-brand mt-1 size-4 shrink-0" aria-hidden />
+            <div className="min-w-0">
+              <p className="text-ink text-xs font-semibold">Titik panas terpilih</p>
+              <p className="text-ink-2 mt-1 text-xs leading-4">
+                {target.lat.toFixed(5)}, {target.lon.toFixed(5)} · {formatDateTime(target.time, timeZone)}
+                {target.frpMw != null ? ` · FRP ${target.frpMw.toLocaleString('id-ID')} MW` : ''}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="border-line bg-surface-muted rounded-ctl mb-3 flex items-start gap-2 border px-3 py-2">
+            <MapPin className="text-ink-2 mt-1 size-4 shrink-0" aria-hidden />
+            <p className="text-ink-2 text-xs leading-5">
+              Pilih titik panas di peta untuk melihat laporan pada titik itu atau mengirim laporan baru.
             </p>
           </div>
-        ) : null}
+        )}
         {reports.isLoading ? <p className="text-ink-2 text-sm">Memuat laporan…</p> : null}
         {reports.isError ? (
           <p className="text-ink-2 text-sm">Laporan warga belum dapat dimuat.</p>
@@ -375,11 +309,6 @@ export function CitizenReports({
             onClose={() => setSelectedReport(null)}
           />
         ) : null}
-        {regionHotspots.length === 0 && !hotspots.isLoading ? (
-          <p className="text-ink-2 mt-4 text-xs">
-            Belum ada titik panas aktif yang dapat dilaporkan di wilayah ini.
-          </p>
-        ) : null}
         {create.isSuccess && !open ? (
           <p
             role="status"
@@ -388,20 +317,6 @@ export function CitizenReports({
             <CheckCircle2 className="size-4 shrink-0" aria-hidden />
             Laporan berhasil dikirim.
           </p>
-        ) : null}
-        {!open ? (
-          <Button
-            variant="soft"
-            size="md"
-            disabled={!target}
-            onClick={() => {
-              create.reset()
-              setOpen(true)
-            }}
-            className="mt-4 w-full"
-          >
-            Kirim laporan
-          </Button>
         ) : null}
         {open ? (
           <form onSubmit={submit} className="border-line mt-3 space-y-3 border-t pt-3">
@@ -414,7 +329,7 @@ export function CitizenReports({
               </div>
               <button
                 type="button"
-                onClick={() => setOpen(false)}
+                onClick={() => setDismissedTargetKey(reportHotspotKey)}
                 aria-label={copy.detail.closeReportForm}
                 title={copy.detail.closeReportForm}
                 className={cn(

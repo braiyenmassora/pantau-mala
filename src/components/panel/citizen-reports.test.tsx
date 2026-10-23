@@ -43,25 +43,6 @@ vi.mock('@/data/hotspot-reports', () => ({
   }),
 }))
 
-vi.mock('@/data/queries', () => ({
-  useHotspots: () => ({
-    isLoading: false,
-    data: {
-      features: [
-        {
-          geometry: { coordinates: [116.2, -3.2] },
-          properties: {
-            region_code: '63.02',
-            time: '2026-10-19T12:00:00Z',
-            frp_mw: 3.2,
-            satellite: 'VIIRS',
-          },
-        },
-      ],
-    },
-  }),
-}))
-
 describe('CitizenReports', () => {
   beforeEach(() => {
     optimizeReportPhoto.mockImplementation(async (file: File) => ({
@@ -97,17 +78,23 @@ describe('CitizenReports', () => {
     render(<CitizenReports regionCode="63.02" />)
 
     expect(screen.getByText('Detail laporan')).toBeTruthy()
-    expect(screen.getByText('Titik -3.20000, 116.20000')).toBeTruthy()
+    expect(screen.getByText(/-3\.20000, 116\.20000/)).toBeTruthy()
   })
 
   it('shows labelled fields and a custom photo control', () => {
+    useMapStore.setState({
+      reportHotspot: {
+        lat: -3.2,
+        lon: 116.2,
+        time: '2026-10-19T12:00:00Z',
+        frpMw: 3.2,
+        satellite: 'VIIRS',
+      },
+    })
     render(<CitizenReports regionCode="63.02" />)
-    const target = screen.getByLabelText(
-      /Titik panas yang dilaporkan/,
-    ) as HTMLSelectElement
-    fireEvent.change(target, { target: { value: target.options[1].value } })
-    fireEvent.click(screen.getByRole('button', { name: 'Kirim laporan' }))
 
+    expect(screen.queryByText('Titik panas yang dilaporkan')).toBeNull()
+    expect(screen.getByText('Titik panas terpilih')).toBeTruthy()
     expect(screen.getByLabelText(/Nama pelapor/)).toBeTruthy()
     expect(screen.getByLabelText(/Apa yang terlihat/)).toBeTruthy()
     expect(screen.getByRole('option', { name: 'Lainnya / belum yakin' })).toBeTruthy()
@@ -120,12 +107,16 @@ describe('CitizenReports', () => {
   })
 
   it('optimizes a camera photo before enabling submission', async () => {
+    useMapStore.setState({
+      reportHotspot: {
+        lat: -3.2,
+        lon: 116.2,
+        time: '2026-10-19T12:00:00Z',
+        frpMw: 3.2,
+        satellite: 'VIIRS',
+      },
+    })
     render(<CitizenReports regionCode="63.02" />)
-    const target = screen.getByLabelText(
-      /Titik panas yang dilaporkan/,
-    ) as HTMLSelectElement
-    fireEvent.change(target, { target: { value: target.options[1].value } })
-    fireEvent.click(screen.getByRole('button', { name: 'Kirim laporan' }))
     fireEvent.change(screen.getByLabelText(/Nama pelapor/), {
       target: { value: 'Sari' },
     })

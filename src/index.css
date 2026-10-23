@@ -121,7 +121,7 @@
   }
 }
 
-/* Penanda berdenyut — riak lebih kencang & radius lebih luas di peta */
+/* Penanda berdenyut: sinyal aktivitas, bukan jangkauan atau radius bahaya. */
 .marker--pulse {
   position: relative;
   overflow: visible;
@@ -129,10 +129,10 @@
 .marker--pulse::after {
   content: '';
   position: absolute;
-  inset: -4px;
+  inset: -3px;
   border-radius: 50%;
-  border: 2px solid var(--risk-color, var(--color-risk-high));
-  animation: soft-pulse var(--beat, 0.75s) ease-out infinite;
+  border: 1.5px solid var(--risk-color, var(--color-risk-high));
+  animation: soft-pulse var(--beat, 2.8s) var(--ease-out-soft) infinite;
   pointer-events: none;
 }
 /* Ring statis di legenda — jangan animasikan */
@@ -149,15 +149,15 @@
 
 @keyframes soft-pulse {
   0% {
-    transform: scale(1);
-    opacity: 0.55;
+    transform: scale(0.9);
+    opacity: 0.42;
   }
-  55% {
-    transform: scale(3);
+  72% {
+    transform: scale(2.1);
     opacity: 0;
   }
   100% {
-    transform: scale(3);
+    transform: scale(2.1);
     opacity: 0;
   }
 }
@@ -169,13 +169,13 @@
   top: 50%;
   left: 50%;
   box-sizing: border-box;
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--province-radar-color);
+  width: 20px;
+  height: 20px;
+  border: 1.5px solid var(--province-radar-color);
   border-radius: 999px;
   content: '';
   pointer-events: none;
-  transform: translate(-50%, -50%) scale(0.72);
+  transform: translate(-50%, -50%) scale(0.85);
   transform-origin: center;
   opacity: 0;
   will-change: transform, opacity;
@@ -190,8 +190,8 @@
 .province-radar-core {
   position: relative;
   z-index: 1;
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border: 2px solid var(--color-surface);
   border-radius: 999px;
   background: var(--province-radar-color);
@@ -206,12 +206,12 @@
 
 @keyframes province-radar-ripple {
   0% {
-    transform: translate(-50%, -50%) scale(0.72);
-    opacity: 0.72;
+    transform: translate(-50%, -50%) scale(0.85);
+    opacity: 0.48;
   }
   72%,
   100% {
-    transform: translate(-50%, -50%) scale(2.05);
+    transform: translate(-50%, -50%) scale(1.7);
     opacity: 0;
   }
 }
