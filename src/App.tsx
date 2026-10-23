@@ -6,6 +6,7 @@ import { focusRing } from '@/components/common/focus-ring'
 import { FilterBar } from '@/components/map/filter-bar'
 import { LocationDetailSync } from '@/components/map/location-detail-sync'
 import { LocationPromptDialog } from '@/components/map/location-prompt-dialog'
+import { MapUrlStateSync } from '@/components/map/map-url-state-sync'
 import { MapControls } from '@/components/map/map-controls'
 import { MapLegend } from '@/components/map/map-legend'
 import { MapSoftLoading } from '@/components/map/map-soft-loading'
@@ -114,6 +115,7 @@ export default function App() {
   return (
     <TooltipProvider>
       <div className="bg-map-bg text-ink relative h-dvh w-dvw overflow-hidden">
+        <MapUrlStateSync />
         <StatusAnnouncer />
 
         <aside
