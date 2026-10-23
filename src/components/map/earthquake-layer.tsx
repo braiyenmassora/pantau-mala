@@ -73,7 +73,7 @@ export function EarthquakeLayer() {
                 type="button"
                 className={cn(
                   'border-line bg-surface relative flex items-center justify-center rounded-full border shadow-sm transition-transform',
-                  hazard ? 'text-risk-high size-8' : 'text-risk-mid size-7',
+                  hazard ? 'text-risk-high size-7' : 'text-risk-mid size-6',
                   focusRing,
                   open && 'z-20 scale-110 ring-2 ring-emerald-600',
                 )}
@@ -88,7 +88,7 @@ export function EarthquakeLayer() {
                 }}
               >
                 {hazard ? <span className="earthquake-hazard-ring" aria-hidden /> : null}
-                <Activity className="relative z-10 size-3.5" strokeWidth={2} aria-hidden />
+                <Activity className="relative z-10 size-3" strokeWidth={2} aria-hidden />
               </button>
 
               {open ? (

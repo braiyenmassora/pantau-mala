@@ -58,13 +58,13 @@ export function UserLocationLayer() {
         <MarkerContent className="relative flex items-center justify-center">
           <span
             aria-hidden
-            className="bg-location-tint/80 absolute size-9 rounded-full opacity-60"
+            className="bg-location-tint/80 absolute size-7 rounded-full opacity-60"
           />
           <Tooltip delayDuration={150}>
             <TooltipTrigger asChild>
               <button
                 type="button"
-                className="border-surface bg-surface relative flex size-5 cursor-pointer items-center justify-center rounded-full border-2 shadow-md transition-transform duration-150 hover:scale-110 active:scale-95"
+                className="border-surface bg-surface relative flex size-6 cursor-pointer items-center justify-center rounded-full border-2 shadow-sm transition-transform duration-150 hover:scale-110 active:scale-95"
                 aria-label={copy.location.yourLocation}
                 onClick={(event) => {
                   event.stopPropagation()
@@ -77,7 +77,7 @@ export function UserLocationLayer() {
                   setPanelOpen(true)
                 }}
               >
-                <span className="bg-location size-3 rounded-full shadow-sm" aria-hidden />
+                <span className="bg-location size-2 rounded-full" aria-hidden />
               </button>
             </TooltipTrigger>
             <TooltipContent side="top" sideOffset={8} className={mapPinTip}>

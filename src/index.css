@@ -190,8 +190,8 @@
 .province-radar-core {
   position: relative;
   z-index: 1;
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border: 2px solid var(--color-surface);
   border-radius: 999px;
   background: var(--province-radar-color);
@@ -219,7 +219,7 @@
 /* Gempa signifikan/dirasakan: sinyal pada marker, bukan radius dampak. */
 .earthquake-hazard-ring {
   position: absolute;
-  inset: -4px;
+  inset: -3px;
   border: 1.5px solid var(--color-risk-high);
   border-radius: 999px;
   opacity: 0;
@@ -230,8 +230,8 @@
 }
 
 @keyframes earthquake-hazard-pulse {
-  0% { transform: scale(0.85); opacity: 0.5; }
-  72%, 100% { transform: scale(1.75); opacity: 0; }
+  0% { transform: scale(0.9); opacity: 0.46; }
+  72%, 100% { transform: scale(1.55); opacity: 0; }
 }
 
 /* Short landscape viewports need compact map chrome regardless of width. */

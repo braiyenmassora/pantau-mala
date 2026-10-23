@@ -2,10 +2,14 @@ import type { Map as MaplibreMap, PaddingOptions } from 'maplibre-gl'
 
 import { LAYOUT } from '@/lib/layout'
 
-/** Geographic extent of Indonesia (Sabang → Merauke). */
+/**
+ * Geographic overview Indonesia (Sabang → Merauke), with a small visual
+ * buffer. The buffer matters when the left information panel is open: the
+ * outer islands must remain visible rather than touching the viewport edge.
+ */
 export const INDONESIA_BOUNDS: [[number, number], [number, number]] = [
-  [94.9, -11.2],
-  [141.1, 6.3],
+  [92.8, -12.8],
+  [143.4, 8.1],
 ]
 
 /** Comfortable navigation envelope around the archipelago. */
