@@ -63,7 +63,7 @@ export const copy = {
 
   auth: {
     logout: 'Keluar',
-    logoutFail: 'Gagal keluar',
+    logoutFail: 'Gagal keluar.',
     loginFail: 'Tidak dapat masuk.',
     loginLead: 'Masuk untuk melihat data ruang kerjamu.',
     clientUnavailable: 'Akses aplikasi belum tersedia.',
@@ -145,7 +145,7 @@ export const copy = {
     },
     appCrash: {
       title: 'Halaman tidak bisa ditampilkan',
-      description: 'Terjadi gangguan. Muat ulang untuk mencoba lagi.',
+      description: 'Ada gangguan sementara. Muat ulang untuk mencoba lagi.',
       action: 'Muat ulang',
     },
   },
@@ -227,7 +227,7 @@ export const copy = {
     groupedEmpty: 'Belum ada laporan warga.',
     panelHint: 'Pengalaman warga di dekat titik panas. Bukan verifikasi resmi.',
     panelOpen: 'Tulis laporan',
-    panelContributeHint: 'Kamu juga bisa kirim laporan di sini, kalau mau.',
+    panelContributeHint: 'Kamu juga bisa kirim laporan di sini.',
     panelEmpty: 'Belum ada laporan di wilayah ini.',
     panelLatest: 'Terbaru',
     detailTitle: 'Detail laporan',
@@ -342,7 +342,7 @@ export const copy = {
     promptTitle: 'Izinkan lokasi untuk melihat titik panas dekat kamu?',
     promptBody: 'Browser meminta izin lokasi. Lokasi kamu tidak disimpan.',
     promptLater: 'Nanti saja',
-    promptContinue: 'Lanjutkan',
+    promptContinue: 'Izinkan',
     allowLocationFull: 'Izinkan lokasi untuk melihat titik panas di sekitarmu',
     deniedBody:
       'Izin lokasi ditolak. Aktifkan di pengaturan browser, atau cari di kolom pencarian.',

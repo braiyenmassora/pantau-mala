@@ -51,7 +51,7 @@ export const enCopy: typeof copy = {
   extra: {
     noDataset: 'Satellite data is not ready yet',
     noDatasetNote:
-      'Satellite data has not arrived yet. That does not necessarily mean there is no fire.',
+      'Satellite data has not arrived yet. That does not always mean there is no fire.',
     detections: 'Hotspots',
     score: 'Score',
     provisional: 'calibration not final',
@@ -64,7 +64,7 @@ export const enCopy: typeof copy = {
   },
   auth: {
     logout: 'Sign out',
-    logoutFail: 'Could not sign out',
+    logoutFail: 'Could not sign out.',
     loginFail: 'Could not sign in.',
     loginLead: 'Sign in to view your workspace data.',
     clientUnavailable: 'App access is not available yet.',
@@ -147,7 +147,7 @@ export const enCopy: typeof copy = {
     },
     appCrash: {
       title: 'This page could not be displayed',
-      description: 'Something went wrong. Reload to try again.',
+      description: 'A temporary problem occurred. Reload to try again.',
       action: 'Reload',
     },
   },
@@ -160,12 +160,12 @@ export const enCopy: typeof copy = {
       'Shows the distribution of satellite hotspots in Indonesia over the last 24 hours.',
     limitationNote: 'Satellite hotspots, not an official fire warning.',
     coverageNote:
-      'Satellites do not monitor continuously. No detections do not necessarily mean there is no fire.',
+      'Satellites do not monitor continuously. Missing detections do not always mean there is no fire.',
     hotspot24h: 'Hotspots (24 hours)',
     hotspotHint: 'About hotspots',
     hotspotTooltip: 'Number of NASA FIRMS satellite hotspots in the last 24 hours.',
     dataSourceLine: 'Data obtained from NASA FIRMS',
-    topRisk: 'Provinces with most hotspots',
+    topRisk: 'Top provinces',
     topRiskHint: 'Top 5, last 24 hours',
     topRiskColumn: 'Hotspots',
     topKab: 'Regencies/cities',
@@ -223,7 +223,7 @@ export const enCopy: typeof copy = {
     groupedEmpty: 'No citizen reports yet.',
     panelHint: 'Citizen experiences near hotspots. Not official verification.',
     panelOpen: 'Write a report',
-    panelContributeHint: 'You can send a report here too, if you want.',
+    panelContributeHint: 'You can also send a report here.',
     panelEmpty: 'No reports in this region yet.',
     panelLatest: 'Latest',
     detailTitle: 'Report details',
@@ -305,7 +305,7 @@ export const enCopy: typeof copy = {
   },
   bahaya: {
     aman: 'Low (model)',
-    waspada: 'Moderate (model)',
+    waspada: 'Watch (model)',
     bahaya: 'High (model)',
     ekstrem: 'Extreme (model)',
   },
@@ -337,7 +337,7 @@ export const enCopy: typeof copy = {
     promptBody:
       'Your browser is asking for location permission. Your location is not stored.',
     promptLater: 'Not now',
-    promptContinue: 'Continue',
+    promptContinue: 'Allow',
     allowLocationFull: 'Allow location to see hotspots around you',
     deniedBody:
       'Location permission was denied. Enable it in your browser settings, or search in the search box.',
