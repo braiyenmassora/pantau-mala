@@ -2,7 +2,7 @@
 
 export const OG_SITE_NAME = 'Pantau Mala'
 // ?v= bust WhatsApp/FB image cache after regenerating public/og.png.
-export const OG_IMAGE_PATH = '/og.png?v=2'
+export const OG_IMAGE_PATH = '/og.png?v=3'
 export const OG_IMAGE_WIDTH = '1200'
 export const OG_IMAGE_HEIGHT = '630'
 

@@ -151,7 +151,7 @@ describe('Cloudflare Worker routing', () => {
 <title>Pantau Mala - Pantauan Titik Panas</title>
 <meta property="og:title" content="Pantau Mala - Pantauan Titik Panas" />
 <meta property="og:url" content="https://pantaumala.live/" />
-<meta property="og:image" content="https://pantaumala.live/og.png?v=2" />
+<meta property="og:image" content="https://pantaumala.live/og.png?v=3" />
 <link rel="canonical" href="https://pantaumala.live/" />
 </head><body></body></html>`
     const env = {
