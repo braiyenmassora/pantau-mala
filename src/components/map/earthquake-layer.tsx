@@ -1,4 +1,4 @@
-import { Radio } from 'lucide-react'
+import { Activity } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
@@ -22,12 +22,20 @@ export function EarthquakeLayer() {
   const showEarthquakes = useMapStore((s) => s.showEarthquakes)
   const earthquakeKind = useMapStore((s) => s.earthquakeKind)
   const earthquakeFocus = useMapStore((s) => s.earthquakeFocus)
+  const sharedEarthquakeTime = useMapStore((s) => s.sharedEarthquakeTime)
+  const focusEarthquake = useMapStore((s) => s.focusEarthquake)
   const { data: earthquakes } = useEarthquakes(earthquakeKind, showEarthquakes)
   const events = useMemo(() => earthquakes?.data ?? [], [earthquakes])
   const [hovered, setHovered] = useState<number | null>(null)
   const [inspectedIndex, setInspectedIndex] = useState<number | null>(null)
 
   const focusedTime = earthquakeFocus?.event.waktu
+
+  useEffect(() => {
+    if (!sharedEarthquakeTime) return
+    const event = events.find((item) => item.waktu === sharedEarthquakeTime)
+    if (event) focusEarthquake(event)
+  }, [events, focusEarthquake, sharedEarthquakeTime])
 
   useEffect(() => {
     if (!map || !earthquakeFocus) return
@@ -47,6 +55,7 @@ export function EarthquakeLayer() {
           maximumFractionDigits: 1,
         })
         const label = `${copy.map.quakeTitle(m)}, ${lokasi}`
+        const hazard = event.magnitudo >= 5 || Boolean(event.dirasakan)
         const open =
           hovered === idx ||
           inspectedIndex === idx ||
@@ -63,8 +72,8 @@ export function EarthquakeLayer() {
               <button
                 type="button"
                 className={cn(
-                  'border-line bg-surface text-risk-mid relative flex items-center justify-center rounded-full border shadow-sm transition-transform',
-                  event.magnitudo >= 5 ? 'size-8 ring-2 ring-amber-500/30' : 'size-7',
+                  'border-line bg-surface relative flex items-center justify-center rounded-full border shadow-sm transition-transform',
+                  hazard ? 'text-risk-high size-8' : 'text-risk-mid size-7',
                   focusRing,
                   open && 'z-20 scale-110 ring-2 ring-emerald-600',
                 )}
@@ -73,9 +82,13 @@ export function EarthquakeLayer() {
                 onMouseLeave={() => setHovered(null)}
                 onFocus={() => setHovered(idx)}
                 onBlur={() => setHovered(null)}
-                onClick={() => setInspectedIndex((curr) => (curr === idx ? null : idx))}
+                onClick={() => {
+                  setInspectedIndex((curr) => (curr === idx ? null : idx))
+                  focusEarthquake(event)
+                }}
               >
-                <Radio className="size-3.5" strokeWidth={2.25} aria-hidden />
+                {hazard ? <span className="earthquake-hazard-ring" aria-hidden /> : null}
+                <Activity className="relative z-10 size-3.5" strokeWidth={2} aria-hidden />
               </button>
 
               {open ? (

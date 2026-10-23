@@ -5,6 +5,7 @@ const REGION_PATH = '/wilayah/'
 export type SharedMapState = {
   regionCode: string | null
   hotspot: ReportHotspot | null
+  earthquakeTime: string | null
 }
 
 function coordinate(value: string | null, min: number, max: number) {
@@ -26,6 +27,19 @@ function regionCodeFromPath(pathname: string) {
 }
 
 export function readSharedMapState(location: Pick<Location, 'pathname' | 'search'>): SharedMapState {
+  if (location.pathname.startsWith('/gempa/')) {
+    const encoded = location.pathname.slice('/gempa/'.length).split('/')[0]
+    try {
+      const time = decodeURIComponent(encoded)
+      return {
+        regionCode: null,
+        hotspot: null,
+        earthquakeTime: Number.isNaN(Date.parse(time)) ? null : time,
+      }
+    } catch {
+      return { regionCode: null, hotspot: null, earthquakeTime: null }
+    }
+  }
   const regionCode = regionCodeFromPath(location.pathname)
   const params = new URLSearchParams(location.search)
   const lat = coordinate(params.get('lat'), -90, 90)
@@ -49,10 +63,12 @@ export function readSharedMapState(location: Pick<Location, 'pathname' | 'search
     hotspot: hasValidHotspot
       ? { lat, lon, time, satellite, frpMw }
       : null,
+    earthquakeTime: null,
   }
 }
 
 export function sharedMapPath(state: SharedMapState) {
+  if (state.earthquakeTime) return `/gempa/${encodeURIComponent(state.earthquakeTime)}`
   if (!state.regionCode) return '/'
   const path = `${REGION_PATH}${encodeURIComponent(state.regionCode)}`
   if (!state.hotspot) return path

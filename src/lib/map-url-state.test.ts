@@ -7,6 +7,7 @@ describe('shared map URL state', () => {
     expect(
       sharedMapPath({
         regionCode: 'IDN.36.73',
+        earthquakeTime: null,
         hotspot: {
           lat: -6.1154321,
           lon: 106.1532678,
@@ -35,9 +36,18 @@ describe('shared map URL state', () => {
         frpMw: 15.7,
         satellite: 'VIIRS',
       },
+      earthquakeTime: null,
     })
     expect(
       readSharedMapState({ pathname: '/wilayah/IDN.36.73', search: '?lat=bad' } as Location),
-    ).toEqual({ regionCode: 'IDN.36.73', hotspot: null })
+    ).toEqual({ regionCode: 'IDN.36.73', hotspot: null, earthquakeTime: null })
+  })
+
+  it('restores a BMKG earthquake route without encoding the whole event payload', () => {
+    expect(readSharedMapState({ pathname: '/gempa/2026-10-23T01%3A13%3A00Z', search: '' } as Location)).toEqual({
+      regionCode: null,
+      hotspot: null,
+      earthquakeTime: '2026-10-23T01:13:00Z',
+    })
   })
 })

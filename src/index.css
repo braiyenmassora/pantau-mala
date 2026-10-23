@@ -216,6 +216,24 @@
   }
 }
 
+/* Gempa signifikan/dirasakan: sinyal pada marker, bukan radius dampak. */
+.earthquake-hazard-ring {
+  position: absolute;
+  inset: -4px;
+  border: 1.5px solid var(--color-risk-high);
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.85);
+  will-change: transform, opacity;
+  animation: earthquake-hazard-pulse 2.8s var(--ease-out-soft) infinite;
+}
+
+@keyframes earthquake-hazard-pulse {
+  0% { transform: scale(0.85); opacity: 0.5; }
+  72%, 100% { transform: scale(1.75); opacity: 0; }
+}
+
 /* Short landscape viewports need compact map chrome regardless of width. */
 @media (max-height: 520px) {
   .map-legend {
@@ -259,7 +277,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .marker--pulse::after {
+  .marker--pulse::after,
+  .earthquake-hazard-ring {
     animation: none;
     transform: scale(1.6);
     opacity: 0.35;
