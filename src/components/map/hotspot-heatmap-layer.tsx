@@ -147,13 +147,11 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   const province = useMapStore((s) => s.province)
   const selectedCode = useMapStore((s) => s.selectedCode)
   const select = useMapStore((s) => s.select)
-  const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
   const { data } = useHotspots()
   const [activeHotspot, setActiveHotspot] = useState<ActiveHotspot | null>(null)
   const regionsRef = useRef(regions)
   const selectRef = useRef(select)
-  const panelOpenRef = useRef(panelOpen)
   const setPanelOpenRef = useRef(setPanelOpen)
   const selectedCodeRef = useRef(selectedCode)
   const collectionRef = useRef(
@@ -168,11 +166,10 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   useEffect(() => {
     regionsRef.current = regions
     selectRef.current = select
-    panelOpenRef.current = panelOpen
     setPanelOpenRef.current = setPanelOpen
     selectedCodeRef.current = selectedCode
     collectionRef.current = collection
-  }, [regions, select, panelOpen, setPanelOpen, selectedCode, collection])
+  }, [regions, select, setPanelOpen, selectedCode, collection])
 
   const tipHotspot = selectedCode ? null : activeHotspot
 
@@ -225,7 +222,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       if (typeof code !== 'string' || !code) return false
       const reg = regionsRef.current.find((r) => r.code === code)
       selectRef.current(code, reg?.province)
-      if (!panelOpenRef.current) setPanelOpenRef.current(true)
+      setPanelOpenRef.current(true)
       return true
     }
 

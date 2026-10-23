@@ -7,6 +7,7 @@ import {
   shouldRefitIndonesiaOnZoomOut,
 } from '@/lib/indonesia-view'
 import { LAYOUT, mobileMapBottomInset } from '@/lib/layout'
+import { useUiStore } from '@/store/ui'
 
 function stubWidth(width: number, height = 800) {
   vi.stubGlobal('window', { innerWidth: width, innerHeight: height })
@@ -77,6 +78,16 @@ describe('fitProvinceBounds', () => {
     // mock cameraForBounds zoom 4.2 — jangan diangkat ke floor tinggi yang memotong Papua
     expect(zoom).toBe(4.2)
     expect(map.jumpTo).toHaveBeenCalledWith(expect.objectContaining({ zoom: 4.2 }))
+    // Zoom-out berhenti di overview nasional (seluruh RI muat), bukan lebih jauh ke laut.
+    expect(map.setMinZoom).toHaveBeenCalledWith(4.2)
+  })
+
+  it('allows zoom-out down to a low natural fit without raising the floor', () => {
+    const map = mockMap()
+    map.cameraForBounds = vi.fn(() => ({ zoom: 3.1, center: { lng: 118, lat: -2 } }))
+    const zoom = fitIndonesia(map as never, true, 0)
+    expect(zoom).toBe(3.1)
+    expect(map.setMinZoom).toHaveBeenCalledWith(3.1)
   })
 
   it('handles coordinate array center from cameraForBounds correctly', () => {
@@ -125,10 +136,13 @@ describe('getMapPadding', () => {
 
   it('pads above peep or expanded sheet on mobile', () => {
     stubWidth(390, 800)
+    useUiStore.setState({ mobileSheet: 'half' })
     const open = getMapPadding(true)
     expect(open.left).toBe(LAYOUT.gutter)
-    expect(open.bottom).toBe(mobileMapBottomInset(true, 800))
-    expect(getMapPadding(false).bottom).toBe(mobileMapBottomInset(false, 800))
+    expect(open.bottom).toBe(mobileMapBottomInset(true, 800, 'half'))
+    useUiStore.setState({ mobileSheet: 'peek' })
+    expect(getMapPadding(false).bottom).toBe(mobileMapBottomInset(false, 800, 'peek'))
+    useUiStore.setState({ mobileSheet: 'half' })
   })
 
   it('uses full overlay inset on desktop when panel open', () => {

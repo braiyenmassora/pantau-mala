@@ -27,7 +27,6 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
   const selectedCode = useMapStore((s) => s.selectedCode)
   const hover = useMapStore((s) => s.hover)
   const select = useMapStore((s) => s.select)
-  const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
   const reducedMotion = usePrefersReducedMotion()
   const active = hoveredCode === region.code || selectedCode === region.code
@@ -50,7 +49,7 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
       onClick={(e) => {
         rememberFocusTrigger(e.currentTarget)
         select(region.code, region.province)
-        if (!panelOpen) setPanelOpen(true)
+        setPanelOpen(true)
         mapRef.current?.flyTo({
           center: region.center,
           zoom: PLACE_ZOOM,

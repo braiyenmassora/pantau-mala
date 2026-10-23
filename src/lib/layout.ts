@@ -31,29 +31,71 @@ export const LAYOUT = {
   /** Sisa lebar peta minimum saat panel terbuka di tablet. */
   mapMinWidth: 280,
   /**
-   * Tinggi bottom sheet mobile (Maps-style). Cap 480px agar tablet kecil tidak menelan peta.
-   * Mirror CSS: `--map-sheet-height` / `--map-sheet-peek`.
+   * Bottom sheet mobile 3 tingkat (Maps): peek → half → full.
+   * Mirror CSS: `--map-sheet-peek` / `--map-sheet-half` / `--map-sheet-height`.
    */
-  mobileSheetMaxPx: 480,
-  mobileSheetVh: 0.55,
-  /** Peep selalu terlihat di mobile (handle + brand + search). */
-  mobileSheetPeekPx: 152,
+  /** Peek: handle + logo + bendera saja. */
+  mobileSheetPeekPx: 88,
+  /** Half = 50/50 peta ↔ panel (Maps mid). Full dinonaktifkan — menutup beat. */
+  mobileSheetHalfMaxPx: 480,
+  mobileSheetHalfVh: 0.5,
+  mobileSheetTopGapPx: 48,
+  mobileSheetDragThresholdPx: 48,
 } as const
 
-/** Tinggi sheet mobile (expanded) dalam px untuk padding MapLibre. */
-export function mobileSheetHeightPx(height = viewportHeight()): number {
-  return Math.min(LAYOUT.mobileSheetMaxPx, Math.round(height * LAYOUT.mobileSheetVh))
+export type MobileSheetLevel = 'peek' | 'half' | 'full'
+
+/** Hanya peek ↔ half; `full` dipetakan ke half. */
+const SHEET_LEVELS: readonly MobileSheetLevel[] = ['peek', 'half']
+
+function clampSheetLevel(level: MobileSheetLevel): 'peek' | 'half' {
+  return level === 'peek' ? 'peek' : 'half'
 }
 
-/** Padding bawah peta mobile: expanded sheet atau peep. */
+/** Tinggi sheet per tingkat (px) untuk padding MapLibre + mirror CSS. */
+export function mobileSheetHeightFor(
+  level: MobileSheetLevel,
+  height = viewportHeight(),
+): number {
+  if (clampSheetLevel(level) === 'peek') return LAYOUT.mobileSheetPeekPx
+  return Math.min(
+    LAYOUT.mobileSheetHalfMaxPx,
+    Math.round(height * LAYOUT.mobileSheetHalfVh),
+  )
+}
+
+/** @deprecated pakai mobileSheetHeightFor('half') — tetap untuk pemanggil lama. */
+export function mobileSheetHeightPx(height = viewportHeight()): number {
+  return mobileSheetHeightFor('half', height)
+}
+
+/** Snap drag: dy < 0 = naik ke half; dy > 0 = turun ke peek. */
+export function sheetSnapFromDrag(
+  dy: number,
+  level: MobileSheetLevel,
+  threshold = LAYOUT.mobileSheetDragThresholdPx,
+): MobileSheetLevel {
+  const current = clampSheetLevel(level)
+  const i = SHEET_LEVELS.indexOf(current)
+  if (dy <= -threshold) return SHEET_LEVELS[Math.min(i + 1, SHEET_LEVELS.length - 1)]!
+  if (dy >= threshold) return SHEET_LEVELS[Math.max(i - 1, 0)]!
+  return current
+}
+
+/** Ketuk handle: peek ↔ half (50/50). */
+export function sheetCycleNext(level: MobileSheetLevel): MobileSheetLevel {
+  return clampSheetLevel(level) === 'peek' ? 'half' : 'peek'
+}
+
+/** Padding bawah peta mobile menurut tingkat sheet. */
 export function mobileMapBottomInset(
   panelExpanded: boolean,
   height = viewportHeight(),
+  level?: MobileSheetLevel,
 ): number {
-  return (
-    (panelExpanded ? mobileSheetHeightPx(height) : LAYOUT.mobileSheetPeekPx) +
-    LAYOUT.gutter
-  )
+  const resolved: MobileSheetLevel =
+    level ?? (panelExpanded ? 'half' : 'peek')
+  return mobileSheetHeightFor(resolved, height) + LAYOUT.gutter
 }
 
 export function viewportHeight(): number {

@@ -55,13 +55,13 @@ export function MapControls({ mapRef }: MapControlsProps) {
       className={cn(
         'absolute right-(--floating-control-offset) z-30 flex flex-col items-end gap-3 sm:gap-4',
         'ease-out-soft transition-[bottom] duration-300',
-        // Mobile: sheet selalu expanded → kontrol di atas sheet. Tablet+: pojok bawah.
-        'bottom-[calc(var(--map-sheet-height)+var(--floating-control-offset))] sm:bottom-(--floating-control-offset)',
+        // Mobile: di atas sheet (peek/full). Tablet+: pojok bawah.
+        'bottom-[calc(var(--map-sheet-current)+var(--floating-control-offset))] sm:bottom-(--floating-control-offset)',
       )}
       {...mapOverlayGestureProps}
     >
       {/* Zoom: scroll/gesture — hanya tombol lokasi. */}
-      <div className="border-line bg-surface rounded-ctl shadow-chrome overflow-hidden border backdrop-blur-sm">
+      <div className="border-line bg-surface rounded-ctl shadow-chrome overflow-hidden border">
         <button
           type="button"
           className={cn(btnClass, hasCoords && 'bg-brand-soft text-brand', focusRing)}

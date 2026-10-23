@@ -1,5 +1,5 @@
 import { Check, ChevronDown, ListFilter } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Chip } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
@@ -9,7 +9,7 @@ import { getCopy } from '@/copy'
 import type { Region, RiskCategory } from '@/data/types'
 import { filterRegions } from '@/lib/filter-regions'
 import { formatNumber } from '@/lib/format'
-import { useMapChrome } from '@/lib/layout'
+import { isMobileWidth, useMapChrome } from '@/lib/layout'
 import { RISK_CATEGORIES, riskCategoryLabel } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
@@ -60,16 +60,31 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
   const allCount = preCategory.length
   const categorySum = counts.sangat_tinggi + counts.sedang + counts.rendah
 
-  const { left, availWidth } = useMapChrome(panelOpen)
+  const { left, availWidth, width } = useMapChrome(panelOpen)
   const riskMenu = availWidth < RISK_MENU_MAX_AVAIL
-  // Panel terbuka + chrome sempit: picker di panel; sisakan ruang untuk menu Risiko.
-  const showProvince = !(panelOpen && availWidth < 280)
+  // Mobile: selalu tampilkan picker (bar bisa di-scroll).
+  // Tablet+ panel sempit: sembunyikan — ruang untuk Risiko; ganti via panel.
+  const showProvince = isMobileWidth(width) || !(panelOpen && availWidth < 280)
+  const rowRef = useRef<HTMLDivElement>(null)
+  const [overflowX, setOverflowX] = useState(false)
+
+  useEffect(() => {
+    const el = rowRef.current
+    if (!el) return
+    const sync = () => setOverflowX(el.scrollWidth > el.clientWidth + 1)
+    sync()
+    const ro = new ResizeObserver(sync)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [availWidth, showProvince, riskMenu, allCount])
 
   return (
     <div
+      ref={rowRef}
       className={cn(
-        'soft-scroll soft-fade-x fixed top-(--floating-control-offset) z-30',
-        'flex items-center gap-2 overflow-x-auto overscroll-x-contain pr-7 pb-1',
+        'soft-scroll fixed top-(--floating-control-offset) z-30',
+        'flex items-center gap-2 overflow-x-auto overscroll-x-contain pb-1',
+        overflowX && 'soft-fade-x pr-7',
         'ease-out-soft transition-[left,max-width] duration-300',
       )}
       style={{ left, maxWidth: availWidth }}
@@ -84,6 +99,9 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           className={cn('shrink-0', availWidth < 320 && 'max-w-36')}
         />
       ) : null}
+
+      {/* Provinsi → Kerapatan → Risiko — legenda tidak kena soft-fade di ujung. */}
+      <DensityLegendChip />
 
       {riskMenu ? (
         <RiskFilterMenu
@@ -159,6 +177,47 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           })}
         </>
       )}
+    </div>
+  )
+}
+
+/** Legenda kerapatan heatmap — chip di bar filter (tidak menutup peta). */
+function DensityLegendChip() {
+  const aria = `${getCopy().legend.densityTitle}: ${getCopy().legend.densityLow}, ${getCopy().legend.densityMid}, ${getCopy().legend.densityHigh}`
+  return (
+    <div
+      role="img"
+      data-testid="density-legend-chip"
+      aria-label={aria}
+      title={aria}
+      className={cn(
+        'border-line bg-surface text-ink shadow-none',
+        'flex h-11 min-h-11 shrink-0 items-center gap-2 rounded-card border px-3',
+      )}
+    >
+      <span className="text-ink-2 text-xs leading-4 font-medium whitespace-nowrap">
+        {getCopy().legend.densityTitle}
+      </span>
+      <span
+        className="text-ink-3 hidden text-xs leading-4 whitespace-nowrap sm:inline"
+        aria-hidden
+      >
+        {getCopy().legend.densityLow}
+      </span>
+      <span
+        className="h-1.5 w-16 shrink-0 rounded-full sm:w-20"
+        style={{
+          background:
+            'linear-gradient(90deg, var(--color-heat-low), var(--color-heat-mid), var(--color-heat-high))',
+        }}
+        aria-hidden
+      />
+      <span
+        className="text-ink-3 hidden text-xs leading-4 whitespace-nowrap sm:inline"
+        aria-hidden
+      >
+        {getCopy().legend.densityHigh}
+      </span>
     </div>
   )
 }

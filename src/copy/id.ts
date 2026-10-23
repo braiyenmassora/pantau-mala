@@ -377,6 +377,9 @@ export const copy = {
     panelAria: 'Panel informasi',
     hidePanel: 'Sembunyikan panel',
     showPanel: 'Tampilkan panel',
+    expandSheet: 'Perbesar panel',
+    collapseSheet: 'Perkecil panel',
+    sheetHalf: 'Panel setengah layar',
     mapAria: 'Peta deteksi titik panas Indonesia',
   },
   a11y: {

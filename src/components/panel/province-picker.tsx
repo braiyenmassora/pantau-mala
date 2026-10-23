@@ -9,6 +9,7 @@ import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
+import { useUiStore } from '@/store/ui'
 
 const ALL_PROVINCES = 'Semua'
 
@@ -24,6 +25,7 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
   const { data: catalog } = useRegionCatalog()
   const province = useMapStore((s) => s.province)
   const setProvince = useMapStore((s) => s.setProvince)
+  const setPanelOpen = useUiStore((s) => s.setPanelOpen)
 
   const provinces = useMemo(() => {
     const set = new Set([
@@ -140,6 +142,7 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
                   )}
                   onClick={() => {
                     setProvince(option.value)
+                    if (option.value !== ALL_PROVINCES) setPanelOpen(true)
                     setOpen(false)
                     setSearch('')
                   }}

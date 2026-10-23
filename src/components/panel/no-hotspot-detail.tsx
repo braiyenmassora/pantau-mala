@@ -26,7 +26,7 @@ export function NoHotspotDetail({ kab }: NoHotspotDetailProps) {
 
   return (
     <div className="flex flex-col">
-      <div className="bg-surface sticky top-0 z-10 flex justify-end px-4 pt-3 pb-2">
+      <div className="border-line bg-surface sticky top-0 z-10 flex justify-end border-b px-4 pt-3 pb-2">
         <IconButton onClick={handleBack} aria-label={getCopy().panel.closeDetail}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         </IconButton>

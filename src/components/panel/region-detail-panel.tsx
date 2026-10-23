@@ -336,7 +336,22 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
 
   return (
     <div key={region.code} className="flex flex-col">
-      <div className="bg-surface sticky top-0 z-10 flex justify-end px-4 pt-3 pb-2">
+      <div className="border-line bg-surface sticky top-0 z-10 flex items-center gap-2 border-b px-4 pt-2 pb-2">
+        <div className="flex min-w-0 flex-1 items-center gap-1">
+          <h1
+            ref={titleRef}
+            tabIndex={-1}
+            className="text-ink min-w-0 truncate text-sm leading-5 font-semibold outline-none"
+            title={region.name}
+          >
+            {region.name}
+          </h1>
+          <InfoTooltip content={getCopy().detail.riskTooltip} />
+        </div>
+        <HotspotStatusBadge
+          hotspots={region.hotspots_24h}
+          riskCategory={region.risk_category}
+        />
         <IconButton onClick={handleBack} aria-label={getCopy().panel.closeDetail}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         </IconButton>
@@ -346,24 +361,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
         <DataFreshnessBanner />
 
         <Card aria-label={region.name}>
-          <CardHeader>
-            <div className="flex min-w-0 items-center gap-1">
-              <h1
-                ref={titleRef}
-                tabIndex={-1}
-                className="text-ink min-w-0 truncate text-sm leading-5 font-semibold outline-none"
-                title={region.name}
-              >
-                {region.name}
-              </h1>
-              <InfoTooltip content={getCopy().detail.riskTooltip} />
-            </div>
-            <HotspotStatusBadge
-              hotspots={region.hotspots_24h}
-              riskCategory={region.risk_category}
-            />
-          </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 pt-4">
             <div className="space-y-1">
               <p className="text-ink font-mono text-3xl leading-10 font-semibold tabular-nums">
                 {formatNumber(region.hotspots_24h)}

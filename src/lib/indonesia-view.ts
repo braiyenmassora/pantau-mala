@@ -6,8 +6,10 @@ import {
   chromeLeft,
   isMobileWidth,
   mobileMapBottomInset,
+  viewportHeight,
   viewportWidth,
 } from '@/lib/layout'
+import { useUiStore } from '@/store/ui'
 
 /** Geographic extent of Indonesia (Sabang → Merauke). */
 export const INDONESIA_BOUNDS: [[number, number], [number, number]] = [
@@ -29,10 +31,10 @@ export function locationFramingZoom(width = viewportWidth()): number {
   return isMobileWidth(width) ? MOBILE_LOCATION_ZOOM : LOCATION_ZOOM
 }
 /**
- * Lantai zoom overview nasional — jangan naikkan di atas cameraForBounds:
- * Sabang→Merauke harus muat (Papua tidak boleh terpotong).
+ * Cadangan jika cameraForBounds gagal. Jangan pakai untuk mengangkat zoom fit:
+ * zoom lebih tinggi = Papua terpotong.
  */
-export const OVERVIEW_ZOOM_FLOOR = 3.8
+export const OVERVIEW_ZOOM_FLOOR = 3.2
 
 /**
  * Padding area aman agar fit nasional tidak ketutup chip/legend/panel.
@@ -45,8 +47,12 @@ export function getMapPadding(panelOpen: boolean): PaddingOptions {
       left: LAYOUT.gutter,
       top: 72,
       right: LAYOUT.gutter,
-      // Peep selalu ada → padding bawah tidak pernah kembali ke 88.
-      bottom: mobileMapBottomInset(panelOpen),
+      // 3 tingkat sheet (peek/half/full) — peep selalu ada.
+      bottom: mobileMapBottomInset(
+        panelOpen,
+        viewportHeight(),
+        useUiStore.getState().mobileSheet,
+      ),
     }
   }
   const left = panelOpen ? chromeLeft(true, width) : 24
@@ -64,8 +70,8 @@ function overviewCamera(map: MaplibreMap, panelOpen: boolean) {
     padding,
     absolutePadding: true,
   })
-  // Pakai zoom natural fitBounds; lantai hanya cegah zoom terlalu jauh ke luar negeri.
-  const zoom = Math.max(camera?.zoom ?? OVERVIEW_ZOOM_FLOOR, OVERVIEW_ZOOM_FLOOR)
+  // Zoom natural agar Sabang→Merauke muat di area peta (dengan padding chrome/sheet).
+  const zoom = camera?.zoom ?? OVERVIEW_ZOOM_FLOOR
   const rawCenter = camera?.center
   const center: [number, number] =
     rawCenter != null
@@ -183,10 +189,12 @@ export function applyDynamicMaxBounds(map: MaplibreMap) {
   ])
 }
 
-/** Headroom zoom-out di bawah zoom fit nasional (mobile sheet tinggi → headroom lebih besar). */
-function overviewMinZoom(fitZoom: number): number {
-  const headroom = isMobileWidth() ? 1.15 : 0.35
-  return Math.max(OVERVIEW_ZOOM_FLOOR - (isMobileWidth() ? 0.4 : 0), fitZoom - headroom)
+/**
+ * Maps-style: zoom-out berhenti tepat di overview nasional (seluruh Indonesia terlihat).
+ * Tanpa headroom ke laut lepas — sesuaikan minZoom ke zoom fit padding saat ini.
+ */
+export function overviewMinZoom(fitZoom: number): number {
+  return fitZoom
 }
 
 /**

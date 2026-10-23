@@ -31,7 +31,7 @@ import { RegionRow } from '@/components/panel/region-row'
 import { SearchBox } from '@/components/panel/search-box'
 import { TopProvincesList } from '@/components/panel/top-provinces-list'
 import { TotalReportsCard } from '@/components/panel/total-reports-card'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import { getCopy } from '@/copy'
 import { useRegionCatalog } from '@/data/queries'
@@ -87,9 +87,11 @@ export function SummaryPanel({
   const wilayahNotFound = useMapStore((s) => s.wilayahNotFound)
   const setWilayahNotFound = useMapStore((s) => s.setWilayahNotFound)
   const panelOpen = useUiStore((s) => s.panelOpen)
+  const mobileSheet = useUiStore((s) => s.mobileSheet)
   const selectedReportId = useUiStore((s) => s.selectedReportId)
   const reportTarget = useUiStore((s) => s.reportTarget)
   const reportsOpen = useUiStore((s) => s.reportsOpen)
+  const sheetPeek = mobileSheet === 'peek'
 
   const { data: daftar, isPending: daftarPending } = useRegionCatalog()
 
@@ -301,20 +303,35 @@ export function SummaryPanel({
     )
   }
 
-  // Beranda nasional + hasil cari: SearchBox tetap di sticky yang sama (hindari remount → fokus stuck).
+  // Beranda nasional + hasil cari: SearchBox tetap di DOM (hindari remount → fokus stuck).
+  // Peek mobile: hanya logo + bendera — kolom cari disembunyikan.
   // Spacing DS: gutter 16 · sticky→konten 24 (pb-3+pt-3) · antar section 24 · dalam section 12.
   if (nationalView || searching) {
     return (
       <div className="flex flex-col">
-        <div className="bg-surface sticky top-0 z-10 space-y-3 px-4 pt-3 pb-2">
+        <div
+          className={cn(
+            'bg-surface sticky top-0 z-10 px-4',
+            sheetPeek ? 'space-y-0 py-1' : 'space-y-3 pt-3 pb-2',
+          )}
+        >
           <div className="flex items-center justify-between gap-2">
             <Brand compact />
             <LanguageToggle />
           </div>
-          <SearchBox mapRef={mapRef} />
+          <div className={cn(sheetPeek && 'hidden')}>
+            <SearchBox mapRef={mapRef} />
+          </div>
         </div>
 
-        <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
+        {/* Peek: jangan biarkan judul/isi bocor di bawah logo. */}
+        <div
+          className={cn(
+            'flex flex-col gap-6 px-4 pt-3 pb-6',
+            sheetPeek && 'hidden',
+          )}
+          aria-hidden={sheetPeek || undefined}
+        >
           <DataFreshnessBanner />
           {searching ? (
             <section className="space-y-3">
@@ -393,14 +410,24 @@ export function SummaryPanel({
     )
   }
 
-  // 3. Panel provinsi — kartu pola Gempa (judul di dalam · atas hanya X)
+  // 3. Panel provinsi — judul sticky (terbaca di peek Maps).
   const provTrend = hotspotTrend(provinceStats?.trend_7d ?? [0, 0, 0, 0, 0, 0, 0])
   const { Icon: TrendIcon } = TREND_UI[provTrend]
   const trendLabel = TREND_LABEL(provTrend)
 
   return (
     <div className="flex flex-col">
-      <div className="bg-surface sticky top-0 z-10 flex justify-end px-4 pt-3 pb-2">
+      <div className="border-line bg-surface sticky top-0 z-10 flex items-center gap-2 border-b px-4 pt-2 pb-2">
+        <div className="flex min-w-0 flex-1 items-center gap-1">
+          <h1 className="text-ink min-w-0 truncate text-sm leading-5 font-semibold">
+            {province}
+          </h1>
+          <InfoTooltip content={getCopy().detail.riskTooltip} />
+        </div>
+        <HotspotStatusBadge
+          hotspots={provinceStats?.count_24h ?? 0}
+          riskCategory={provinceStats?.risk_category ?? 'tidak_tersedia'}
+        />
         <IconButton
           onClick={() => {
             setProvince('Semua')
@@ -416,19 +443,7 @@ export function SummaryPanel({
         <DataFreshnessBanner />
 
         <Card aria-label={province}>
-          <CardHeader>
-            <div className="flex min-w-0 items-center gap-1">
-              <h1 className="text-ink min-w-0 truncate text-sm leading-5 font-semibold">
-                {province}
-              </h1>
-              <InfoTooltip content={getCopy().detail.riskTooltip} />
-            </div>
-            <HotspotStatusBadge
-              hotspots={provinceStats?.count_24h ?? 0}
-              riskCategory={provinceStats?.risk_category ?? 'tidak_tersedia'}
-            />
-          </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 pt-4">
             <div className="space-y-1">
               <p className="text-ink font-mono text-3xl leading-10 font-semibold tabular-nums">
                 {formatNumber(provinceStats?.count_24h ?? 0)}

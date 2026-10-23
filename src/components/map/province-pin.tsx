@@ -23,7 +23,6 @@ type ProvincePinProps = {
 export function ProvincePin({ aggregate, hovered = false, onHover }: ProvincePinProps) {
   const { map } = useMap()
   const setProvince = useMapStore((s) => s.setProvince)
-  const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
 
   const { data: meta } = useMeta()
@@ -59,7 +58,7 @@ export function ProvincePin({ aggregate, hovered = false, onHover }: ProvincePin
           onClick={(e) => {
             e.stopPropagation()
             setProvince(aggregate.name)
-            if (!panelOpen) setPanelOpen(true)
+            setPanelOpen(true)
             if (map) {
               fitProvinceBounds(map, aggregate.bbox, true, 0)
             }

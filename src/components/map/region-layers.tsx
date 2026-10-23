@@ -28,7 +28,6 @@ export function RegionLayers({ regions }: RegionLayersProps) {
   const hoveredCode = useMapStore((s) => s.hoveredCode)
   const select = useMapStore((s) => s.select)
   const hover = useMapStore((s) => s.hover)
-  const panelOpen = useUiStore((s) => s.panelOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
 
   const isProvinceView = province !== 'Semua' && !selectedCode
@@ -90,7 +89,7 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                 onClick={(e) => {
                   e.stopPropagation()
                   select(r.code, r.province)
-                  if (!panelOpen) setPanelOpen(true)
+                  setPanelOpen(true)
                 }}
               >
                 <span

@@ -371,6 +371,9 @@ export const enCopy: typeof copy = {
     panelAria: 'Information panel',
     hidePanel: 'Hide panel',
     showPanel: 'Show panel',
+    expandSheet: 'Expand panel',
+    collapseSheet: 'Collapse panel',
+    sheetHalf: 'Half-height panel',
     mapAria: 'Indonesia hotspot detection map',
   },
   a11y: {

@@ -17,18 +17,13 @@ describe('MapLegend', () => {
   })
   afterEach(cleanup)
 
-  it('renders risk (web) + density legend cards', () => {
+  it('renders risk legend only (density lives in FilterBar)', () => {
     render(<MapLegend />)
 
     expect(screen.getByTestId('map-legend')).toBeTruthy()
+    expect(screen.queryByTestId('map-legend-density-side')).toBeNull()
     const risk = screen.getByLabelText(copy.legend.riskTitle)
-    const density = screen.getByLabelText(
-      `${copy.legend.densityTitle}: ${copy.legend.densityLow}, ${copy.legend.densityMid}, ${copy.legend.densityHigh}`,
-    )
     expect(risk).toBeTruthy()
-    expect(risk.className).toMatch(/sm:flex/)
-    expect(density).toBeTruthy()
-    expect(density.textContent).toContain(copy.legend.densityLow)
     expect(screen.getByText('Sangat tinggi')).toBeTruthy()
     expect(screen.getByText(copy.legend.noDetectionsTitle)).toBeTruthy()
   })

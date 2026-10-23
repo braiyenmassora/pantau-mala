@@ -10,6 +10,7 @@ import {
   shouldRefitIndonesiaOnZoomOut,
 } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
+import { useUiStore } from '@/store/ui'
 
 type IndonesiaMapFramingProps = {
   panelOpen: boolean
@@ -21,9 +22,11 @@ type IndonesiaMapFramingProps = {
 export function IndonesiaMapFraming({ panelOpen, onReady }: IndonesiaMapFramingProps) {
   const { map, isLoaded } = useMap()
   const reducedMotion = usePrefersReducedMotion()
+  const mobileSheet = useUiStore((s) => s.mobileSheet)
   const fitZoomRef = useRef<number | null>(null)
   const readyRef = useRef(false)
   const prevPanelRef = useRef<boolean | null>(null)
+  const prevSheetRef = useRef(mobileSheet)
   const panelOpenRef = useRef(panelOpen)
   const onReadyRef = useRef(onReady)
 
@@ -57,8 +60,9 @@ export function IndonesiaMapFraming({ panelOpen, onReady }: IndonesiaMapFramingP
 
   useEffect(() => {
     if (!map || !readyRef.current) return
-    if (prevPanelRef.current === panelOpen) return
+    if (prevPanelRef.current === panelOpen && prevSheetRef.current === mobileSheet) return
     prevPanelRef.current = panelOpen
+    prevSheetRef.current = mobileSheet
 
     const duration = reducedMotion ? 0 : 300
     const padding = getMapPadding(panelOpen)
@@ -71,7 +75,7 @@ export function IndonesiaMapFraming({ panelOpen, onReady }: IndonesiaMapFramingP
 
     map.easeTo({ padding, duration, easing: easeOutSoft })
     fitZoomRef.current = refreshFitMinZoom(map, panelOpen)
-  }, [map, panelOpen, reducedMotion])
+  }, [map, panelOpen, mobileSheet, reducedMotion])
 
   useEffect(() => {
     if (!map || !isLoaded) return

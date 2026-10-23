@@ -10,7 +10,10 @@ import {
   isMobileWidth,
   isTabletWidth,
   mobileMapBottomInset,
+  mobileSheetHeightFor,
   mobileSheetHeightPx,
+  sheetCycleNext,
+  sheetSnapFromDrag,
 } from '@/lib/layout'
 
 describe('LAYOUT', () => {
@@ -25,17 +28,42 @@ describe('LAYOUT', () => {
   })
 })
 
-describe('mobileSheetHeightPx', () => {
-  it('caps sheet height at mobileSheetMaxPx', () => {
-    expect(mobileSheetHeightPx(2000)).toBe(LAYOUT.mobileSheetMaxPx)
-    expect(mobileSheetHeightPx(800)).toBe(Math.round(800 * LAYOUT.mobileSheetVh))
+describe('mobileSheetHeightFor', () => {
+  it('maps peek / half at 50/50 and coerces full → half', () => {
+    expect(mobileSheetHeightFor('peek', 800)).toBe(LAYOUT.mobileSheetPeekPx)
+    expect(mobileSheetHeightFor('half', 800)).toBe(
+      Math.min(
+        LAYOUT.mobileSheetHalfMaxPx,
+        Math.round(800 * LAYOUT.mobileSheetHalfVh),
+      ),
+    )
+    expect(mobileSheetHeightFor('full', 800)).toBe(mobileSheetHeightFor('half', 800))
+    expect(mobileSheetHeightPx(800)).toBe(mobileSheetHeightFor('half', 800))
   })
 
-  it('uses peek inset when sheet is collapsed', () => {
+  it('uses peek/half inset when level omitted', () => {
     expect(mobileMapBottomInset(false, 800)).toBe(
       LAYOUT.mobileSheetPeekPx + LAYOUT.gutter,
     )
-    expect(mobileMapBottomInset(true, 800)).toBe(mobileSheetHeightPx(800) + LAYOUT.gutter)
+    expect(mobileMapBottomInset(true, 800)).toBe(
+      mobileSheetHeightFor('half', 800) + LAYOUT.gutter,
+    )
+  })
+})
+
+describe('sheetSnapFromDrag', () => {
+  it('steps only peek ↔ half', () => {
+    expect(sheetSnapFromDrag(-50, 'peek')).toBe('half')
+    expect(sheetSnapFromDrag(-50, 'half')).toBe('half')
+    expect(sheetSnapFromDrag(50, 'half')).toBe('peek')
+    expect(sheetSnapFromDrag(50, 'peek')).toBe('peek')
+    expect(sheetSnapFromDrag(-50, 'full')).toBe('half')
+  })
+
+  it('toggles peek ↔ half on tap', () => {
+    expect(sheetCycleNext('peek')).toBe('half')
+    expect(sheetCycleNext('half')).toBe('peek')
+    expect(sheetCycleNext('full')).toBe('peek')
   })
 })
 

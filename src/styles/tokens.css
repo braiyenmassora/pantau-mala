@@ -63,10 +63,15 @@
   --map-panel-edge: 416px;
   --map-overlay-inset: 432px;
   --map-controls-clearance: 56px;
-  /* Mobile bottom sheet (Maps-style) — mirror LAYOUT.mobileSheet* */
-  --map-sheet-height: min(55dvh, 480px);
-  /* Peep selalu terlihat (handle + brand + search) — seperti Google Maps */
-  --map-sheet-peek: 152px;
+  /* Mobile bottom sheet 3 tingkat (Maps) — mirror LAYOUT.mobileSheet* */
+  /* Peek: handle + logo + bendera saja */
+  --map-sheet-peek: 88px;
+  /* Half = 50/50 peta ↔ panel. */
+  --map-sheet-half: min(50dvh, 480px);
+  /* full tidak dipakai (alias half) — dulu menutup maps. */
+  --map-sheet-height: var(--map-sheet-half);
+  /* Runtime: peek | half — di-set dari App pada mobile */
+  --map-sheet-current: var(--map-sheet-half);
   --card-padding: var(--space-4);
   --card-gap: var(--space-4);
   --section-gap: var(--space-6);

@@ -130,7 +130,7 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
 
   return (
     <div className="flex min-h-full flex-col">
-      <div className="bg-surface sticky top-0 z-10 flex items-center justify-between gap-2 px-4 pt-3 pb-2">
+      <div className="border-line bg-surface sticky top-0 z-10 flex items-center justify-between gap-2 border-b px-4 pt-3 pb-2">
         <h1
           ref={titleRef}
           tabIndex={-1}
