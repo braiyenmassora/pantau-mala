@@ -125,6 +125,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   const panelOpenRef = useRef(panelOpen)
   const setPanelOpenRef = useRef(setPanelOpen)
   const compactMap = useMemo(() => prefersCompactMap(), [])
+  const usesDetailMarkers = Boolean(selectedCode && data && data.features.length <= 64)
 
   useEffect(() => {
     regionsRef.current = regions
@@ -136,15 +137,18 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
 
   const collection = useMemo(() => {
     // Sesudah wilayah/titik dipilih, SelectedHotspotsLayer menjadi satu-satunya
-    // marker interaktif. Menyisakan layer GeoJSON di bawahnya membuat satu klik
-    // membuka dua kartu untuk observasi yang sama.
-    if (selectedCode) return { type: 'FeatureCollection' as const, features: [] }
+    // marker interaktif hanya bila jumlahnya kecil. Untuk wilayah padat, DOM
+    // marker sengaja tidak dipasang; GeoJSON tetap harus tampil sebagai
+    // heatmap/cluster agar pencarian tidak mengosongkan peta.
+    if (usesDetailMarkers) {
+      return { type: 'FeatureCollection' as const, features: [] }
+    }
     if (province === 'Semua' && !selectedCode) {
       if (compactMap) return { type: 'FeatureCollection' as const, features: [] }
       return filterHotspotsForMap(undefined, regions, province, selectedCode)
     }
     return filterHotspotsForMap(data, regions, province, selectedCode)
-  }, [compactMap, data, regions, province, selectedCode])
+  }, [compactMap, data, regions, province, selectedCode, usesDetailMarkers])
 
   // Setup layer + handler sekali
   useEffect(() => {
@@ -498,7 +502,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
 
   return (
     <>
-      {!selectedCode && activeHotspot && (
+      {!usesDetailMarkers && activeHotspot && (
         <MapPopup
           longitude={activeHotspot.longitude}
           latitude={activeHotspot.latitude}
