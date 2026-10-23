@@ -175,6 +175,7 @@ adalah pengecualian khusus brand asset, bukan perubahan palet komponen FE.
 ## 8. Mobile GIS & Interaktivitas Peta
 
 Pada viewport mobile (<640px):
+
 - Kanvas peta selalu interaktif (`pointer-events` aktif, tidak menggunakan atribut `inert`).
 - Gestur sentuh multi-touch diaktifkan: 1-jari drag pan, 2-jari pinch-to-zoom, dan double-tap zoom.
 - Navigasi kamera dipagari dalam `INDONESIA_NAVIGATION_BOUNDS` (`[88, -16]` s.d. `[148, 12]`) dengan `minZoom` 3.2, memungkinkan eksplorasi seluruh pulau tanpa tersendat batas viewport sempit.
@@ -186,3 +187,7 @@ Pada viewport mobile (<640px):
 `TerrainIndicatorCard` adalah komponen reusable untuk indikator tanah dan elevasi Open-Meteo pada detail wilayah. Nilai selalu diberi label `Modelled`, menampilkan waktu valid dan waktu tarik, serta menjelaskan bahwa kelembapan tersebut bukan pengukuran langsung gambut dan tidak mengubah skor risiko.
 
 Konteks NASA EONET tetap dipisahkan dari titik panas FIRMS. Jika ditampilkan, gunakan label `konteks event eksternal`, bukan jumlah deteksi atau konfirmasi lapangan. Gateway client hanya meneruskan endpoint read-only yang terdaftar di `server/client-gateway.mjs`; setiap parameter query baru harus ditambah ke allowlist dan diuji.
+
+## 10. Form laporan warga
+
+`author_name` ditampilkan sebagai **Nama pelapor**, bukan nama tampilan. Form berada langsung di dalam kartu laporan tanpa border kartu kedua: judul dan tombol tutup diikuti divider, field berjarak 12px, dan unggah foto memakai tinggi minimum 64px. Nama pelapor serta kondisi boleh berdampingan saat lebar konten minimal 520px; di bawahnya keduanya kembali satu kolom. Tombol kirim memenuhi lebar pada ponsel dan menjadi tombol kanan yang ringkas ketika ruang cukup. Bantuan pemilihan titik hanya ditampilkan sekali agar state kosong tidak mengulang instruksi yang sama.

@@ -108,7 +108,7 @@ describe('CitizenReports', () => {
     fireEvent.change(target, { target: { value: target.options[1].value } })
     fireEvent.click(screen.getByRole('button', { name: 'Kirim laporan' }))
 
-    expect(screen.getByLabelText(/Nama tampilan/)).toBeTruthy()
+    expect(screen.getByLabelText(/Nama pelapor/)).toBeTruthy()
     expect(screen.getByLabelText(/Apa yang terlihat/)).toBeTruthy()
     expect(screen.getByRole('option', { name: 'Lainnya / belum yakin' })).toBeTruthy()
     expect(screen.getByLabelText(/Catatan/)).toBeTruthy()
@@ -126,7 +126,7 @@ describe('CitizenReports', () => {
     ) as HTMLSelectElement
     fireEvent.change(target, { target: { value: target.options[1].value } })
     fireEvent.click(screen.getByRole('button', { name: 'Kirim laporan' }))
-    fireEvent.change(screen.getByLabelText(/Nama tampilan/), {
+    fireEvent.change(screen.getByLabelText(/Nama pelapor/), {
       target: { value: 'Sari' },
     })
     const input = screen.getByLabelText(/Pilih foto dari perangkat/)

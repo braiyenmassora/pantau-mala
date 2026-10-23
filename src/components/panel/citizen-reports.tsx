@@ -242,7 +242,7 @@ export function CitizenReports({
   }
 
   return (
-    <Card className="border-brand/20 bg-brand-soft/30">
+    <Card className="border-brand/20 bg-surface">
       <CardHeader className="flex-row items-start gap-3">
         <span className="bg-surface text-brand flex size-8 shrink-0 items-center justify-center rounded-full shadow-sm">
           <MessageSquare className="size-4" strokeWidth={1.8} aria-hidden />
@@ -254,9 +254,9 @@ export function CitizenReports({
           </p>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-3">
         {regionHotspots.length > 0 ? (
-          <div className="mb-4 space-y-2">
+          <div className="mb-3 space-y-2">
             <label
               htmlFor={`${fieldId}-target`}
               className="text-ink text-xs font-semibold"
@@ -309,7 +309,7 @@ export function CitizenReports({
             <p className="text-ink-3 text-xs leading-4">
               {target
                 ? `Titik ${target.geometry.coordinates[1].toFixed(5)}, ${target.geometry.coordinates[0].toFixed(5)}`
-                : 'Pilih titik agar laporan dan jumlah warga tidak tercampur antar lokasi.'}
+                : 'Pilih satu titik agar laporan warga tercatat pada lokasi yang tepat.'}
             </p>
           </div>
         ) : null}
@@ -317,11 +317,9 @@ export function CitizenReports({
         {reports.isError ? (
           <p className="text-ink-2 text-sm">Laporan warga belum dapat dimuat.</p>
         ) : null}
-        {reports.data?.length === 0 ? (
+        {reports.data?.length === 0 && target ? (
           <p className="text-ink-2 text-sm">
-            {target
-              ? 'Belum ada laporan warga pada titik panas ini.'
-              : 'Pilih titik panas untuk melihat laporan pada lokasi yang sama.'}
+            Belum ada laporan warga pada titik panas ini.
           </p>
         ) : null}
         {reports.data?.length ? (
@@ -406,78 +404,78 @@ export function CitizenReports({
           </Button>
         ) : null}
         {open ? (
-          <form
-            onSubmit={submit}
-            className="border-line bg-surface rounded-card mt-3 space-y-4 border p-3"
-          >
-            <div className="flex items-start justify-between gap-3">
+          <form onSubmit={submit} className="border-line mt-3 space-y-3 border-t pt-3">
+            <div className="flex items-center justify-between gap-3">
               <div>
                 <h3 className="text-ink text-sm font-semibold">Detail laporan</h3>
                 <p className="text-ink-2 mt-1 text-xs leading-4">
-                  Foto dan nama tampilan wajib diisi.
+                  Nama pelapor dan foto wajib diisi.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
+                aria-label={copy.detail.closeReportForm}
+                title={copy.detail.closeReportForm}
                 className={cn(
-                  'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex min-h-11 items-center gap-1 px-3 text-xs font-medium',
+                  'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex size-11 shrink-0 items-center justify-center',
                   focusRing,
                 )}
               >
                 <X className="size-4" aria-hidden />
-                Tutup
               </button>
             </div>
 
-            <div className="space-y-2">
-              <label
-                htmlFor={`${fieldId}-name`}
-                className="text-ink text-xs font-semibold"
-              >
-                Nama tampilan <span className="text-risk-high">*</span>
-              </label>
-              <input
-                id={`${fieldId}-name`}
-                required
-                maxLength={80}
-                autoComplete="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={copy.detail.reportNamePlaceholder}
-                className={cn(
-                  'border-line bg-surface rounded-ctl h-11 w-full border px-3 text-sm',
-                  'placeholder:text-ink-3',
-                  focusRing,
-                )}
-              />
+            <div className="grid gap-3 min-[520px]:grid-cols-2">
+              <div className="space-y-1">
+                <label
+                  htmlFor={`${fieldId}-name`}
+                  className="text-ink text-xs font-semibold"
+                >
+                  Nama pelapor <span className="text-risk-high">*</span>
+                </label>
+                <input
+                  id={`${fieldId}-name`}
+                  required
+                  maxLength={80}
+                  autoComplete="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={copy.detail.reportNamePlaceholder}
+                  className={cn(
+                    'border-line bg-surface rounded-ctl h-11 w-full border px-3 text-sm',
+                    'placeholder:text-ink-3',
+                    focusRing,
+                  )}
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label
+                  htmlFor={`${fieldId}-sighting`}
+                  className="text-ink text-xs font-semibold"
+                >
+                  Apa yang terlihat? <span className="text-risk-high">*</span>
+                </label>
+                <select
+                  id={`${fieldId}-sighting`}
+                  value={sighting}
+                  onChange={(e) => setSighting(e.target.value as HotspotSighting)}
+                  className={cn(
+                    'border-line bg-surface rounded-ctl h-11 w-full border px-3 text-sm',
+                    focusRing,
+                  )}
+                >
+                  {Object.entries(sightingLabel).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <label
-                htmlFor={`${fieldId}-sighting`}
-                className="text-ink text-xs font-semibold"
-              >
-                Apa yang terlihat? <span className="text-risk-high">*</span>
-              </label>
-              <select
-                id={`${fieldId}-sighting`}
-                value={sighting}
-                onChange={(e) => setSighting(e.target.value as HotspotSighting)}
-                className={cn(
-                  'border-line bg-surface rounded-ctl h-11 w-full border px-3 text-sm',
-                  focusRing,
-                )}
-              >
-                {Object.entries(sightingLabel).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="space-y-2">
+            <div className="space-y-1">
               <div className="flex items-center justify-between gap-3">
                 <label
                   htmlFor={`${fieldId}-description`}
@@ -497,14 +495,14 @@ export function CitizenReports({
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={copy.detail.reportDescriptionPlaceholder}
                 className={cn(
-                  'border-line bg-surface rounded-ctl min-h-24 w-full resize-y border px-3 py-2 text-sm',
+                  'border-line bg-surface rounded-ctl min-h-20 w-full resize-y border px-3 py-2 text-sm',
                   'placeholder:text-ink-3',
                   focusRing,
                 )}
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1">
               <span className="text-ink block text-xs font-semibold">
                 Bukti foto <span className="text-risk-high">*</span>
               </span>
@@ -567,7 +565,7 @@ export function CitizenReports({
                 <label
                   htmlFor={`${fieldId}-photo`}
                   className={cn(
-                    'border-line hover:border-brand/40 hover:bg-brand-soft/40 rounded-ctl flex min-h-20 cursor-pointer items-center gap-3 border border-dashed px-3 py-3 transition-colors',
+                    'border-line hover:border-brand/40 hover:bg-brand-soft/40 rounded-ctl flex min-h-16 cursor-pointer items-center gap-3 border border-dashed px-3 py-2 transition-colors',
                     focusRing,
                   )}
                   tabIndex={0}
@@ -611,7 +609,7 @@ export function CitizenReports({
               size="md"
               loading={create.isPending}
               disabled={create.isPending || isOptimizingPhoto || !photo || !name.trim()}
-              className="w-full"
+              className="w-full min-[520px]:ml-auto min-[520px]:w-auto min-[520px]:min-w-40"
             >
               {create.isPending ? 'Mengirim…' : 'Kirim laporan'}
             </Button>
