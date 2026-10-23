@@ -24,7 +24,8 @@ import { UserLocationLayer } from '@/components/map/user-location-layer'
 import { Map, useMap, type MapRef } from '@/components/ui/map'
 import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
-import { getCopy } from '@/copy'
+import { getCopy, useLocaleStore, type Locale } from '@/copy'
+import { BASEMAP_PLACE_TEXT_LAYERS, basemapPlaceTextField } from '@/lib/basemap-labels'
 import { getMapPadding, INDONESIA_CENTER } from '@/lib/indonesia-view'
 import { useMapChrome } from '@/lib/layout'
 import { isBasemapStyleError, webGlSupported } from '@/lib/map-support'
@@ -141,7 +142,7 @@ function applyBasemapCleanups(map: MapLibreMap) {
     }
   }
 
-  // Benua saja yang disembunyikan; negara difilter ke Indonesia + prefer name:id.
+  // Benua disembunyikan; negara hanya Indonesia (label bahasa di applyBasemapPlaceLabels).
   if (map.getLayer('place_continent')) {
     try {
       map.setLayoutProperty('place_continent', 'visibility', 'none')
@@ -153,46 +154,14 @@ function applyBasemapCleanups(map: MapLibreMap) {
     if (map.getLayer(id)) {
       try {
         map.setFilter(id, ['==', 'iso_a2', 'ID'])
-        map.setLayoutProperty(id, 'text-field', [
-          'coalesce',
-          ['get', 'name:id'],
-          ['get', 'name'],
-        ])
       } catch {
         // layer not found or already styled
       }
     }
   }
 
-  // Prefer label Indonesia + turunkan minzoom agar nama daerah
-  // sudah terbaca di zoom provinsi (default Carto: desa 10+, jalan 13–16).
-  const placeTextLayers = [
-    'place_state',
-    'place_city',
-    'place_city_r6',
-    'place_city_r5',
-    'place_town',
-    'place_suburbs',
-    'place_villages',
-    'place_hamlet',
-    'roadname_major',
-    'roadname_pri',
-    'roadname_sec',
-    'roadname_minor',
-  ]
-  for (const id of placeTextLayers) {
-    if (!map.getLayer(id)) continue
-    try {
-      map.setLayoutProperty(id, 'text-field', [
-        'coalesce',
-        ['get', 'name:id'],
-        ['get', 'name'],
-      ])
-    } catch {
-      // layer tidak mendukung text-field
-    }
-  }
-
+  // Turunkan minzoom agar nama daerah terbaca di zoom provinsi
+  // (default Carto: desa 10+, jalan 13–16).
   const earlierLabels: Record<string, [number, number]> = {
     place_state: [4, 12],
     place_city_r6: [6, 16],
@@ -216,16 +185,32 @@ function applyBasemapCleanups(map: MapLibreMap) {
   }
 }
 
+function applyBasemapPlaceLabels(map: MapLibreMap, locale: Locale) {
+  if (!map || typeof map.getLayer !== 'function') return
+  const textField = basemapPlaceTextField(locale)
+  for (const id of BASEMAP_PLACE_TEXT_LAYERS) {
+    if (!map.getLayer(id)) continue
+    try {
+      map.setLayoutProperty(id, 'text-field', textField)
+    } catch {
+      // layer tidak mendukung text-field
+    }
+  }
+}
+
 function MapBasemapListener({ onBasemapError }: { onBasemapError: () => void }) {
   const { map } = useMap()
+  const locale = useLocaleStore((s) => s.locale)
 
   useEffect(() => {
     if (!map) return
     const onStyle = () => {
       applyBasemapCleanups(map)
+      applyBasemapPlaceLabels(map, locale)
     }
     if (typeof map.isStyleLoaded === 'function' && map.isStyleLoaded()) {
       applyBasemapCleanups(map)
+      applyBasemapPlaceLabels(map, locale)
     }
     if (typeof map.on === 'function') {
       map.on('style.load', onStyle)
@@ -242,7 +227,7 @@ function MapBasemapListener({ onBasemapError }: { onBasemapError: () => void }) 
         map.off('error', handler)
       }
     }
-  }, [map, onBasemapError])
+  }, [map, locale, onBasemapError])
 
   return null
 }

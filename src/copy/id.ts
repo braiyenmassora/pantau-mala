@@ -17,7 +17,7 @@ export const copy = {
     sessionExpired: 'Sesi berakhir. Masuk kembali.',
     rateLimited: 'Batas permintaan tercapai. Coba lagi nanti.',
     catalogTooLarge: 'Katalog wilayah melebihi batas dukungan.',
-    photoUploadFailed: 'Upload foto gagal. Coba lagi.',
+    photoUploadFailed: 'Unggah foto gagal. Coba lagi.',
     workspaceSwitchUnavailable: 'Ganti ruang kerja tidak tersedia di mode ini.',
     tooManyAttempts: 'Terlalu banyak percobaan. Coba lagi setelah satu menit.',
     wrongCredentials: 'Nama pengguna atau kata sandi salah, atau sesi telah berakhir.',
@@ -25,7 +25,7 @@ export const copy = {
     appAccessUnavailable: 'Akses aplikasi belum tersedia. Coba lagi nanti.',
     accessUnavailable: 'Akses belum tersedia.',
     proxyOriginRequired:
-      'FE dan API Go memerlukan proxy origin yang sama dengan base /api/v1.',
+      'Alamat data aplikasi belum dikonfigurasi dengan benar. Hubungi pengelola.',
     provinceMetaFailed: 'Metadata batas provinsi belum dapat dimuat.',
     provinceGeometryFailed: 'Geometri batas provinsi belum dapat dimuat.',
     provinceHashMismatch: 'Revisi batas provinsi tidak sesuai metadata.',
@@ -82,7 +82,7 @@ export const copy = {
   },
   empty: {
     noHotspots: {
-      title: 'Tidak ada titik panas',
+      title: 'Tidak ada titik panas terdeteksi',
       description: (wilayah: string) =>
         `Tidak ada titik panas satelit di ${wilayah} dalam 24 jam terakhir.`,
     },
@@ -102,12 +102,12 @@ export const copy = {
       action: 'Cari kabupaten/kota',
     },
     noHotspotsInRegion: {
-      title: 'Tidak ada titik panas',
+      title: 'Tidak ada titik panas terdeteksi',
       description: (nama: string) =>
         `Tidak ada titik panas satelit di ${nama} dalam 24 jam terakhir.`,
     },
     loadFail: {
-      title: 'Data belum bisa dimuat',
+      title: 'Data belum dapat dimuat',
       description: 'Periksa koneksi lalu coba lagi.',
       action: 'Coba lagi',
     },
@@ -151,18 +151,19 @@ export const copy = {
   },
 
   panel: {
-    indonesiaToday: 'Pantauan Titik Panas',
-    provinceToday: (province: string) => `Pantauan Titik Panas · ${province}`,
+    indonesiaToday: 'Pantauan titik panas',
+    provinceToday: (province: string) => `Pantauan titik panas · ${province}`,
     subtitle: 'Deteksi satelit NASA FIRMS · 24 jam terakhir',
+    /** Aria singkat untuk ⓘ judul beranda. */
+    titleHint: 'Penjelasan pantauan',
     /** Tooltip ⓘ di judul beranda: apa yang ditampilkan di halaman ini. */
     titleTip:
       'Menampilkan sebaran titik panas satelit di Indonesia selama 24 jam terakhir.',
     /** Satu baris di bawah judul beranda panel. */
-    limitationNote:
-      'Titik panas satelit, bukan konfirmasi kebakaran atau peringatan resmi.',
+    limitationNote: 'Titik panas satelit, bukan peringatan resmi kebakaran.',
     /** Orbit satelit: hanya saat nol titik terdeteksi. */
     coverageNote:
-      'Satelit tidak memantau terus-menerus. Nol titik belum tentu berarti tidak ada api.',
+      'Satelit tidak memantau terus-menerus. Tidak ada titik terdeteksi belum tentu berarti tidak ada api.',
     hotspot24h: 'Titik panas 24 jam',
     hotspotHint: 'Penjelasan titik panas',
     hotspotTooltip: 'Jumlah titik panas satelit NASA FIRMS 24 jam terakhir.',
@@ -181,12 +182,15 @@ export const copy = {
   report: {
     title: 'Laporan di titik ini',
     openAria: 'Buka laporan warga di titik panas ini',
+    /** Tutup daftar laporan / konteks laporan umum. */
     close: 'Tutup laporan',
+    /** Tutup form tulis laporan. */
+    formClose: 'Tutup formulir',
     disclaimer:
       'Dengan mengirim ini, kamu bertanggung jawab penuh atas keaslian isi laporan.',
     emergencyHint: 'Jika melihat asap atau api, hubungi 112.',
     empty: 'Belum ada laporan di titik ini.',
-    formTitle: 'Kirim laporan',
+    formTitle: 'Tulis laporan',
     sightingLabel: 'Apa yang kamu lihat?',
     sightings: {
       asap: 'Asap',
@@ -194,7 +198,7 @@ export const copy = {
       tidak_yakin: 'Tidak yakin',
       sudah_padam: 'Sudah padam',
     },
-    authorLabel: 'Nama kamu',
+    authorLabel: 'Nama kamu (wajib)',
     authorPlaceholder: 'Contoh: Sari W.',
     descriptionLabel: 'Deskripsi (wajib)',
     descriptionPlaceholder: 'Ceritakan apa yang kamu lihat…',
@@ -203,13 +207,16 @@ export const copy = {
     photoMissing: 'Tambah foto dulu.',
     photoTooBig: 'Foto harus JPG, PNG, atau WebP maks 2 MB.',
     photoAlt: (nama: string) => `Foto laporan dari ${nama}`,
+    photoPreviewAlt: 'Pratinjau foto laporan',
+    photoUnavailable: 'Foto belum bisa ditampilkan',
     submit: 'Kirim laporan',
     submitting: 'Mengirim…',
     submitFailed: 'Laporan belum terkirim. Coba lagi.',
     submitSuccessTitle: 'Laporan terkirim',
-    submitSuccess: 'Terima kasih — laporanmu sekarang tampil di titik ini.',
+    submitSuccess: 'Terima kasih. Laporanmu sekarang tampil di titik ini.',
     rateLimitedTitle: 'Batas permintaan tercapai',
-    rateLimited: 'Kirim laporan dibatasi 5× per jam — coba lagi nanti.',
+    rateLimited: 'Kirim laporan dibatasi 5 kali per jam. Coba lagi nanti.',
+    /** ID: "laporan" sama untuk 1 dan banyak. */
     badge: (n: string) => `${n} laporan`,
     listTitle: 'Laporan terbaru',
     panelTitle: 'Laporan warga',
@@ -275,12 +282,23 @@ export const copy = {
     hotspotUnitLine: 'titik panas · 24 jam',
     hotspots24hReason: (n: string) => `${n} titik panas (24 jam)`,
     trendVsPrevious: 'dibanding kemarin',
-    weatherSourceNote: 'Data cuaca dan kualitas udara diperoleh dari Open-Meteo.',
+    weatherSourceNote:
+      'Cuaca, udara, dan debit sungai dari Open-Meteo. Angin dan hujan titik dari Windy.',
+    weatherSourceHint: 'Sumber cuaca dan lingkungan',
     weatherMissingTip: 'Nilai cuaca belum tersedia untuk wilayah ini.',
     weatherDanger: 'Indeks cuaca kebakaran',
     weatherDangerHint: 'Penjelasan indeks cuaca kebakaran',
     weatherDangerTooltip: 'Indeks cuaca kebakaran diperoleh dari Open-Meteo.',
     fwiUnit: 'FWI',
+    riverDischarge: 'Debit sungai',
+    riverDischargeUnit: 'm³/detik',
+    riverDischargeChart: 'Prakiraan debit 7 hari',
+    temp: 'Suhu',
+    tempUnit: '°C',
+    rain3h: 'Hujan 3 jam',
+    rainUnit: 'mm',
+    windGust: 'Hembusan',
+    scoreToday: (n: string) => `Skor ${n}`,
     lastDetection: 'Deteksi satelit terakhir',
     trendUp: 'Naik',
     trendDown: 'Turun',
@@ -394,11 +412,10 @@ export const copy = {
   },
   legend: {
     riskTitle: 'Tingkat risiko',
-    /** Sama dengan RISK_CATEGORIES.tanpa_titik.label / status.noDetections. */
-    noDetectionsTitle: 'Tidak ada titik panas terdeteksi',
     densityTitle: 'Kerapatan',
     densityLow: 'Sedikit',
-    densityMid: 'Sedang',
+    /** Bukan "Sedang" agar tidak bentrok dengan risiko Sedang. */
+    densityMid: 'Menengah',
     densityHigh: 'Banyak',
   },
   search: {
@@ -409,7 +426,7 @@ export const copy = {
     kabkota: 'Kabupaten/kota',
     provinceTitle: (nama: string) => `Provinsi ${nama}`,
     withHotspots: (n: string) => `${n} wilayah dengan titik panas`,
-    noHotspots: 'Tidak ada titik panas satelit dalam 24 jam terakhir.',
+    noHotspots: 'Tidak ada titik panas terdeteksi dalam 24 jam terakhir.',
   },
   footer: {
     /** Label di atas tautan sumber data yang dipakai panel. */
@@ -424,6 +441,11 @@ export const copy = {
         id: 'weather' as const,
         name: 'Open-Meteo',
         href: 'https://open-meteo.com/',
+      },
+      {
+        id: 'windy' as const,
+        name: 'Windy',
+        href: 'https://www.windy.com/',
       },
     ],
     /** Basemap di pojok bawah peta (bukan footer panel). */
@@ -480,24 +502,26 @@ export const copy = {
     udara: 'Kualitas udara',
   },
   common: {
-    pick: 'Pilih...',
-    search: 'Cari...',
+    pick: 'Pilih…',
+    search: 'Cari…',
     notFound: 'Tidak ditemukan',
     retry: 'Coba lagi',
     dismissNotification: 'Tutup notifikasi',
     clearSearch: 'Hapus pencarian',
+    moreInfo: 'Info tambahan',
     /** Satu copy boot (sesi, data, peta). Jangan pecah jadi “Memuat data/peta”. */
     loading: 'Memuat…',
     indonesia: 'Indonesia',
     refresh: 'Segarkan',
   },
   meta: {
-    homeTitle: 'Pantau Mala - Pantauan Titik Panas',
+    homeTitle: 'Pantau Mala - Pantauan titik panas',
     homeDescription:
-      'Pantau Mala (pantaumala) — peta titik panas satelit per kabupaten/kota di Indonesia. Bukan konfirmasi kebakaran atau peringatan resmi.',
+      'Pantau Mala (pantaumala). Peta titik panas satelit per kabupaten/kota di Indonesia. Bukan peringatan resmi kebakaran.',
     wilayahTitle: (name: string) => `${name} - Pantau Mala`,
     wilayahDescription: (name: string) =>
-      `Pantau Mala — pantauan titik panas satelit di ${name}. Bukan konfirmasi kebakaran atau peringatan resmi.`,
+      `Pantau Mala. Pantauan titik panas satelit di ${name}. Bukan peringatan resmi kebakaran.`,
+    ogImageAlt: 'Pantau Mala · pantauan titik panas satelit Indonesia',
   },
   share: {
     button: 'Bagikan',
@@ -505,6 +529,6 @@ export const copy = {
     whatsappFallback: 'Membuka WhatsApp…',
     /** Satu teks netral (tanpa status/angka). Tautan dilampirkan pemanggil. */
     text: (name: string) =>
-      `${name} · pantauan titik panas satelit pantaumala. Bukan konfirmasi kebakaran atau peringatan resmi.`,
+      `${name} · pantauan titik panas satelit pantaumala. Bukan peringatan resmi kebakaran.`,
   },
 }

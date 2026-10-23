@@ -1,4 +1,10 @@
 import { createClientGateway } from './server/client-gateway.mjs'
+import {
+  injectOgHtml,
+  isSocialCrawler,
+  ogPayloadForPath,
+  parseWilayahSharePath,
+} from './server/og-html.mjs'
 
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> }
@@ -47,6 +53,36 @@ async function serveReportPhoto(
   })
 }
 
+/** HTML index + meta OG untuk crawler share (SPA tidak mengeksekusi JS mereka). */
+async function serveOgHtml(request: Request, env: Env): Promise<Response | null> {
+  if (request.method !== 'GET' && request.method !== 'HEAD') return null
+  if (!isSocialCrawler(request.headers.get('user-agent') || '')) return null
+  const url = new URL(request.url)
+  const parsed = parseWilayahSharePath(url.pathname)
+  if (parsed.kind === 'other') return null
+
+  const indexUrl = new URL('/', url.origin)
+  const assetReq = new Request(indexUrl, {
+    method: 'GET',
+    headers: request.headers,
+  })
+  const asset = await env.ASSETS.fetch(assetReq)
+  if (!asset.ok) return null
+  const raw = await asset.text()
+  // Tanpa dokumen HTML (mock/dev): biarkan fallback ASSETS biasa.
+  if (!/<html[\s>]/i.test(raw)) return null
+  const og = ogPayloadForPath(url.pathname, url.origin)
+  const html = injectOgHtml(raw, og)
+  return new Response(request.method === 'HEAD' ? null : html, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'public, max-age=300',
+      'X-Content-Type-Options': 'nosniff',
+    },
+  })
+}
+
 export async function handleRequest(
   request: Request,
   env: Env,
@@ -62,7 +98,11 @@ export async function handleRequest(
     pathname === '/auth' ||
     pathname.startsWith('/auth/') ||
     pathname === '/frontend/session'
-  if (!reserved) return env.ASSETS.fetch(request)
+  if (!reserved) {
+    const og = await serveOgHtml(request, env)
+    if (og) return og
+    return env.ASSETS.fetch(request)
+  }
 
   try {
     if (env.FE_ACCESS_MODE !== 'client') throw new Error('Client gateway required')

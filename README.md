@@ -1,6 +1,6 @@
 # pantaumala
 
-Satellite hotspot monitoring map for Indonesia. Not a fire confirmation or official warning.
+Satellite hotspot monitoring map for Indonesia. Satellite hotspots, not an official fire warning.
 
 ## Tech Stack
 

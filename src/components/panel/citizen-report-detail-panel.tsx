@@ -2,11 +2,12 @@ import { MapPin, X } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
 import { IconButton } from '@/components/common/icon-button'
-import { ReportPhoto } from '@/components/panel/report-photo'
+import { SectionHead } from '@/components/common/section-head'
+import { CitizenReportReview } from '@/components/panel/citizen-report-review'
+import { Card, CardContent } from '@/components/ui/card'
 import { getCopy } from '@/copy'
 import { useHotspotReport } from '@/data/hotspot-reports'
 import { restoreFocusTrigger } from '@/lib/focus-return'
-import { formatRelativeAge, reportAuthorInitials } from '@/lib/format'
 import { useUiStore } from '@/store/ui'
 
 /** Side panel detail satu laporan warga (klik dari list). */
@@ -52,63 +53,31 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
         </IconButton>
       </div>
 
-      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
-        {report.photo_url ? (
-          <ReportPhoto
-            src={report.photo_url}
-            alt={getCopy().report.photoAlt(report.author_name)}
-            className="rounded-card aspect-[4/3] w-full object-cover"
-          />
-        ) : null}
+      <div className="flex flex-col gap-4 px-4 pt-3 pb-6">
+        <CitizenReportReview report={report} variant="full" />
 
-        <div className="flex items-start gap-3">
-          <span
-            className="bg-brand-soft text-brand flex size-12 shrink-0 items-center justify-center rounded-full text-sm font-semibold"
-            aria-hidden
-          >
-            {reportAuthorInitials(report.author_name)}
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-ink text-sm leading-5 font-semibold">
-              {report.author_name}
+        <Card aria-label={getCopy().report.detailLocation}>
+          <SectionHead title={getCopy().report.detailLocation} />
+          <CardContent className="space-y-3">
+            <p className="text-ink flex items-start gap-2 text-sm leading-5">
+              <MapPin
+                className="text-ink-2 mt-1 size-4 shrink-0"
+                strokeWidth={2}
+                aria-hidden
+              />
+              <span className="min-w-0 font-mono break-all tabular-nums">
+                {getCopy().report.detailCoords(
+                  report.point_lat.toFixed(5),
+                  report.point_lon.toFixed(5),
+                )}
+              </span>
             </p>
-            <p className="text-ink-2 mt-1 text-xs leading-4">
-              {getCopy().report.sightings[report.sighting]}
-              <span aria-hidden> · </span>
-              <time dateTime={report.created_at}>
-                {formatRelativeAge(report.created_at)}
-              </time>
-            </p>
-          </div>
-        </div>
-
-        {report.description ? (
-          <p className="text-ink text-sm leading-5 whitespace-pre-wrap">
-            {report.description}
-          </p>
-        ) : null}
-
-        <div className="border-line space-y-2 border-t pt-4">
-          <p className="text-ink-2 text-xs leading-4 font-medium">
-            {getCopy().report.detailLocation}
-          </p>
-          <p className="text-ink flex items-start gap-2 text-sm leading-5">
-            <MapPin
-              className="text-ink-2 mt-1 size-4 shrink-0"
-              strokeWidth={2}
-              aria-hidden
-            />
-            <span className="font-mono tabular-nums">
-              {getCopy().report.detailCoords(
-                report.point_lat.toFixed(5),
-                report.point_lon.toFixed(5),
-              )}
-            </span>
-          </p>
-          <p className="text-ink-2 text-xs leading-4">{getCopy().report.detailMapHint}</p>
-        </div>
-
-        <p className="text-ink-2 text-xs leading-4">{getCopy().report.panelHint}</p>
+            <div className="text-ink-2 space-y-2 text-xs leading-4">
+              <p>{getCopy().report.detailMapHint}</p>
+              <p>{getCopy().report.panelHint}</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

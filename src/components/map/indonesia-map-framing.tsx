@@ -64,6 +64,9 @@ export function IndonesiaMapFraming({ panelOpen, onReady }: IndonesiaMapFramingP
     prevPanelRef.current = panelOpen
     prevSheetRef.current = mobileSheet
 
+    // Canvas mobile berubah tinggi saat peek↔half — wajib resize sebelum fit/padding.
+    map.resize()
+
     const duration = reducedMotion ? 0 : 300
     const padding = getMapPadding(panelOpen)
     const fitZoom = fitZoomRef.current

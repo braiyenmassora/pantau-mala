@@ -6,8 +6,7 @@ import {
   getMapPadding,
   shouldRefitIndonesiaOnZoomOut,
 } from '@/lib/indonesia-view'
-import { LAYOUT, mobileMapBottomInset } from '@/lib/layout'
-import { useUiStore } from '@/store/ui'
+import { LAYOUT } from '@/lib/layout'
 
 function stubWidth(width: number, height = 800) {
   vi.stubGlobal('window', { innerWidth: width, innerHeight: height })
@@ -134,15 +133,12 @@ describe('getMapPadding', () => {
     vi.unstubAllGlobals()
   })
 
-  it('pads above peep or expanded sheet on mobile', () => {
+  it('uses compact bottom pad on mobile (sheet sits outside map canvas)', () => {
     stubWidth(390, 800)
-    useUiStore.setState({ mobileSheet: 'half' })
     const open = getMapPadding(true)
     expect(open.left).toBe(LAYOUT.gutter)
-    expect(open.bottom).toBe(mobileMapBottomInset(true, 800, 'half'))
-    useUiStore.setState({ mobileSheet: 'peek' })
-    expect(getMapPadding(false).bottom).toBe(mobileMapBottomInset(false, 800, 'peek'))
-    useUiStore.setState({ mobileSheet: 'half' })
+    expect(open.bottom).toBe(LAYOUT.gutter + LAYOUT.controlSize)
+    expect(getMapPadding(false).bottom).toBe(LAYOUT.gutter + LAYOUT.controlSize)
   })
 
   it('uses full overlay inset on desktop when panel open', () => {

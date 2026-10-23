@@ -24,6 +24,9 @@ export function PanelHeaderPill({ mapRef }: PanelHeaderPillProps) {
   const panelOpen = useUiStore((s) => s.panelOpen)
 
   if (selectedCode || province !== 'Semua') {
+    const backLabel = selectedCode
+      ? getCopy().panel.backHome
+      : getCopy().panel.backIndonesia
     return (
       <div className="border-line bg-surface rounded-card shadow-chrome flex h-12 shrink-0 items-center gap-2 border px-3">
         <button
@@ -38,7 +41,7 @@ export function PanelHeaderPill({ mapRef }: PanelHeaderPillProps) {
             const map = mapRef.current
             if (map) fitIndonesia(map, panelOpen, 0)
           }}
-          aria-label={getCopy().panel.closeDetail}
+          aria-label={backLabel}
           className={cn(
             'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex h-11 min-w-0 flex-1 items-center gap-2 px-2',
             'transition-colors duration-150',
@@ -46,9 +49,7 @@ export function PanelHeaderPill({ mapRef }: PanelHeaderPillProps) {
           )}
         >
           <ArrowLeft className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-          <span className="truncate text-sm leading-5 font-medium">
-            {selectedCode ? getCopy().panel.backHome : getCopy().panel.backIndonesia}
-          </span>
+          <span className="truncate text-sm leading-5 font-medium">{backLabel}</span>
         </button>
       </div>
     )

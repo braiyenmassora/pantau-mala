@@ -5,11 +5,8 @@ import {
   LAYOUT,
   chromeLeft,
   isMobileWidth,
-  mobileMapBottomInset,
-  viewportHeight,
   viewportWidth,
 } from '@/lib/layout'
-import { useUiStore } from '@/store/ui'
 
 /** Geographic extent of Indonesia (Sabang → Merauke). */
 export const INDONESIA_BOUNDS: [[number, number], [number, number]] = [
@@ -38,7 +35,9 @@ export const OVERVIEW_ZOOM_FLOOR = 3.2
 
 /**
  * Padding area aman agar fit nasional tidak ketutup chip/legend/panel.
- * Mobile: bottom sheet → padding bawah = tinggi sheet saat terbuka. Tablet/desktop: inset kiri.
+ * Mobile: canvas peta sudah dipotong di atas sheet (`main` bottom = sheet) —
+ * padding bawah hanya chrome dalam peta, bukan tinggi sheet (hindari double-count).
+ * Tablet/desktop: inset kiri.
  */
 export function getMapPadding(panelOpen: boolean): PaddingOptions {
   const width = viewportWidth()
@@ -47,12 +46,8 @@ export function getMapPadding(panelOpen: boolean): PaddingOptions {
       left: LAYOUT.gutter,
       top: 72,
       right: LAYOUT.gutter,
-      // 3 tingkat sheet (peek/half/full) — peep selalu ada.
-      bottom: mobileMapBottomInset(
-        panelOpen,
-        viewportHeight(),
-        useUiStore.getState().mobileSheet,
-      ),
+      // Stamp/atribusi + tombol lokasi di luar canvas; sisakan sedikit napas bawah.
+      bottom: LAYOUT.gutter + LAYOUT.controlSize,
     }
   }
   const left = panelOpen ? chromeLeft(true, width) : 24

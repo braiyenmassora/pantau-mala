@@ -93,8 +93,7 @@ export function mobileMapBottomInset(
   height = viewportHeight(),
   level?: MobileSheetLevel,
 ): number {
-  const resolved: MobileSheetLevel =
-    level ?? (panelExpanded ? 'half' : 'peek')
+  const resolved: MobileSheetLevel = level ?? (panelExpanded ? 'half' : 'peek')
   return mobileSheetHeightFor(resolved, height) + LAYOUT.gutter
 }
 

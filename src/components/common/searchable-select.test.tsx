@@ -24,7 +24,7 @@ describe('SearchableSelect', () => {
     const trigger = screen.getByRole('button')
     fireEvent.click(trigger)
 
-    const searchInput = screen.getByPlaceholderText('Cari...')
+    const searchInput = screen.getByPlaceholderText('Cari…')
     expect(searchInput).not.toBeNull()
 
     fireEvent.change(searchInput, { target: { value: 'Dua' } })

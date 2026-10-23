@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { MapLegend } from '@/components/map/map-legend'
@@ -17,14 +17,20 @@ describe('MapLegend', () => {
   })
   afterEach(cleanup)
 
-  it('renders risk legend only (density lives in FilterBar)', () => {
+  it('renders risk + density legend cards (desktop)', () => {
     render(<MapLegend />)
 
     expect(screen.getByTestId('map-legend')).toBeTruthy()
-    expect(screen.queryByTestId('map-legend-density-side')).toBeNull()
     const risk = screen.getByLabelText(copy.legend.riskTitle)
+    const density = screen.getByLabelText(
+      `${copy.legend.densityTitle}: ${copy.legend.densityLow}, ${copy.legend.densityMid}, ${copy.legend.densityHigh}`,
+    )
     expect(risk).toBeTruthy()
-    expect(screen.getByText('Sangat tinggi')).toBeTruthy()
-    expect(screen.getByText(copy.legend.noDetectionsTitle)).toBeTruthy()
+    expect(density).toBeTruthy()
+    expect(density.textContent).toContain(copy.legend.densityLow)
+    expect(within(risk).getByText('Sangat tinggi')).toBeTruthy()
+    expect(within(risk).getByText('Sedang')).toBeTruthy()
+    expect(within(risk).getByText('Rendah')).toBeTruthy()
+    expect(within(risk).queryByText(copy.status.noDetections)).toBeNull()
   })
 })

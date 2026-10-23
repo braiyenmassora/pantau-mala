@@ -20,22 +20,34 @@ export function CitizenReportReview({
   onSelect,
 }: CitizenReportReviewProps) {
   const compact = variant === 'compact'
+  const age = (
+    <time className="text-ink-2 shrink-0 text-xs leading-4" dateTime={report.created_at}>
+      {formatRelativeAge(report.created_at)}
+    </time>
+  )
 
   const textBlock = (
     <div className="min-w-0 flex-1">
-      <div className="flex items-baseline justify-between gap-2">
+      {compact ? (
         <p className="text-ink truncate text-sm leading-5 font-semibold">
           {report.author_name}
         </p>
-        <time
-          className="text-ink-2 shrink-0 text-xs leading-4"
-          dateTime={report.created_at}
-        >
-          {formatRelativeAge(report.created_at)}
-        </time>
-      </div>
-      <p className="text-ink-2 mt-1 text-xs leading-4">
-        {getCopy().report.sightings[report.sighting]}
+      ) : (
+        <div className="flex items-baseline justify-between gap-2">
+          <p className="text-ink truncate text-sm leading-5 font-semibold">
+            {report.author_name}
+          </p>
+          {age}
+        </div>
+      )}
+      <p className="text-ink-2 mt-1 flex flex-wrap items-center gap-x-2 text-xs leading-4">
+        <span>{getCopy().report.sightings[report.sighting]}</span>
+        {compact ? (
+          <>
+            <span aria-hidden>·</span>
+            {age}
+          </>
+        ) : null}
       </p>
       {report.description ? (
         <p className={cn('text-ink mt-2 text-sm leading-5', compact && 'line-clamp-2')}>
@@ -57,8 +69,9 @@ export function CitizenReportReview({
       {report.photo_url ? (
         <ReportPhoto
           src={report.photo_url}
-          alt=""
-          className="rounded-ctl size-[68px] shrink-0 object-cover"
+          alt={getCopy().report.photoAlt(report.author_name)}
+          hideOnFail
+          className="rounded-ctl size-14 shrink-0 object-cover"
         />
       ) : null}
     </div>

@@ -2,12 +2,15 @@ import { Share2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { Button } from '@/components/common'
+import { IconButton } from '@/components/common/icon-button'
 import { getCopy } from '@/copy'
 import { buildWilayahPath } from '@/lib/wilayah-path'
 
 type ShareWilayahButtonProps = {
   name: string
   code: string
+  /** `icon` = header detail (IconButton); default tombol teks. */
+  variant?: 'button' | 'icon'
 }
 
 function openWhatsApp(text: string) {
@@ -16,7 +19,11 @@ function openWhatsApp(text: string) {
 }
 
 /** Bagikan detail wilayah. Web Share API, fallback WhatsApp. */
-export function ShareWilayahButton({ name, code }: ShareWilayahButtonProps) {
+export function ShareWilayahButton({
+  name,
+  code,
+  variant = 'button',
+}: ShareWilayahButtonProps) {
   const [hint, setHint] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
 
@@ -52,6 +59,28 @@ export function ShareWilayahButton({ name, code }: ShareWilayahButtonProps) {
     setHint(getCopy().share.whatsappFallback)
     setBusy(false)
     window.setTimeout(() => setHint(null), 2500)
+  }
+
+  if (variant === 'icon') {
+    return (
+      <>
+        <IconButton
+          onClick={() => {
+            void handleShare()
+          }}
+          aria-label={getCopy().share.button}
+          disabled={busy}
+          aria-busy={busy || undefined}
+        >
+          <Share2 className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+        </IconButton>
+        {hint ? (
+          <span role="status" className="sr-only">
+            {hint}
+          </span>
+        ) : null}
+      </>
+    )
   }
 
   return (

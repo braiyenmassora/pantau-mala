@@ -12,18 +12,20 @@ import { useUiStore } from '@/store/ui'
 
 const MAP_RISK_ORDER = ['sangat_tinggi', 'sedang', 'rendah'] as const
 
-/** Chrome mengambang peta — sama kontrol lokasi: surface + shadow-chrome. */
+/** Chrome mengambang: sama kontrol lokasi (surface solid + shadow-chrome). */
 const legendCardClass = 'bg-surface shrink-0 gap-2 px-3 py-2 shadow-chrome'
 
 /**
- * Legenda risiko peta (sm+ saja).
- * Kerapatan ada di FilterBar (chip di samping filter) — tidak menutup peta.
+ * Legenda peta desktop (sm+): Tingkat risiko + Kerapatan.
+ * Mobile: kerapatan di FilterBar; risiko lewat dropdown filter.
  */
 export function MapLegend() {
   const panelOpen = useUiStore((s) => s.panelOpen)
   const { left, legendAvailWidth: availWidth } = useMapChrome(panelOpen)
   const rowRef = useRef<HTMLDivElement>(null)
+  const riskRef = useRef<HTMLDivElement>(null)
   const [overflowX, setOverflowX] = useState(false)
+  const [riskWidth, setRiskWidth] = useState<number | null>(null)
 
   useEffect(() => {
     const el = rowRef.current
@@ -33,12 +35,26 @@ export function MapLegend() {
     const ro = new ResizeObserver(sync)
     ro.observe(el)
     return () => ro.disconnect()
-  }, [availWidth, panelOpen])
+  }, [availWidth, panelOpen, riskWidth])
+
+  useEffect(() => {
+    const el = riskRef.current
+    if (!el) return
+    const sync = () => {
+      const w = el.offsetWidth
+      setRiskWidth(w > 0 ? w : null)
+    }
+    sync()
+    const ro = new ResizeObserver(sync)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
 
   return (
     <div
       ref={rowRef}
       data-testid="map-legend"
+      // Region scroll horizontal harus bisa difokus keyboard (axe scrollable-region-focusable).
       tabIndex={overflowX ? 0 : undefined}
       className={cn(
         'pointer-events-auto fixed z-30 hidden sm:flex',
@@ -52,6 +68,7 @@ export function MapLegend() {
       {...mapOverlayGestureProps}
     >
       <Card
+        ref={riskRef}
         aria-label={getCopy().legend.riskTitle}
         className={cn(legendCardClass, 'w-max max-w-full')}
       >
@@ -68,11 +85,35 @@ export function MapLegend() {
               <span>{riskCategoryLabel(category)}</span>
             </li>
           ))}
-          <li className="text-ink flex items-center gap-2 text-xs leading-4 whitespace-nowrap">
-            <RiskMarker kategori="tanpa_titik" className="size-2" />
-            <span>{getCopy().legend.noDetectionsTitle}</span>
-          </li>
         </ul>
+      </Card>
+
+      <Card
+        aria-label={`${getCopy().legend.densityTitle}: ${getCopy().legend.densityLow}, ${getCopy().legend.densityMid}, ${getCopy().legend.densityHigh}`}
+        className={cn(legendCardClass, 'box-border w-auto max-w-full')}
+        style={riskWidth != null ? { width: riskWidth } : undefined}
+      >
+        <p className="text-ink-2 text-xs leading-4 font-medium">
+          {getCopy().legend.densityTitle}
+        </p>
+        <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-center gap-2">
+          <div
+            className="h-1.5 w-full rounded-full"
+            style={{
+              background:
+                'linear-gradient(90deg, var(--color-heat-low), var(--color-heat-mid), var(--color-heat-high))',
+            }}
+            aria-hidden
+          />
+          <p
+            className="text-ink-2 flex items-center justify-between gap-2 text-xs leading-4 whitespace-nowrap"
+            aria-hidden
+          >
+            <span>{getCopy().legend.densityLow}</span>
+            <span>{getCopy().legend.densityMid}</span>
+            <span>{getCopy().legend.densityHigh}</span>
+          </p>
+        </div>
       </Card>
     </div>
   )
