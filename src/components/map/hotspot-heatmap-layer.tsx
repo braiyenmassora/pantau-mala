@@ -135,6 +135,10 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
   }, [regions, select, selectHotspot, panelOpen, setPanelOpen])
 
   const collection = useMemo(() => {
+    // Sesudah wilayah/titik dipilih, SelectedHotspotsLayer menjadi satu-satunya
+    // marker interaktif. Menyisakan layer GeoJSON di bawahnya membuat satu klik
+    // membuka dua kartu untuk observasi yang sama.
+    if (selectedCode) return { type: 'FeatureCollection' as const, features: [] }
     if (province === 'Semua' && !selectedCode) {
       if (compactMap) return { type: 'FeatureCollection' as const, features: [] }
       return filterHotspotsForMap(undefined, regions, province, selectedCode)
@@ -494,7 +498,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
 
   return (
     <>
-      {activeHotspot && (
+      {!selectedCode && activeHotspot && (
         <MapPopup
           longitude={activeHotspot.longitude}
           latitude={activeHotspot.latitude}

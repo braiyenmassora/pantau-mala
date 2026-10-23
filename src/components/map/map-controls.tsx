@@ -4,12 +4,11 @@ import { useEffect, useState, type RefObject } from 'react'
 import { focusRing } from '@/components/common/focus-ring'
 import type { MapRef } from '@/components/ui/map'
 import { copy } from '@/copy/id'
-import { useHotspots, useMeta, useRegions } from '@/data/queries'
+import { useMeta, useRegions } from '@/data/queries'
 import { rememberFocusTrigger } from '@/lib/focus-return'
 import { formatRelativeAge } from '@/lib/format'
 import { getMapPadding, LOCATION_ZOOM } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
-import { resolveUserRegionCode } from '@/lib/resolve-user-region'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -23,12 +22,9 @@ type MapControlsProps = {
 export function MapControls({ mapRef }: MapControlsProps) {
   const location = useMapStore((s) => s.location)
   const setLocation = useMapStore((s) => s.setLocation)
-  const select = useMapStore((s) => s.select)
   const panelOpen = useUiStore((s) => s.panelOpen)
-  const setPanelOpen = useUiStore((s) => s.setPanelOpen)
   const reducedMotion = usePrefersReducedMotion()
   const { data: regions } = useRegions()
-  const { data: hotspots } = useHotspots(location.status === 'active')
   const { data: meta } = useMeta()
   const [nowMs, setNowMs] = useState(() => Date.now())
   const active = location.status === 'active' && location.coords
@@ -72,17 +68,8 @@ export function MapControls({ mapRef }: MapControlsProps) {
                 padding: getMapPadding(panelOpen),
                 duration: reducedMotion ? 0 : 600,
               })
-              if (regions && hotspots) {
-                const code = resolveUserRegionCode(
-                  location.coords!,
-                  regions,
-                  hotspots.features,
-                )
-                if (code) {
-                  select(code)
-                  setPanelOpen(true)
-                }
-              }
+              // Jangan sekaligus memilih kabupaten: fit wilayah akan menimpa
+              // flyTo lokasi pengguna dan tombol "lokasi saya" tampak gagal.
               return
             }
             rememberFocusTrigger(e.currentTarget)
