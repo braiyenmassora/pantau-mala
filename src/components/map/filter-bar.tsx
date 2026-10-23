@@ -83,7 +83,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         )}
       >
         <span>
-          Semua · <span className="tabular-nums">{formatNumber(allCount)}</span>
+          Wilayah · <span className="tabular-nums">{formatNumber(allCount)}</span>
         </span>
       </Chip>
 
