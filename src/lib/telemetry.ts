@@ -15,9 +15,43 @@ export type TelemetryEvent = {
   type: 'page_view' | 'error'
   path: string
   referrer: string
+  /** Field kontrak BE (tampil sebagai Sumber di console). */
+  utm_source?: string
+  utm_medium?: string
+  utm_campaign?: string
   /** Allowlist BE — bukan message/stack. */
   issue?: TelemetryIssue
   status?: number
+}
+
+const UTM_MAX = 64
+
+function sanitizeUtm(value: string | null): string {
+  const v = (value || '').trim()
+  if (!v || v.length > UTM_MAX) return ''
+  for (let i = 0; i < v.length; i++) {
+    const c = v.charCodeAt(i)
+    if (c < 32 || c === 127) return ''
+  }
+  return v
+}
+
+/** Ekstrak sumber kampanye dari query — bukan seluruh search string. */
+export function telemetrySumber(
+  loc: Location = typeof window !== 'undefined'
+    ? window.location
+    : ({ search: '' } as Location),
+): Pick<TelemetryEvent, 'utm_source' | 'utm_medium' | 'utm_campaign'> {
+  const q = new URLSearchParams(loc.search || '')
+  const out: Pick<TelemetryEvent, 'utm_source' | 'utm_medium' | 'utm_campaign'> =
+    {}
+  const source = sanitizeUtm(q.get('utm_source'))
+  const medium = sanitizeUtm(q.get('utm_medium'))
+  const campaign = sanitizeUtm(q.get('utm_campaign'))
+  if (source) out.utm_source = source
+  if (medium) out.utm_medium = medium
+  if (campaign) out.utm_campaign = campaign
+  return out
 }
 
 type StoredSession = { id: string; at: number }
@@ -108,6 +142,7 @@ function buildEvent(
     path: telemetryPath(),
     referrer: privacy ? '' : document.referrer || '',
   }
+  if (!privacy) Object.assign(event, telemetrySumber())
   if (issue) event.issue = issue
   if (typeof status === 'number') event.status = status
   return event

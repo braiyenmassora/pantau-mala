@@ -9,6 +9,7 @@ import {
   startTelemetry,
   telemetryPath,
   telemetrySessionId,
+  telemetrySumber,
   TELEMETRY_SESSION_KEY,
   getTelemetryStatus,
 } from './telemetry'
@@ -46,6 +47,24 @@ describe('telemetry', () => {
         hash: '#y',
       } as Location),
     ).toBe('/dashboard')
+  })
+
+  it('extracts sumber fields from query without keeping raw search', () => {
+    expect(
+      telemetrySumber({
+        search: '?utm_source=google&utm_medium=organic&utm_campaign=karhutla&x=1',
+      } as Location),
+    ).toEqual({
+      utm_source: 'google',
+      utm_medium: 'organic',
+      utm_campaign: 'karhutla',
+    })
+    expect(telemetrySumber({ search: '' } as Location)).toEqual({})
+    expect(
+      telemetrySumber({
+        search: `?utm_source=${'a'.repeat(65)}`,
+      } as Location),
+    ).toEqual({})
   })
 
   it('reuses pantau-page-view meta for first page_view id', () => {
@@ -98,13 +117,53 @@ describe('telemetry', () => {
     expect(headers.Prefer).toBe('respond-async')
     expect(headers['X-Pantau-Telemetry-Transport']).toBe('fetch-keepalive')
     const body = JSON.parse(String(init.body)) as {
-      events: Array<{ session_id: string; referrer: string; type: string }>
+      events: Array<{
+        session_id: string
+        referrer: string
+        type: string
+        utm_source?: string
+        utm_medium?: string
+        utm_campaign?: string
+      }>
     }
     expect(body.events[0].type).toBe('page_view')
     expect(body.events[0].session_id).toBe('')
     expect(body.events[0].referrer).toBe('')
+    expect(body.events[0].utm_source).toBeUndefined()
+    expect(body.events[0].utm_medium).toBeUndefined()
+    expect(body.events[0].utm_campaign).toBeUndefined()
     expect(getTelemetryStatus()).toBe('privacy')
     expect(sessionStorage.length).toBe(0)
+  })
+
+  it('includes sumber fields on page_view in normal mode', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 202 }))
+    vi.stubGlobal('fetch', fetchMock)
+    vi.stubGlobal('navigator', {
+      doNotTrack: '0',
+      globalPrivacyControl: false,
+    })
+    window.history.replaceState(
+      {},
+      '',
+      '/?utm_source=google&utm_medium=organic&utm_campaign=karhutla',
+    )
+
+    startTelemetry()
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled())
+
+    const body = JSON.parse(String(fetchMock.mock.calls[0][1].body)) as {
+      events: Array<{
+        utm_source?: string
+        utm_medium?: string
+        utm_campaign?: string
+        path: string
+      }>
+    }
+    expect(body.events[0].path).toBe('/')
+    expect(body.events[0].utm_source).toBe('google')
+    expect(body.events[0].utm_medium).toBe('organic')
+    expect(body.events[0].utm_campaign).toBe('karhutla')
   })
 
   it('treats HTTP 202 as accepted for normal mode', async () => {
