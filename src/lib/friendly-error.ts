@@ -30,11 +30,13 @@ export function friendlyActionError(
 ): string {
   const msg = (err instanceof Error ? err.message : '').trim()
   if (
-    /layanan akses tidak tersedia|layanan ini belum tersedia|internal.?error/i.test(msg)
+    /layanan akses tidak tersedia|layanan ini belum tersedia|access service|not available yet|internal.?error/i.test(
+      msg,
+    )
   ) {
     return getCopy().errors.serviceNotReady
   }
-  if (/akses tidak diizinkan/i.test(msg)) {
+  if (/akses tidak diizinkan|access (is )?not permitted|forbidden|unauthorized/i.test(msg)) {
     return getCopy().errors.accessDenied
   }
   return friendlyLoadError(err, '') || fallback
