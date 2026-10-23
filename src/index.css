@@ -219,7 +219,7 @@
 /* Gempa signifikan/dirasakan: sinyal pada marker, bukan radius dampak. */
 .earthquake-hazard-ring {
   position: absolute;
-  inset: -3px;
+  inset: -2px;
   border: 1.5px solid var(--color-risk-high);
   border-radius: 999px;
   opacity: 0;
@@ -231,7 +231,7 @@
 
 @keyframes earthquake-hazard-pulse {
   0% { transform: scale(0.9); opacity: 0.46; }
-  72%, 100% { transform: scale(1.55); opacity: 0; }
+  72%, 100% { transform: scale(1.45); opacity: 0; }
 }
 
 /* Short landscape viewports need compact map chrome regardless of width. */

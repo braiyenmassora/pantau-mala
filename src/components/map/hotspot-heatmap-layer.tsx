@@ -198,7 +198,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
           'circle-color': HEATMAP_TRANSPARENT,
           'circle-stroke-color': RISK_CATEGORIES.sangat_tinggi.dot,
           'circle-stroke-width': 2,
-          'circle-radius': ['case', ['has', 'point_count'], 13, 5.5],
+          'circle-radius': ['case', ['has', 'point_count'], 12, 10],
           'circle-stroke-opacity': 0.7,
           'circle-radius-transition': { duration: 0 },
           'circle-stroke-opacity-transition': { duration: 0 },
@@ -228,7 +228,7 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
           'circle-color': HEATMAP_TRANSPARENT,
           'circle-stroke-color': RISK_CATEGORIES.sedang.dot,
           'circle-stroke-width': 1.5,
-          'circle-radius': ['case', ['has', 'point_count'], 13, 5.5],
+          'circle-radius': ['case', ['has', 'point_count'], 12, 10],
           'circle-stroke-opacity': 0.55,
           'circle-radius-transition': { duration: 0 },
           'circle-stroke-opacity-transition': { duration: 0 },
@@ -289,9 +289,10 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         minzoom: 0,
         filter: ['!', ['has', 'point_count']],
         paint: {
-          // Titik observasi adalah kontrol interaktif, bukan noise heatmap.
-          // Ukuran minimum dijaga terbaca setara marker lokasi/gempa.
-          'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 4.5, 7, 5, 12, 6],
+          // Titik observasi memakai footprint 20–24px (inti + cincin), sama
+          // dengan marker lokasi dan gempa. Cukup besar untuk disentuh tanpa
+          // mengubahnya menjadi simbol radius dampak.
+          'circle-radius': ['interpolate', ['linear'], ['zoom'], 0, 5, 7, 5.5, 12, 6],
           'circle-color': HOTSPOT_HEX,
           'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 0, 1, 10, 1.5],
           'circle-stroke-color': MAP_COLORS.surface,
@@ -480,8 +481,8 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       map.setPaintProperty(layerId, 'circle-radius', [
         'case',
         ['has', 'point_count'],
-        13,
-        5.5,
+        12,
+        10,
       ])
       map.setPaintProperty(
         layerId,

@@ -73,7 +73,9 @@ export function EarthquakeLayer() {
                 type="button"
                 className={cn(
                   'border-line bg-surface relative flex items-center justify-center rounded-full border shadow-sm transition-transform',
-                  hazard ? 'text-risk-high size-7' : 'text-risk-mid size-6',
+                  // Marker kejadian tunggal selalu 20px. Magnitudo memakai
+                  // warna/ripple, bukan ukuran yang melonjak dari marker lain.
+                  hazard ? 'text-risk-high size-5' : 'text-risk-mid size-5',
                   focusRing,
                   open && 'z-20 scale-110 ring-2 ring-emerald-600',
                 )}

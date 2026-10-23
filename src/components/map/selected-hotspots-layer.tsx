@@ -139,7 +139,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                 type="button"
                 aria-label={label}
                 className={cn(
-                  'group relative flex size-11 cursor-pointer items-center justify-center rounded-full',
+                  'group relative flex size-8 cursor-pointer items-center justify-center rounded-full',
                   'focus-visible:ring-brand focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
                 )}
                 onMouseEnter={() => setHovered(i)}
@@ -159,7 +159,7 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
                 }}
               >
                 <span
-                  className="border-surface size-3 rounded-full border-2 shadow-sm transition-transform duration-150 group-hover:scale-125"
+                  className="border-surface size-3.5 rounded-full border-2 shadow-sm transition-transform duration-150 group-hover:scale-110"
                   style={{ backgroundColor: HOTSPOT_HEX }}
                   aria-hidden
                 />

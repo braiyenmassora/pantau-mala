@@ -135,7 +135,7 @@ describe('SelectedHotspotsLayer', () => {
     )
     expect(screen.getAllByTestId('hotspot-marker')).toHaveLength(1)
     const marker = screen.getByRole('button', { name: /Titik panas/ })
-    expect(marker.className).toContain('size-11')
+    expect(marker.className).toContain('size-8')
     fireEvent.click(marker)
     expect(useMapStore.getState().reportHotspot).toMatchObject({
       lat: -7.1,
