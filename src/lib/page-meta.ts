@@ -1,7 +1,8 @@
 import { getCopy, getLocale } from '@/copy'
 
 const SITE_NAME = 'Pantau Mala'
-const OG_IMAGE_PATH = '/og.png'
+// ?v= bust WhatsApp/FB image cache after regenerating public/og.png.
+const OG_IMAGE_PATH = '/og.png?v=2'
 const OG_IMAGE_WIDTH = '1200'
 const OG_IMAGE_HEIGHT = '630'
 
