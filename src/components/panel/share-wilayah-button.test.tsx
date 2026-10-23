@@ -4,12 +4,15 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { ShareWilayahButton } from '@/components/panel/share-wilayah-button'
+import { useLocaleStore } from '@/copy'
 import { copy } from '@/copy/id'
+import { enCopy } from '@/copy/en'
 
 describe('ShareWilayahButton', () => {
   afterEach(() => {
     cleanup()
     vi.unstubAllGlobals()
+    useLocaleStore.getState().setLocale('id')
   })
 
   it('uses navigator.share when available and ignores abort', async () => {
@@ -54,5 +57,18 @@ describe('ShareWilayahButton', () => {
     const decoded = decodeURIComponent(url)
     expect(decoded).toContain(copy.share.text('Kab. Kosong'))
     expect(decoded).not.toMatch(/tidak ada titik|aman|Rendah/i)
+  })
+
+  it('appends lang=en to the shared URL in English mode', async () => {
+    useLocaleStore.getState().setLocale('en')
+    vi.stubGlobal('navigator', { ...navigator, share: undefined })
+    const open = vi.spyOn(window, 'open').mockImplementation(() => null)
+
+    render(<ShareWilayahButton name="Kapuas" code="62.03" />)
+    await userEvent.click(screen.getByRole('button', { name: enCopy.share.button }))
+
+    const decoded = decodeURIComponent(String(open.mock.calls[0]?.[0] ?? ''))
+    expect(decoded).toContain(enCopy.share.text('Kapuas'))
+    expect(decoded).toMatch(/\/wilayah\/kapuas-6203\?lang=en/)
   })
 })

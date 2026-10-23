@@ -6,20 +6,42 @@ export const OG_IMAGE_PATH = '/og.png?v=3'
 export const OG_IMAGE_WIDTH = '1200'
 export const OG_IMAGE_HEIGHT = '630'
 
-/** Copy ID baku — selaras src/copy/id.ts meta (+ istilah-baku). */
+/** Copy ID/EN — selaras src/copy/{id,en}.ts meta (+ istilah-baku). */
 export const OG_HOME = {
-  title: 'Pantau Mala - Pantauan titik panas',
-  description:
-    'Pantau Mala (pantaumala). Peta titik panas satelit per kabupaten/kota di Indonesia. Bukan peringatan resmi kebakaran.',
-  imageAlt: 'Pantau Mala · pantauan titik panas satelit Indonesia',
+  id: {
+    title: 'Pantau Mala - Pantauan titik panas',
+    description:
+      'Pantau Mala (pantaumala). Peta titik panas satelit per kabupaten/kota di Indonesia. Bukan peringatan resmi kebakaran.',
+    imageAlt: 'Pantau Mala · pantauan titik panas satelit Indonesia',
+  },
+  en: {
+    title: 'Pantau Mala - Satellite hotspot monitoring',
+    description:
+      'Pantau Mala (pantaumala). Satellite hotspot map by regency/city in Indonesia. Not an official fire warning.',
+    imageAlt: 'Pantau Mala · satellite hotspot monitoring for Indonesia',
+  },
 }
 
-export function wilayahOg(name) {
+export function wilayahOg(name, locale = 'id') {
+  if (locale === 'en') {
+    return {
+      title: `${name} - Pantau Mala`,
+      description: `Pantau Mala. Satellite hotspot monitoring in ${name}. Not an official fire warning.`,
+      imageAlt: OG_HOME.en.imageAlt,
+    }
+  }
   return {
     title: `${name} - Pantau Mala`,
     description: `Pantau Mala. Pantauan titik panas satelit di ${name}. Bukan peringatan resmi kebakaran.`,
-    imageAlt: OG_HOME.imageAlt,
+    imageAlt: OG_HOME.id.imageAlt,
   }
+}
+
+/** Share crawler: `?lang=en` dari tombol bagikan (UA crawler tidak punya locale UI). */
+export function parseShareLocale(search = '') {
+  const q = search.startsWith('?') ? search.slice(1) : search
+  const lang = new URLSearchParams(q).get('lang')
+  return lang === 'en' ? 'en' : 'id'
 }
 
 /** UA crawler pratinjau tautan — bukan browser pengguna. */
@@ -112,7 +134,9 @@ function setCanonical(html, href) {
  * Sisipkan / perbarui meta OG+Twitter di HTML index agar crawler share
  * mendapat judul/URL halaman (bukan hanya home SPA).
  */
-export function injectOgHtml(html, { title, description, url, image, imageAlt }) {
+export function injectOgHtml(html, { title, description, url, image, imageAlt, locale = 'id' }) {
+  const ogLocale = locale === 'en' ? 'en_US' : 'id_ID'
+  const ogAlternate = locale === 'en' ? 'id_ID' : 'en_US'
   let out = html
   out = setTitle(out, title)
   out = setCanonical(out, url)
@@ -124,7 +148,8 @@ export function injectOgHtml(html, { title, description, url, image, imageAlt })
   out = setMetaContent(out, 'property', 'og:image:alt', imageAlt)
   out = setMetaContent(out, 'property', 'og:type', 'website')
   out = setMetaContent(out, 'property', 'og:site_name', OG_SITE_NAME)
-  out = setMetaContent(out, 'property', 'og:locale', 'id_ID')
+  out = setMetaContent(out, 'property', 'og:locale', ogLocale)
+  out = setMetaContent(out, 'property', 'og:locale:alternate', ogAlternate)
   out = setMetaContent(out, 'name', 'twitter:card', 'summary_large_image')
   out = setMetaContent(out, 'name', 'twitter:title', title)
   out = setMetaContent(out, 'name', 'twitter:description', description)
@@ -132,22 +157,26 @@ export function injectOgHtml(html, { title, description, url, image, imageAlt })
   return out
 }
 
-export function ogPayloadForPath(pathname, origin) {
+export function ogPayloadForPath(pathname, origin, search = '') {
   const base = origin.replace(/\/$/, '')
   const image = `${base}${OG_IMAGE_PATH}`
+  const locale = parseShareLocale(search)
+  const langQ = locale === 'en' ? '?lang=en' : ''
   const parsed = parseWilayahSharePath(pathname)
   if (parsed.kind === 'wilayah') {
     const name = labelFromWilayahSlug(parsed.slug)
-    const copy = wilayahOg(name)
+    const copy = wilayahOg(name, locale)
     return {
       ...copy,
-      url: `${base}/wilayah/${parsed.slug}-${parsed.pathCode}`,
+      locale,
+      url: `${base}/wilayah/${parsed.slug}-${parsed.pathCode}${langQ}`,
       image,
     }
   }
   return {
-    ...OG_HOME,
-    url: `${base}/`,
+    ...OG_HOME[locale],
+    locale,
+    url: `${base}/${langQ}`,
     image,
   }
 }

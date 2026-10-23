@@ -71,7 +71,7 @@ async function serveOgHtml(request: Request, env: Env): Promise<Response | null>
   const raw = await asset.text()
   // Tanpa dokumen HTML (mock/dev): biarkan fallback ASSETS biasa.
   if (!/<html[\s>]/i.test(raw)) return null
-  const og = ogPayloadForPath(url.pathname, url.origin)
+  const og = ogPayloadForPath(url.pathname, url.origin, url.search)
   const html = injectOgHtml(raw, og)
   return new Response(request.method === 'HEAD' ? null : html, {
     status: 200,
