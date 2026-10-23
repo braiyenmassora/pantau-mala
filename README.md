@@ -62,7 +62,7 @@ Pengukuran kunjungan versi pribadi memakai Worker-first untuk dokumen, bukan
 hanya tracker JavaScript. Sumber, privasi, deduplikasi, batas delivery, dan urutan
 migrasi/deploy dijelaskan di [FRONTEND_MEASUREMENT.md](docs/FRONTEND_MEASUREMENT.md).
 
-Konfigurasi `wrangler.jsonc` mengirim assets `dist` bersama `worker.ts`. Route `/api`, `/api/*`, `/auth`, `/auth/*`, dan `/frontend/session` dijalankan melalui Worker sebelum fallback SPA. Gateway memakai mode client read-only. Deployment Worker memakai `PANTAU_API_ORIGIN=https://api.pantaumala.live`. Pengembangan lokal tetap memakai `http://127.0.0.1:8080` dari `.env.example`. Untuk deployment lain, atur origin HTTPS backend dan slug client yang sesuai. Worker cloud tidak dapat mengakses backend loopback komputer lokal.
+Konfigurasi `wrangler.jsonc` mengirim assets `dist` bersama `worker.ts`. Route `/api`, `/api/*`, `/auth`, `/auth/*`, dan `/frontend/session` dijalankan melalui Worker sebelum fallback SPA. Gateway memakai mode client read-only. Deployment Worker pribadi memakai `PANTAU_API_ORIGIN=https://pantau.mala.pandanteknik.com`. Pengembangan lokal tetap memakai `http://127.0.0.1:8080` dari `.env.example`. Untuk deployment lain, atur origin HTTPS backend dan slug client yang sesuai. Worker cloud tidak dapat mengakses backend loopback komputer lokal.
 
 ```sh
 pnpm run build
