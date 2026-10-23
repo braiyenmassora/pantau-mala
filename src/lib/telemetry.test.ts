@@ -166,6 +166,49 @@ describe('telemetry', () => {
     expect(body.events[0].utm_campaign).toBe('karhutla')
   })
 
+  it('sends page_view on SPA path change without repeating UTM/referrer', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 202 }))
+    vi.stubGlobal('fetch', fetchMock)
+    vi.stubGlobal('navigator', {
+      doNotTrack: '0',
+      globalPrivacyControl: false,
+    })
+    Object.defineProperty(document, 'referrer', {
+      configurable: true,
+      get: () => 'https://www.google.com/',
+    })
+    window.history.replaceState({}, '', '/?utm_source=google')
+
+    startTelemetry()
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
+
+    window.history.pushState({}, '', '/wilayah/kab-contoh-1234')
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+
+    const second = JSON.parse(String(fetchMock.mock.calls[1][1].body)) as {
+      events: Array<{
+        path: string
+        referrer: string
+        utm_source?: string
+      }>
+    }
+    expect(second.events[0].path).toBe('/wilayah/kab-contoh-1234')
+    expect(second.events[0].referrer).toBe('')
+    expect(second.events[0].utm_source).toBeUndefined()
+
+    // replaceState slug sama path → tidak kirim ulang
+    window.history.replaceState({}, '', '/wilayah/kab-contoh-1234')
+    await new Promise((r) => setTimeout(r, 30))
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+
+    window.history.pushState({}, '', '/')
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3))
+    const third = JSON.parse(String(fetchMock.mock.calls[2][1].body)) as {
+      events: Array<{ path: string }>
+    }
+    expect(third.events[0].path).toBe('/')
+  })
+
   it('treats HTTP 202 as accepted for normal mode', async () => {
     const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 202 }))
     vi.stubGlobal('fetch', fetchMock)

@@ -129,23 +129,65 @@ export function telemetrySessionId(privacy: boolean): string {
   }
 }
 
+type BuildOpts = {
+  /** Navigasi dalam SPA — path baru, tanpa referrer/UTM eksternal. */
+  spa?: boolean
+}
+
+let lastTrackedPath = ''
+let historyPatched = false
+const nativePushState = history.pushState.bind(history)
+const nativeReplaceState = history.replaceState.bind(history)
+
 function buildEvent(
   type: TelemetryEvent['type'],
   privacy: boolean,
   issue?: TelemetryIssue,
   status?: number,
+  opts?: BuildOpts,
 ): TelemetryEvent {
+  const spa = Boolean(opts?.spa)
   const event: TelemetryEvent = {
-    id: type === 'page_view' ? pageViewEventId() : crypto.randomUUID(),
+    id:
+      type === 'page_view'
+        ? spa
+          ? crypto.randomUUID()
+          : pageViewEventId()
+        : crypto.randomUUID(),
     session_id: telemetrySessionId(privacy),
     type,
     path: telemetryPath(),
-    referrer: privacy ? '' : document.referrer || '',
+    referrer: privacy || spa ? '' : document.referrer || '',
   }
-  if (!privacy) Object.assign(event, telemetrySumber())
+  if (!privacy && !spa) Object.assign(event, telemetrySumber())
   if (issue) event.issue = issue
   if (typeof status === 'number') event.status = status
   return event
+}
+
+function trackPathChange(privacy: boolean, spa: boolean) {
+  const path = telemetryPath()
+  if (path === lastTrackedPath) return
+  lastTrackedPath = path
+  void sendTelemetry([buildEvent('page_view', privacy, undefined, undefined, { spa })], privacy)
+}
+
+function patchHistory(privacy: boolean) {
+  if (historyPatched || typeof window === 'undefined') return
+  historyPatched = true
+  history.pushState = function pushState(...args: Parameters<History['pushState']>) {
+    const ret = nativePushState(...args)
+    trackPathChange(privacy, true)
+    return ret
+  }
+  history.replaceState = function replaceState(
+    ...args: Parameters<History['replaceState']>
+  ) {
+    const ret = nativeReplaceState(...args)
+    trackPathChange(privacy, true)
+    return ret
+  }
+  window.addEventListener('popstate', () => trackPathChange(privacy, true))
 }
 
 async function postEvents(events: TelemetryEvent[]): Promise<Response> {
@@ -208,7 +250,9 @@ export function startTelemetry() {
   try {
     const privacy = isPrivacyMode()
     setStatus(privacy ? 'privacy' : 'queued')
+    lastTrackedPath = telemetryPath()
     void sendTelemetry([buildEvent('page_view', privacy)], privacy)
+    patchHistory(privacy)
   } catch {
     setStatus('unavailable')
   }
@@ -219,4 +263,10 @@ export function resetTelemetryForTests() {
   started = false
   memorySessionId = ''
   status = 'queued'
+  lastTrackedPath = ''
+  if (historyPatched && typeof history !== 'undefined') {
+    history.pushState = nativePushState
+    history.replaceState = nativeReplaceState
+    historyPatched = false
+  }
 }
