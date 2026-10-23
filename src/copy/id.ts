@@ -403,7 +403,7 @@ export const copy = {
     hideMenu: 'Sembunyikan legenda peta',
     /** Strip kartu kiri bawah peta — teks pendek agar mudah dibaca. */
     riskTitle: 'Radar provinsi',
-    riskHint: 'Data 24 jam; merah cepat, oranye sedang',
+    riskHint: 'Data 24 jam; penanda agregat provinsi, bukan radius dampak',
     detectionTitle: 'Deteksi & heatmap',
     detectionHint: 'Aktif saat wilayah dipilih',
     quakeTitle: 'Gempa bumi',

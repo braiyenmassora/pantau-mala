@@ -12,7 +12,9 @@ describe('MapLegend', () => {
 
     expect(screen.getByTestId('map-legend')).toBeTruthy()
     expect(screen.getByText('Radar provinsi')).toBeTruthy()
-    expect(screen.getByText('Data 24 jam; merah cepat, oranye sedang')).toBeTruthy()
+    expect(
+      screen.getByText('Data 24 jam; penanda agregat provinsi, bukan radius dampak'),
+    ).toBeTruthy()
     expect(screen.getByText('Deteksi & heatmap')).toBeTruthy()
     expect(screen.getByText('Aktif saat wilayah dipilih')).toBeTruthy()
     expect(screen.getByText('Gempa bumi')).toBeTruthy()
