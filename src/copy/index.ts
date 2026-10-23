@@ -54,6 +54,13 @@ function safeLanguages(): readonly string[] {
 
 function initialLocale(): Locale {
   if (typeof window === 'undefined') return 'id'
+  // Share URL `?lang=` menang (crawler + penerima tautan).
+  try {
+    const lang = new URLSearchParams(window.location.search).get('lang')
+    if (lang === 'id' || lang === 'en') return lang
+  } catch {
+    // ignore
+  }
   try {
     const saved = window.localStorage.getItem(STORAGE_KEY)
     if (saved === 'id' || saved === 'en') return saved

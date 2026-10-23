@@ -173,6 +173,34 @@ describe('Cloudflare Worker routing', () => {
     expect(html).toContain('Kapuas - Pantau Mala')
     expect(html).toContain('/wilayah/kapuas-6203')
     expect(html).toContain('/og.png')
+    expect(html).toContain('Bukan peringatan resmi kebakaran')
     expect(env.ASSETS.fetch).toHaveBeenCalled()
+  })
+
+  it('injects English OG when share URL has lang=en', async () => {
+    const index = `<!doctype html><html><head>
+<title>Pantau Mala</title>
+<meta property="og:title" content="old" />
+<meta property="og:description" content="old" />
+<meta property="og:url" content="https://pantaumala.live/" />
+</head><body></body></html>`
+    const env = {
+      ...environment(),
+      ASSETS: {
+        fetch: vi.fn().mockResolvedValue(
+          new Response(index, { headers: { 'Content-Type': 'text/html' } }),
+        ),
+      },
+    }
+    const response = await handleRequest(
+      request('/wilayah/kapuas-6203?lang=en', {
+        headers: { 'User-Agent': 'WhatsApp/2.23' },
+      }),
+      env,
+    )
+    const html = await response.text()
+    expect(html).toContain('Not an official fire warning')
+    expect(html).toContain('content="en_US"')
+    expect(html).toContain('kapuas-6203?lang=en')
   })
 })

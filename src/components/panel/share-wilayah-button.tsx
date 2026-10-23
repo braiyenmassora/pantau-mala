@@ -3,8 +3,14 @@ import { useState } from 'react'
 
 import { Button } from '@/components/common'
 import { IconButton } from '@/components/common/icon-button'
-import { getCopy } from '@/copy'
+import { getCopy, getLocale } from '@/copy'
 import { buildWilayahPath } from '@/lib/wilayah-path'
+
+/** Crawler share baca `?lang=`; tanpa param = ID. */
+function sharePageUrl(origin: string, path: string) {
+  const lang = getLocale() === 'en' ? '?lang=en' : ''
+  return `${origin.replace(/\/$/, '')}${path}${lang}`
+}
 
 type ShareWilayahButtonProps = {
   name: string
@@ -30,7 +36,7 @@ export function ShareWilayahButton({
   async function handleShare() {
     const path = buildWilayahPath(name, code)
     if (!path) return
-    const pageUrl = `${window.location.origin}${path}`
+    const pageUrl = sharePageUrl(window.location.origin, path)
     const body = getCopy().share.text(name)
     const message = `${body}\n${pageUrl}`
 

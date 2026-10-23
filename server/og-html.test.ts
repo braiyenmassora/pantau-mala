@@ -5,6 +5,7 @@ import {
   isSocialCrawler,
   labelFromWilayahSlug,
   ogPayloadForPath,
+  parseShareLocale,
   parseWilayahSharePath,
 } from './og-html.mjs'
 
@@ -41,6 +42,20 @@ describe('og-html', () => {
     expect(og.url).toBe('https://pantaumala.live/wilayah/kapuas-6203')
     expect(og.image).toBe('https://pantaumala.live/og.png?v=3')
     expect(og.description).toContain('Bukan peringatan resmi kebakaran')
+    expect(og.locale).toBe('id')
+  })
+
+  it('builds English OG when share URL has lang=en', () => {
+    expect(parseShareLocale('?lang=en')).toBe('en')
+    const og = ogPayloadForPath(
+      '/wilayah/kapuas-6203',
+      'https://pantaumala.live',
+      '?lang=en',
+    )
+    expect(og.locale).toBe('en')
+    expect(og.url).toBe('https://pantaumala.live/wilayah/kapuas-6203?lang=en')
+    expect(og.description).toContain('Not an official fire warning')
+    expect(og.description).not.toContain('Bukan peringatan')
   })
 
   it('injects title and og tags into HTML', () => {
@@ -50,10 +65,12 @@ describe('og-html', () => {
       url: 'https://pantaumala.live/wilayah/kab-tes-6299',
       image: 'https://pantaumala.live/og.png?v=3',
       imageAlt: 'alt',
+      locale: 'en',
     })
     expect(html).toContain('<title>Kab. Tes - Pantau Mala</title>')
     expect(html).toContain('content="Kab. Tes - Pantau Mala"')
     expect(html).toContain('content="https://pantaumala.live/wilayah/kab-tes-6299"')
     expect(html).toContain('og:image:alt')
+    expect(html).toContain('content="en_US"')
   })
 })
