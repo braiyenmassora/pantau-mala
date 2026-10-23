@@ -3,7 +3,12 @@ import { useQuery } from '@tanstack/react-query'
 import { getCopy } from '@/copy'
 import { expireSession, useSession } from '@/auth/session'
 import { decodeRegions, decodeHotspots, decodeMeta, decodeCatalog } from './go-contract'
-import { nearbyHotspotsSchema } from './extended-contract'
+import {
+  dischargeSchema,
+  historySchema,
+  nearbyHotspotsSchema,
+  windyForecastSchema,
+} from './extended-contract'
 
 const STALE_MS = 5 * 60 * 1000
 
@@ -124,6 +129,69 @@ export function useNearbyHotspots(
       getData(
         `/nearby?lat=${lat}&lon=${lon}&radius_km=${radiusKm}`,
         (raw) => nearbyHotspotsSchema.parse(raw).data,
+        signal,
+      ),
+    staleTime: STALE_MS,
+  })
+}
+
+/** Riwayat 7 hari per wilayah — lazy saat detail dibuka. */
+export function useRegionHistory(code?: string | null) {
+  const session = useSession()
+  const enabled = session.status === 'authenticated' && Boolean(code)
+  return useQuery({
+    queryKey: ['region-history', code, session.principal?.client_id, session.generation],
+    enabled,
+    queryFn: ({ signal }) =>
+      getData(
+        `/regions/${encodeURIComponent(code!)}/history`,
+        (raw) => historySchema.parse(raw).data,
+        signal,
+      ),
+    staleTime: STALE_MS,
+  })
+}
+
+/** Debit sungai grid terdekat — soft-fail di UI bila kosong. */
+export function useRiverDischarge(code?: string | null) {
+  const session = useSession()
+  const enabled = session.status === 'authenticated' && Boolean(code)
+  return useQuery({
+    queryKey: ['river-discharge', code, session.principal?.client_id, session.generation],
+    enabled,
+    queryFn: ({ signal }) =>
+      getData(
+        `/regions/${encodeURIComponent(code!)}/river-discharge`,
+        (raw) => dischargeSchema.parse(raw),
+        signal,
+      ),
+    staleTime: STALE_MS,
+  })
+}
+
+/** Prakiraan Windy di pusat wilayah (lat, lon). */
+export function useWindyForecast(lat?: number | null, lon?: number | null) {
+  const session = useSession()
+  const enabled =
+    session.status === 'authenticated' &&
+    typeof lat === 'number' &&
+    typeof lon === 'number' &&
+    Number.isFinite(lat) &&
+    Number.isFinite(lon)
+
+  return useQuery({
+    queryKey: [
+      'weather-windy',
+      lat,
+      lon,
+      session.principal?.client_id,
+      session.generation,
+    ],
+    enabled,
+    queryFn: ({ signal }) =>
+      getData(
+        `/weather/windy?lat=${lat}&lon=${lon}`,
+        (raw) => windyForecastSchema.parse(raw),
         signal,
       ),
     staleTime: STALE_MS,

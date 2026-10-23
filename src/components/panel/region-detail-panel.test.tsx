@@ -102,18 +102,15 @@ describe('RegionDetailPanel', () => {
     expect(screen.queryByText(/114\.|-2\./)).toBeNull()
   })
 
-  it('shows status hierarchy: badge, count, trend; no air/cuaca in Ringkasan', () => {
+  it('shows status hierarchy: badge, count, trend, skor; no air/cuaca in Ringkasan', () => {
     renderDetail(pulangPisau)
+    const hero = screen.getByLabelText(pulangPisau.name)
     expect(screen.getByText('Sangat tinggi')).toBeTruthy()
     expect(document.querySelector('.text-3xl.font-mono')?.textContent).toBe('23')
-    expect(screen.getByText(copy.detail.hotspotUnitLine)).toBeTruthy()
-    expect(
-      screen.getByText(
-        (_, el) =>
-          el?.tagName === 'SPAN' &&
-          el.textContent === `${copy.detail.trendUp} ${copy.detail.trendVsPrevious}`,
-      ),
-    ).toBeTruthy()
+    expect(hero.textContent).toContain(copy.detail.hotspotUnitLine)
+    expect(hero.textContent).toContain(copy.detail.trendUp)
+    expect(hero.textContent).toContain(copy.detail.trendVsPrevious)
+    expect(hero.textContent).toContain(copy.detail.scoreToday('82'))
   })
 
   it('shows the full seven-day chart immediately without opening a tab or accordion', () => {
@@ -175,7 +172,7 @@ describe('RegionDetailPanel', () => {
     // Satu ⓘ risiko di judul (bukan di tiap angka)
     expect(
       screen.getByRole('button', {
-        name: copy.detail.riskTooltip,
+        name: copy.detail.riskHint,
       }),
     ).toBeTruthy()
   })
@@ -193,7 +190,7 @@ describe('RegionDetailPanel', () => {
     expect(screen.getByText('Tidak sehat')).toBeTruthy()
     expect(screen.getByText(copy.detail.airPm25)).toBeTruthy()
     expect(
-      screen.getByRole('button', { name: copy.detail.weatherSourceNote }),
+      screen.getByRole('button', { name: copy.detail.weatherSourceHint }),
     ).toBeTruthy()
     // Hanya angka titik panas yang display 3xl — PM2.5 ikut skala metrik biasa.
     expect(document.querySelectorAll('.text-3xl.font-mono')).toHaveLength(1)
@@ -209,8 +206,8 @@ describe('RegionDetailPanel', () => {
     expect(screen.getByText(copy.official.poskoEmpty)).toBeTruthy()
   })
 
-  it('does not show a share button on region detail', () => {
+  it('shows a share icon on region detail header', () => {
     renderDetail(pulangPisau)
-    expect(screen.queryByRole('button', { name: copy.share.button })).toBeNull()
+    expect(screen.getByRole('button', { name: copy.share.button })).toBeTruthy()
   })
 })

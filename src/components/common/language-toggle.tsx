@@ -30,7 +30,8 @@ export function LanguageToggle() {
           aria-label={copy.language[opt.key]}
           onClick={() => setLocale(opt.locale)}
           className={cn(
-            'flex h-10 w-10 items-center justify-center',
+            // 44×44: sama target sentuh IconButton / kontrol utama.
+            'flex size-11 items-center justify-center',
             focusRing,
             locale === opt.locale ? 'bg-brand-soft' : 'hover:bg-surface-muted',
           )}

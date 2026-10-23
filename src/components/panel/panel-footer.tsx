@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils'
 const SOURCE_ICON: Record<Copy['footer']['sources'][number]['id'], string> = {
   firms: '/sources/nasa-firms.png',
   weather: '/sources/open-meteo.png',
+  windy: '/sources/windy.png',
 }
 
 /** Footer panel: tautan sumber data. Rujukan resmi hanya di detail wilayah. */

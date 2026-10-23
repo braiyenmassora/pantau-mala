@@ -1,4 +1,25 @@
 // Server-only: never import this module from src or expose these env names via VITE_.
+
+/** Host yang boleh jadi target PUT foto (presign R2 / fixture tes). */
+export function isAllowedUploadTarget(target) {
+  try {
+    const u = new URL(target)
+    if (
+      u.protocol !== 'https:' &&
+      !(u.protocol === 'http:' && u.hostname === '127.0.0.1')
+    )
+      return false
+    const host = u.hostname
+    return (
+      host.endsWith('.r2.cloudflarestorage.com') ||
+      host.endsWith('.r2.dev') ||
+      host === 'storage.example'
+    )
+  } catch {
+    return false
+  }
+}
+
 export function createClientGateway(env, fetcher = fetch) {
   const mode = env.FE_ACCESS_MODE || 'account'
   if (!['account', 'client'].includes(mode)) throw new Error('Invalid FE_ACCESS_MODE')
@@ -31,7 +52,7 @@ export function createClientGateway(env, fetcher = fetch) {
       },
     })
   const allowed =
-    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages|hotspot-reports(?:\/(?:counts(?:\/by-region)?|total|photo|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}))?)$/
+    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages|hotspot-reports(?:\/(?:counts(?:\/by-region)?|total|photo(?:-put)?|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}))?)$/
   async function upstream(path) {
     return fetcher(new URL(path, origin), {
       headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
@@ -48,15 +69,20 @@ export function createClientGateway(env, fetcher = fetch) {
     )
       return null
     const isTelemetry = url.pathname === '/api/v1/telemetry'
-    // Satu-satunya tulis selain telemetry: buat laporan warga + minta URL upload foto.
+    // Tulis: laporan + minta URL upload. PUT foto lewat proxy same-origin (hindari CORS R2).
     const isReportWrite =
       request.method === 'POST' &&
       (url.pathname === '/api/v1/hotspot-reports' ||
         url.pathname === '/api/v1/hotspot-reports/photo')
-    if (
-      isTelemetry || isReportWrite ? request.method !== 'POST' : request.method !== 'GET'
-    )
+    const isPhotoPut =
+      request.method === 'PUT' && url.pathname === '/api/v1/hotspot-reports/photo-put'
+    if (isTelemetry && request.method !== 'POST')
       return reply(405, { error: 'Read-only frontend' })
+    if (url.pathname === '/api/v1/hotspot-reports/photo-put' && !isPhotoPut)
+      return reply(405, { error: 'Read-only frontend' })
+    if (!isTelemetry && !isReportWrite && !isPhotoPut && request.method !== 'GET') {
+      return reply(405, { error: 'Read-only frontend' })
+    }
     if (request.headers.has('authorization') || request.headers.has('x-client-id'))
       return reply(400, { error: 'Client identity is server configured' })
     if (request.headers.get('origin') && request.headers.get('origin') !== url.origin)
@@ -94,6 +120,7 @@ export function createClientGateway(env, fetcher = fetch) {
       'point_lat',
       'point_lon',
       'points',
+      'target',
     ])
     for (const key of url.searchParams.keys())
       if (!queryNames.has(key))
@@ -184,6 +211,35 @@ export function createClientGateway(env, fetcher = fetch) {
           },
         })
       }
+      // PUT foto: browser → gateway (same-origin) → URL presign R2 (tanpa CORS browser).
+      if (isPhotoPut) {
+        const target = url.searchParams.get('target')
+        if (!target || !isAllowedUploadTarget(target))
+          return reply(400, { error: 'Invalid upload target' })
+        const putHeaders = {}
+        const contentType = request.headers.get('content-type')
+        if (contentType) putHeaders['Content-Type'] = contentType
+        const contentMd5 = request.headers.get('content-md5')
+        if (contentMd5) putHeaders['Content-MD5'] = contentMd5
+        const putRes = await fetcher(target, {
+          method: 'PUT',
+          headers: putHeaders,
+          body: await request.arrayBuffer(),
+          redirect: 'manual',
+          signal: AbortSignal.timeout(60000),
+        })
+        if (!putRes.ok)
+          return reply(putRes.status >= 500 ? 502 : putRes.status, {
+            error: 'Upload failed',
+          })
+        return new Response(null, {
+          status: putRes.status,
+          headers: {
+            'Cache-Control': 'no-store',
+            'X-Content-Type-Options': 'nosniff',
+          },
+        })
+      }
       // Laporan warga: teruskan body JSON + Origin/IP agar rate limit BE per-pengirim jalan.
       if (isReportWrite) {
         const headers = {
@@ -210,6 +266,26 @@ export function createClientGateway(env, fetcher = fetch) {
             { error: 'Data unavailable' },
           )
         const createdBody = await created.arrayBuffer()
+        // Minta URL upload: tulis ulang ke proxy same-origin agar PUT lokal tidak kena CORS.
+        if (url.pathname === '/api/v1/hotspot-reports/photo') {
+          try {
+            const json = JSON.parse(new TextDecoder().decode(createdBody))
+            const real = json?.data?.upload_url
+            if (typeof real === 'string' && isAllowedUploadTarget(real)) {
+              json.data.upload_url = `/api/v1/hotspot-reports/photo-put?target=${encodeURIComponent(real)}`
+              return Response.json(json, {
+                status: created.status,
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Cache-Control': 'no-store',
+                  'X-Content-Type-Options': 'nosniff',
+                },
+              })
+            }
+          } catch {
+            // Body bukan JSON yang diharapkan — teruskan apa adanya.
+          }
+        }
         return new Response(createdBody, {
           status: created.status,
           headers: {

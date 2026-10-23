@@ -44,7 +44,9 @@ export function Button({
         focusRing,
         variantClass[variant],
         sizeClass[size],
-        (disabled || loading) && 'cursor-not-allowed opacity-50',
+        // Disabled: jangan ikut hover/opacity primary (terasa "aktif" padahal belum siap).
+        (disabled || loading) &&
+          'pointer-events-none cursor-not-allowed opacity-50 hover:opacity-50',
         className,
       )}
       {...props}

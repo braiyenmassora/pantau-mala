@@ -94,7 +94,7 @@ export function CitizenReportsPanel({ regions, mapRef }: CitizenReportsPanelProp
         >
           {getCopy().report.panelTitle}
         </h1>
-        <IconButton onClick={back} aria-label={getCopy().panel.backHome}>
+        <IconButton onClick={back} aria-label={getCopy().report.close}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         </IconButton>
       </div>

@@ -24,7 +24,7 @@ describe('Toast', () => {
       .showToast(copy.report.rateLimitedTitle, copy.report.rateLimited, 'err')
     render(<Toast />)
     expect(screen.getByRole('alert').textContent).toContain('Batas permintaan tercapai')
-    expect(screen.getByRole('alert').textContent).toContain('5× per jam')
+    expect(screen.getByRole('alert').textContent).toContain('5 kali per jam')
     await userEvent.click(
       screen.getByRole('button', { name: copy.common.dismissNotification }),
     )

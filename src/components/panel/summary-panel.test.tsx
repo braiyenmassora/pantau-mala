@@ -161,11 +161,11 @@ describe('SummaryPanel states', () => {
     )
     expect(screen.getByText(copy.panel.limitationNote)).toBeTruthy()
     expect(copy.panel.limitationNote).toMatch(
-      /titik panas satelit.*bukan konfirmasi kebakaran atau peringatan resmi/i,
+      /titik panas satelit.*bukan peringatan resmi kebakaran/i,
     )
     expect(screen.queryByText(copy.panel.coverageNote)).toBeNull()
     expect(screen.getByText(copy.panel.indonesiaToday)).toBeTruthy()
-    expect(screen.getByRole('button', { name: copy.panel.titleTip })).toBeTruthy()
+    expect(screen.getByRole('button', { name: copy.panel.titleHint })).toBeTruthy()
   })
 
   it('shows filter empty with tampilkan semua', () => {

@@ -16,6 +16,8 @@ export const summarySchema = z.object({
 export const historySchema = z.object({
   data: z.array(z.object({ tanggal: z.string(), titik_panas: number, skor: nullable })),
 })
+export type RegionHistoryRow = z.infer<typeof historySchema>['data'][number]
+export type RegionHistoryResponse = z.infer<typeof historySchema>
 export const forecastSchema = z.object({
   data: z.object({
     kode_desa: z.string(),
@@ -50,6 +52,7 @@ export const dischargeSchema = z
     (v) => v.data.tanggal_utc.length === v.data.debit_m3_detik.length,
     'Tanggal dan debit harus sejajar',
   )
+export type RiverDischargeResponse = z.infer<typeof dischargeSchema>
 export const sourceStatusSchema = z.object({
   data: z.object({
     diperbarui: z.string().nullable(),
@@ -88,6 +91,8 @@ export const windyPointSchema = z.object({
   kecepatan_angin_kmj: number,
   hembusan_kmj: number,
   kelembapan: number,
+  titik_embun_c: number.optional(),
+  curah_hujan_3j_mm: number.optional(),
 })
 
 export const windyForecastSchema = z.object({

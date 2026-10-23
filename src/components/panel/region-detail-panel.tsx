@@ -1,13 +1,16 @@
 import {
   Check,
   CloudFog,
+  CloudRain,
   Droplets,
   Gauge,
   MessageSquarePlus,
   Minus,
   Sun,
+  Thermometer,
   TrendingDown,
   TrendingUp,
+  Waves,
   Wind,
   X,
 } from 'lucide-react'
@@ -18,6 +21,7 @@ import {
   HotspotStatusBadge,
   IconButton,
   InfoTooltip,
+  Sparkline,
   TrendChart,
 } from '@/components/common'
 import { AirCategoryPill } from '@/components/panel/air-quality-card'
@@ -26,16 +30,29 @@ import { SectionHead } from '@/components/common/section-head'
 import { CitizenReportReview } from '@/components/panel/citizen-report-review'
 import { DataFreshnessBanner } from '@/components/panel/data-freshness-banner'
 import { OfficialRefsCard } from '@/components/panel/official-refs'
+import { ShareWilayahButton } from '@/components/panel/share-wilayah-button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import { getCopy, getLocale } from '@/copy'
 import { useRegionReports } from '@/data/hotspot-reports'
-import { useHotspots } from '@/data/queries'
+import {
+  useHotspots,
+  useRegionHistory,
+  useRiverDischarge,
+  useWindyForecast,
+} from '@/data/queries'
 import type { Region, RiskCategory } from '@/data/types'
 import { rememberFocusTrigger, restoreFocusTrigger } from '@/lib/focus-return'
 import { formatNumber } from '@/lib/format'
 import { hotspotTrend, type TrendDirection } from '@/lib/hotspot-trend'
 import { fitIndonesia } from '@/lib/indonesia-view'
+import {
+  dischargeSeries,
+  latestDischargeM3s,
+  latestHistoryScore,
+  nearestWindyPoint,
+  trendValuesFromHistory,
+} from '@/lib/region-history'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -144,12 +161,27 @@ function ConditionCell({
 }
 
 function ConditionsCard({ region }: { region: Region }) {
-  const humidity =
-    region.weather.humidity != null ? `${formatNumber(region.weather.humidity)}%` : null
-  const wind =
-    region.weather.wind_kmh != null
-      ? `${formatNumber(region.weather.wind_kmh)} ${getCopy().detail.windUnit}`
+  const [lon, lat] = region.center
+  const windy = useWindyForecast(lat, lon)
+  const discharge = useRiverDischarge(region.code)
+  const windyPoint = nearestWindyPoint(windy.data?.data.titik)
+  const tempValue = region.weather.temp_c ?? windyPoint?.suhu_c ?? null
+  const humidityValue = region.weather.humidity ?? windyPoint?.kelembapan ?? null
+  const windValue = region.weather.wind_kmh ?? windyPoint?.kecepatan_angin_kmj ?? null
+  const gustValue = windyPoint?.hembusan_kmj ?? null
+  const rainValue =
+    windyPoint?.curah_hujan_3j_mm != null && Number.isFinite(windyPoint.curah_hujan_3j_mm)
+      ? windyPoint.curah_hujan_3j_mm
       : null
+  const temp =
+    tempValue != null ? `${formatNumber(tempValue)}${getCopy().detail.tempUnit}` : null
+  const humidity = humidityValue != null ? `${formatNumber(humidityValue)}%` : null
+  const wind =
+    windValue != null ? `${formatNumber(windValue)} ${getCopy().detail.windUnit}` : null
+  const gust =
+    gustValue != null ? `${formatNumber(gustValue)} ${getCopy().detail.windUnit}` : null
+  const rain =
+    rainValue != null ? `${formatNumber(rainValue)} ${getCopy().detail.rainUnit}` : null
   const dryDays =
     region.weather.dry_days != null
       ? `${formatNumber(region.weather.dry_days)} ${getCopy().detail.dayUnit}`
@@ -158,20 +190,49 @@ function ConditionsCard({ region }: { region: Region }) {
     ? `${getCopy().bahaya[region.weather_danger.class]} (${formatNumber(region.weather_danger.fwi)})`
     : null
   const pm25 = airPm25Value(region)
-  const hasMetrics = !!(humidity || wind || dryDays || weatherDanger || pm25)
+  const riverValues = discharge.data?.data.debit_m3_detik
+  const riverDates = discharge.data?.data.tanggal_utc
+  const river = latestDischargeM3s(riverValues)
+  const riverSpark = dischargeSeries(riverValues)
+  const riverLabel =
+    river != null ? `${formatNumber(river)} ${getCopy().detail.riverDischargeUnit}` : null
+  const riverMin = riverSpark.length ? Math.min(...riverSpark) : null
+  const riverMax = riverSpark.length ? Math.max(...riverSpark) : null
+  const riverDayFirst = riverDates?.[0]?.slice(8, 10)
+  const riverDayLast = riverDates?.at(-1)?.slice(8, 10)
+  const hasMetrics = !!(
+    temp ||
+    humidity ||
+    wind ||
+    gust ||
+    rain ||
+    dryDays ||
+    weatherDanger ||
+    pm25 ||
+    riverLabel
+  )
 
   return (
     <Card aria-label={getCopy().detail.conditions}>
       <CardHeader>
         <div className="flex min-w-0 items-center gap-1">
           <CardTitle>{getCopy().detail.conditions}</CardTitle>
-          <InfoTooltip content={getCopy().detail.weatherSourceNote} />
+          <InfoTooltip
+            label={getCopy().detail.weatherSourceHint}
+            content={getCopy().detail.weatherSourceNote}
+          />
         </div>
         <AirCategoryPill region={region} />
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         {hasMetrics ? (
           <div className="grid grid-cols-1 gap-4 min-[360px]:grid-cols-2">
+            <ConditionCell
+              icon={<Thermometer strokeWidth={2} />}
+              iconClass="panel-icon-sun"
+              label={getCopy().detail.temp}
+              value={temp}
+            />
             <ConditionCell
               icon={<Droplets strokeWidth={2} />}
               iconClass="panel-icon-drip"
@@ -183,6 +244,18 @@ function ConditionsCard({ region }: { region: Region }) {
               iconClass="panel-icon-breeze"
               label={getCopy().detail.wind}
               value={wind}
+            />
+            <ConditionCell
+              icon={<Wind strokeWidth={2} />}
+              iconClass="panel-icon-breeze"
+              label={getCopy().detail.windGust}
+              value={gust}
+            />
+            <ConditionCell
+              icon={<CloudRain strokeWidth={2} />}
+              iconClass="panel-icon-drip"
+              label={getCopy().detail.rain3h}
+              value={rain}
             />
             <ConditionCell
               icon={<Sun strokeWidth={2} />}
@@ -198,9 +271,45 @@ function ConditionsCard({ region }: { region: Region }) {
             />
             <ConditionCell
               icon={<CloudFog strokeWidth={2} />}
+              iconClass="panel-icon-breeze"
               label={getCopy().detail.airPm25}
               value={pm25}
             />
+            <ConditionCell
+              icon={<Waves strokeWidth={2} />}
+              iconClass="panel-icon-drip"
+              label={getCopy().detail.riverDischarge}
+              value={riverLabel}
+            />
+          </div>
+        ) : null}
+        {riverSpark.length >= 2 ? (
+          <div className="space-y-2">
+            <div className="flex items-baseline justify-between gap-2">
+              <p className="text-ink-2 text-xs leading-4 font-medium">
+                {getCopy().detail.riverDischargeChart}
+              </p>
+              {riverMin != null && riverMax != null ? (
+                <p className="text-ink-3 font-mono text-xs leading-4 tabular-nums">
+                  {formatNumber(riverMin)}–{formatNumber(riverMax)}{' '}
+                  {getCopy().detail.riverDischargeUnit}
+                </p>
+              ) : null}
+            </div>
+            <Sparkline
+              data={riverSpark}
+              width={280}
+              height={40}
+              smooth={false}
+              className="text-chart h-10 w-full max-w-full"
+              ariaLabel={getCopy().detail.riverDischargeChart}
+            />
+            {riverDayFirst && riverDayLast ? (
+              <div className="text-ink-3 flex justify-between text-xs leading-4">
+                <span>{riverDayFirst}</span>
+                <span>{riverDayLast}</span>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </CardContent>
@@ -253,21 +362,26 @@ export function CitizenReportsCard({
 
   return (
     <Card aria-label={getCopy().report.panelTitle}>
-      <CardHeader>
-        <div className="flex min-w-0 items-center gap-1">
-          <CardTitle>{getCopy().report.panelTitle}</CardTitle>
-          {canCompose ? (
-            <InfoTooltip content={getCopy().report.panelContributeHint} />
-          ) : null}
+      <CardHeader className="items-start">
+        <div className="min-w-0 flex-1 space-y-1">
+          <div className="flex min-w-0 items-center gap-1">
+            <CardTitle>{getCopy().report.panelTitle}</CardTitle>
+            {canCompose ? (
+              <InfoTooltip
+                label={getCopy().report.panelTitle}
+                content={getCopy().report.panelContributeHint}
+              />
+            ) : null}
+          </div>
+          <p className="text-ink-2 text-xs leading-4">{getCopy().report.panelHint}</p>
         </div>
         {regionReports.length > 0 ? (
-          <span className="text-ink shrink-0 text-xs leading-4 font-semibold tabular-nums">
+          <span className="text-ink-2 shrink-0 text-xs leading-4 tabular-nums">
             {getCopy().report.badge(String(regionReports.length))}
           </span>
         ) : null}
       </CardHeader>
       <CardContent className="space-y-3">
-        <p className="text-ink-2 text-xs leading-4">{getCopy().report.panelHint}</p>
         {reportsPending ? (
           <p className="text-ink-2 text-sm leading-5">{getCopy().common.loading}</p>
         ) : latest.length === 0 ? (
@@ -293,11 +407,7 @@ export function CitizenReportsCard({
             disabled={!composeReady}
             loading={hotspotsPending && !composeReady}
           >
-            <MessageSquarePlus
-              className="panel-icon-report size-3.5"
-              strokeWidth={2}
-              aria-hidden
-            />
+            <MessageSquarePlus className="size-3.5" strokeWidth={2} aria-hidden />
             {getCopy().report.panelOpen}
           </Button>
         ) : null}
@@ -312,9 +422,17 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
   const select = useMapStore((s) => s.select)
   const province = useMapStore((s) => s.province)
   const panelOpen = useUiStore((s) => s.panelOpen)
+  const history = useRegionHistory(region.code)
+  const trendValues = useMemo(
+    () => trendValuesFromHistory(history.data, region.trend_7d),
+    [history.data, region.trend_7d],
+  )
+  const skor =
+    latestHistoryScore(history.data) ??
+    (region.score != null && Number.isFinite(region.score) ? region.score : null)
 
   const risk = effectiveRiskCategory(region)
-  const trend = hotspotTrend(region.trend_7d)
+  const trend = hotspotTrend(trendValues)
   const { Icon: TrendIcon } = TREND_UI[trend]
   const trendLabel = TREND_LABEL(trend)
   const actions =
@@ -346,12 +464,16 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
           >
             {region.name}
           </h1>
-          <InfoTooltip content={getCopy().detail.riskTooltip} />
+          <InfoTooltip
+            label={getCopy().detail.riskHint}
+            content={getCopy().detail.riskTooltip}
+          />
         </div>
         <HotspotStatusBadge
           hotspots={region.hotspots_24h}
           riskCategory={region.risk_category}
         />
+        <ShareWilayahButton name={region.name} code={region.code} variant="icon" />
         <IconButton onClick={handleBack} aria-label={getCopy().panel.closeDetail}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         </IconButton>
@@ -373,24 +495,36 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
 
             <div className="text-ink-2 space-y-1 text-xs leading-4">
               <p>{getCopy().map.regionMetaProvince(region.province)}</p>
-              <p className="flex items-center gap-2">
-                <TrendIcon
-                  className={cn(
-                    'size-3.5 shrink-0',
-                    trend === 'naik' && 'panel-icon-trend-up',
-                    trend === 'turun' && 'panel-icon-trend-down',
-                  )}
-                  strokeWidth={2}
-                  aria-hidden
-                />
-                <span>
-                  {trendLabel} {getCopy().detail.trendVsPrevious}
+              <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="inline-flex items-center gap-2">
+                  <TrendIcon
+                    className={cn(
+                      'size-3.5 shrink-0',
+                      trend === 'naik' && 'panel-icon-trend-up',
+                      trend === 'turun' && 'panel-icon-trend-down',
+                    )}
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                  <span>
+                    {trendLabel} {getCopy().detail.trendVsPrevious}
+                  </span>
                 </span>
+                {skor != null ? (
+                  <>
+                    <span className="text-ink-3" aria-hidden>
+                      ·
+                    </span>
+                    <span className="font-mono font-semibold tabular-nums">
+                      {getCopy().detail.scoreToday(formatNumber(skor))}
+                    </span>
+                  </>
+                ) : null}
               </p>
             </div>
 
             <TrendChart
-              values={region.trend_7d}
+              values={trendValues}
               timeZone={region.time_zone}
               tone={chartTone(risk)}
               description={null}
@@ -412,7 +546,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
               {actions.map((act, i) => (
                 <li key={i} className="flex items-start gap-2">
                   <Check
-                    className="panel-icon-check text-risk-low mt-1 size-4 shrink-0"
+                    className="text-risk-low mt-1 size-4 shrink-0"
                     strokeWidth={2}
                     aria-hidden
                   />

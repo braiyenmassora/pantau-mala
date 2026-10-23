@@ -285,7 +285,11 @@ export function SummaryPanel({
               <h1 className="text-ink truncate text-xl leading-8 font-semibold">
                 {getCopy().panel.indonesiaToday}
               </h1>
-              <InfoTooltip content={getCopy().panel.titleTip} className="-my-4" />
+              <InfoTooltip
+                label={getCopy().panel.titleHint}
+                content={getCopy().panel.titleTip}
+                className="-my-4"
+              />
             </div>
             <p className="text-ink-2 text-xs leading-4">
               {getCopy().panel.limitationNote}
@@ -326,10 +330,7 @@ export function SummaryPanel({
 
         {/* Peek: jangan biarkan judul/isi bocor di bawah logo. */}
         <div
-          className={cn(
-            'flex flex-col gap-6 px-4 pt-3 pb-6',
-            sheetPeek && 'hidden',
-          )}
+          className={cn('flex flex-col gap-6 px-4 pt-3 pb-6', sheetPeek && 'hidden')}
           aria-hidden={sheetPeek || undefined}
         >
           <DataFreshnessBanner />
@@ -359,7 +360,11 @@ export function SummaryPanel({
                   <h1 className="text-ink min-w-0 text-xl leading-8 font-semibold break-words">
                     {getCopy().panel.indonesiaToday}
                   </h1>
-                  <InfoTooltip content={getCopy().panel.titleTip} className="-my-4" />
+                  <InfoTooltip
+                    label={getCopy().panel.titleHint}
+                    content={getCopy().panel.titleTip}
+                    className="-my-4"
+                  />
                 </div>
                 <p className="text-ink-2 text-xs leading-4">
                   {getCopy().panel.limitationNote}
@@ -422,7 +427,10 @@ export function SummaryPanel({
           <h1 className="text-ink min-w-0 truncate text-sm leading-5 font-semibold">
             {province}
           </h1>
-          <InfoTooltip content={getCopy().detail.riskTooltip} />
+          <InfoTooltip
+            label={getCopy().detail.riskHint}
+            content={getCopy().detail.riskTooltip}
+          />
         </div>
         <HotspotStatusBadge
           hotspots={provinceStats?.count_24h ?? 0}
@@ -433,7 +441,7 @@ export function SummaryPanel({
             setProvince('Semua')
             if (mapRef?.current) fitIndonesia(mapRef.current, panelOpen, 0)
           }}
-          aria-label={getCopy().panel.closeDetail}
+          aria-label={getCopy().panel.backIndonesia}
         >
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         </IconButton>

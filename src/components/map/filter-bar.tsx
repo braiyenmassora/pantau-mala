@@ -100,9 +100,6 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
         />
       ) : null}
 
-      {/* Provinsi → Kerapatan → Risiko — legenda tidak kena soft-fade di ujung. */}
-      <DensityLegendChip />
-
       {riskMenu ? (
         <RiskFilterMenu
           allPressed={allPressed}
@@ -177,11 +174,14 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
           })}
         </>
       )}
+
+      {/* Mobile: Provinsi → Risiko → Kerapatan. Desktop: MapLegend bawah. */}
+      <DensityLegendChip />
     </div>
   )
 }
 
-/** Legenda kerapatan heatmap — chip di bar filter (tidak menutup peta). */
+/** Kerapatan di filter — mobile saja (`sm:hidden`); desktop pakai MapLegend. */
 function DensityLegendChip() {
   const aria = `${getCopy().legend.densityTitle}: ${getCopy().legend.densityLow}, ${getCopy().legend.densityMid}, ${getCopy().legend.densityHigh}`
   return (
@@ -191,33 +191,21 @@ function DensityLegendChip() {
       aria-label={aria}
       title={aria}
       className={cn(
-        'border-line bg-surface text-ink shadow-none',
-        'flex h-11 min-h-11 shrink-0 items-center gap-2 rounded-card border px-3',
+        'border-line bg-surface text-ink shadow-none sm:hidden',
+        'rounded-card flex h-11 min-h-11 shrink-0 items-center gap-2 border px-3',
       )}
     >
       <span className="text-ink-2 text-xs leading-4 font-medium whitespace-nowrap">
         {getCopy().legend.densityTitle}
       </span>
       <span
-        className="text-ink-3 hidden text-xs leading-4 whitespace-nowrap sm:inline"
-        aria-hidden
-      >
-        {getCopy().legend.densityLow}
-      </span>
-      <span
-        className="h-1.5 w-16 shrink-0 rounded-full sm:w-20"
+        className="h-1.5 w-16 shrink-0 rounded-full"
         style={{
           background:
             'linear-gradient(90deg, var(--color-heat-low), var(--color-heat-mid), var(--color-heat-high))',
         }}
         aria-hidden
       />
-      <span
-        className="text-ink-3 hidden text-xs leading-4 whitespace-nowrap sm:inline"
-        aria-hidden
-      >
-        {getCopy().legend.densityHigh}
-      </span>
     </div>
   )
 }

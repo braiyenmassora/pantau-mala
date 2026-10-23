@@ -12,6 +12,7 @@ import {
 } from '@/data/hotspot-reports'
 import { restoreFocusTrigger } from '@/lib/focus-return'
 import { friendlyActionError } from '@/lib/friendly-error'
+import { isAllowedReportPhoto } from '@/lib/report-photo'
 import { cn } from '@/lib/utils'
 import { useToastStore } from '@/store/toast'
 import { useUiStore } from '@/store/ui'
@@ -30,6 +31,7 @@ const fieldLabel = 'text-ink-2 text-xs leading-4'
 /** Form tulis laporan di side panel. */
 export function CitizenReportComposePanel({ target }: { target: HotspotReportTarget }) {
   const titleRef = useRef<HTMLHeadingElement>(null)
+  const photoInputRef = useRef<HTMLInputElement>(null)
   const setReportTarget = useUiStore((s) => s.setReportTarget)
   const setSelectedReportId = useUiStore((s) => s.setSelectedReportId)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
@@ -66,10 +68,9 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
     setPhotoFile(null)
     setPhotoPreview(null)
     if (!file) return
-    if (
-      !['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
-      file.size > 2 * 1024 * 1024
-    ) {
+    if (!isAllowedReportPhoto(file)) {
+      // Biar input native tidak terlihat “sudah isi” sementara state masih kosong.
+      if (photoInputRef.current) photoInputRef.current.value = ''
       setPhotoError(getCopy().report.photoTooBig)
       return
     }
@@ -138,7 +139,7 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
         >
           {getCopy().report.formTitle}
         </h1>
-        <IconButton onClick={back} aria-label={getCopy().report.close}>
+        <IconButton onClick={back} aria-label={getCopy().report.formClose}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
         </IconButton>
       </div>
@@ -226,8 +227,9 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
           <label className={fieldStack}>
             <span className={fieldLabel}>{getCopy().report.photoLabel}</span>
             <input
+              ref={photoInputRef}
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/jpeg,image/jpg,image/png,image/webp,image/*"
               className="text-ink-2 file:rounded-ctl file:bg-surface-muted block w-full text-xs file:mr-3 file:border-0 file:px-3 file:py-2 file:text-sm file:font-medium file:shadow-none"
               onChange={(e) => onPhotoChange(e.target.files?.[0])}
             />
@@ -235,23 +237,27 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
             {photoPreview ? (
               <img
                 src={photoPreview}
-                alt=""
+                alt={
+                  authorName.trim()
+                    ? getCopy().report.photoAlt(authorName.trim())
+                    : getCopy().report.photoPreviewAlt
+                }
                 className="rounded-card aspect-[3/2] w-full object-cover"
               />
             ) : null}
           </label>
-
-          {photoError || formError ? (
-            <p className="text-risk-high text-sm leading-5" role="alert">
-              {photoError ?? formError}
-            </p>
-          ) : null}
         </section>
       </div>
 
-      <div className="border-line bg-surface sticky bottom-0 z-10 shrink-0 border-t px-4 py-3">
+      <div className="border-line bg-surface sticky bottom-0 z-10 shrink-0 space-y-2 border-t px-4 py-3">
+        {photoError || formError ? (
+          <p className="text-risk-high text-sm leading-5" role="alert">
+            {photoError ?? formError}
+          </p>
+        ) : null}
         <Button
-          variant="primary"
+          // Hijau hanya saat nama + deskripsi + foto siap.
+          variant={canSubmit ? 'primary' : 'secondary'}
           className="w-full"
           onClick={submit}
           loading={createReport.isPending}

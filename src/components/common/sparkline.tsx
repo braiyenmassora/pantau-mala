@@ -9,9 +9,18 @@ type SparklineProps = {
   height?: number
   className?: string
   ariaLabel?: string
+  /** false = polyline (aman untuk chart panel; bezier bisa overshoot + terpotong). */
+  smooth?: boolean
 }
 
 type Point = { x: number; y: number }
+
+function linearPath(pts: readonly Point[]): string {
+  if (pts.length === 0) return ''
+  return pts
+    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`)
+    .join(' ')
+}
 
 function smoothPath(pts: readonly Point[]): string {
   if (pts.length < 2) return ''
@@ -45,6 +54,7 @@ export function Sparkline({
   height = 20,
   className,
   ariaLabel,
+  smooth = true,
 }: SparklineProps) {
   const gradId = useId().replaceAll(':', '')
   if (!data || data.length < 2) return null
@@ -55,7 +65,8 @@ export function Sparkline({
   const flat = max === min
   const range = flat ? 1 : max - min
   const padX = 2
-  const padY = 3
+  // Panel chart: padding lebih besar agar titik min/max + stroke tidak terpotong.
+  const padY = height >= 28 ? 6 : 3
 
   const pts = data.map((v, i) => ({
     x: padX + (i / (data.length - 1)) * (width - padX * 2),
@@ -66,7 +77,7 @@ export function Sparkline({
       : height - padY - ((v - min) / range) * (height - padY * 2),
   }))
 
-  const line = smoothPath(pts)
+  const line = smooth ? smoothPath(pts) : linearPath(pts)
   const area = areaUnder(line, pts, height)
   const end = pts.at(-1)!
 

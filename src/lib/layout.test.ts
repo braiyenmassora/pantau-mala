@@ -32,10 +32,7 @@ describe('mobileSheetHeightFor', () => {
   it('maps peek / half at 50/50 and coerces full → half', () => {
     expect(mobileSheetHeightFor('peek', 800)).toBe(LAYOUT.mobileSheetPeekPx)
     expect(mobileSheetHeightFor('half', 800)).toBe(
-      Math.min(
-        LAYOUT.mobileSheetHalfMaxPx,
-        Math.round(800 * LAYOUT.mobileSheetHalfVh),
-      ),
+      Math.min(LAYOUT.mobileSheetHalfMaxPx, Math.round(800 * LAYOUT.mobileSheetHalfVh)),
     )
     expect(mobileSheetHeightFor('full', 800)).toBe(mobileSheetHeightFor('half', 800))
     expect(mobileSheetHeightPx(800)).toBe(mobileSheetHeightFor('half', 800))

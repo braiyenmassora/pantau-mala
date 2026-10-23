@@ -1,3 +1,4 @@
+export function isAllowedUploadTarget(target: string): boolean
 export function createClientGateway(
   env: Record<string, string | undefined>,
   fetcher?: typeof fetch,

@@ -1,11 +1,7 @@
 import { create } from 'zustand'
 
 import type { HotspotReportTarget } from '@/data/hotspot-reports'
-import {
-  isMobileWidth,
-  isTabletWidth,
-  type MobileSheetLevel,
-} from '@/lib/layout'
+import { isMobileWidth, isTabletWidth, type MobileSheetLevel } from '@/lib/layout'
 
 type UiState = {
   panelOpen: boolean

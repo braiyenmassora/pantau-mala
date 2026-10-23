@@ -37,7 +37,7 @@ describe('ShareWilayahButton', () => {
     expect(url).toMatch(/^https:\/\/wa\.me\/\?text=/)
     const decoded = decodeURIComponent(url)
     expect(decoded).toContain(copy.share.text('Kab. Pulang Pisau'))
-    expect(decoded).toContain('Bukan konfirmasi kebakaran')
+    expect(decoded).toContain('Bukan peringatan resmi kebakaran')
     expect(decoded).not.toMatch(/tidak ada titik|Sangat tinggi|Rendah|aman|risiko/i)
     expect(decoded).toMatch(/\/wilayah\//)
     expect(screen.getByText(copy.share.whatsappFallback)).toBeTruthy()
@@ -47,7 +47,7 @@ describe('ShareWilayahButton', () => {
     vi.stubGlobal('navigator', { ...navigator, share: undefined })
     const open = vi.spyOn(window, 'open').mockImplementation(() => null)
 
-    render(<ShareWilayahButton name="Kab. Kosong" code="62.99" />)
+    render(<ShareWilayahButton name="Kab. Kosong" code="62.99" variant="icon" />)
     await userEvent.click(screen.getByRole('button', { name: copy.share.button }))
 
     const url = String(open.mock.calls[0]?.[0] ?? '')

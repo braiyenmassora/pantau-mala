@@ -1,5 +1,5 @@
 import { it, expect, vi } from 'vitest'
-import { createClientGateway } from './client-gateway.mjs'
+import { createClientGateway, isAllowedUploadTarget } from './client-gateway.mjs'
 const env = {
   FE_ACCESS_MODE: 'client',
   PANTAU_API_ORIGIN: 'http://127.0.0.1:8080',
@@ -212,6 +212,12 @@ it('forwards hotspot report reads and writes with server key only', async () => 
     }),
   )
   expect(photo!.status).toBe(201)
+  const photoBody = await photo!.json()
+  expect(photoBody.data.upload_url).toBe(
+    '/api/v1/hotspot-reports/photo-put?target=' +
+      encodeURIComponent('https://storage.example/put'),
+  )
+  expect(photoBody.data.public_url).toBe('https://media.example/report.jpg')
 
   const total = await gateway(
     new Request('http://localhost/api/v1/hotspot-reports/total'),
@@ -256,4 +262,55 @@ it('masks upstream telemetry 401 as 502', async () => {
   )
   expect(response!.status).toBe(502)
   expect(await response!.text()).not.toContain('nope')
+})
+it('allowlists only https R2/fixture upload hosts', () => {
+  expect(isAllowedUploadTarget('https://storage.example/put')).toBe(true)
+  expect(isAllowedUploadTarget('https://abc.r2.cloudflarestorage.com/o')).toBe(true)
+  expect(isAllowedUploadTarget('https://evil.example/put')).toBe(false)
+  expect(isAllowedUploadTarget('http://storage.example/put')).toBe(false)
+})
+it('proxies photo PUT to allowed target without browser CORS', async () => {
+  const fetcher = vi.fn().mockResolvedValue(new Response(null, { status: 200 }))
+  const gateway = createClientGateway(env, fetcher)
+  const target = 'https://storage.example/put?X-Amz-Signature=sig'
+  const bytes = new Uint8Array([1, 2, 3])
+  const response = await gateway(
+    new Request(
+      'http://localhost/api/v1/hotspot-reports/photo-put?target=' +
+        encodeURIComponent(target),
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'image/jpeg', 'Content-MD5': 'abc' },
+        body: bytes,
+      },
+    ),
+  )
+  expect(response!.status).toBe(200)
+  expect(String(fetcher.mock.calls[0][0])).toBe(target)
+  expect(fetcher.mock.calls[0][1].method).toBe('PUT')
+  expect(fetcher.mock.calls[0][1].headers['Content-Type']).toBe('image/jpeg')
+  expect(fetcher.mock.calls[0][1].headers['Content-MD5']).toBe('abc')
+  expect(fetcher.mock.calls[0][1].headers.Authorization).toBeUndefined()
+})
+it('rejects photo-put to disallowed host and non-PUT', async () => {
+  const fetcher = vi.fn()
+  const gateway = createClientGateway(env, fetcher)
+  expect(
+    (await gateway(
+      new Request(
+        'http://localhost/api/v1/hotspot-reports/photo-put?target=' +
+          encodeURIComponent('https://evil.example/put'),
+        { method: 'PUT', body: new Uint8Array([1]) },
+      ),
+    ))!.status,
+  ).toBe(400)
+  expect(
+    (await gateway(
+      new Request('http://localhost/api/v1/hotspot-reports/photo-put', {
+        method: 'POST',
+        body: '{}',
+      }),
+    ))!.status,
+  ).toBe(405)
+  expect(fetcher).not.toHaveBeenCalled()
 })

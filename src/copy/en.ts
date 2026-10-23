@@ -9,25 +9,24 @@ export const enCopy: typeof copy = {
   },
   errors: {
     loadFallback: 'Data could not be loaded yet.',
-    actionFallback: 'Please try again in a moment.',
-    timeout: 'The connection took too long. Please try again in a moment.',
-    network: 'Not connected to the server. Please try again in a moment.',
-    serviceNotReady: 'The service is not ready yet. Please try again in a moment.',
+    actionFallback: 'Try again in a moment.',
+    timeout: 'The connection took too long. Try again in a moment.',
+    network: 'Not connected to the server. Try again in a moment.',
+    serviceNotReady: 'The service is not ready yet. Try again in a moment.',
     accessDenied: 'Access is not permitted.',
     sessionRequired: 'A session is required.',
-    sessionExpired: 'Your session has ended. Please sign in again.',
-    rateLimited: 'Request limit reached. Please try again later.',
+    sessionExpired: 'Your session has ended. Sign in again.',
+    rateLimited: 'Request limit reached. Try again later.',
     catalogTooLarge: 'The region catalog exceeds the supported limit.',
-    photoUploadFailed: 'Photo upload failed. Please try again.',
+    photoUploadFailed: 'Photo upload failed. Try again.',
     workspaceSwitchUnavailable: 'Switching workspaces is not available in this mode.',
     tooManyAttempts: 'Too many attempts. Try again after one minute.',
     wrongCredentials: 'Incorrect username or password, or your session has ended.',
-    accessServiceUnavailable:
-      'The access service is not available yet. Please try again.',
-    appAccessUnavailable: 'App access is not available yet. Please try again later.',
+    accessServiceUnavailable: 'The access service is not available yet. Try again.',
+    appAccessUnavailable: 'App access is not available yet. Try again later.',
     accessUnavailable: 'Access is not available yet.',
     proxyOriginRequired:
-      'The FE and Go API need the same-origin proxy with base /api/v1.',
+      'The app data address is not configured correctly. Contact the administrator.',
     provinceMetaFailed: 'Province boundary metadata could not be loaded yet.',
     provinceGeometryFailed: 'Province boundary geometry could not be loaded yet.',
     provinceHashMismatch: 'Province boundary revision does not match the metadata.',
@@ -53,7 +52,7 @@ export const enCopy: typeof copy = {
     noDataset: 'Satellite data is not ready yet',
     noDatasetNote:
       'Satellite data has not arrived yet. That does not necessarily mean there is no fire.',
-    detections: 'Hotspot',
+    detections: 'Hotspots',
     score: 'Score',
     provisional: 'calibration not final',
     trendChart: '7-day trend',
@@ -84,7 +83,7 @@ export const enCopy: typeof copy = {
   },
   empty: {
     noHotspots: {
-      title: 'No hotspots',
+      title: 'No hotspots detected',
       description: (wilayah: string) =>
         `No satellite hotspots in ${wilayah} in the last 24 hours.`,
     },
@@ -105,7 +104,7 @@ export const enCopy: typeof copy = {
       action: 'Search regency/city',
     },
     noHotspotsInRegion: {
-      title: 'No hotspots',
+      title: 'No hotspots detected',
       description: (nama: string) =>
         `No satellite hotspots in ${nama} in the last 24 hours.`,
     },
@@ -153,15 +152,15 @@ export const enCopy: typeof copy = {
     },
   },
   panel: {
-    indonesiaToday: 'Hotspot Monitoring',
-    provinceToday: (province: string) => `Hotspot Monitoring · ${province}`,
+    indonesiaToday: 'Hotspot monitoring',
+    provinceToday: (province: string) => `Hotspot monitoring · ${province}`,
     subtitle: 'NASA FIRMS satellite detection · last 24 hours',
+    titleHint: 'About this monitoring view',
     titleTip:
       'Shows the distribution of satellite hotspots in Indonesia over the last 24 hours.',
-    limitationNote:
-      'Satellite hotspots are not a fire confirmation or an official warning.',
+    limitationNote: 'Satellite hotspots, not an official fire warning.',
     coverageNote:
-      'Satellites do not monitor continuously. Zero hotspots does not necessarily mean there is no fire.',
+      'Satellites do not monitor continuously. No detections do not necessarily mean there is no fire.',
     hotspot24h: 'Hotspots (24 hours)',
     hotspotHint: 'About hotspots',
     hotspotTooltip: 'Number of NASA FIRMS satellite hotspots in the last 24 hours.',
@@ -180,12 +179,15 @@ export const enCopy: typeof copy = {
   report: {
     title: 'Reports at this point',
     openAria: 'Open citizen reports at this hotspot',
+    /** Close the reports list / general report chrome. */
     close: 'Close reports',
+    /** Close the write-report form. */
+    formClose: 'Close form',
     disclaimer:
       'By submitting this, you are fully responsible for the authenticity of the report.',
     emergencyHint: 'If you see smoke or fire, call 112.',
     empty: 'No reports at this point yet.',
-    formTitle: 'Submit a report',
+    formTitle: 'Write a report',
     sightingLabel: 'What do you see?',
     sightings: {
       asap: 'Smoke',
@@ -193,7 +195,7 @@ export const enCopy: typeof copy = {
       tidak_yakin: 'Not sure',
       sudah_padam: 'Already out',
     },
-    authorLabel: 'Your name',
+    authorLabel: 'Your name (required)',
     authorPlaceholder: 'Example: Sari W.',
     descriptionLabel: 'Description (required)',
     descriptionPlaceholder: 'Tell us what you saw…',
@@ -202,14 +204,16 @@ export const enCopy: typeof copy = {
     photoMissing: 'Add a photo first.',
     photoTooBig: 'The photo must be JPG, PNG, or WebP, max 2 MB.',
     photoAlt: (nama: string) => `Report photo from ${nama}`,
+    photoPreviewAlt: 'Report photo preview',
+    photoUnavailable: 'Photo could not be shown',
     submit: 'Submit report',
     submitting: 'Submitting…',
-    submitFailed: 'Your report was not sent yet. Please try again.',
+    submitFailed: 'Your report was not sent yet. Try again.',
     submitSuccessTitle: 'Report sent',
-    submitSuccess: 'Thank you — your report now appears at this point.',
+    submitSuccess: 'Thank you. Your report now appears at this point.',
     rateLimitedTitle: 'Request limit reached',
-    rateLimited: 'Reports are limited to 5 per hour — please try again later.',
-    badge: (n: string) => `${n} reports`,
+    rateLimited: 'Reports are limited to 5 per hour. Try again later.',
+    badge: (n: string) => (n === '1' ? '1 report' : `${n} reports`),
     listTitle: 'Latest reports',
     panelTitle: 'Citizen reports',
     totalUnit: 'reports from citizens across Indonesia',
@@ -273,12 +277,23 @@ export const enCopy: typeof copy = {
     hotspotUnitLine: 'hotspots · 24 hours',
     hotspots24hReason: (n: string) => `${n} hotspots (24 hours)`,
     trendVsPrevious: 'compared with yesterday',
-    weatherSourceNote: 'Weather and air quality data obtained from Open-Meteo.',
+    weatherSourceNote:
+      'Weather, air, and river discharge from Open-Meteo. Point wind and rain from Windy.',
+    weatherSourceHint: 'Weather and environment sources',
     weatherMissingTip: 'Weather values are not available for this region yet.',
     weatherDanger: 'Fire weather index',
     weatherDangerHint: 'About the fire weather index',
     weatherDangerTooltip: 'Fire weather index obtained from Open-Meteo.',
     fwiUnit: 'FWI',
+    riverDischarge: 'River discharge',
+    riverDischargeUnit: 'm³/s',
+    riverDischargeChart: '7-day discharge forecast',
+    temp: 'Temperature',
+    tempUnit: '°C',
+    rain3h: 'Rain (3 h)',
+    rainUnit: 'mm',
+    windGust: 'Gust',
+    scoreToday: (n: string) => `Score ${n}`,
     lastDetection: 'Latest satellite detection',
     trendUp: 'Rising',
     trendDown: 'Falling',
@@ -386,10 +401,10 @@ export const enCopy: typeof copy = {
   },
   legend: {
     riskTitle: 'Risk level',
-    noDetectionsTitle: 'No hotspots detected',
     densityTitle: 'Density',
     densityLow: 'Few',
-    densityMid: 'Moderate',
+    /** Not "Moderate" — that label is reserved for risk. */
+    densityMid: 'Medium',
     densityHigh: 'Many',
   },
   search: {
@@ -400,7 +415,7 @@ export const enCopy: typeof copy = {
     kabkota: 'Regencies/cities',
     provinceTitle: (nama: string) => `Province of ${nama}`,
     withHotspots: (n: string) => `${n} regions with hotspots`,
-    noHotspots: 'No satellite hotspots in the last 24 hours.',
+    noHotspots: 'No hotspots detected in the last 24 hours.',
   },
   footer: {
     dataSourcesLabel: 'Data sources',
@@ -414,6 +429,11 @@ export const enCopy: typeof copy = {
         id: 'weather' as const,
         name: 'Open-Meteo',
         href: 'https://open-meteo.com/',
+      },
+      {
+        id: 'windy' as const,
+        name: 'Windy',
+        href: 'https://www.windy.com/',
       },
     ],
     mapAttribution: [
@@ -467,29 +487,31 @@ export const enCopy: typeof copy = {
     udara: 'Air quality',
   },
   common: {
-    pick: 'Select...',
-    search: 'Search...',
+    pick: 'Select…',
+    search: 'Search…',
     notFound: 'Not found',
     retry: 'Try again',
     dismissNotification: 'Dismiss notification',
     clearSearch: 'Clear search',
+    moreInfo: 'More information',
     loading: 'Loading…',
     indonesia: 'Indonesia',
     refresh: 'Refresh',
   },
   meta: {
-    homeTitle: 'Pantau Mala - Satellite Hotspot Monitoring',
+    homeTitle: 'Pantau Mala - Satellite hotspot monitoring',
     homeDescription:
-      'Pantau Mala (pantaumala) — satellite hotspot map by regency/city in Indonesia. Not a fire confirmation or an official warning.',
+      'Pantau Mala (pantaumala). Satellite hotspot map by regency/city in Indonesia. Not an official fire warning.',
     wilayahTitle: (name: string) => `${name} - Pantau Mala`,
     wilayahDescription: (name: string) =>
-      `Pantau Mala — satellite hotspot monitoring in ${name}. Not a fire confirmation or an official warning.`,
+      `Pantau Mala. Satellite hotspot monitoring in ${name}. Not an official fire warning.`,
+    ogImageAlt: 'Pantau Mala · satellite hotspot monitoring for Indonesia',
   },
   share: {
     button: 'Share',
     buttonBusy: 'Sharing…',
     whatsappFallback: 'Opening WhatsApp…',
     text: (name: string) =>
-      `${name} · pantaumala satellite hotspot monitoring. Not a fire confirmation or an official warning.`,
+      `${name} · pantaumala satellite hotspot monitoring. Not an official fire warning.`,
   },
 }

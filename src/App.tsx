@@ -245,9 +245,10 @@ export default function App() {
             easePanel,
             'transition-[transform,opacity,height]',
             // Mobile: peek ↔ half ↔ full. Tablet+: panel kiri.
-            'rounded-t-panel inset-x-0 bottom-0 h-(--map-sheet-current) translate-y-0 border-b-0 opacity-100',
+            // Mobile: tinggi ketat peek/half — jangan ikut konten (meluap menutup peta).
+            'rounded-t-panel inset-x-0 bottom-0 h-(--map-sheet-current) max-h-(--map-sheet-current) translate-y-0 border-b-0 opacity-100',
             'sm:inset-auto sm:top-(--floating-control-offset) sm:right-auto sm:bottom-(--floating-control-offset) sm:left-(--floating-control-offset)',
-            'sm:rounded-panel sm:h-auto sm:w-[min(var(--map-panel-width),calc(100vw-5rem))] sm:border',
+            'sm:rounded-panel sm:h-auto sm:max-h-none sm:w-[min(var(--map-panel-width),calc(100vw-5rem))] sm:border',
             !panelOpen &&
               'sm:pointer-events-none sm:-translate-x-(--map-overlay-inset) sm:opacity-0',
           )}
@@ -325,7 +326,15 @@ export default function App() {
         {!isPending && <MapLegend />}
         {!isPending && <MapControls mapRef={mapRef} />}
 
-        <main aria-label={getCopy().app.mapAria} className="absolute inset-0 z-0">
+        <main
+          aria-label={getCopy().app.mapAria}
+          // Mobile: canvas peta = area di atas sheet (kecil saat half) — bukan full-bleed di balik sheet.
+          className={cn(
+            'absolute inset-x-0 top-0 z-0',
+            'bottom-(--map-sheet-current) sm:bottom-0',
+            'ease-out-soft transition-[bottom] duration-300',
+          )}
+        >
           {/* Suspense: bg polos. Overlay "Memuat…" di AccessGate sampai mapReady. */}
           <Suspense fallback={<div className="bg-map-bg size-full" aria-hidden />}>
             <MapShell

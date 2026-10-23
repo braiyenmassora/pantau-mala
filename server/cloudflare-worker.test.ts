@@ -145,4 +145,34 @@ describe('Cloudflare Worker routing', () => {
       expect(fetcher).not.toHaveBeenCalled()
     }
   })
+
+  it('injects wilayah Open Graph HTML for share crawlers', async () => {
+    const index = `<!doctype html><html><head>
+<title>Pantau Mala - Pantauan Titik Panas</title>
+<meta property="og:title" content="Pantau Mala - Pantauan Titik Panas" />
+<meta property="og:url" content="https://pantaumala.live/" />
+<meta property="og:image" content="https://pantaumala.live/og.png" />
+<link rel="canonical" href="https://pantaumala.live/" />
+</head><body></body></html>`
+    const env = {
+      ...environment(),
+      ASSETS: {
+        fetch: vi.fn().mockResolvedValue(
+          new Response(index, { headers: { 'Content-Type': 'text/html' } }),
+        ),
+      },
+    }
+    const response = await handleRequest(
+      request('/wilayah/kapuas-6203', {
+        headers: { 'User-Agent': 'WhatsApp/2.23' },
+      }),
+      env,
+    )
+    expect(response.status).toBe(200)
+    const html = await response.text()
+    expect(html).toContain('Kapuas - Pantau Mala')
+    expect(html).toContain('/wilayah/kapuas-6203')
+    expect(html).toContain('/og.png')
+    expect(env.ASSETS.fetch).toHaveBeenCalled()
+  })
 })

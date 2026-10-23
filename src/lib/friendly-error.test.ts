@@ -24,8 +24,8 @@ describe('friendly-error', () => {
     expect(friendlyActionError(new Error('Layanan akses tidak tersedia'))).toBe(
       'Layanan belum siap. Coba lagi sebentar.',
     )
-    expect(friendlyActionError(new Error('Upload foto gagal. Coba lagi.'))).toBe(
-      'Upload foto gagal. Coba lagi.',
+    expect(friendlyActionError(new Error('Unggah foto gagal. Coba lagi.'))).toBe(
+      'Unggah foto gagal. Coba lagi.',
     )
   })
 })
