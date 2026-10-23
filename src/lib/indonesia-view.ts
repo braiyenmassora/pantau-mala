@@ -26,10 +26,11 @@ export const PLACE_ZOOM = 8
 /** Location framing: nearby context without hiding the national overview. */
 export const LOCATION_ZOOM = 5.5
 /**
- * Lantai zoom overview nasional — jangan naikkan di atas cameraForBounds:
- * Sabang→Merauke harus muat (Papua tidak boleh terpotong).
+ * Lantai navigasi overview nasional. Nilainya harus lebih rendah dari zoom
+ * hasil cameraForBounds pada layar desktop sempit; jika lebih tinggi, peta
+ * akan memaksa zoom-in dan memotong Sabang atau Papua saat panel terbuka.
  */
-export const OVERVIEW_ZOOM_FLOOR = 3.2
+export const OVERVIEW_ZOOM_FLOOR = 2.25
 export const MOBILE_OVERVIEW_ZOOM_CEILING = 3
 
 function overviewZoomFloor() {

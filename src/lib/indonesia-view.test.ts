@@ -71,6 +71,14 @@ describe('fitProvinceBounds', () => {
     expect(map.jumpTo).toHaveBeenCalledWith(expect.objectContaining({ zoom: 4.2 }))
   })
 
+  it('does not force a narrow desktop viewport to crop the national fit', () => {
+    const map = mockMap()
+    map.cameraForBounds = vi.fn(() => ({ zoom: 2.55, center: [118, -2] as never }))
+
+    expect(fitIndonesia(map as never, true, 0)).toBe(2.55)
+    expect(map.jumpTo).toHaveBeenCalledWith(expect.objectContaining({ zoom: 2.55 }))
+  })
+
   it('handles coordinate array center from cameraForBounds correctly', () => {
     const map = mockMap()
     map.cameraForBounds = vi.fn(() => ({ zoom: 4.5, center: [115, -1] as never }))
