@@ -475,12 +475,12 @@ export const enCopy: typeof copy = {
     refresh: 'Refresh',
   },
   meta: {
-    homeTitle: 'pantaumala · Indonesia satellite hotspot monitoring',
+    homeTitle: 'Pantau Mala - Satellite Hotspot Monitoring',
     homeDescription:
-      'Satellite hotspot map by regency/city. Not a fire confirmation or an official warning.',
-    wilayahTitle: (name: string) => `${name} · satellite hotspot monitoring · pantaumala`,
+      'Pantau Mala (pantaumala) — satellite hotspot map by regency/city in Indonesia. Not a fire confirmation or an official warning.',
+    wilayahTitle: (name: string) => `${name} - Pantau Mala`,
     wilayahDescription: (name: string) =>
-      `Satellite hotspot monitoring in ${name}. Not a fire confirmation or an official warning.`,
+      `Pantau Mala — satellite hotspot monitoring in ${name}. Not a fire confirmation or an official warning.`,
   },
   share: {
     button: 'Share',

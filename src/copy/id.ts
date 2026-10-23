@@ -489,12 +489,12 @@ export const copy = {
     refresh: 'Segarkan',
   },
   meta: {
-    homeTitle: 'pantaumala · Pantauan titik panas satelit Indonesia',
+    homeTitle: 'Pantau Mala - Pantauan Titik Panas',
     homeDescription:
-      'Peta titik panas satelit per kabupaten/kota. Bukan konfirmasi kebakaran atau peringatan resmi.',
-    wilayahTitle: (name: string) => `${name} · pantauan titik panas satelit · pantaumala`,
+      'Pantau Mala (pantaumala) — peta titik panas satelit per kabupaten/kota di Indonesia. Bukan konfirmasi kebakaran atau peringatan resmi.',
+    wilayahTitle: (name: string) => `${name} - Pantau Mala`,
     wilayahDescription: (name: string) =>
-      `Pantauan titik panas satelit di ${name}. Bukan konfirmasi kebakaran atau peringatan resmi.`,
+      `Pantau Mala — pantauan titik panas satelit di ${name}. Bukan konfirmasi kebakaran atau peringatan resmi.`,
   },
   share: {
     button: 'Bagikan',

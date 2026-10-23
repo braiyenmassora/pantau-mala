@@ -21,6 +21,7 @@ describe('page-meta', () => {
     ).toBe(copy.meta.wilayahDescription('Kab. Pulang Pisau'))
 
     applyHomeMeta('https://pantaumala.live')
-    expect(document.title).toBe(copy.meta.homeTitle)
+    expect(document.title).toBe('Pantau Mala - Pantauan Titik Panas')
+    expect(copy.meta.homeDescription.toLowerCase()).toContain('pantau mala')
   })
 })
