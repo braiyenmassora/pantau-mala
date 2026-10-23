@@ -38,7 +38,7 @@ export function createClientGateway(env, fetcher = fetch) {
     return response
   }
   const allowed =
-    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages|indicators\/soil-moisture|external-events\/nasa-eonet|providers\/(registry|provenance)|hotspot-reports(?:\/[0-9a-fA-F-]+|\/counts|\/photo)?|telemetry)$/
+    /^\/api\/v1\/(regions(?:\/[0-9]{2}\.[0-9]{2}(?:\/(history|river-discharge))?)?|region-catalog|hotspots(?:\.geojson)?|data-status|summary|earthquakes|weather\/(bmkg|windy)|nearby|villages|indicators\/soil-moisture|external-events\/nasa-eonet|providers\/(registry|provenance)|hotspot-reports(?:\/[0-9a-fA-F-]+|\/(?:counts(?:\/by-region)?|total|photo))?|telemetry)$/
   function upstreamHeaders(request, metadata) {
     const headers = {
       Authorization: `Bearer ${token}`,

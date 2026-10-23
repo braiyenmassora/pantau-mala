@@ -151,6 +151,20 @@ it('refuses management, writes, supplied identity, unknown routes and cross-orig
   expect(fetcher).not.toHaveBeenCalled()
 })
 it.each([
+  '/api/v1/hotspot-reports/total',
+  '/api/v1/hotspot-reports/counts/by-region',
+])('forwards public report aggregate %s', async (path) => {
+  const fetcher = vi
+    .fn()
+    .mockResolvedValueOnce(Response.json({ data: principal }))
+    .mockResolvedValueOnce(Response.json({ data: {} }))
+  const response = await createClientGateway(env, fetcher)(
+    new Request('http://localhost' + path),
+  )
+  expect(response!.status).toBe(200)
+  expect(String(fetcher.mock.calls[1][0])).toBe('http://127.0.0.1:8080' + path)
+})
+it.each([
   ['/api/v1/hotspot-reports/photo', { content_type: 'image/jpeg', content_length: 128 }],
   [
     '/api/v1/hotspot-reports',
