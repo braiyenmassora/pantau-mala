@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
+import { T } from '@/lib/pola'
 import { cn } from '@/lib/utils'
 
 type IconButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -13,7 +14,8 @@ export function IconButton({ className, children, ...props }: IconButtonProps) {
     <button
       type="button"
       className={cn(
-        'text-ink-2 hover:bg-surface-muted hover:text-ink rounded-ctl flex size-11 shrink-0 items-center justify-center shadow-none transition-colors duration-150',
+        T.icon,
+        'hover:bg-surface-muted rounded-ctl flex size-11 shrink-0 items-center justify-center shadow-none transition-colors duration-150',
         focusRing,
         className,
       )}
@@ -22,4 +24,9 @@ export function IconButton({ className, children, ...props }: IconButtonProps) {
       {children}
     </button>
   )
+}
+
+/** Tutup — ikon X saja, tanpa kotak/border. */
+export function CloseIconButton(props: IconButtonProps) {
+  return <IconButton {...props} />
 }

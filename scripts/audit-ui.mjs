@@ -26,8 +26,9 @@ const HALF_STEP_SPACING =
 const BAD_ROUNDED =
   /\brounded-(?!ctl\b|card\b|panel\b|full\b|none\b|[trblse]-(?:ctl|card|panel|full)\b)[a-z0-9\[\]\/.-]+\b/
 
-/** shadow-chrome = alias token `--shadow-sm` (chrome mengambang). */
-const BAD_SHADOW = /\bshadow-(?!sm\b|md\b|lg\b|map\b|chrome\b|none\b)[a-z0-9\[\]\/.-]+\b/
+/** shadow-chrome = tip/kontrol; shadow-panel = shell panel desktop. */
+const BAD_SHADOW =
+  /\bshadow-(?!sm\b|md\b|lg\b|map\b|chrome\b|panel\b|none\b)[a-z0-9\[\]\/.-]+\b/
 
 const TEXT_ARBITRARY = /\btext-\[[^\]]*px[^\]]*\]/
 

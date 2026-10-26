@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import { ProvincePin } from '@/components/map/province-pin'
 import { useRegionCatalog } from '@/data/queries'
@@ -16,7 +16,6 @@ export function ProvincePinsLayer({ regions }: ProvincePinsLayerProps) {
   const province = useMapStore((s) => s.province)
   const selectedCode = useMapStore((s) => s.selectedCode)
   const selectedCategories = useMapStore((s) => s.selectedCategories)
-  const [hoveredName, setHoveredName] = useState<string | null>(null)
 
   const isNational = province === 'Semua' && !selectedCode
   const pinRisk = selectedCategories.size === 1 ? [...selectedCategories][0] : undefined
@@ -35,12 +34,7 @@ export function ProvincePinsLayer({ regions }: ProvincePinsLayerProps) {
   return (
     <>
       {aggregates.map((agg) => (
-        <ProvincePin
-          key={agg.name}
-          aggregate={agg}
-          hovered={hoveredName === agg.name}
-          onHover={setHoveredName}
-        />
+        <ProvincePin key={agg.name} aggregate={agg} />
       ))}
     </>
   )

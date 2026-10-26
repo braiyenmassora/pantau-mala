@@ -4,7 +4,7 @@ import { useEffect, useRef, type RefObject } from 'react'
 import { Button, EmptyState } from '@/components/common'
 import type { MapRef } from '@/components/ui/map'
 import { getCopy } from '@/copy'
-import { chromeSurface } from '@/lib/chrome'
+import { CHROME } from '@/lib/pola'
 import { restoreFocusTrigger } from '@/lib/focus-return'
 import { locationFromCoords, resolveUserCoords } from '@/lib/geolocation'
 import { getMapPadding, locationFramingZoom } from '@/lib/indonesia-view'
@@ -57,7 +57,7 @@ export function LocationPromptDialog({ mapRef }: LocationPromptDialogProps) {
       aria-modal="true"
       aria-labelledby="location-prompt-title"
       className={cn(
-        chromeSurface,
+        CHROME.panel,
         'absolute top-[68px] z-50 w-[min(360px,calc(100vw-2rem))] p-4',
         'ease-out-soft transition-[left] duration-300',
       )}

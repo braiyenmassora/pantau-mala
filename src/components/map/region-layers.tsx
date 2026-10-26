@@ -1,10 +1,7 @@
 import { useEffect, useMemo } from 'react'
 
-import { MapInfoCard } from '@/components/map/map-info-card'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
-import { getCopy } from '@/copy'
 import type { Region } from '@/data/types'
-import { formatDateDotTime, formatNumber } from '@/lib/format'
 import { hasHotspotDetections, hotspotDotColor } from '@/lib/hotspot-status'
 import { pinPulseStyle } from '@/lib/map-beat'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
@@ -106,24 +103,6 @@ export function RegionLayers({ regions }: RegionLayersProps) {
                   aria-hidden
                 />
               </button>
-
-              {isHovered ? (
-                <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
-                  <MapInfoCard
-                    title={r.name}
-                    meta={
-                      hasDetections
-                        ? getCopy().map.regionMetaHotspots(formatNumber(r.hotspots_24h))
-                        : getCopy().status.noDetections
-                    }
-                    updatedAt={
-                      r.last_detection?.time
-                        ? formatDateDotTime(r.last_detection.time, r.time_zone)
-                        : undefined
-                    }
-                  />
-                </div>
-              ) : null}
             </MarkerContent>
           </MapMarker>
         )

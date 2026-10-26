@@ -1,4 +1,4 @@
-import { Check, ChevronDown, Map as MapIcon, Search, X } from 'lucide-react'
+import { Check, ChevronDown, MapPinned, Search, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { Chip } from '@/components/common'
@@ -7,6 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { getCopy, getLocale } from '@/copy'
 import { useRegionCatalog } from '@/data/queries'
 import type { Region } from '@/data/types'
+import { CHROME } from '@/lib/pola'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -66,15 +67,15 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
           aria-label={getCopy().filter.pickProvince}
           className={cn('max-w-[min(240px,55vw)] shrink-0', className)}
         >
-          <MapIcon
-            className="text-ink-2 size-4 shrink-0"
+          <MapPinned
+            className="text-brand size-4 shrink-0"
             strokeWidth={1.75}
             aria-hidden
           />
           <span className="min-w-0 truncate">{provinceLabel}</span>
           <ChevronDown
             className={cn(
-              'text-ink-2 ease-out-soft size-4 shrink-0 transition-transform duration-200',
+              'text-brand ease-out-soft size-4 shrink-0 transition-transform duration-200',
               open && 'rotate-180',
             )}
             strokeWidth={1.75}
@@ -86,12 +87,12 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
         align="start"
         side="bottom"
         sideOffset={6}
-        className="rounded-card border-line bg-surface text-ink shadow-chrome z-50 max-h-80 w-70 overflow-hidden border p-2"
+        className={cn(CHROME.mapFilterPopover, 'z-50 max-h-80 w-70 overflow-hidden p-2')}
       >
         <div className="mb-2">
           <div className="bg-surface-muted rounded-card flex h-10 items-center gap-2 px-3">
             <Search
-              className="text-ink-3 size-4 shrink-0"
+              className="text-brand size-4 shrink-0"
               strokeWidth={1.75}
               aria-hidden
             />
@@ -107,7 +108,7 @@ export function ProvincePicker({ regions, className }: ProvincePickerProps) {
               <button
                 type="button"
                 onClick={() => setSearch('')}
-                className="text-ink-3 hover:text-ink"
+                className="text-brand hover:opacity-80"
                 aria-label={getCopy().search.clearProvinceSearch}
               >
                 <X className="size-4 shrink-0" strokeWidth={1.75} />

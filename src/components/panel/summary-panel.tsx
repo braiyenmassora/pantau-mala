@@ -12,9 +12,9 @@ import type { RefObject } from 'react'
 import { useMemo } from 'react'
 
 import {
+  CloseIconButton,
   EmptyState,
   HotspotStatusBadge,
-  IconButton,
   InfoTooltip,
   Skeleton,
 } from '@/components/common'
@@ -40,7 +40,7 @@ import { filterRegions } from '@/lib/filter-regions'
 import { formatNumber } from '@/lib/format'
 import { focusWilayahSearch } from '@/lib/geolocation'
 import { hotspotTrend, type TrendDirection } from '@/lib/hotspot-trend'
-import { T } from '@/lib/pola'
+import { PANEL, T } from '@/lib/pola'
 import { fitIndonesia } from '@/lib/indonesia-view'
 import { aggregateByProvince } from '@/lib/province-aggregates'
 import { riskCategoryLabel } from '@/lib/risk-category'
@@ -166,7 +166,7 @@ export function SummaryPanel({
     const offline = typeof navigator !== 'undefined' && navigator.onLine === false
     const fail = offline ? getCopy().empty.offline : getCopy().empty.loadFail
     return (
-      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
+      <div className={cn(PANEL.body, PANEL.pad)}>
         <EmptyState
           icon={CloudOff}
           variant="action"
@@ -206,7 +206,7 @@ export function SummaryPanel({
 
   if (wilayahNotFound) {
     return (
-      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
+      <div className={cn(PANEL.body, PANEL.pad)}>
         <header className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <Brand compact />
@@ -245,7 +245,7 @@ export function SummaryPanel({
   // Filter kosong jangan menelan mode cari — tanpa SearchBox query bisa “stuck”.
   if (filtering && filtered.length === 0 && !searching) {
     return (
-      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
+      <div className={cn(PANEL.body, PANEL.pad)}>
         <header className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <Brand compact />
@@ -274,7 +274,7 @@ export function SummaryPanel({
 
   if (noHotspots && !filtering && !searching) {
     return (
-      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
+      <div className={cn(PANEL.body, PANEL.pad)}>
         <header className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <Brand compact />
@@ -291,10 +291,8 @@ export function SummaryPanel({
                 className="-my-4"
               />
             </div>
-            <p className="text-ink-2 text-xs leading-4">
-              {getCopy().panel.limitationNote}
-            </p>
-            <p className="text-ink-2 text-xs leading-4">{getCopy().panel.coverageNote}</p>
+            <p className={T.quiet}>{getCopy().panel.limitationNote}</p>
+            <p className={T.quiet}>{getCopy().panel.coverageNote}</p>
           </div>
         </header>
         <DataFreshnessBanner />
@@ -315,8 +313,9 @@ export function SummaryPanel({
       <div className="flex flex-col">
         <div
           className={cn(
-            'bg-surface sticky top-0 z-10 px-4',
-            sheetPeek ? 'space-y-0 py-1' : 'space-y-3 pt-3 pb-2',
+            PANEL.stickyHeader,
+            PANEL.pad,
+            sheetPeek ? 'space-y-0 py-1' : cn(PANEL.header, 'space-y-3'),
           )}
         >
           <div className="flex items-center justify-between gap-2">
@@ -330,7 +329,7 @@ export function SummaryPanel({
 
         {/* Peek: jangan biarkan judul/isi bocor di bawah logo. */}
         <div
-          className={cn('flex flex-col gap-6 px-4 pt-3 pb-6', sheetPeek && 'hidden')}
+          className={cn(PANEL.body, PANEL.pad, sheetPeek && 'hidden')}
           aria-hidden={sheetPeek || undefined}
         >
           <DataFreshnessBanner />
@@ -366,9 +365,7 @@ export function SummaryPanel({
                     className="-my-4"
                   />
                 </div>
-                <p className="text-ink-2 text-xs leading-4">
-                  {getCopy().panel.limitationNote}
-                </p>
+                <p className={T.quiet}>{getCopy().panel.limitationNote}</p>
               </header>
 
               <LocationCard regions={regions} />
@@ -422,11 +419,16 @@ export function SummaryPanel({
 
   return (
     <div className="flex flex-col">
-      <div className="border-line bg-surface sticky top-0 z-10 flex items-center gap-2 border-b px-4 pt-2 pb-2">
+      <div
+        className={cn(
+          PANEL.stickyHeader,
+          PANEL.pad,
+          PANEL.header,
+          'flex items-center gap-2',
+        )}
+      >
         <div className="flex min-w-0 flex-1 items-center gap-1">
-          <h1 className="text-ink min-w-0 truncate text-sm leading-5 font-semibold">
-            {province}
-          </h1>
+          <h1 className={cn(T.title, 'min-w-0 truncate')}>{province}</h1>
           <InfoTooltip
             label={getCopy().detail.riskHint}
             content={getCopy().detail.riskTooltip}
@@ -436,7 +438,7 @@ export function SummaryPanel({
           hotspots={provinceStats?.count_24h ?? 0}
           riskCategory={provinceStats?.risk_category ?? 'tidak_tersedia'}
         />
-        <IconButton
+        <CloseIconButton
           onClick={() => {
             setProvince('Semua')
             if (mapRef?.current) fitIndonesia(mapRef.current, panelOpen, 0)
@@ -444,29 +446,23 @@ export function SummaryPanel({
           aria-label={getCopy().panel.backIndonesia}
         >
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-        </IconButton>
+        </CloseIconButton>
       </div>
 
-      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
+      <div className={cn(PANEL.body, PANEL.pad)}>
         <DataFreshnessBanner />
 
         <Card aria-label={province}>
-          <CardContent className="space-y-3 pt-4">
+          <CardContent className="space-y-3">
             <div className="space-y-1">
-              <p className="text-ink font-mono text-3xl leading-10 font-semibold tabular-nums">
+              <p className={cn(T.display, 'font-mono')}>
                 {formatNumber(provinceStats?.count_24h ?? 0)}
               </p>
-              <p className="text-ink text-sm leading-5">
-                {getCopy().detail.hotspotUnitLine}
-              </p>
+              <p className={T.body}>{getCopy().detail.hotspotUnitLine}</p>
             </div>
             <p className="text-ink-2 flex items-center gap-2 text-xs leading-4">
               <TrendIcon
-                className={cn(
-                  'size-3.5 shrink-0',
-                  provTrend === 'naik' && 'panel-icon-trend-up',
-                  provTrend === 'turun' && 'panel-icon-trend-down',
-                )}
+                className="text-brand size-3.5 shrink-0"
                 strokeWidth={2}
                 aria-hidden
               />
@@ -475,9 +471,7 @@ export function SummaryPanel({
               </span>
             </p>
             {(provinceStats?.count_24h ?? 0) === 0 ? (
-              <p className="text-ink-2 text-xs leading-4">
-                {getCopy().panel.coverageNote}
-              </p>
+              <p className={T.quiet}>{getCopy().panel.coverageNote}</p>
             ) : null}
           </CardContent>
         </Card>
@@ -510,11 +504,11 @@ function SummarySkeleton({ nationalView }: { nationalView: boolean }) {
   const rowCount = nationalView ? 5 : 10
   return (
     <div className="flex flex-col" aria-busy aria-label={getCopy().common.loading}>
-      <div className="bg-surface sticky top-0 z-10 space-y-3 px-4 pt-3 pb-2">
+      <div className={cn(PANEL.stickyHeader, PANEL.pad, PANEL.header, 'space-y-3')}>
         <Skeleton className="rounded-ctl h-7 w-28" />
         <Skeleton className="rounded-ctl h-12 w-full" />
       </div>
-      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
+      <div className={cn(PANEL.body, PANEL.pad)}>
         <div className="space-y-1">
           <Skeleton className="rounded-ctl h-8 w-3/4" />
           <Skeleton className="rounded-ctl h-4 w-1/2" />

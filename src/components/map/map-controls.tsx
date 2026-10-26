@@ -12,6 +12,7 @@ import { formatRelativeAge } from '@/lib/format'
 import { getMapPadding, locationFramingZoom } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { resolveUserRegionCode } from '@/lib/resolve-user-region'
+import { CHROME } from '@/lib/pola'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -23,7 +24,7 @@ type MapControlsProps = {
 
 const iconClass = 'size-4 shrink-0'
 const btnClass =
-  'text-ink-2 hover:bg-surface-muted hover:text-ink flex size-11 shrink-0 items-center justify-center transition-[background-color,color] duration-150'
+  'text-brand hover:bg-surface-muted flex size-11 shrink-0 items-center justify-center transition-[background-color,color] duration-150'
 
 /** Kontrol peta + umur data + atribusi basemap di pojok bawah kanan. */
 export function MapControls({ mapRef }: MapControlsProps) {
@@ -61,7 +62,7 @@ export function MapControls({ mapRef }: MapControlsProps) {
       {...mapOverlayGestureProps}
     >
       {/* Zoom: scroll/gesture — hanya tombol lokasi. */}
-      <div className="border-line bg-surface rounded-ctl shadow-chrome overflow-hidden border">
+      <div className={cn(CHROME.mapFloat, 'overflow-hidden')}>
         <button
           type="button"
           className={cn(btnClass, hasCoords && 'bg-brand-soft text-brand', focusRing)}

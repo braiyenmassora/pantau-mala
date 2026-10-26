@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 import { focusRing } from '@/components/common/focus-ring'
+import { CHROME } from '@/lib/pola'
 import { cn } from '@/lib/utils'
 
 type ChipProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -8,14 +9,15 @@ type ChipProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode
 }
 
-/** Chip filter: permukaan Card (radius 12) + tinggi 44; pad compact seperti sebelumnya. */
+/** Chip filter peta — shell CHROME.mapFilterTrigger, tinggi 44. */
 export function Chip({ pressed, className, children, ...props }: ChipProps) {
   return (
     <button
       type="button"
       aria-pressed={pressed}
       className={cn(
-        'border-line bg-surface text-ink rounded-card inline-flex h-11 min-h-11 items-center gap-2 border px-3 text-sm leading-5 font-medium shadow-none',
+        CHROME.mapFilterTrigger,
+        'inline-flex h-11 min-h-11 items-center gap-2 px-3 text-sm leading-5 font-medium',
         'ease-out-soft transition-[background-color,color,border-color] duration-150',
         'hover:bg-surface-muted [&_svg]:shrink-0',
         focusRing,

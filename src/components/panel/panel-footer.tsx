@@ -1,6 +1,7 @@
 import { SessionControl } from '@/auth/session-control'
 import { focusRing } from '@/components/common/focus-ring'
 import { getCopy, type Copy } from '@/copy'
+import { PANEL } from '@/lib/pola'
 import { cn } from '@/lib/utils'
 
 const SOURCE_ICON: Record<Copy['footer']['sources'][number]['id'], string> = {
@@ -12,7 +13,13 @@ const SOURCE_ICON: Record<Copy['footer']['sources'][number]['id'], string> = {
 /** Footer panel: tautan sumber data. Rujukan resmi hanya di detail wilayah. */
 export function PanelFooter() {
   return (
-    <footer className="border-line bg-surface shrink-0 space-y-3 border-t px-4 py-3">
+    <footer
+      className={cn(
+        'border-line bg-surface shrink-0 space-y-3 border-t',
+        PANEL.pad,
+        PANEL.footer,
+      )}
+    >
       <p
         className="text-ink-2 flex flex-wrap items-center gap-x-1 gap-y-1 text-xs leading-4"
         data-testid="panel-data-sources"

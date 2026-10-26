@@ -21,7 +21,7 @@ export function InfoTooltip({ content, label, className }: InfoTooltipProps) {
           type="button"
           aria-label={label ?? getCopy().common.moreInfo}
           className={cn(
-            'text-ink-3 hover:text-ink hover:bg-surface-muted rounded-ctl inline-flex shrink-0 items-center justify-center transition-colors',
+            'text-brand hover:bg-surface-muted rounded-ctl inline-flex shrink-0 items-center justify-center transition-colors',
             focusRing,
             className,
             // Setelah className: cegah override size-4 di caller.
@@ -34,7 +34,7 @@ export function InfoTooltip({ content, label, className }: InfoTooltipProps) {
       <TooltipContent
         side="top"
         align="center"
-        className="rounded-ctl border-line bg-surface text-ink shadow-chrome max-w-[240px] border p-3 text-xs leading-4"
+        className="rounded-ctl border-line bg-surface text-ink shadow-map max-w-[240px] border p-3 text-xs leading-4"
       >
         {content}
       </TooltipContent>

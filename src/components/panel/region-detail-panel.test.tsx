@@ -132,11 +132,9 @@ describe('RegionDetailPanel', () => {
           'Kurangi aktivitas di luar bila ada asap dan ikuti informasi kualitas udara resmi.',
         ],
       })
+      expect(screen.getByText(/Don't burn land or trash/)).toBeTruthy()
       expect(
-        screen.getByText(/Do not burn land or trash, and do not carelessly throw away/),
-      ).toBeTruthy()
-      expect(
-        screen.getByText(/Reduce outdoor activities when there is smoke/),
+        screen.getByText(/If there's smoke, cut back on outdoor activity/),
       ).toBeTruthy()
     } finally {
       useLocaleStore.getState().setLocale('id')

@@ -68,11 +68,6 @@ export default function App() {
     return () => mq.removeEventListener('change', onChange)
   }, [setMobileSheet])
 
-  // Coerce sisa state "full" lama → half.
-  useEffect(() => {
-    if (mobileSheet === 'full') setMobileSheet('half')
-  }, [mobileSheet, setMobileSheet])
-
   function onSheetHandlePointerDown(e: ReactPointerEvent<HTMLButtonElement>) {
     if (!mobile) return
     sheetDragYRef.current = e.clientY
@@ -83,7 +78,7 @@ export default function App() {
     if (!mobile || sheetDragYRef.current == null) return
     const dy = e.clientY - sheetDragYRef.current
     sheetDragYRef.current = null
-    // Ketuk / geser: hanya peek ↔ half (50/50).
+    // Ketuk / geser: peek ↔ half ↔ full.
     if (Math.abs(dy) < 8) {
       setMobileSheet(sheetCycleNext(mobileSheet))
       return
@@ -92,10 +87,18 @@ export default function App() {
   }
 
   const sheetHeightVar =
-    mobileSheet === 'peek' ? 'var(--map-sheet-peek)' : 'var(--map-sheet-half)'
+    mobileSheet === 'peek'
+      ? 'var(--map-sheet-peek)'
+      : mobileSheet === 'full'
+        ? 'var(--map-sheet-full)'
+        : 'var(--map-sheet-half)'
 
   const sheetHandleLabel =
-    mobileSheet === 'peek' ? getCopy().app.expandSheet : getCopy().app.sheetHalf
+    mobileSheet === 'peek'
+      ? getCopy().app.expandSheet
+      : mobileSheet === 'full'
+        ? getCopy().app.collapseSheet
+        : getCopy().app.sheetHalf
 
   const { data, isPending, isError, refetch } = useRegions()
   const province = useMapStore((s) => s.province)
@@ -241,14 +244,13 @@ export default function App() {
           inert={(!mobile && !panelOpen) || undefined}
           className={cn(
             'absolute z-40 flex flex-col overflow-hidden',
-            'border-line bg-surface shadow-chrome border',
+            // DNA = CHROME.sidebar (pola.ts); mobile sheet beda radius atas + shadow-chrome.
+            'border-line bg-surface border',
             easePanel,
             'transition-[transform,opacity,height]',
-            // Mobile: peek ↔ half ↔ full. Tablet+: panel kiri.
-            // Mobile: tinggi ketat peek/half — jangan ikut konten (meluap menutup peta).
-            'rounded-t-panel inset-x-0 bottom-0 h-(--map-sheet-current) max-h-(--map-sheet-current) translate-y-0 border-b-0 opacity-100',
+            'rounded-t-panel shadow-chrome inset-x-0 bottom-0 h-(--map-sheet-current) max-h-(--map-sheet-current) translate-y-0 border-b-0 opacity-100',
             'sm:inset-auto sm:top-(--floating-control-offset) sm:right-auto sm:bottom-(--floating-control-offset) sm:left-(--floating-control-offset)',
-            'sm:rounded-panel sm:h-auto sm:max-h-none sm:w-[min(var(--map-panel-width),calc(100vw-5rem))] sm:border',
+            'sm:rounded-panel sm:shadow-panel sm:h-auto sm:max-h-none sm:w-[min(var(--map-panel-width),calc(100vw-5rem))]',
             !panelOpen &&
               'sm:pointer-events-none sm:-translate-x-(--map-overlay-inset) sm:opacity-0',
           )}
@@ -303,7 +305,7 @@ export default function App() {
           aria-label={panelOpen ? getCopy().app.hidePanel : getCopy().app.showPanel}
           className={cn(
             'absolute top-1/2 z-[41] hidden h-12 w-11 -translate-y-1/2 items-center justify-center sm:flex',
-            'rounded-r-ctl border-line bg-surface text-ink-2 shadow-chrome border border-l-0',
+            'rounded-r-ctl border-line bg-surface text-brand shadow-map border border-l-0',
             'hover:bg-surface-muted',
             easePanel,
             'transition-[left,background-color] duration-150',

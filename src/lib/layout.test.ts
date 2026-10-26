@@ -29,12 +29,12 @@ describe('LAYOUT', () => {
 })
 
 describe('mobileSheetHeightFor', () => {
-  it('maps peek / half at 50/50 and coerces full → half', () => {
+  it('maps peek / half / full heights', () => {
     expect(mobileSheetHeightFor('peek', 800)).toBe(LAYOUT.mobileSheetPeekPx)
     expect(mobileSheetHeightFor('half', 800)).toBe(
       Math.min(LAYOUT.mobileSheetHalfMaxPx, Math.round(800 * LAYOUT.mobileSheetHalfVh)),
     )
-    expect(mobileSheetHeightFor('full', 800)).toBe(mobileSheetHeightFor('half', 800))
+    expect(mobileSheetHeightFor('full', 800)).toBe(800 - LAYOUT.mobileSheetTopGapPx)
     expect(mobileSheetHeightPx(800)).toBe(mobileSheetHeightFor('half', 800))
   })
 
@@ -49,17 +49,18 @@ describe('mobileSheetHeightFor', () => {
 })
 
 describe('sheetSnapFromDrag', () => {
-  it('steps only peek ↔ half', () => {
+  it('snaps up/down one step with threshold', () => {
     expect(sheetSnapFromDrag(-50, 'peek')).toBe('half')
-    expect(sheetSnapFromDrag(-50, 'half')).toBe('half')
+    expect(sheetSnapFromDrag(-50, 'half')).toBe('full')
+    expect(sheetSnapFromDrag(50, 'full')).toBe('half')
     expect(sheetSnapFromDrag(50, 'half')).toBe('peek')
     expect(sheetSnapFromDrag(50, 'peek')).toBe('peek')
-    expect(sheetSnapFromDrag(-50, 'full')).toBe('half')
+    expect(sheetSnapFromDrag(-50, 'full')).toBe('full')
   })
 
-  it('toggles peek ↔ half on tap', () => {
+  it('cycles peek → half → full → peek on tap', () => {
     expect(sheetCycleNext('peek')).toBe('half')
-    expect(sheetCycleNext('half')).toBe('peek')
+    expect(sheetCycleNext('half')).toBe('full')
     expect(sheetCycleNext('full')).toBe('peek')
   })
 })
@@ -94,6 +95,12 @@ describe('chromeLeft', () => {
 })
 
 describe('chromeAvailWidth', () => {
+  it('gives mobile filter bar full width minus gutters (controls sit below sheet)', () => {
+    const width = 390
+    const left = chromeLeft(true, width)
+    expect(chromeAvailWidth(true, width)).toBe(width - left - LAYOUT.gutter)
+  })
+
   it('keeps legend/filter clear of map controls on tablet with panel open', () => {
     const width = 768
     const avail = chromeAvailWidth(true, width)

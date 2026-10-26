@@ -5,7 +5,7 @@ import { IconButton } from '@/components/common/icon-button'
 import { Input } from '@/components/ui/input'
 import type { MapRef } from '@/components/ui/map'
 import { getCopy } from '@/copy'
-import { chromeSurface } from '@/lib/chrome'
+import { CHROME } from '@/lib/pola'
 import { fitIndonesia } from '@/lib/indonesia-view'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { cn } from '@/lib/utils'
@@ -39,17 +39,13 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
   return (
     <div
       className={cn(
-        chromeSurface,
+        CHROME.mapFloat,
         'group flex h-12 items-center gap-3 px-3',
         'ease-out-soft transition-[border-color,box-shadow] duration-150',
         'focus-within:border-brand',
       )}
     >
-      <Search
-        className="text-ink-3 group-focus-within:text-brand size-4 shrink-0 transition-colors duration-150"
-        strokeWidth={2}
-        aria-hidden
-      />
+      <Search className="text-brand size-4 shrink-0" strokeWidth={2} aria-hidden />
       <Input
         type="text"
         inputMode="search"
@@ -59,7 +55,7 @@ export function SearchBox({ mapRef }: SearchBoxProps) {
         placeholder={getCopy().panel.searchPlaceholder}
         aria-label={getCopy().panel.searchPlaceholder}
         className={cn(
-          // h-full (bukan h-auto/py-0): tinggi ketat memotong glif IBM Plex → teks hampir tak kebaca.
+          // h-full (bukan h-auto/py-0): tinggi ketat memotong glif → teks hampir tak kebaca.
           'h-full min-w-0 flex-1 border-0 bg-transparent px-0 text-sm leading-5 shadow-none',
           'text-ink caret-ink placeholder:text-ink-3',
           'focus-visible:border-0 focus-visible:ring-0',

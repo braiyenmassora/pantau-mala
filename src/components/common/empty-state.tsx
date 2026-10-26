@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import { Button } from '@/components/common/button'
+import { T } from '@/lib/pola'
 import { cn } from '@/lib/utils'
 
 type EmptyStateProps = {
@@ -28,21 +29,20 @@ export function EmptyState({
   titleId,
   className,
 }: EmptyStateProps) {
-  const titleClass = 'text-sm leading-5 font-semibold'
   const body = (
     <div className="flex items-start gap-3">
-      <span className="rounded-ctl flex size-8 shrink-0 items-center justify-center bg-current/10 text-current">
+      <span className="bg-brand-soft text-brand rounded-ctl flex size-8 shrink-0 items-center justify-center">
         <Icon className="size-4" strokeWidth={2} aria-hidden />
       </span>
       <div className="min-w-0 flex-1 space-y-2">
         {titleId ? (
-          <h2 id={titleId} className={titleClass}>
+          <h2 id={titleId} className={T.title}>
             {title}
           </h2>
         ) : (
-          <p className={titleClass}>{title}</p>
+          <p className={T.title}>{title}</p>
         )}
-        <p className="text-xs leading-4">{description}</p>
+        <p className={T.quiet}>{description}</p>
         {actions ? (
           <div className="flex flex-wrap gap-2 pt-1">{actions}</div>
         ) : (

@@ -1,13 +1,15 @@
 import { MapPin, X } from 'lucide-react'
 import { useEffect, useRef } from 'react'
 
-import { IconButton } from '@/components/common/icon-button'
+import { CloseIconButton } from '@/components/common/icon-button'
 import { SectionHead } from '@/components/common/section-head'
 import { CitizenReportReview } from '@/components/panel/citizen-report-review'
 import { Card, CardContent } from '@/components/ui/card'
 import { getCopy } from '@/copy'
 import { useHotspotReport } from '@/data/hotspot-reports'
 import { restoreFocusTrigger } from '@/lib/focus-return'
+import { PANEL, T } from '@/lib/pola'
+import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui'
 
 /** Side panel detail satu laporan warga (klik dari list). */
@@ -27,41 +29,62 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
 
   if (!report) {
     return (
-      <div className="flex flex-col gap-4 px-4 pt-3 pb-6">
-        <IconButton onClick={back} aria-label={getCopy().report.detailBack}>
-          <X className="size-4" strokeWidth={2} aria-hidden />
-        </IconButton>
-        <p className="text-ink-2 text-sm leading-5">
-          {isPending ? getCopy().common.loading : getCopy().report.detailNotFound}
-        </p>
+      <div className="flex flex-col">
+        <div
+          className={cn(
+            PANEL.stickyHeader,
+            PANEL.pad,
+            PANEL.header,
+            'flex items-center justify-between gap-2',
+          )}
+        >
+          <h1 className={cn(T.title, 'min-w-0 truncate')}>
+            {getCopy().report.detailTitle}
+          </h1>
+          <CloseIconButton onClick={back} aria-label={getCopy().report.detailBack}>
+            <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+          </CloseIconButton>
+        </div>
+        <div className={cn(PANEL.body, PANEL.pad)}>
+          <p className={T.quiet}>
+            {isPending ? getCopy().common.loading : getCopy().report.detailNotFound}
+          </p>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="flex flex-col">
-      <div className="border-line bg-surface sticky top-0 z-10 flex items-center justify-between gap-2 border-b px-4 pt-3 pb-2">
+      <div
+        className={cn(
+          PANEL.stickyHeader,
+          PANEL.pad,
+          PANEL.header,
+          'flex items-center justify-between gap-2',
+        )}
+      >
         <h1
           ref={titleRef}
           tabIndex={-1}
-          className="text-ink min-w-0 truncate text-sm leading-5 font-semibold outline-none"
+          className={cn(T.title, 'min-w-0 truncate outline-none')}
         >
           {getCopy().report.detailTitle}
         </h1>
-        <IconButton onClick={back} aria-label={getCopy().report.detailBack}>
+        <CloseIconButton onClick={back} aria-label={getCopy().report.detailBack}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-        </IconButton>
+        </CloseIconButton>
       </div>
 
-      <div className="flex flex-col gap-4 px-4 pt-3 pb-6">
+      <div className={cn(PANEL.body, PANEL.pad)}>
         <CitizenReportReview report={report} variant="full" />
 
         <Card aria-label={getCopy().report.detailLocation}>
           <SectionHead title={getCopy().report.detailLocation} />
           <CardContent className="space-y-3">
-            <p className="text-ink flex items-start gap-2 text-sm leading-5">
+            <p className={cn(T.body, 'flex items-start gap-2')}>
               <MapPin
-                className="text-ink-2 mt-1 size-4 shrink-0"
+                className="text-brand mt-1 size-4 shrink-0"
                 strokeWidth={2}
                 aria-hidden
               />
@@ -72,7 +95,7 @@ export function CitizenReportDetailPanel({ reportId }: { reportId: string }) {
                 )}
               </span>
             </p>
-            <div className="text-ink-2 space-y-2 text-xs leading-4">
+            <div className={cn(T.quiet, 'space-y-2')}>
               <p>{getCopy().report.detailMapHint}</p>
               <p>{getCopy().report.panelHint}</p>
             </div>

@@ -7,10 +7,7 @@ settings:
 importers:
   .:
     dependencies:
-      '@fontsource/ibm-plex-mono':
-        specifier: ^5.3.0
-        version: 5.3.0
-      '@fontsource/ibm-plex-sans':
+      '@fontsource/plus-jakarta-sans':
         specifier: ^5.3.0
         version: 5.3.0
       '@tailwindcss/vite':
@@ -883,16 +880,10 @@ packages:
         integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==,
       }
 
-  '@fontsource/ibm-plex-mono@5.3.0':
+  '@fontsource/plus-jakarta-sans@5.3.0':
     resolution:
       {
-        integrity: sha512-eTgnZjZEGk1QtD3ZstF+Vclo2HLAni8YMy34/DxllwZvyz1lR/1RF/xTiAquOBO7MvqBx8D2Ig2WCPMVfdZu7Q==,
-      }
-
-  '@fontsource/ibm-plex-sans@5.3.0':
-    resolution:
-      {
-        integrity: sha512-CbE4CbbEEZJX860XyUiRpsksXIQR8Rp2XDva2VO53NJox9tVNtusrysd2x5YkUEY3ErQ66W1IiiQL8/wihhw5w==,
+        integrity: sha512-9WRw3G74Ve4cyPApAZSXLPY5DiLOZXDn7Q7dIBjFBpA0Pj56ljDItEdy2UUajjJxRuTg2HkMLO5C3K2nAQORWg==,
       }
 
   '@hono/node-server@2.1.5':
@@ -6564,9 +6555,7 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@fontsource/ibm-plex-mono@5.3.0': {}
-
-  '@fontsource/ibm-plex-sans@5.3.0': {}
+  '@fontsource/plus-jakarta-sans@5.3.0': {}
 
   '@hono/node-server@2.1.5(hono@4.13.13)':
     dependencies:

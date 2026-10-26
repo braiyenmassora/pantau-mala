@@ -47,7 +47,7 @@ describe('MapControls', () => {
     expect(screen.queryByRole('button', { name: copy.map.zoomIn })).toBeNull()
     expect(screen.queryByRole('button', { name: copy.map.zoomOut })).toBeNull()
     expect(screen.getByTestId('map-updated-stamp').textContent).toMatch(
-      /^Diperbarui .+ menit yang lalu$/,
+      /^Diperbarui .+ menit lalu$/,
     )
     const attrib = screen.getByTestId('map-basemap-attribution')
     expect(attrib.textContent).toMatch(/© CARTO/)

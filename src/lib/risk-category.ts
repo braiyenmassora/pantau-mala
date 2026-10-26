@@ -28,7 +28,7 @@ export const TEMP_TEXT_HEX = '#1F2328'
 export const TEMP_HALO_HEX = '#FFFFFF'
 
 /** Line / border hex — mirrors `--color-line`. */
-export const LINE_HEX = '#F0F1F3'
+export const LINE_HEX = '#E7E5E4'
 
 /** Warna risiko / status — hex MapLibre / SVG. */
 export const RISK_CATEGORIES: Record<RiskCategory, RiskCategoryStyle> = {

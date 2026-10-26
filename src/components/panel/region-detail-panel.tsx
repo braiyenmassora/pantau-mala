@@ -4,7 +4,6 @@ import {
   CloudRain,
   Droplets,
   Gauge,
-  MessageSquarePlus,
   Minus,
   Sun,
   Thermometer,
@@ -17,9 +16,8 @@ import {
 import { useEffect, useMemo, useRef, type ReactNode, type RefObject } from 'react'
 
 import {
-  Button,
+  CloseIconButton,
   HotspotStatusBadge,
-  IconButton,
   InfoTooltip,
   Sparkline,
   TrendChart,
@@ -35,12 +33,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
 import { getCopy, getLocale } from '@/copy'
 import { useRegionReports } from '@/data/hotspot-reports'
-import {
-  useHotspots,
-  useRegionHistory,
-  useRiverDischarge,
-  useWindyForecast,
-} from '@/data/queries'
+import { useRegionHistory, useRiverDischarge, useWindyForecast } from '@/data/queries'
 import type { Region, RiskCategory } from '@/data/types'
 import { rememberFocusTrigger, restoreFocusTrigger } from '@/lib/focus-return'
 import { formatNumber } from '@/lib/format'
@@ -53,6 +46,7 @@ import {
   nearestWindyPoint,
   trendValuesFromHistory,
 } from '@/lib/region-history'
+import { PANEL, T } from '@/lib/pola'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -84,11 +78,15 @@ function chartTone(risk: RiskCategory): 'chart' | 'risk-high' | 'risk-mid' | 'ri
 
 // shortcut: API `saran` masih teks bebas berbahasa Indonesia — petakan kalimat baku yang dikenal.
 // Upgrade: backend kirim kode saran, FE yang memilih bahasa.
-const KNOWN_ACTION_EN: Record<string, string> = {
+const KNOWN_ACTION_API: Record<string, 'actionNoBurn' | 'actionReduceSmoke'> = {
   'jangan membakar lahan, sampah, atau membuang puntung rokok sembarangan':
-    'Do not burn land or trash, and do not carelessly throw away cigarette butts.',
+    'actionNoBurn',
+  'jangan membakar lahan atau sampah, dan jangan buang puntung rokok sembarangan':
+    'actionNoBurn',
   'kurangi aktivitas di luar bila ada asap dan ikuti informasi kualitas udara resmi':
-    'Reduce outdoor activities when there is smoke and follow official air quality information.',
+    'actionReduceSmoke',
+  'kalau ada asap, kurangi aktivitas di luar dan ikuti info kualitas udara resmi':
+    'actionReduceSmoke',
 }
 
 function sanitizeAction(text: string): string {
@@ -99,9 +97,10 @@ function sanitizeAction(text: string): string {
   ) {
     return getCopy().detail.actionFireContact
   }
+  const key = text.trim().replace(/\.$/, '').toLowerCase()
+  const known = KNOWN_ACTION_API[key]
+  if (known) return getCopy().detail[known]
   if (getLocale() === 'en') {
-    const key = text.trim().replace(/\.$/, '').toLowerCase()
-    if (KNOWN_ACTION_EN[key]) return KNOWN_ACTION_EN[key]
     if (key === 'jika melihat asap atau api, hubungi 112 atau bpbd setempat') {
       return getCopy().detail.actionFireContact
     }
@@ -147,14 +146,14 @@ function ConditionCell({
   return (
     <div className="flex items-start gap-2">
       <span
-        className={cn('text-ink-2 mt-1 shrink-0 [&>svg]:size-4', iconClass)}
+        className={cn('text-brand mt-1 shrink-0 [&>svg]:size-4', iconClass)}
         aria-hidden
       >
         {icon}
       </span>
       <div className="min-w-0 flex-1 space-y-1">
-        <p className="text-ink-2 text-xs leading-4 font-medium">{label}</p>
-        <p className="text-ink text-sm leading-5 font-semibold tabular-nums">{value}</p>
+        <p className={T.fieldLabel}>{label}</p>
+        <p className={cn(T.title, 'tabular-nums')}>{value}</p>
       </div>
     </div>
   )
@@ -286,11 +285,9 @@ function ConditionsCard({ region }: { region: Region }) {
         {riverSpark.length >= 2 ? (
           <div className="space-y-2">
             <div className="flex items-baseline justify-between gap-2">
-              <p className="text-ink-2 text-xs leading-4 font-medium">
-                {getCopy().detail.riverDischargeChart}
-              </p>
+              <p className={T.fieldLabel}>{getCopy().detail.riverDischargeChart}</p>
               {riverMin != null && riverMax != null ? (
-                <p className="text-ink-3 font-mono text-xs leading-4 tabular-nums">
+                <p className={cn(T.quiet, 'font-mono tabular-nums')}>
                   {formatNumber(riverMin)}–{formatNumber(riverMax)}{' '}
                   {getCopy().detail.riverDischargeUnit}
                 </p>
@@ -317,28 +314,14 @@ function ConditionsCard({ region }: { region: Region }) {
   )
 }
 
-/** canCompose: dari hitungan wilayah (tersedia segera). Titik GeoJSON bisa datang belakangan. */
-export function CitizenReportsCard({
-  regionCode,
-  canCompose = false,
-}: {
-  regionCode: string
-  canCompose?: boolean
-}) {
-  const setReportTarget = useUiStore((s) => s.setReportTarget)
+/** Daftar laporan warga di detail wilayah — tulis laporan hanya dari pin card. */
+export function CitizenReportsCard({ regionCode }: { regionCode: string }) {
   const setSelectedReportId = useUiStore((s) => s.setSelectedReportId)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
-  const { data, isPending: hotspotsPending } = useHotspots()
   const { data: regionReports = [], isPending: reportsPending } =
     useRegionReports(regionCode)
 
-  const hotspots = useMemo(() => {
-    if (!data) return []
-    return data.features.filter((f) => f.properties.region_code === regionCode)
-  }, [data, regionCode])
-
   const latest = regionReports.slice(0, 6)
-  const composeReady = hotspots.length > 0
 
   const openDetail = (el: HTMLElement, id: string) => {
     rememberFocusTrigger(el)
@@ -346,34 +329,12 @@ export function CitizenReportsCard({
     setPanelOpen(true)
   }
 
-  const openComposer = (el: HTMLElement) => {
-    const f = hotspots[0]
-    if (!f) return
-    const [lon, lat] = f.geometry.coordinates
-    rememberFocusTrigger(el)
-    setReportTarget({
-      lat,
-      lon,
-      region_code: f.properties.region_code,
-      hotspot_time: f.properties.time,
-    })
-    setPanelOpen(true)
-  }
-
   return (
     <Card aria-label={getCopy().report.panelTitle}>
       <CardHeader className="items-start">
         <div className="min-w-0 flex-1 space-y-1">
-          <div className="flex min-w-0 items-center gap-1">
-            <CardTitle>{getCopy().report.panelTitle}</CardTitle>
-            {canCompose ? (
-              <InfoTooltip
-                label={getCopy().report.panelTitle}
-                content={getCopy().report.panelContributeHint}
-              />
-            ) : null}
-          </div>
-          <p className="text-ink-2 text-xs leading-4">{getCopy().report.panelHint}</p>
+          <CardTitle>{getCopy().report.panelTitle}</CardTitle>
+          <p className={T.quiet}>{getCopy().report.panelHint}</p>
         </div>
         {regionReports.length > 0 ? (
           <span className="text-ink-2 shrink-0 text-xs leading-4 tabular-nums">
@@ -399,18 +360,6 @@ export function CitizenReportsCard({
             ))}
           </ul>
         )}
-        {canCompose ? (
-          <Button
-            variant="soft"
-            className="w-full"
-            onClick={(e) => openComposer(e.currentTarget)}
-            disabled={!composeReady}
-            loading={hotspotsPending && !composeReady}
-          >
-            <MessageSquarePlus className="size-3.5" strokeWidth={2} aria-hidden />
-            {getCopy().report.panelOpen}
-          </Button>
-        ) : null}
       </CardContent>
     </Card>
   )
@@ -454,12 +403,19 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
 
   return (
     <div key={region.code} className="flex flex-col">
-      <div className="border-line bg-surface sticky top-0 z-10 flex items-center gap-2 border-b px-4 pt-2 pb-2">
+      <div
+        className={cn(
+          PANEL.stickyHeader,
+          PANEL.pad,
+          PANEL.header,
+          'flex items-center gap-2',
+        )}
+      >
         <div className="flex min-w-0 flex-1 items-center gap-1">
           <h1
             ref={titleRef}
             tabIndex={-1}
-            className="text-ink min-w-0 truncate text-sm leading-5 font-semibold outline-none"
+            className={cn(T.title, 'min-w-0 truncate outline-none')}
             title={region.name}
           >
             {region.name}
@@ -474,35 +430,29 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
           riskCategory={region.risk_category}
         />
         <ShareWilayahButton name={region.name} code={region.code} variant="icon" />
-        <IconButton onClick={handleBack} aria-label={getCopy().panel.closeDetail}>
+        <CloseIconButton onClick={handleBack} aria-label={getCopy().panel.closeDetail}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-        </IconButton>
+        </CloseIconButton>
       </div>
 
-      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
+      <div className={cn(PANEL.body, PANEL.pad)}>
         <DataFreshnessBanner />
 
         <Card aria-label={region.name}>
-          <CardContent className="space-y-3 pt-4">
+          <CardContent className="space-y-3">
             <div className="space-y-1">
-              <p className="text-ink font-mono text-3xl leading-10 font-semibold tabular-nums">
+              <p className={cn(T.display, 'font-mono')}>
                 {formatNumber(region.hotspots_24h)}
               </p>
-              <p className="text-ink text-sm leading-5">
-                {getCopy().detail.hotspotUnitLine}
-              </p>
+              <p className={T.body}>{getCopy().detail.hotspotUnitLine}</p>
             </div>
 
-            <div className="text-ink-2 space-y-1 text-xs leading-4">
+            <div className={cn(T.quiet, 'space-y-1')}>
               <p>{getCopy().map.regionMetaProvince(region.province)}</p>
               <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <span className="inline-flex items-center gap-2">
                   <TrendIcon
-                    className={cn(
-                      'size-3.5 shrink-0',
-                      trend === 'naik' && 'panel-icon-trend-up',
-                      trend === 'turun' && 'panel-icon-trend-down',
-                    )}
+                    className="text-brand size-3.5 shrink-0"
                     strokeWidth={2}
                     aria-hidden
                   />
@@ -532,10 +482,7 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
           </CardContent>
         </Card>
 
-        <CitizenReportsCard
-          regionCode={region.code}
-          canCompose={typeof region.hotspots_24h === 'number' && region.hotspots_24h > 0}
-        />
+        <CitizenReportsCard regionCode={region.code} />
 
         <ConditionsCard region={region} />
 
@@ -546,11 +493,11 @@ export function RegionDetailPanel({ region, mapRef }: RegionDetailPanelProps) {
               {actions.map((act, i) => (
                 <li key={i} className="flex items-start gap-2">
                   <Check
-                    className="text-risk-low mt-1 size-4 shrink-0"
+                    className="text-brand mt-1 size-4 shrink-0"
                     strokeWidth={2}
                     aria-hidden
                   />
-                  <span className="text-ink text-sm leading-5">
+                  <span className={T.body}>
                     <ActionText text={act} />
                   </span>
                 </li>

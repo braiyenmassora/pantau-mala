@@ -91,7 +91,7 @@ Rekomendasi: **A saat migrasi**, **B saat ship**.
    @import './styles/tokens.css';
    ```
 
-6. Pasang font IBM Plex Sans 400/500/600 + Mono 500/600 (`@fontsource/…` atau self-host).
+6. Pasang font Plus Jakarta Sans 400/500/600 (`@fontsource/…` atau self-host).
 7. Body: `font-sans`, `text-ink`, `bg-map-bg` (atau netral admin yang sama).
 8. Dev proxy Vite → `http://127.0.0.1:8080` untuk `/api`, `/auth` (sesuaikan path Go).
 9. Halaman placeholder: `/` → “Admin React OK” + tombol primary dari token.
@@ -226,7 +226,7 @@ Untuk **setiap** halaman HTML:
 | `docs/design-system.md` (tokens + resep) | `MapShell`, layers, heatmap               |
 | Pola Button / Card / Badge / EmptyState  | `client-gateway.mjs` read-only            |
 | focusRing, tipografi, spacing            | Asumsi full-viewport map                  |
-| IBM Plex                                 | `FE_ACCESS_MODE=client` untuk admin write |
+| Plus Jakarta Sans                        | `FE_ACCESS_MODE=client` untuk admin write |
 
 Boleh **menyalin file komponen** lalu hapus dependensi map — lebih aman **tulis ulang tipis** dari resep di design-system (lebih sedikit coupling).
 

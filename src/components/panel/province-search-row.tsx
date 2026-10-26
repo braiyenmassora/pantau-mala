@@ -1,4 +1,4 @@
-import { Map as MapIcon } from 'lucide-react'
+import { MapPinned } from 'lucide-react'
 import type { RefObject } from 'react'
 
 import { ListRow } from '@/components/common/list-row'
@@ -57,10 +57,10 @@ export function ProvinceSearchRow({
           <RiskMarker kategori={effectiveRisk} />
         ) : (
           <span
-            className="bg-surface-muted text-ink-3 rounded-ctl flex size-10 items-center justify-center"
+            className="bg-brand-soft text-brand rounded-ctl flex size-10 items-center justify-center"
             aria-hidden
           >
-            <MapIcon className="size-4" strokeWidth={2} />
+            <MapPinned className="size-4" strokeWidth={2} />
           </span>
         )
       }

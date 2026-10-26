@@ -39,7 +39,7 @@ export function Button({
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={cn(
-        'rounded-card relative inline-flex items-center justify-center gap-2 overflow-hidden shadow-none',
+        'rounded-ctl relative inline-flex items-center justify-center gap-2 overflow-hidden shadow-none',
         'transition-[background-color,opacity,transform] duration-150 ease-in-out',
         focusRing,
         variantClass[variant],

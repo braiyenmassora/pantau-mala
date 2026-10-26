@@ -38,6 +38,9 @@ const removeSource = vi.fn()
 const setData = vi.fn()
 const getSource = vi.fn()
 const getLayer = vi.fn()
+const setLayoutProperty = vi.fn()
+const setPaintProperty = vi.fn()
+const setLayerZoomRange = vi.fn()
 const on = vi.fn()
 const off = vi.fn()
 const getCanvas = vi.fn(() => ({ style: {} }))
@@ -52,6 +55,9 @@ vi.mock('@/components/ui/map', () => ({
       removeSource,
       getSource,
       getLayer,
+      setLayoutProperty,
+      setPaintProperty,
+      setLayerZoomRange,
       on,
       off,
       getCanvas,
@@ -97,6 +103,7 @@ describe('HotspotHeatmapLayer', () => {
     addSource.mockClear()
     addLayer.mockClear()
     setData.mockClear()
+    setLayoutProperty.mockClear()
     getSource.mockReturnValue(undefined)
     getLayer.mockReturnValue(undefined)
     useMapStore.setState({ selectedCode: null, province: 'Semua' })
@@ -160,6 +167,34 @@ describe('HotspotHeatmapLayer', () => {
         type: 'heatmap',
         minzoom: HEATMAP_MIN_ZOOM,
       }),
+    )
+  })
+
+  it('hides heatmap + points when a region is selected', () => {
+    getSource.mockReturnValue({ setData })
+    getLayer.mockReturnValue({})
+    useMapStore.setState({ selectedCode: 'IDN.1.1_1', province: 'Semua' })
+
+    const client = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+    render(
+      <QueryClientProvider client={client}>
+        <HotspotHeatmapLayer
+          regions={[{ ...region, risk_category: 'tidak_tersedia', quality: 'stale' }]}
+        />
+      </QueryClientProvider>,
+    )
+
+    expect(setLayoutProperty).toHaveBeenCalledWith(
+      'fy-hotspot-heatmap-layer',
+      'visibility',
+      'none',
+    )
+    expect(setLayoutProperty).toHaveBeenCalledWith(
+      'fy-hotspot-points-layer',
+      'visibility',
+      'none',
     )
   })
 })

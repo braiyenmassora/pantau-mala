@@ -11,14 +11,14 @@ export const OG_HOME = {
   id: {
     title: 'Pantau Mala - Pantauan titik panas',
     description:
-      'Pantau Mala (pantaumala). Peta titik panas satelit per kabupaten/kota di Indonesia. Bukan peringatan resmi kebakaran.',
-    imageAlt: 'Pantau Mala · pantauan titik panas satelit Indonesia',
+      'Pantau Mala (pantaumala). Titik panas satelit per kabupaten/kota di Indonesia. Bukan peringatan resmi kebakaran.',
+    imageAlt: 'Pantau Mala · titik panas satelit Indonesia',
   },
   en: {
     title: 'Pantau Mala - Satellite hotspot monitoring',
     description:
-      'Pantau Mala (pantaumala). Satellite hotspot map by regency/city in Indonesia. Not an official fire warning.',
-    imageAlt: 'Pantau Mala · satellite hotspot monitoring for Indonesia',
+      'Pantau Mala (pantaumala). Satellite hotspots by regency and city in Indonesia. Not an official fire warning.',
+    imageAlt: 'Pantau Mala · satellite hotspots across Indonesia',
   },
 }
 
@@ -26,13 +26,13 @@ export function wilayahOg(name, locale = 'id') {
   if (locale === 'en') {
     return {
       title: `${name} - Pantau Mala`,
-      description: `Pantau Mala. Satellite hotspot monitoring in ${name}. Not an official fire warning.`,
+      description: `Pantau Mala. Satellite hotspots in ${name}. Not an official fire warning.`,
       imageAlt: OG_HOME.en.imageAlt,
     }
   }
   return {
     title: `${name} - Pantau Mala`,
-    description: `Pantau Mala. Pantauan titik panas satelit di ${name}. Bukan peringatan resmi kebakaran.`,
+    description: `Pantau Mala. Titik panas satelit di ${name}. Bukan peringatan resmi kebakaran.`,
     imageAlt: OG_HOME.id.imageAlt,
   }
 }

@@ -141,13 +141,13 @@ describe('RegionLayers', () => {
     expect(useMapStore.getState().query).toBe('')
   })
 
-  it('shows tooltip card and scales marker when hovered', () => {
+  it('tracks hover for list sync without tip card', () => {
     render(<RegionLayers regions={mockRegions} />)
 
     const btnHigh = screen.getByRole('button', { name: 'Kab. Sangat Rawan' })
     fireEvent.mouseEnter(btnHigh)
 
-    expect(screen.getByText('Kab. Sangat Rawan')).toBeTruthy()
     expect(useMapStore.getState().hoveredCode).toBe('IDN.1.1')
+    expect(screen.queryByText(/titik panas/)).toBeNull()
   })
 })

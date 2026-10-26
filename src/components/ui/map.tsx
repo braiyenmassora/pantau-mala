@@ -12,6 +12,7 @@ import {
   useEffect,
   useId,
   useImperativeHandle,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -20,6 +21,8 @@ import {
 import { createPortal } from 'react-dom'
 import { X, Minus, Plus, Locate, Maximize, Loader2 } from 'lucide-react'
 
+import { CloseIconButton } from '@/components/common/icon-button'
+import { getCopy } from '@/copy'
 import { cn } from '@/lib/utils'
 
 if (typeof window !== 'undefined' && !MapLibreGL.getWorkerUrl()) {
@@ -585,10 +588,24 @@ type MarkerContentProps = {
   children?: ReactNode
   /** Additional CSS classes for the marker container */
   className?: string
+  /**
+   * Stacking among MapLibre marker siblings (tip card must sit above neighbor pins).
+   * Applied on the marker element, not only the inner portal div.
+   */
+  zIndex?: number
 }
 
-function MarkerContent({ children, className }: MarkerContentProps) {
+function MarkerContent({ children, className, zIndex }: MarkerContentProps) {
   const { marker } = useMarkerContext()
+
+  useLayoutEffect(() => {
+    const el = marker.getElement()
+    if (zIndex != null) el.style.zIndex = String(zIndex)
+    else el.style.removeProperty('z-index')
+    return () => {
+      el.style.removeProperty('z-index')
+    }
+  }, [marker, zIndex])
 
   return createPortal(
     <div className={cn('relative cursor-pointer', className)}>
@@ -606,14 +623,13 @@ function DefaultMarkerIcon() {
 
 function PopupCloseButton({ onClick }: { onClick: () => void }) {
   return (
-    <button
-      type="button"
+    <CloseIconButton
       onClick={onClick}
-      aria-label="Close popup"
-      className="focus-visible:ring-ring hover:bg-muted text-foreground absolute top-1 right-1 z-10 inline-flex size-5 cursor-pointer items-center justify-center rounded-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset"
+      aria-label={getCopy().map.closePopup}
+      className="absolute top-1 right-1 z-10 size-8"
     >
-      <X className="size-3.5" />
-    </button>
+      <X className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
+    </CloseIconButton>
   )
 }
 
@@ -914,10 +930,10 @@ function MapControls({
     >
       {showZoom && (
         <ControlGroup>
-          <ControlButton onClick={handleZoomIn} label="Zoom in">
+          <ControlButton onClick={handleZoomIn} label={getCopy().map.zoomIn}>
             <Plus className="size-4" />
           </ControlButton>
-          <ControlButton onClick={handleZoomOut} label="Zoom out">
+          <ControlButton onClick={handleZoomOut} label={getCopy().map.zoomOut}>
             <Minus className="size-4" />
           </ControlButton>
         </ControlGroup>
@@ -931,7 +947,7 @@ function MapControls({
         <ControlGroup>
           <ControlButton
             onClick={handleLocate}
-            label="Find my location"
+            label={getCopy().map.findMyLocation}
             disabled={waitingForLocation}
           >
             {waitingForLocation ? (
@@ -944,7 +960,10 @@ function MapControls({
       )}
       {showFullscreen && (
         <ControlGroup>
-          <ControlButton onClick={handleFullscreen} label="Toggle fullscreen">
+          <ControlButton
+            onClick={handleFullscreen}
+            label={getCopy().map.toggleFullscreen}
+          >
             <Maximize className="size-4" />
           </ControlButton>
         </ControlGroup>
@@ -979,7 +998,7 @@ function CompassButton({ onClick }: { onClick: () => void }) {
   }, [map])
 
   return (
-    <ControlButton onClick={onClick} label="Reset bearing to north">
+    <ControlButton onClick={onClick} label={getCopy().map.resetNorth}>
       <svg
         ref={compassRef}
         viewBox="0 0 24 24"

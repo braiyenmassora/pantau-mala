@@ -25,7 +25,17 @@ type MapState = {
    * Dipakai untuk empty state, terpisah dari selectedCode.
    */
   wilayahNotFound: boolean
-  select: (code: string | null, regionProvince?: string) => void
+  /**
+   * Setelah klik titik di heatmap: buka tip detail + CTA laporan di pin
+   * yang `properties.time`-nya cocok. Sekali pakai.
+   */
+  focusHotspotTime: string | null
+  select: (
+    code: string | null,
+    regionProvince?: string,
+    /** Klik titik heatmap → buka tip laporan di pin ini. */
+    focusHotspotTime?: string | null,
+  ) => void
   hover: (code: string | null) => void
   setProvince: (province: string) => void
   toggleCategory: (category: RiskCategory) => void
@@ -35,6 +45,7 @@ type MapState = {
   setQuery: (query: string) => void
   setLocation: (location: UserLocation) => void
   setWilayahNotFound: (value: boolean) => void
+  clearFocusHotspotTime: () => void
 }
 
 export const useMapStore = create<MapState>((set) => ({
@@ -45,19 +56,27 @@ export const useMapStore = create<MapState>((set) => ({
   query: '',
   location: { status: 'off' },
   wilayahNotFound: false,
-  select: (selectedCode, regionProvince) =>
+  focusHotspotTime: null,
+  select: (selectedCode, regionProvince, focusHotspotTime) =>
     set({
       selectedCode,
       wilayahNotFound: false,
       // Lepas tip hover/flag agar tidak “nempel” setelah Escape / tutup detail.
       hoveredCode: null,
+      focusHotspotTime: focusHotspotTime ?? null,
       // Buka detail: kosongkan pencarian agar panel detail tampil bersih
       ...(selectedCode ? { query: '' } : {}),
       ...(regionProvince ? { province: regionProvince } : {}),
     }),
   hover: (hoveredCode) => set({ hoveredCode }),
   setProvince: (province) =>
-    set({ province, selectedCode: null, hoveredCode: null, wilayahNotFound: false }),
+    set({
+      province,
+      selectedCode: null,
+      hoveredCode: null,
+      wilayahNotFound: false,
+      focusHotspotTime: null,
+    }),
   /** Single-select: pick one category, or clear if the same chip is clicked again. */
   toggleCategory: (category) =>
     set((s) => {
@@ -66,16 +85,23 @@ export const useMapStore = create<MapState>((set) => ({
           selectedCategories: new Set(),
           selectedCode: null,
           wilayahNotFound: false,
+          focusHotspotTime: null,
         }
       }
       return {
         selectedCategories: new Set([category]),
         selectedCode: null,
         wilayahNotFound: false,
+        focusHotspotTime: null,
       }
     }),
   clearCategories: () =>
-    set({ selectedCategories: new Set(), selectedCode: null, wilayahNotFound: false }),
+    set({
+      selectedCategories: new Set(),
+      selectedCode: null,
+      wilayahNotFound: false,
+      focusHotspotTime: null,
+    }),
   resetHome: () =>
     set({
       query: '',
@@ -83,12 +109,16 @@ export const useMapStore = create<MapState>((set) => ({
       selectedCategories: new Set(),
       province: 'Semua',
       wilayahNotFound: false,
+      focusHotspotTime: null,
     }),
   setQuery: (query) => set({ query }),
   setLocation: (location) => set({ location }),
   setWilayahNotFound: (wilayahNotFound) =>
     set({
       wilayahNotFound,
-      ...(wilayahNotFound ? { selectedCode: null, hoveredCode: null } : {}),
+      ...(wilayahNotFound
+        ? { selectedCode: null, hoveredCode: null, focusHotspotTime: null }
+        : {}),
     }),
+  clearFocusHotspotTime: () => set({ focusHotspotTime: null }),
 }))

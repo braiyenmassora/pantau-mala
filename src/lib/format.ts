@@ -72,18 +72,18 @@ export function reportAuthorInitials(name: string): string {
   return `${parts[0]![0] ?? ''}${parts[1]![0] ?? ''}`.toUpperCase()
 }
 
-/** Relatif untuk badge meta; clock = sekarang. Contoh: "46 menit yang lalu". */
+/** Relatif untuk badge meta; clock = sekarang. Contoh: "46 menit lalu". */
 export function formatRelativeAge(iso: string, nowMs: number = Date.now()): string {
   const t = new Date(iso).getTime()
   if (Number.isNaN(t)) return iso
   const en = currentLocale() === 'en'
   const mins = Math.max(0, Math.round((nowMs - t) / 60_000))
   if (mins < 1) return en ? 'just now' : 'baru saja'
-  if (mins < 60) return en ? `${mins} min ago` : `${mins} menit yang lalu`
+  if (mins < 60) return en ? `${mins} min ago` : `${mins} menit lalu`
   const hours = Math.round(mins / 60)
-  if (hours < 48) return en ? `${hours} hr ago` : `${hours} jam yang lalu`
+  if (hours < 48) return en ? `${hours} hr ago` : `${hours} jam lalu`
   const days = Math.round(hours / 24)
-  return en ? `${days} days ago` : `${days} hari yang lalu`
+  return en ? `${days} days ago` : `${days} hari lalu`
 }
 
 /** Cadence ingest ~3 jam → stale setelah 3,5 jam. */

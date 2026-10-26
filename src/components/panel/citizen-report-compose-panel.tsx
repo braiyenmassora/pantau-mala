@@ -1,8 +1,9 @@
-import { X } from 'lucide-react'
+import { Check, ChevronDown, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 
-import { Button, IconButton } from '@/components/common'
+import { CloseIconButton } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { getCopy } from '@/copy'
 import {
   useCreateHotspotReport,
@@ -12,6 +13,7 @@ import {
 } from '@/data/hotspot-reports'
 import { restoreFocusTrigger } from '@/lib/focus-return'
 import { friendlyActionError } from '@/lib/friendly-error'
+import { CHROME, PANEL, T } from '@/lib/pola'
 import { isAllowedReportPhoto } from '@/lib/report-photo'
 import { cn } from '@/lib/utils'
 import { useToastStore } from '@/store/toast'
@@ -19,16 +21,9 @@ import { useUiStore } from '@/store/ui'
 
 const SIGHTINGS = hotspotSightingSchema.options
 
-const fieldClass = cn(
-  'border-line bg-surface text-ink rounded-card w-full border px-3 shadow-none',
-  'text-sm leading-5 outline-none',
-  'focus-visible:ring-brand/40 focus-visible:ring-2',
-)
-/** Satu pola jarak label → kontrol di semua field. */
 const fieldStack = 'flex flex-col gap-2'
-const fieldLabel = 'text-ink-2 text-xs leading-4'
 
-/** Form tulis laporan di side panel. */
+/** Form tulis laporan — shell ikut panel (bukan card terpisah). */
 export function CitizenReportComposePanel({ target }: { target: HotspotReportTarget }) {
   const titleRef = useRef<HTMLHeadingElement>(null)
   const photoInputRef = useRef<HTMLInputElement>(null)
@@ -38,6 +33,7 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
   const showToast = useToastStore((s) => s.showToast)
 
   const [sighting, setSighting] = useState<HotspotSighting>('asap')
+  const [topicOpen, setTopicOpen] = useState(false)
   const [authorName, setAuthorName] = useState('')
   const [description, setDescription] = useState('')
   const [photoFile, setPhotoFile] = useState<File | null>(null)
@@ -46,7 +42,6 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
   const [formError, setFormError] = useState<string | null>(null)
   const createReport = useCreateHotspotReport()
 
-  // Panel di-remount per target (key lat,lon di pemanggil) — state awal cukup dari useState.
   useEffect(() => {
     titleRef.current?.focus()
   }, [target])
@@ -69,7 +64,6 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
     setPhotoPreview(null)
     if (!file) return
     if (!isAllowedReportPhoto(file)) {
-      // Biar input native tidak terlihat “sudah isi” sementara state masih kosong.
       if (photoInputRef.current) photoInputRef.current.value = ''
       setPhotoError(getCopy().report.photoTooBig)
       return
@@ -78,7 +72,6 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
     setPhotoPreview(URL.createObjectURL(file))
   }
 
-  // Semua field wajib (sighting selalu terpilih via default).
   const canSubmit = Boolean(authorName.trim() && description.trim() && photoFile)
 
   const submit = () => {
@@ -112,7 +105,6 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
           )
         },
         onError: (error) => {
-          // 429 dari BE: cukup toast global, form tetap terisi untuk dicoba lagi nanti.
           // shortcut: match both locales' rate-limit wording; upgrade when API returns an error code.
           if (/Batas permintaan|Request limit/i.test(error.message)) {
             setFormError(null)
@@ -130,24 +122,31 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
   }
 
   return (
-    <div className="flex min-h-full flex-col">
-      <div className="border-line bg-surface sticky top-0 z-10 flex items-center justify-between gap-2 border-b px-4 pt-3 pb-2">
+    <div className="bg-surface flex min-h-full flex-col">
+      <div
+        className={cn(
+          PANEL.stickyHeader,
+          PANEL.pad,
+          PANEL.header,
+          'flex items-center justify-between gap-2',
+        )}
+      >
         <h1
           ref={titleRef}
           tabIndex={-1}
-          className="text-ink min-w-0 truncate text-sm leading-5 font-semibold outline-none"
+          className={cn(T.title, 'min-w-0 truncate outline-none')}
         >
           {getCopy().report.formTitle}
         </h1>
-        <IconButton onClick={back} aria-label={getCopy().report.formClose}>
+        <CloseIconButton onClick={back} aria-label={getCopy().report.formClose}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-        </IconButton>
+        </CloseIconButton>
       </div>
 
-      <div className="flex flex-1 flex-col gap-6 px-4 pt-3 pb-4">
-        <div className="space-y-1">
-          <p className="text-ink-2 text-xs leading-4">{getCopy().report.disclaimer}</p>
-          <p className="text-ink-2 text-xs leading-4">
+      <div className={cn(PANEL.body, PANEL.pad, 'divide-line flex-1 gap-0 divide-y')}>
+        <div className={cn(PANEL.sectionY, 'space-y-2')}>
+          <p className={T.quiet}>{getCopy().report.disclaimer}</p>
+          <p className={T.quiet}>
             {getCopy()
               .report.emergencyHint.split(/(112)/g)
               .map((part, i) =>
@@ -166,74 +165,127 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
           </p>
         </div>
 
-        <section aria-label={getCopy().report.formTitle} className="space-y-4">
-          <label className={fieldStack}>
-            <span className={fieldLabel}>{getCopy().report.authorLabel}</span>
-            <input
-              type="text"
-              value={authorName}
-              onChange={(e) => setAuthorName(e.target.value)}
-              maxLength={80}
-              placeholder={getCopy().report.authorPlaceholder}
-              className={cn(fieldClass, 'h-11')}
-            />
-          </label>
-
-          <div
-            role="group"
-            aria-labelledby="report-sighting-label"
-            className={fieldStack}
-          >
-            <div id="report-sighting-label" className={fieldLabel}>
-              {getCopy().report.sightingLabel}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {SIGHTINGS.map((s) => {
-                const pressed = sighting === s
-                return (
-                  <button
-                    key={s}
-                    type="button"
-                    aria-pressed={pressed}
-                    onClick={() => setSighting(s)}
+        {/* Topik */}
+        <section
+          aria-labelledby="report-section-topic"
+          className={cn(PANEL.sectionY, 'space-y-3')}
+        >
+          <h2 id="report-section-topic" className={T.section}>
+            {getCopy().report.sectionTopic}
+          </h2>
+          <div className={fieldStack}>
+            <span className={T.fieldLabel}>{getCopy().report.sightingLabel}</span>
+            <Popover open={topicOpen} onOpenChange={setTopicOpen}>
+              <PopoverTrigger asChild>
+                <button
+                  type="button"
+                  aria-expanded={topicOpen}
+                  aria-haspopup="listbox"
+                  className={cn(
+                    CHROME.mapFilterTrigger,
+                    'inline-flex h-11 w-full items-center justify-between gap-2 px-3 text-left text-sm leading-5 font-medium',
+                    focusRing,
+                  )}
+                >
+                  <span className="min-w-0 truncate">
+                    {getCopy().report.sightings[sighting]}
+                  </span>
+                  <ChevronDown
                     className={cn(
-                      'rounded-ctl inline-flex h-11 items-center border px-3 text-sm leading-5 font-medium shadow-none',
-                      'transition-colors',
-                      focusRing,
-                      pressed
-                        ? 'border-brand/30 bg-brand-soft text-brand'
-                        : 'border-line bg-surface text-ink hover:bg-surface-muted',
+                      'text-brand ease-out-soft size-4 shrink-0 transition-transform duration-200',
+                      topicOpen && 'rotate-180',
                     )}
-                  >
-                    {getCopy().report.sightings[s]}
-                  </button>
-                )
-              })}
-            </div>
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                side="bottom"
+                sideOffset={6}
+                className={cn(
+                  CHROME.mapFilterPopover,
+                  'z-50 max-h-80 w-[var(--radix-popover-trigger-width)] overflow-hidden p-2',
+                )}
+              >
+                <div
+                  role="listbox"
+                  aria-label={getCopy().report.sightingPick}
+                  className="soft-scroll max-h-60 overflow-y-auto"
+                >
+                  {SIGHTINGS.map((s) => {
+                    const selected = sighting === s
+                    return (
+                      <button
+                        key={s}
+                        type="button"
+                        role="option"
+                        aria-selected={selected}
+                        onClick={() => {
+                          setSighting(s)
+                          setTopicOpen(false)
+                        }}
+                        className={cn(
+                          'rounded-ctl flex h-10 w-full cursor-pointer items-center justify-between gap-2 px-3 text-left text-sm leading-5 font-medium',
+                          'ease-out-soft transition-colors duration-150',
+                          'hover:bg-surface-muted',
+                          focusRing,
+                          selected && 'bg-brand-soft text-brand font-semibold',
+                        )}
+                      >
+                        <span className="min-w-0 flex-1 truncate">
+                          {getCopy().report.sightings[s]}
+                        </span>
+                        {selected ? (
+                          <Check
+                            className="text-brand size-4 shrink-0"
+                            strokeWidth={2}
+                            aria-hidden
+                          />
+                        ) : null}
+                      </button>
+                    )
+                  })}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
+        </section>
 
+        {/* Usulan */}
+        <section
+          aria-labelledby="report-section-suggestion"
+          className={cn(PANEL.sectionY, 'space-y-3')}
+        >
+          <h2 id="report-section-suggestion" className={T.section}>
+            {getCopy().report.sectionSuggestion}
+          </h2>
           <label className={fieldStack}>
-            <span className={fieldLabel}>{getCopy().report.descriptionLabel}</span>
+            <span className={T.fieldLabel}>{getCopy().report.descriptionLabel}</span>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               maxLength={500}
               rows={4}
               placeholder={getCopy().report.descriptionPlaceholder}
-              className={cn(fieldClass, 'py-2')}
+              className={cn(CHROME.field, 'h-auto min-h-24 resize-y py-2')}
             />
           </label>
-
           <label className={fieldStack}>
-            <span className={fieldLabel}>{getCopy().report.photoLabel}</span>
+            <span className={T.fieldLabel}>{getCopy().report.photoLabel}</span>
             <input
               ref={photoInputRef}
               type="file"
               accept="image/jpeg,image/jpg,image/png,image/webp,image/*"
-              className="text-ink-2 file:rounded-ctl file:bg-surface-muted block w-full text-xs file:mr-3 file:border-0 file:px-3 file:py-2 file:text-sm file:font-medium file:shadow-none"
+              className={cn(
+                CHROME.field,
+                'text-ink-2 file:text-ink cursor-pointer py-2 text-xs leading-4',
+                'file:rounded-ctl file:mr-3 file:border-0 file:bg-transparent file:px-0 file:text-sm file:font-medium',
+              )}
               onChange={(e) => onPhotoChange(e.target.files?.[0])}
             />
-            <span className={fieldLabel}>{getCopy().report.photoHint}</span>
+            <span className={T.quiet}>{getCopy().report.photoHint}</span>
             {photoPreview ? (
               <img
                 src={photoPreview}
@@ -242,29 +294,62 @@ export function CitizenReportComposePanel({ target }: { target: HotspotReportTar
                     ? getCopy().report.photoAlt(authorName.trim())
                     : getCopy().report.photoPreviewAlt
                 }
-                className="rounded-card aspect-[3/2] w-full object-cover"
+                className="rounded-ctl aspect-[3/2] w-full object-cover"
               />
             ) : null}
           </label>
         </section>
+
+        {/* Data kamu */}
+        <section
+          aria-labelledby="report-section-reporter"
+          className={cn(PANEL.sectionY, 'space-y-3')}
+        >
+          <h2 id="report-section-reporter" className={T.section}>
+            {getCopy().report.sectionReporter}
+          </h2>
+          <label className={fieldStack}>
+            <span className={T.fieldLabel}>{getCopy().report.authorLabel}</span>
+            <input
+              type="text"
+              value={authorName}
+              onChange={(e) => setAuthorName(e.target.value)}
+              maxLength={80}
+              placeholder={getCopy().report.authorPlaceholder}
+              className={CHROME.field}
+              autoComplete="name"
+            />
+            <span className={T.quiet}>{getCopy().report.authorHint}</span>
+          </label>
+        </section>
       </div>
 
-      <div className="border-line bg-surface sticky bottom-0 z-10 shrink-0 space-y-2 border-t px-4 py-3">
+      <div
+        className={cn(
+          'border-line bg-surface sticky bottom-0 z-10 shrink-0 space-y-2 border-t',
+          PANEL.pad,
+          PANEL.footer,
+        )}
+      >
         {photoError || formError ? (
           <p className="text-risk-high text-sm leading-5" role="alert">
             {photoError ?? formError}
           </p>
         ) : null}
-        <Button
-          // Hijau hanya saat nama + deskripsi + foto siap.
-          variant={canSubmit ? 'primary' : 'secondary'}
-          className="w-full"
+        <button
+          type="button"
+          className={cn(
+            CHROME.ctaPrimary,
+            'w-full',
+            focusRing,
+            !canSubmit && 'opacity-50',
+          )}
           onClick={submit}
-          loading={createReport.isPending}
           disabled={!canSubmit || createReport.isPending}
+          aria-busy={createReport.isPending || undefined}
         >
           {createReport.isPending ? getCopy().report.submitting : getCopy().report.submit}
-        </Button>
+        </button>
       </div>
     </div>
   )
