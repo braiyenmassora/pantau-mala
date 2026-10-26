@@ -71,8 +71,8 @@ describe('formatDateTime', () => {
 })
 
 describe('formatRelativeAge', () => {
-  it('uses lowercase menit yang lalu', () => {
+  it('uses lowercase menit lalu', () => {
     const now = Date.parse('2026-10-11T12:46:00Z')
-    expect(formatRelativeAge('2026-10-11T12:00:00Z', now)).toBe('46 menit yang lalu')
+    expect(formatRelativeAge('2026-10-11T12:00:00Z', now)).toBe('46 menit lalu')
   })
 })

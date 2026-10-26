@@ -4,6 +4,7 @@ import { getCopy } from '@/copy'
 import type { CatalogProvince, RiskCategory } from '@/data/types'
 import { formatNumber } from '@/lib/format'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
+import { T } from '@/lib/pola'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 
@@ -53,7 +54,7 @@ export function TopProvincesList({ items }: TopProvincesListProps) {
               )}
               aria-hidden
             />
-            <span className="text-ink min-w-0 flex-1 truncate text-sm leading-5 font-medium">
+            <span className={cn(T.body, 'min-w-0 flex-1 truncate')}>
               {item.province.name}
             </span>
             {item.trend_7d && item.trend_7d.length >= 2 ? (
@@ -65,7 +66,7 @@ export function TopProvincesList({ items }: TopProvincesListProps) {
                 ariaLabel={`${getCopy().extra.trendChart} ${item.province.name}`}
               />
             ) : null}
-            <span className="text-ink shrink-0 font-mono text-sm leading-5 font-semibold tabular-nums">
+            <span className={cn(T.title, 'shrink-0 font-mono tabular-nums')}>
               {formatNumber(item.hotspots_24h)}
             </span>
           </button>

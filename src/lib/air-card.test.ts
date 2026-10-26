@@ -77,7 +77,7 @@ describe('airUpdatedLabel', () => {
       { window_end: null },
       now,
     )
-    expect(label).toMatch(/30 menit yang lalu/)
+    expect(label).toMatch(/30 menit lalu/)
     expect(label).toMatch(/WIB/)
   })
 })

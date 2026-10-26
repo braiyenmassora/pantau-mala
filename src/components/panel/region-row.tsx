@@ -12,6 +12,7 @@ import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { hasHotspotDetections } from '@/lib/hotspot-status'
 import { RISK_CATEGORIES } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
+import { T } from '@/lib/pola'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 import { useUiStore } from '@/store/ui'
@@ -59,10 +60,7 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
       }}
     >
       <span className={cn('size-2 shrink-0 rounded-full', meta.dotClass)} aria-hidden />
-      <span
-        className="text-ink min-w-0 flex-1 truncate text-sm leading-5 font-medium"
-        title={region.name}
-      >
+      <span className={cn(T.body, 'min-w-0 flex-1 truncate')} title={region.name}>
         {region.name}
       </span>
       {trend && trend.length >= 2 ? (
@@ -82,7 +80,7 @@ export function RegionRow({ region, mapRef }: RegionRowProps) {
           ariaLabel={`${getCopy().extra.trendChart} ${region.name}`}
         />
       ) : null}
-      <span className="text-ink shrink-0 font-mono text-sm leading-5 font-semibold tabular-nums">
+      <span className={cn(T.title, 'shrink-0 font-mono tabular-nums')}>
         {formatNumber(region.hotspots_24h)}
       </span>
     </button>

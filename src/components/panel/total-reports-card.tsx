@@ -8,6 +8,7 @@ import { getCopy } from '@/copy'
 import { useTotalReports } from '@/data/hotspot-reports'
 import { rememberFocusTrigger } from '@/lib/focus-return'
 import { formatNumber } from '@/lib/format'
+import { T } from '@/lib/pola'
 import { cn } from '@/lib/utils'
 import { useUiStore } from '@/store/ui'
 
@@ -16,7 +17,9 @@ export function TotalReportsCard() {
   const { data: total, isPending } = useTotalReports()
   const setReportsOpen = useUiStore((s) => s.setReportsOpen)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
-  const hint = getCopy().report.totalContributeHint
+  const tip = getCopy().report.totalInfoTip
+  const ask = getCopy().report.totalContributeAsk
+  const how = getCopy().report.totalContributeHow
 
   const open = (el: HTMLElement) => {
     rememberFocusTrigger(el)
@@ -27,8 +30,7 @@ export function TotalReportsCard() {
   return (
     <Card
       aria-label={getCopy().report.panelTitle}
-      aria-description={hint}
-      title={hint}
+      aria-description={`${tip} ${ask} ${how}`}
       className={cn(
         'hover:bg-surface-muted cursor-pointer transition-colors duration-150',
         focusRing,
@@ -46,12 +48,16 @@ export function TotalReportsCard() {
       <CardHeader>
         <div className="flex min-w-0 items-center gap-1">
           <CardTitle>{getCopy().report.panelTitle}</CardTitle>
-          <span className="text-ink-3 inline-flex size-3.5 shrink-0" aria-hidden>
-            <Info className="size-3.5" strokeWidth={1.75} />
+          <span
+            className="text-brand inline-flex size-3.5 shrink-0"
+            title={tip}
+            aria-label={tip}
+          >
+            <Info className="size-3.5" strokeWidth={1.75} aria-hidden />
           </span>
         </div>
       </CardHeader>
-      <CardContent className="space-y-1">
+      <CardContent className="space-y-3">
         {isPending ? (
           <Skeleton className="rounded-ctl h-10 w-24" />
         ) : (
@@ -59,7 +65,10 @@ export function TotalReportsCard() {
             {formatNumber(total ?? null)}
           </p>
         )}
-        <p className="text-ink text-sm leading-5">{getCopy().report.totalUnit}</p>
+        <div className={cn(T.quiet, 'space-y-1')}>
+          <p>{ask}</p>
+          <p>{how}</p>
+        </div>
       </CardContent>
     </Card>
   )

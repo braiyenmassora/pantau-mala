@@ -3,6 +3,8 @@ import { Button } from '@/components/common/button'
 import { IconButton } from '@/components/common/icon-button'
 import { BootLoading } from '@/components/map/map-soft-loading'
 import { getCopy, useLocaleStore } from '@/copy'
+import { CHROME, T } from '@/lib/pola'
+import { cn } from '@/lib/utils'
 import { Eye, EyeOff } from 'lucide-react'
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { login, restoreSession, useSession } from './session'
@@ -52,14 +54,14 @@ export function AccessGate({ children }: { children: ReactNode }) {
     ) : status === 'restoring' ? null : (
       <main className="bg-map-bg text-ink flex min-h-dvh items-center justify-center p-4">
         <section
-          className="rounded-panel bg-surface shadow-chrome w-full max-w-sm space-y-6 p-6"
+          className={cn(CHROME.sidebar, 'w-full max-w-sm space-y-6 p-6')}
           aria-labelledby="login-title"
         >
           <header className="space-y-1">
-            <h1 id="login-title" className="text-xl leading-8 font-semibold">
+            <h1 id="login-title" className={T.page}>
               <Brand />
             </h1>
-            <p className="text-ink-2 text-sm leading-5">{getCopy().auth.loginLead}</p>
+            <p className={T.body}>{getCopy().auth.loginLead}</p>
           </header>
           {accessMode === 'client' ? (
             <div className="space-y-4">
@@ -78,7 +80,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
               className="space-y-4"
             >
               <div className="flex flex-col gap-2">
-                <label htmlFor="username" className="text-ink-2 text-xs leading-4">
+                <label htmlFor="username" className={T.fieldLabel}>
                   {getCopy().auth.username}
                 </label>
                 <input
@@ -87,11 +89,11 @@ export function AccessGate({ children }: { children: ReactNode }) {
                   autoComplete="username"
                   required
                   maxLength={80}
-                  className={`border-line rounded-card h-11 w-full border px-3 text-sm leading-5 ${focusRing}`}
+                  className={cn(CHROME.field, focusRing)}
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label htmlFor="password" className="text-ink-2 text-xs leading-4">
+                <label htmlFor="password" className={T.fieldLabel}>
                   {getCopy().auth.password}
                 </label>
                 <div className="relative">
@@ -102,7 +104,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
                     autoComplete="current-password"
                     required
                     maxLength={128}
-                    className={`border-line rounded-card h-11 w-full border pr-12 pl-3 text-sm leading-5 ${focusRing}`}
+                    className={cn(CHROME.field, 'pr-12', focusRing)}
                   />
                   <IconButton
                     aria-label={

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
-import { Card, CardContent } from '@/components/ui/card'
 import { getCopy } from '@/copy'
+import { CHROME, PANEL, T } from '@/lib/pola'
 import { cn } from '@/lib/utils'
 
 export type MapInfoCardProps = {
@@ -37,9 +37,7 @@ function InfoLine({ children, strong }: { children: ReactNode; strong?: boolean 
     <p
       className={cn(
         'text-left break-words whitespace-normal',
-        strong
-          ? 'text-ink text-sm leading-5 font-semibold'
-          : 'text-ink-2 text-xs leading-4',
+        strong ? T.title : T.quiet,
       )}
     >
       {children}
@@ -54,7 +52,7 @@ function UpdatedAtLine({ value }: { value: string }) {
     return <InfoLine>{value}</InfoLine>
   }
   return (
-    <p className="text-ink-2 flex items-center gap-2 text-left text-xs leading-4">
+    <p className={cn(T.quiet, 'flex items-center gap-2 text-left')}>
       <span>{parts[0]}</span>
       <span className="bg-ink-3 size-1 shrink-0 rounded-full" aria-hidden />
       <span>{parts[1]}</span>
@@ -82,7 +80,7 @@ export function MapInfoCard({
   updatedAt,
   children,
   className,
-  hideArrow = false,
+  hideArrow = true,
 }: MapInfoCardProps) {
   const districtName = nonEmpty(district)
   const regencyName = nonEmpty(regency)
@@ -118,25 +116,25 @@ export function MapInfoCard({
   }
 
   return (
-    <Card
+    <div
       className={cn(
-        'shadow-chrome relative z-30 w-max max-w-[min(280px,70vw)]',
+        CHROME.panel,
+        PANEL.pad,
+        'relative z-30 w-max max-w-[min(280px,70vw)] pt-3 pb-4',
         className,
       )}
     >
-      <CardContent className="space-y-1 pt-3">
-        {heading || body.length > 0 || updated ? (
-          <div className="flex min-w-0 flex-col gap-1 text-left">
-            {heading ? <InfoLine strong>{heading}</InfoLine> : null}
-            {body.map((line, i) => (
-              <InfoLine key={`${i}-${line}`}>{line}</InfoLine>
-            ))}
-            {updated ? <UpdatedAtLine value={updated} /> : null}
-          </div>
-        ) : null}
+      {heading || body.length > 0 || updated ? (
+        <div className="flex min-w-0 flex-col gap-1 text-left">
+          {heading ? <InfoLine strong>{heading}</InfoLine> : null}
+          {body.map((line, i) => (
+            <InfoLine key={`${i}-${line}`}>{line}</InfoLine>
+          ))}
+          {updated ? <UpdatedAtLine value={updated} /> : null}
+        </div>
+      ) : null}
 
-        {children}
-      </CardContent>
+      {children}
 
       {!hideArrow && (
         <div
@@ -144,6 +142,6 @@ export function MapInfoCard({
           aria-hidden
         />
       )}
-    </Card>
+    </div>
   )
 }

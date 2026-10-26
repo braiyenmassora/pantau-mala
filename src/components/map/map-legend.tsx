@@ -5,6 +5,7 @@ import { RiskMarker } from '@/components/common/risk-marker'
 import { Card } from '@/components/ui/card'
 import { getCopy } from '@/copy'
 import { useMapChrome } from '@/lib/layout'
+import { CHROME } from '@/lib/pola'
 import { riskCategoryLabel } from '@/lib/risk-category'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
@@ -12,8 +13,7 @@ import { useUiStore } from '@/store/ui'
 
 const MAP_RISK_ORDER = ['sangat_tinggi', 'sedang', 'rendah'] as const
 
-/** Chrome mengambang: sama kontrol lokasi (surface solid + shadow-chrome). */
-const legendCardClass = 'bg-surface shrink-0 gap-2 px-3 py-2 shadow-chrome'
+const legendCardClass = cn(CHROME.mapFloat, 'shrink-0 gap-2 px-3 py-2')
 
 /**
  * Legenda peta desktop (sm+): Tingkat risiko + Kerapatan.

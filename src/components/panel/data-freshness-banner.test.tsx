@@ -53,7 +53,7 @@ describe('DataFreshnessBanner', () => {
     })
     wrap(<DataFreshnessBanner />)
     expect(screen.getByText(copy.empty.dataStale.title)).toBeTruthy()
-    expect(screen.getByText(/bisa sudah berubah/i)).toBeTruthy()
+    expect(screen.getByText(/mungkin sudah berubah/i)).toBeTruthy()
   })
 
   it('hides source failure without snack or card', () => {

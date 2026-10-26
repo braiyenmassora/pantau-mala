@@ -3,6 +3,7 @@ import { Check, ChevronDown, Search, X } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { focusRing } from '@/components/common/focus-ring'
 import { getCopy } from '@/copy'
+import { CHROME } from '@/lib/pola'
 import { cn } from '@/lib/utils'
 
 export type SearchableSelectOption = {
@@ -81,7 +82,8 @@ export function SearchableSelect({
           aria-expanded={open}
           aria-haspopup="listbox"
           className={cn(
-            'border-line bg-surface text-ink rounded-card flex h-11 min-h-11 w-full items-center justify-between gap-2 border px-3 text-sm leading-5 font-medium shadow-none',
+            CHROME.mapFilterTrigger,
+            'flex h-11 min-h-11 w-full items-center justify-between gap-2 px-3 text-sm leading-5 font-medium',
             'hover:bg-surface-muted transition-colors duration-200 ease-[var(--ease-out-soft)]',
             disabled && 'cursor-not-allowed opacity-50',
             focusRing,
@@ -98,7 +100,7 @@ export function SearchableSelect({
           </span>
           <ChevronDown
             className={cn(
-              'text-ink-2 size-4 shrink-0 transition-transform duration-200 ease-[var(--ease-out-soft)]',
+              'text-brand size-4 shrink-0 transition-transform duration-200 ease-[var(--ease-out-soft)]',
               open && 'rotate-180',
             )}
             strokeWidth={2}
@@ -110,11 +112,11 @@ export function SearchableSelect({
         align="start"
         side="bottom"
         sideOffset={4}
-        className="border-line bg-surface rounded-card shadow-chrome z-50 w-64 border p-1"
+        className={cn(CHROME.mapFilterPopover, 'z-50 w-64 p-1')}
       >
         <div className="border-line border-b p-1">
           <div className="rounded-card bg-surface-muted flex items-center gap-2 px-2 py-1">
-            <Search className="text-ink-3 size-4 shrink-0" strokeWidth={2} aria-hidden />
+            <Search className="text-brand size-4 shrink-0" strokeWidth={2} aria-hidden />
             <input
               type="text"
               value={search}
@@ -131,7 +133,7 @@ export function SearchableSelect({
                 type="button"
                 onClick={() => setSearch('')}
                 aria-label={getCopy().common.clearSearch}
-                className="text-ink-3 hover:text-ink rounded-ctl flex size-8 shrink-0 items-center justify-center"
+                className="text-brand hover:bg-surface-muted rounded-ctl flex size-8 shrink-0 items-center justify-center"
               >
                 <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
               </button>

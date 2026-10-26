@@ -5,14 +5,18 @@ import type { FeatureCollection, Polygon } from 'geojson'
 import type { GeoJSONSource } from 'maplibre-gl'
 
 import { BeatWaveRadius } from '@/components/map/beat-wave-radius'
-import { MapInfoCard } from '@/components/map/map-info-card'
+import {
+  HotspotDetailCard,
+  type HotspotDetailRow,
+} from '@/components/map/hotspot-detail-card'
+import { pinTipMapOffsetY } from '@/components/map/map-pin-tip'
 import { MapMarker, MarkerContent, useMap } from '@/components/ui/map'
 import { getCopy } from '@/copy'
 import { pointKey, useReportCounts } from '@/data/hotspot-reports'
 import { useHotspots } from '@/data/queries'
-import type { Region } from '@/data/types'
+import type { ConfidenceLevel, HotspotFeature, Region } from '@/data/types'
 import { rememberFocusTrigger } from '@/lib/focus-return'
-import { formatDateDotTime } from '@/lib/format'
+import { formatDateDotTime, formatDateTime } from '@/lib/format'
 import { getMapPadding } from '@/lib/indonesia-view'
 import { pinPulseStyle, riskBeatMs } from '@/lib/map-beat'
 import { MAP_COLORS } from '@/lib/map-colors'
@@ -33,12 +37,22 @@ type SelectedHotspotsLayerProps = {
 export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
   const { map, isLoaded } = useMap()
   const selectedCode = useMapStore((s) => s.selectedCode)
+  const focusHotspotTime = useMapStore((s) => s.focusHotspotTime)
+  const clearFocusHotspotTime = useMapStore((s) => s.clearFocusHotspotTime)
   const panelOpen = useUiStore((s) => s.panelOpen)
   const { data } = useHotspots()
   const lastFitCode = useRef<string | null>(null)
-  const [hovered, setHovered] = useState<number | null>(null)
+  /** Tip atribut lengkap — hanya saat pin diklik. */
+  const [selectedPin, setSelectedPin] = useState<number | null>(null)
   const setReportTarget = useUiStore((s) => s.setReportTarget)
   const setPanelOpen = useUiStore((s) => s.setPanelOpen)
+
+  // Ganti wilayah → tutup tip (adjust state saat prop berubah — bukan effect).
+  const [pinScope, setPinScope] = useState(selectedCode)
+  if (pinScope !== selectedCode) {
+    setPinScope(selectedCode)
+    setSelectedPin(null)
+  }
 
   const selectedRegion = useMemo(
     () => regions.find((r) => r.code === selectedCode),
@@ -50,6 +64,19 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
     return data.features.filter((f) => f.properties.region_code === selectedCode)
   }, [selectedCode, data])
 
+  // Klik titik heatmap → buka tip; bersihkan flag fokus di effect (store eksternal).
+  const focusIndex =
+    focusHotspotTime == null
+      ? -1
+      : regionHotspots.findIndex((f) => f.properties.time === focusHotspotTime)
+  if (focusIndex >= 0 && selectedPin !== focusIndex) {
+    setSelectedPin(focusIndex)
+  }
+  useEffect(() => {
+    if (focusHotspotTime == null || focusIndex < 0) return
+    clearFocusHotspotTime()
+  }, [focusHotspotTime, focusIndex, clearFocusHotspotTime])
+
   const countPoints = useMemo(
     () =>
       regionHotspots.map((f) => {
@@ -59,6 +86,19 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
     [regionHotspots],
   )
   const { data: reportCounts } = useReportCounts(countPoints)
+
+  // Tip di atas pin: canvas mobile pendek (di atas sheet) — pan supaya tip tidak kepotong.
+  useEffect(() => {
+    if (selectedPin == null || !map) return
+    const f = regionHotspots[selectedPin]
+    if (!f) return
+    const [lon, lat] = f.geometry.coordinates
+    const pad = getMapPadding(panelOpen)
+    const top = typeof pad.top === 'number' ? pad.top : 72
+    const offsetY = pinTipMapOffsetY(map.getContainer().clientHeight, 300, top)
+    if (offsetY === 0) return
+    map.easeTo({ center: [lon, lat], offset: [0, offsetY], duration: 280 })
+  }, [selectedPin, map, regionHotspots, panelOpen])
 
   const focus = useMemo(() => {
     if (!selectedRegion) return null
@@ -202,8 +242,24 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
 
   if (!selectedRegion) return null
 
-  const showMarkers = regionHotspots.length > 0 && regionHotspots.length <= 64
   const pulseStyle = pinPulseStyle(risk, style.dot)
+
+  function detailRows(f: HotspotFeature): HotspotDetailRow[] {
+    const copy = getCopy().hotspotDetail
+    return [
+      {
+        label: copy.date,
+        value: formatDateTime(f.properties.time, selectedRegion!.time_zone),
+      },
+      { label: copy.source, value: f.properties.satellite },
+      {
+        label: copy.confidence,
+        value: copy.confidenceValue[f.properties.confidence as ConfidenceLevel],
+      },
+      { label: copy.regency, value: selectedRegion!.name },
+      { label: copy.province, value: selectedRegion!.province },
+    ]
+  }
 
   return (
     <>
@@ -218,74 +274,79 @@ export function SelectedHotspotsLayer({ regions }: SelectedHotspotsLayerProps) {
         />
       ) : null}
 
-      {showMarkers
-        ? regionHotspots.map((f, i) => {
-            const [lon, lat] = f.geometry.coordinates
-            const stamp = formatDateDotTime(f.properties.time, selectedRegion.time_zone)
-            const reportCount = reportCounts?.get(pointKey(lat, lon)) ?? 0
-            const label =
-              reportCount > 0
-                ? `${getCopy().extra.detections} ${stamp}, ${getCopy().report.badge(String(reportCount))}`
-                : `${getCopy().extra.detections} ${stamp}`
+      {regionHotspots.map((f, i) => {
+        const [lon, lat] = f.geometry.coordinates
+        const stamp = formatDateDotTime(f.properties.time, selectedRegion.time_zone)
+        const reportCount = reportCounts?.get(pointKey(lat, lon)) ?? 0
+        const label =
+          reportCount > 0
+            ? `${getCopy().extra.detections} ${stamp}, ${getCopy().report.badge(String(reportCount))}`
+            : `${getCopy().extra.detections} ${stamp}`
 
-            const openReport = (el: HTMLElement) => {
-              rememberFocusTrigger(el)
-              setReportTarget({
-                lat,
-                lon,
-                region_code: f.properties.region_code,
-                hotspot_time: f.properties.time,
-              })
-              setPanelOpen(true)
-            }
-
-            return (
-              <MapMarker
-                key={`${f.properties.time}-${lon}-${lat}-${i}`}
-                longitude={lon}
-                latitude={lat}
-                anchor="center"
-              >
-                <MarkerContent className="relative flex items-center justify-center overflow-visible">
-                  {hovered === i ? (
-                    <div className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-2 -translate-x-1/2">
-                      <MapInfoCard
-                        title={selectedRegion.name}
-                        meta={
-                          reportCount > 0
-                            ? `${getCopy().map.regionMetaHotspots('1')} · ${getCopy().report.badge(String(reportCount))}`
-                            : getCopy().map.regionMetaHotspots('1')
-                        }
-                        updatedAt={stamp}
-                      />
-                    </div>
-                  ) : null}
-                  {reportCount > 0 ? (
-                    <span
-                      className="bg-brand text-surface shadow-map absolute -top-3 -right-3 z-20 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs leading-none font-semibold"
-                      aria-hidden
-                    >
-                      {reportCount}
-                    </span>
-                  ) : null}
-                  <button
-                    type="button"
-                    aria-label={`${label}. ${getCopy().report.openAria}`}
-                    className={cn(
-                      'marker--interactive marker--pulse border-surface shadow-map relative size-4 cursor-pointer rounded-full border-2',
-                    )}
-                    style={{ backgroundColor: style.dot, ...pulseStyle }}
-                    onMouseEnter={() => setHovered(i)}
-                    onMouseLeave={() => setHovered(null)}
-                    onFocus={() => setHovered(i)}
-                    onBlur={() => setHovered(null)}
-                    onClick={(e) => openReport(e.currentTarget)}
-                  />
-                </MarkerContent>
-              </MapMarker>
-            )
-          })
-        : null}
+        return (
+          <MapMarker
+            key={`${f.properties.time}-${lon}-${lat}-${i}`}
+            longitude={lon}
+            latitude={lat}
+            anchor="center"
+          >
+            <MarkerContent
+              // Tip di atas pin tetangga — z pada elemen MapLibre marker.
+              zIndex={selectedPin === i ? 40 : undefined}
+              className="relative flex items-center justify-center overflow-visible"
+            >
+              <div className="relative flex items-center justify-center">
+                {selectedPin === i ? (
+                  <div
+                    className="absolute bottom-full left-1/2 z-40 mb-2 -translate-x-1/2"
+                    onClick={(e) => e.stopPropagation()}
+                    onPointerDown={(e) => e.stopPropagation()}
+                  >
+                    <HotspotDetailCard
+                      rows={detailRows(f)}
+                      onClose={() => setSelectedPin(null)}
+                      onWriteReport={(el) => {
+                        rememberFocusTrigger(el)
+                        setReportTarget({
+                          lat,
+                          lon,
+                          region_code: f.properties.region_code,
+                          hotspot_time: f.properties.time,
+                        })
+                        setPanelOpen(true)
+                        setSelectedPin(null)
+                      }}
+                    />
+                  </div>
+                ) : null}
+                {reportCount > 0 ? (
+                  <span
+                    className="bg-brand text-surface shadow-map absolute -top-3 -right-3 z-20 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-xs leading-none font-semibold"
+                    aria-hidden
+                  >
+                    {reportCount}
+                  </span>
+                ) : null}
+                <button
+                  type="button"
+                  aria-label={`${label}. ${getCopy().map.openHotspotDetail}`}
+                  aria-expanded={selectedPin === i}
+                  className={cn(
+                    // Area ketuk lebih besar dari titik visual (mobile).
+                    'marker--interactive marker--pulse border-surface shadow-map relative size-5 cursor-pointer rounded-full border-2',
+                    'after:absolute after:-inset-3 after:content-[""]',
+                  )}
+                  style={{ backgroundColor: style.dot, ...pulseStyle }}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setSelectedPin((cur) => (cur === i ? null : i))
+                  }}
+                />
+              </div>
+            </MarkerContent>
+          </MapMarker>
+        )
+      })}
     </>
   )
 }

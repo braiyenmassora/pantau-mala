@@ -36,7 +36,9 @@ export function friendlyActionError(
   ) {
     return getCopy().errors.serviceNotReady
   }
-  if (/akses tidak diizinkan|access (is )?not permitted|forbidden|unauthorized/i.test(msg)) {
+  if (
+    /akses tidak diizinkan|access (is )?not permitted|forbidden|unauthorized/i.test(msg)
+  ) {
     return getCopy().errors.accessDenied
   }
   return friendlyLoadError(err, '') || fallback

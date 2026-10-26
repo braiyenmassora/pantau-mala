@@ -2,6 +2,7 @@ import { getCopy } from '@/copy'
 import type { HotspotReport } from '@/data/hotspot-reports'
 import { ReportPhoto } from '@/components/panel/report-photo'
 import { formatRelativeAge, reportAuthorInitials } from '@/lib/format'
+import { T } from '@/lib/pola'
 import { cn } from '@/lib/utils'
 
 type CitizenReportReviewProps = {
@@ -29,18 +30,14 @@ export function CitizenReportReview({
   const textBlock = (
     <div className="min-w-0 flex-1">
       {compact ? (
-        <p className="text-ink truncate text-sm leading-5 font-semibold">
-          {report.author_name}
-        </p>
+        <p className={cn(T.title, 'truncate')}>{report.author_name}</p>
       ) : (
         <div className="flex items-baseline justify-between gap-2">
-          <p className="text-ink truncate text-sm leading-5 font-semibold">
-            {report.author_name}
-          </p>
+          <p className={cn(T.title, 'truncate')}>{report.author_name}</p>
           {age}
         </div>
       )}
-      <p className="text-ink-2 mt-1 flex flex-wrap items-center gap-x-2 text-xs leading-4">
+      <p className={cn(T.quiet, 'mt-1 flex flex-wrap items-center gap-x-2')}>
         <span>{getCopy().report.sightings[report.sighting]}</span>
         {compact ? (
           <>
@@ -50,7 +47,7 @@ export function CitizenReportReview({
         ) : null}
       </p>
       {report.description ? (
-        <p className={cn('text-ink mt-2 text-sm leading-5', compact && 'line-clamp-2')}>
+        <p className={cn(T.body, 'mt-2', compact && 'line-clamp-2')}>
           {report.description}
         </p>
       ) : null}

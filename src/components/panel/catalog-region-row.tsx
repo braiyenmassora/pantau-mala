@@ -26,7 +26,7 @@ export function CatalogRegionRow({ kab, mapRef }: CatalogRegionRowProps) {
     <ListRow
       leading={
         <span
-          className="border-line bg-surface text-ink-3 rounded-ctl flex size-10 items-center justify-center border-[3px]"
+          className="border-line bg-brand-soft text-brand rounded-ctl flex size-10 items-center justify-center border"
           aria-hidden
         >
           <MapPin className="size-4" strokeWidth={2} />

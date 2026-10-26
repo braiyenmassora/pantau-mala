@@ -32,8 +32,7 @@ describe('ProvincePin', () => {
     useUiStore.setState({ panelOpen: false })
   })
 
-  it('renders pulsing red pin without numbers; hover shows name only', () => {
-    const onHover = vi.fn()
+  it('renders pulsing red pin without numbers or hover tip', () => {
     render(
       <ProvincePin
         aggregate={{
@@ -44,8 +43,6 @@ describe('ProvincePin', () => {
           risk_category: 'sangat_tinggi',
           trend_7d: [0, 0, 0, 0, 0, 0, 212],
         }}
-        hovered
-        onHover={onHover}
       />,
     )
 
@@ -53,7 +50,7 @@ describe('ProvincePin', () => {
     expect(pin.className).toContain('marker--pulse')
     expect(pin.style.getPropertyValue('--beat')).toBe('0.75s')
     expect(pin.textContent).not.toContain('212')
-    expect(screen.getByText('Kalimantan Selatan')).toBeTruthy()
+    expect(screen.queryByText(/titik panas/)).toBeNull()
 
     fireEvent.click(pin)
     expect(useMapStore.getState().province).toBe('Kalimantan Selatan')

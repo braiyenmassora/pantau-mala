@@ -1,13 +1,15 @@
 import { ShieldCheck, X } from 'lucide-react'
 
-import { EmptyState, HotspotStatusBadge, IconButton } from '@/components/common'
+import { CloseIconButton, EmptyState, HotspotStatusBadge } from '@/components/common'
 import { DataFreshnessBanner } from '@/components/panel/data-freshness-banner'
 import { CitizenReportsCard } from '@/components/panel/region-detail-panel'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { getCopy } from '@/copy'
 import { useMeta } from '@/data/queries'
 import type { CatalogRegency } from '@/data/types'
 import { restoreFocusTrigger } from '@/lib/focus-return'
+import { PANEL, T } from '@/lib/pola'
+import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
 
 type NoHotspotDetailProps = {
@@ -26,28 +28,30 @@ export function NoHotspotDetail({ kab }: NoHotspotDetailProps) {
 
   return (
     <div className="flex flex-col">
-      <div className="border-line bg-surface sticky top-0 z-10 flex justify-end border-b px-4 pt-3 pb-2">
-        <IconButton onClick={handleBack} aria-label={getCopy().panel.closeDetail}>
+      <div
+        className={cn(
+          PANEL.stickyHeader,
+          PANEL.pad,
+          PANEL.header,
+          'flex items-center gap-2',
+        )}
+      >
+        <h1 className={cn(T.title, 'min-w-0 flex-1 truncate')} title={kab.name}>
+          {kab.name}
+        </h1>
+        <HotspotStatusBadge hotspots={0} />
+        <CloseIconButton onClick={handleBack} aria-label={getCopy().panel.closeDetail}>
           <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-        </IconButton>
+        </CloseIconButton>
       </div>
 
-      <div className="flex flex-col gap-6 px-4 pt-3 pb-6">
+      <div className={cn(PANEL.body, PANEL.pad)}>
         <DataFreshnessBanner />
 
         <Card aria-label={kab.name}>
-          <CardHeader>
-            <h1
-              className="text-ink min-w-0 truncate text-sm leading-5 font-semibold"
-              title={kab.name}
-            >
-              {kab.name}
-            </h1>
-            <HotspotStatusBadge hotspots={0} />
-          </CardHeader>
-          <CardContent className="text-ink-2 space-y-1 text-xs leading-4">
-            <p>{getCopy().map.regionMetaProvince(kab.province)}</p>
-            <p>{getCopy().panel.coverageNote}</p>
+          <CardContent className="space-y-1">
+            <p className={T.quiet}>{getCopy().map.regionMetaProvince(kab.province)}</p>
+            <p className={T.quiet}>{getCopy().panel.coverageNote}</p>
           </CardContent>
         </Card>
 

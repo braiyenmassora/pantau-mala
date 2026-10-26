@@ -9,7 +9,7 @@ Gunakan nilai di bawah apa adanya. Jangan menebak warna, spacing, atau tipografi
 ## Cara pakai (repo lain)
 
 1. Salin blok **§ Tokens CSS lengkap** ke file theme proyekmu (`tokens.css`, `globals.css`, atau `:root`).
-2. Pasang font IBM Plex Sans (400/500/600) + IBM Plex Mono (500/600).
+2. Pasang font Plus Jakarta Sans (400/500/600). Mono UI = Sans + tabular-nums.
 3. Ikuti prinsip visual + resep komponen di dokumen ini.
 4. Untuk canvas / MapLibre / SVG, pakai konstanta hex di **§ Hex untuk Map / canvas**.
 5. Jangan menambah hex baru sebelum ada alasan kuat; utamakan token yang sudah ada.
@@ -51,11 +51,11 @@ Blok berikut adalah **sumber kebenaran nilai**. Cocok untuk Tailwind v4 `@theme`
 
 ```css
 /* pantaumala design tokens — portable copy
-   Font: IBM Plex Sans 400/500/600 + IBM Plex Mono 500/600 */
+   Font: Plus Jakarta Sans 400/500/600; mono = Sans + tabular-nums */
 
 @theme {
-  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-mono: 'Plus Jakarta Sans', system-ui, sans-serif;
 
   /* Netral — ink-2 / ink-3 lolos AA 4.5:1 di atas surface */
   --color-ink: #1f2328;
@@ -279,15 +279,15 @@ Tanpa Tailwind: pakai `var(--…)` langsung.
 
 ### Tipografi
 
-| Token                                            | Size                                   | Line-height |
-| ------------------------------------------------ | -------------------------------------- | ----------- |
-| `--text-xs`                                      | 12px                                   | 16px        |
-| `--text-sm` / `--text-base` / `--text-paragraph` | 14px                                   | 20px        |
-| `--text-lg`                                      | 16px                                   | 24px        |
-| `--text-xl`                                      | 24px                                   | 32px        |
-| `--text-3xl`                                     | 32px                                   | 40px        |
-| `--font-sans`                                    | IBM Plex Sans, system-ui, sans-serif   |             |
-| `--font-mono`                                    | IBM Plex Mono, ui-monospace, monospace |             |
+| Token                                            | Size                                     | Line-height |
+| ------------------------------------------------ | ---------------------------------------- | ----------- |
+| `--text-xs`                                      | 12px                                     | 16px        |
+| `--text-sm` / `--text-base` / `--text-paragraph` | 14px                                     | 20px        |
+| `--text-lg`                                      | 16px                                     | 24px        |
+| `--text-xl`                                      | 24px                                     | 32px        |
+| `--text-3xl`                                     | 32px                                     | 40px        |
+| `--font-sans`                                    | Plus Jakarta Sans, system-ui, sans-serif |             |
+| `--font-mono`                                    | Plus Jakarta Sans + tabular-nums         |             |
 
 Weight yang dipakai: **400** body, **500** label/list, **600** judul/button/angka.
 
@@ -675,7 +675,7 @@ Breakpoint internal opsional (bukan token global): `360px` (grid 2 kolom), `380p
 3. Pakai semantic token / class dari indeks §3, bukan hex mentah di JSX (kecuali Map/canvas §4).
 4. Brand hijau hanya untuk aksi/fokus/lokasi; data risiko pakai risk-*.
 5. Ikuti anatomi kartu §6 dan resep §5.
-6. Pertahankan light-mode, IBM Plex, radius 8/12, shadow soft.
+6. Pertahankan light-mode, Plus Jakarta Sans, radius 8/12, shadow soft.
 7. Jangan buat varian button/chip/card baru jika resep yang ada sudah cocok.
 8. Jangan ubah token global demi satu komponen.
 9. Token baru hanya jika nilai berulang & bermakna; dokumentasikan di file design system repo tujuan.

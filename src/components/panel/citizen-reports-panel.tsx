@@ -1,7 +1,7 @@
 import { ChevronRight, ClipboardList, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, type RefObject } from 'react'
 
-import { EmptyState, IconButton } from '@/components/common'
+import { CloseIconButton, EmptyState } from '@/components/common'
 import { focusRing } from '@/components/common/focus-ring'
 import { Card, CardContent } from '@/components/ui/card'
 import type { MapRef } from '@/components/ui/map'
@@ -12,7 +12,7 @@ import type { Region } from '@/data/types'
 import { rememberFocusTrigger, restoreFocusTrigger } from '@/lib/focus-return'
 import { formatNumber } from '@/lib/format'
 import { getMapPadding, PLACE_ZOOM } from '@/lib/indonesia-view'
-import { T } from '@/lib/pola'
+import { PANEL, T } from '@/lib/pola'
 import { usePrefersReducedMotion } from '@/lib/prefers-reduced-motion'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -92,25 +92,25 @@ export function CitizenReportsPanel({ regions, mapRef }: CitizenReportsPanelProp
 
   return (
     <div className="flex flex-col">
-      <div className="border-line bg-surface sticky top-0 z-10 space-y-1 border-b px-4 pt-3 pb-3">
+      <div className={cn(PANEL.stickyHeader, PANEL.pad, PANEL.header, 'space-y-1')}>
         <div className="flex items-center justify-between gap-2">
           <h1
             ref={titleRef}
             tabIndex={-1}
-            className="text-ink min-w-0 truncate text-sm leading-5 font-semibold outline-none"
+            className={cn(T.title, 'min-w-0 truncate outline-none')}
           >
             {getCopy().report.panelTitle}
           </h1>
-          <IconButton onClick={back} aria-label={getCopy().report.close}>
+          <CloseIconButton onClick={back} aria-label={getCopy().report.close}>
             <X className="size-4 shrink-0" strokeWidth={2} aria-hidden />
-          </IconButton>
+          </CloseIconButton>
         </div>
-        <p className="text-ink-2 text-xs leading-4">{getCopy().report.panelHint}</p>
+        <p className={T.quiet}>{getCopy().report.panelHint}</p>
       </div>
 
-      <div className="flex flex-col gap-3 px-4 pt-3 pb-6">
+      <div className={cn(PANEL.body, PANEL.pad)}>
         {isPending ? (
-          <p className="text-ink-2 text-sm leading-5" aria-busy="true">
+          <p className={cn(T.body, 'text-ink-2')} aria-busy="true">
             {getCopy().common.loading}
           </p>
         ) : groups.length === 0 ? (
@@ -122,9 +122,15 @@ export function CitizenReportsPanel({ regions, mapRef }: CitizenReportsPanelProp
         ) : (
           groups.map((group) => (
             <Card key={group.name} aria-label={group.name} className="overflow-hidden">
-              <div className="flex items-center justify-between gap-2 px-4 pt-3 pb-2">
+              <div
+                className={cn(
+                  'border-line flex items-center justify-between gap-2 border-b',
+                  PANEL.pad,
+                  PANEL.header,
+                )}
+              >
                 <h2 className={T.section}>{group.name}</h2>
-                <span className="text-ink-2 shrink-0 text-xs leading-4 font-medium tabular-nums">
+                <span className={cn(T.meta, 'shrink-0 tabular-nums')}>
                   {getCopy().report.badge(String(group.total))}
                 </span>
               </div>
@@ -144,14 +150,14 @@ export function CitizenReportsPanel({ regions, mapRef }: CitizenReportsPanelProp
                           'rounded-none',
                         )}
                       >
-                        <span className="text-ink min-w-0 flex-1 truncate text-sm leading-5 font-medium">
+                        <span className={cn(T.body, 'min-w-0 flex-1 truncate')}>
                           {nameOf(item.region_code)}
                         </span>
-                        <span className="text-ink shrink-0 font-mono text-sm leading-5 font-semibold tabular-nums">
+                        <span className={cn(T.title, 'shrink-0 font-mono tabular-nums')}>
                           {formatNumber(item.count)}
                         </span>
                         <ChevronRight
-                          className="text-ink-3 size-4 shrink-0"
+                          className="text-brand size-4 shrink-0"
                           strokeWidth={2}
                           aria-hidden
                         />

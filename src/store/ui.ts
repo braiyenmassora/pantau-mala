@@ -40,16 +40,11 @@ export const useUiStore = create<UiState>((set) => ({
   setPanelOpen: (panelOpen) =>
     set(() => {
       if (!isMobileWidth()) return { panelOpen }
-      // Mobile: "tutup" = peek; buka (detail/select) = half 50/50 (bukan full).
+      // Mobile: "tutup" = peek; buka (detail/select) = half 50/50.
       if (!panelOpen) return { panelOpen: true, mobileSheet: 'peek' }
       return { panelOpen: true, mobileSheet: 'half' }
     }),
-  setMobileSheet: (mobileSheet) =>
-    set({
-      // Full dinonaktifkan — selalu 50/50 max agar peta/beat tetap kelihatan.
-      mobileSheet: mobileSheet === 'full' ? 'half' : mobileSheet,
-      panelOpen: true,
-    }),
+  setMobileSheet: (mobileSheet) => set({ mobileSheet, panelOpen: true }),
   setBootDone: (bootDone) => set({ bootDone }),
   setReportTarget: (reportTarget) =>
     set(reportTarget ? { reportTarget, selectedReportId: null } : { reportTarget: null }),

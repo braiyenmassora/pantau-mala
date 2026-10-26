@@ -43,8 +43,7 @@ export function telemetrySumber(
     : ({ search: '' } as Location),
 ): Pick<TelemetryEvent, 'utm_source' | 'utm_medium' | 'utm_campaign'> {
   const q = new URLSearchParams(loc.search || '')
-  const out: Pick<TelemetryEvent, 'utm_source' | 'utm_medium' | 'utm_campaign'> =
-    {}
+  const out: Pick<TelemetryEvent, 'utm_source' | 'utm_medium' | 'utm_campaign'> = {}
   const source = sanitizeUtm(q.get('utm_source'))
   const medium = sanitizeUtm(q.get('utm_medium'))
   const campaign = sanitizeUtm(q.get('utm_campaign'))
@@ -169,7 +168,10 @@ function trackPathChange(privacy: boolean, spa: boolean) {
   const path = telemetryPath()
   if (path === lastTrackedPath) return
   lastTrackedPath = path
-  void sendTelemetry([buildEvent('page_view', privacy, undefined, undefined, { spa })], privacy)
+  void sendTelemetry(
+    [buildEvent('page_view', privacy, undefined, undefined, { spa })],
+    privacy,
+  )
 }
 
 function patchHistory(privacy: boolean) {

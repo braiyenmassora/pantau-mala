@@ -181,12 +181,14 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
         ensureHeatmapLayers(map)
         const source = map.getSource(SOURCE_ID) as GeoJSONSource | undefined
         source?.setData(collectionRef.current)
+        // Wilayah terpilih: pin/dense layer milik SelectedHotspotsLayer — jangan
+        // biarkan blob heatmap menutupi target klik tip.
+        const vis = selectedCodeRef.current ? 'none' : 'visible'
+        if (map.getLayer(LAYER_ID)) {
+          map.setLayoutProperty(LAYER_ID, 'visibility', vis)
+        }
         if (map.getLayer(POINTS_LAYER_ID)) {
-          map.setLayoutProperty(
-            POINTS_LAYER_ID,
-            'visibility',
-            selectedCodeRef.current ? 'none' : 'visible',
-          )
+          map.setLayoutProperty(POINTS_LAYER_ID, 'visibility', vis)
         }
       } catch {
         // style swap mid-flight
@@ -216,19 +218,30 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       }
     }
 
-    const openRegionFromEvent = (e: MapLayerMouseEvent) => {
+    const openRegionFromEvent = (
+      e: MapLayerMouseEvent,
+      focusHotspotTime?: string | null,
+    ) => {
       const feature = e.features?.[0]
       const code = feature?.properties?.region_code
       if (typeof code !== 'string' || !code) return false
       const reg = regionsRef.current.find((r) => r.code === code)
-      selectRef.current(code, reg?.province)
+      const time =
+        focusHotspotTime ??
+        (typeof feature?.properties?.time === 'string' ? feature.properties.time : null)
+      selectRef.current(code, reg?.province, time)
       setPanelOpenRef.current(true)
       return true
     }
 
     const onPointClick = (e: MapLayerMouseEvent) => {
+      // Wilayah sudah dipilih: tip + laporan lewat pin DOM SelectedHotspotsLayer.
       if (selectedCodeRef.current) return
-      if (openRegionFromEvent(e)) {
+      const time =
+        typeof e.features?.[0]?.properties?.time === 'string'
+          ? e.features[0].properties.time
+          : null
+      if (openRegionFromEvent(e, time)) {
         setActiveHotspot(null)
         return
       }
@@ -239,9 +252,19 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
 
     const onHeatmapClick = (e: MapLayerMouseEvent) => {
       if (selectedCodeRef.current) return
-      if (openRegionFromEvent(e)) {
-        setActiveHotspot(null)
-      }
+      // Ambil titik terdekat di bawah blob supaya tip laporan ikut terbuka.
+      const pts =
+        map.getLayer(POINTS_LAYER_ID) &&
+        map.queryRenderedFeatures(e.point, { layers: [POINTS_LAYER_ID] })
+      const pointFeat = pts && pts.length > 0 ? pts[0] : e.features?.[0]
+      const code = pointFeat?.properties?.region_code
+      if (typeof code !== 'string' || !code) return
+      const reg = regionsRef.current.find((r) => r.code === code)
+      const time =
+        typeof pointFeat?.properties?.time === 'string' ? pointFeat.properties.time : null
+      selectRef.current(code, reg?.province, time)
+      setPanelOpenRef.current(true)
+      setActiveHotspot(null)
     }
 
     const onPointEnter = (e: MapLayerMouseEvent) => {
@@ -304,12 +327,12 @@ export function HotspotHeatmapLayer({ regions }: HotspotHeatmapLayerProps) {
       ensureHeatmapLayers(map)
       const source = map.getSource(SOURCE_ID) as GeoJSONSource | undefined
       source?.setData(collection)
+      const vis = selectedCode ? 'none' : 'visible'
+      if (map.getLayer(LAYER_ID)) {
+        map.setLayoutProperty(LAYER_ID, 'visibility', vis)
+      }
       if (map.getLayer(POINTS_LAYER_ID)) {
-        map.setLayoutProperty(
-          POINTS_LAYER_ID,
-          'visibility',
-          selectedCode ? 'none' : 'visible',
-        )
+        map.setLayoutProperty(POINTS_LAYER_ID, 'visibility', vis)
       }
     } catch {
       // style swap

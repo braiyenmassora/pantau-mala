@@ -1,18 +1,18 @@
 /* Token desain pantaumala — satu sumber kebenaran.
    Hex MapLibre di risk-category.ts harus mirror nilai di sini.
-   Font UI: hanya IBM Plex Sans (fonts.css). Mono = Sans + tabular-nums. */
+   Font UI: hanya Plus Jakarta Sans (fonts.css). Mono = Sans + tabular-nums. */
 
 @theme {
-  --font-sans: 'IBM Plex Sans', 'IBM Plex Sans Fallback', sans-serif;
-  --font-mono: 'IBM Plex Sans', 'IBM Plex Sans Fallback', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Plus Jakarta Sans Fallback', sans-serif;
+  --font-mono: 'Plus Jakarta Sans', 'Plus Jakarta Sans Fallback', sans-serif;
 
   /* Netral — ink-2 / ink-3 lolos AA 4.5:1 di atas surface */
   --color-ink: #1f2328;
   --color-ink-2: #5f6368;
   --color-ink-3: #757575;
-  --color-line: #f0f1f3;
+  --color-line: #e7e5e4;
   --color-surface: #ffffff;
-  --color-surface-muted: #f8f9fa; /* hover / tile soft */
+  --color-surface-muted: #f5f5f4; /* field / hover — abu hangat */
   --color-map-bg: #e8eaed;
   --color-scrollbar: #dadce0;
   /* Tren / grafik netral (bukan brand, bukan risiko) */
@@ -68,9 +68,10 @@
   --map-sheet-peek: 88px;
   /* Half = 50/50 peta ↔ panel. */
   --map-sheet-half: min(50dvh, 480px);
-  /* full tidak dipakai (alias half) — dulu menutup maps. */
+  /* Full: hampir layar penuh, sisakan gap atas. */
+  --map-sheet-full: calc(100dvh - 48px);
   --map-sheet-height: var(--map-sheet-half);
-  /* Runtime: peek | half — di-set dari App pada mobile */
+  /* Runtime: peek | half | full — di-set dari App pada mobile */
   --map-sheet-current: var(--map-sheet-half);
   --card-padding: var(--space-4);
   --card-gap: var(--space-4);
@@ -105,15 +106,17 @@
   --leading-9: 32px;
   --leading-10: 36px;
 
-  /* Radius soft: kontrol 12 · kartu/panel 16 */
-  --radius-ctl: 12px;
-  --radius-card: 16px;
-  --radius-panel: 16px;
-  --radius-pill: 12px;
+  /* Radius Maps: sudut rendah 8px — ctl/card/panel/pill sama; rounded-full hanya pin/dot/avatar */
+  --radius-ctl: 8px;
+  --radius-card: 8px;
+  --radius-panel: 8px;
+  --radius-pill: 8px;
 
   /* Shadow sangat lembut — sedikit terangkat, tidak “timbul” */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
   --shadow-chrome: 0 1px 3px rgba(0, 0, 0, 0.025);
+  /* Panel desktop: soft edge + drop lebih dalam dari chrome tip */
+  --shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.035);
   --shadow-lg: var(--shadow-md);
   --shadow-map: 0 1px 2px rgba(0, 0, 0, 0.04);

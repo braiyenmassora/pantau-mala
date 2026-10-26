@@ -297,7 +297,7 @@ function ActiveNearbyCard({
         <div className="flex min-w-0 items-center gap-1">
           <CardTitle>{getCopy().location.nearbyLabel}</CardTitle>
           <span
-            className="text-ink-3 inline-flex size-3.5 shrink-0"
+            className="text-brand inline-flex size-3.5 shrink-0"
             title={getCopy().location.riskNearbyTip}
             aria-hidden
           >

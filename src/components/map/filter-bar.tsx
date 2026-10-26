@@ -12,6 +12,7 @@ import { formatNumber } from '@/lib/format'
 import { isMobileWidth, useMapChrome } from '@/lib/layout'
 import { RISK_CATEGORIES, riskCategoryLabel } from '@/lib/risk-category'
 import { effectiveRiskCategory } from '@/lib/risk-rule'
+import { CHROME } from '@/lib/pola'
 import { mapOverlayGestureProps } from '@/lib/stop-map-gesture'
 import { cn } from '@/lib/utils'
 import { useMapStore } from '@/store/map'
@@ -83,7 +84,7 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
       ref={rowRef}
       className={cn(
         'soft-scroll fixed top-(--floating-control-offset) z-30',
-        'flex items-center gap-2 overflow-x-auto overscroll-x-contain pb-1',
+        'flex items-center gap-1.5 overflow-x-auto overscroll-x-contain pb-1 sm:gap-2',
         overflowX && 'soft-fade-x pr-7',
         'ease-out-soft transition-[left,max-width] duration-300',
       )}
@@ -96,7 +97,10 @@ export function FilterBar({ panelOpen, regions }: FilterBarProps) {
       {showProvince ? (
         <ProvincePicker
           regions={regions}
-          className={cn('shrink-0', availWidth < 320 && 'max-w-36')}
+          className={cn(
+            'shrink-0',
+            (isMobileWidth(width) || availWidth < 320) && 'max-w-28',
+          )}
         />
       ) : null}
 
@@ -191,15 +195,15 @@ function DensityLegendChip() {
       aria-label={aria}
       title={aria}
       className={cn(
-        'border-line bg-surface text-ink shadow-none sm:hidden',
-        'rounded-card flex h-11 min-h-11 shrink-0 items-center gap-2 border px-3',
+        CHROME.mapFilterTrigger,
+        'flex h-11 min-h-11 shrink-0 items-center gap-1 px-2 sm:hidden',
       )}
     >
       <span className="text-ink-2 text-xs leading-4 font-medium whitespace-nowrap">
         {getCopy().legend.densityTitle}
       </span>
       <span
-        className="h-1.5 w-16 shrink-0 rounded-full"
+        className="h-1.5 w-8 shrink-0 rounded-full"
         style={{
           background:
             'linear-gradient(90deg, var(--color-heat-low), var(--color-heat-mid), var(--color-heat-high))',
@@ -248,10 +252,14 @@ function RiskFilterMenu({
               : getCopy().filter.riskMenuTitle(formatNumber(activeCount))
           }
           title={summary}
-          className="shrink-0"
+          className="shrink-0 gap-1.5 px-2.5 sm:gap-2 sm:px-3"
         >
-          <ListFilter className="size-4 shrink-0" strokeWidth={1.75} aria-hidden />
-          <span className="max-w-28 truncate sm:max-w-40">
+          <ListFilter
+            className="text-brand hidden size-4 shrink-0 sm:block"
+            strokeWidth={1.75}
+            aria-hidden
+          />
+          <span className="max-w-24 truncate sm:max-w-40">
             {allPressed ? (
               <>
                 {getCopy().filter.riskMenu}
@@ -269,7 +277,7 @@ function RiskFilterMenu({
           ) : null}
           <ChevronDown
             className={cn(
-              'text-ink-2 size-4 shrink-0 transition-transform duration-200',
+              'text-brand size-4 shrink-0 transition-transform duration-200',
               open && 'rotate-180',
             )}
             strokeWidth={1.75}
@@ -281,7 +289,7 @@ function RiskFilterMenu({
         align="start"
         side="bottom"
         sideOffset={6}
-        className="rounded-card border-line bg-surface text-ink shadow-chrome z-50 w-64 border p-1"
+        className={cn(CHROME.mapFilterPopover, 'z-50 w-64 p-1')}
         role="listbox"
         aria-label={getCopy().filter.riskMenu}
       >
@@ -354,7 +362,7 @@ function RiskMenuRow({
       <span className="min-w-0 flex-1 truncate">{label}</span>
       <span className="font-mono text-sm tabular-nums">{formatNumber(count)}</span>
       {pressed ? (
-        <Check className="size-4 shrink-0" strokeWidth={2} aria-hidden />
+        <Check className="text-brand size-4 shrink-0" strokeWidth={2} aria-hidden />
       ) : (
         <span className="size-4 shrink-0" aria-hidden />
       )}
